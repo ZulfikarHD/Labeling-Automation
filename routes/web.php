@@ -28,4 +28,16 @@ Route::get('/np-kepala-menu', function () {
     return Inertia::render('NonPerekat/KepalaMeja/Menu');
 })->name('np-kepala-menu');
 
+Route::get('/np-kepala-monitor', function () {
+    return Inertia::render('NonPerekat/KepalaMeja/Monitor');
+})->name('np-kepala-monitor');
+
+Route::get('/np-kepala-genOrder', function () {
+    return Inertia::render('NonPerekat/KepalaMeja/GeneratedOrders');
+})->name('np-kepala-genOrder');
+
+Route::get('/np-kepala-newGen', function () {
+    return Inertia::render('NonPerekat/KepalaMeja/NewGenerate');
+})->name('np-kepala-newGen');
+
 require __DIR__.'/auth.php';
