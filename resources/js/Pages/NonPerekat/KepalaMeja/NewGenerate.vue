@@ -5,10 +5,12 @@ import TextInput from '@/Components/TextInput.vue';
 import { Link,useForm } from '@inertiajs/vue3';
 
 const form = useForm({
-    jml_rim: '',
-    po     : '',
-    obc    : '',
-    seri   : '',
+    po  : '',
+    obc : '',
+    jml_rim : '',
+    seri    : '',
+    start_rim : '',
+    end_rim : '',
 });
 
 </script>
@@ -70,12 +72,12 @@ const form = useForm({
                             <InputLabel for="start_rim" value="Dari" class="text-4xl font-extrabold  text-center"/>
 
                             <TextInput
-                                id="dari"
-                                ref="dari"
-                                v-model="form.dari"
+                                id="start_rim"
+                                ref="start_rim"
+                                v-model="form.start_rim"
                                 type="number"
                                 class="mt-2 block w-full px-8 py-2 text-2xl text-center"
-                                autocomplete="dari"
+                                autocomplete="start_rim"
                                 value="1"
                             />
                         </div>

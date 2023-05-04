@@ -40,4 +40,16 @@ Route::get('/np-kepala-newGen', function () {
     return Inertia::render('NonPerekat/KepalaMeja/NewGenerate');
 })->name('np-kepala-newGen');
 
+Route::get('/np-verif-menu', function () {
+    return Inertia::render('NonPerekat/Verifikator/Menu');
+})->name('np-verif-menu');
+
+Route::get('/np-verif-chosePo', function () {
+    return Inertia::render('NonPerekat/Verifikator/ChosePo');
+})->name('np-verif-chosePo');
+
+Route::get('/np-verif-genLabel', function () {
+    return Inertia::render('NonPerekat/Verifikator/GenerateLabel');
+})->name('np-verif-genLabel');
+
 require __DIR__.'/auth.php';
