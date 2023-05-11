@@ -16,7 +16,8 @@ module.exports = {
             },
             backgroundImage: {
                 'menu'  : "url('/img/menu.jpg')",
-                'content'  : "url('/img/content.jpg')"
+                'content'  : "url('/img/content.jpg')",
+                'content2'  : "url('/img/content2.jpg')"
             },
         },
     },

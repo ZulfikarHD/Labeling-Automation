@@ -52,4 +52,5 @@ Route::get('/np-verif-genLabel', function () {
     return Inertia::render('NonPerekat/Verifikator/GenerateLabel');
 })->name('np-verif-genLabel');
 
+
 require __DIR__.'/auth.php';

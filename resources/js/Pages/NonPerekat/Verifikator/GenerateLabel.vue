@@ -1,8 +1,17 @@
 <script setup>
+import Modal from '@/Components/Modal.vue'
 import ContentLayout from '@/Layouts/ContentLayout.vue';
 import InputLabel from '@/Components/InputLabel.vue';
+import InputError from '@/Components/InputError.vue';
 import TextInput from '@/Components/TextInput.vue';
 import { Link,useForm } from '@inertiajs/vue3';
+
+defineProps({
+    showModal: {
+        type: Boolean,
+        default: false,
+    },
+});
 
 const form = useForm({
     po  : '',
@@ -11,41 +20,79 @@ const form = useForm({
     seri    : '',
     jml_rim : '',
     lbr_ptg : '',
+    rfid    : '',
 });
 
 </script>
 
 <template>
+    <Modal :show="showModal" @close="Modal => showModal = !showModal">
+        <div class="px-8 py-6">
+            <form>
+                <div class="border-b-2 pb-4 mb-4 border-slate-400">
+                    <h3 class="text-2xl font-semibold text-center text-slate-700">Barang Yang Anda Ambil</h3>
+                    <div>
+                        <h3 class="text-2xl font-semibold text-center text-slate-700">
+                            Berjumlah <span class="text-cyan-600 brightness-110">2 RIM</span>, Dengan Nomor <span class="text-emerald-600 brightness-110">24,25</span>, Sisiran Kiri
+                        </h3>
+                    </div>
+                </div>
+                <div>
+                    <InputLabel for="rfid" value="Silahkan Scan RFID mu" class="text-2xl font-semibold text-center" />
+
+                    <TextInput
+                        id="rfid"
+                        type="text"
+                        class="block w-full mt-4 text-center"
+                        v-model="form.rfid"
+                        required
+                        autofocus
+                        autocomplete="rfid"
+                    />
+
+                    <InputError class="mt-2" :message="form.errors.rfid" />
+                </div>
+                <div class="flex flex-row justify-center gap-4">
+                    <button type="button" @click="showModal = !showModal" class="flex justify-center px-4 py-2 mt-8 w-fit bg-inherit rounded-xl text-start border border-blue-400 hover:brightness-90 drop-shadow-md shadow-md shadow-blue-500/20">
+                        <span class="text-lg font-bold text-blue-500">Cancel</span>
+                    </button>
+                    <button type="button" class="flex justify-center px-4 py-2 mt-8 w-fit bg-gradient-to-r from-blue-400 to-blue-500 rounded-xl text-start hover:brightness-90 drop-shadow-md shadow-md shadow-blue-500/20">
+                        <span class="text-lg font-bold text-indigo-50">Print</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </Modal>
     <ContentLayout>
         <div class="py-8">
             <form>
-                <div class="w-fit mx-auto flex flex-col gap-6 justify-center">
+                <div class="flex flex-col justify-center gap-6 mx-auto w-fit">
                     <!-- Team -->
                     <div class="mx-auto mb-7">
-                        <InputLabel for="team" value="Team" class="text-2xl  font-extrabold  text-center"/>
+                        <InputLabel for="team" value="Team" class="text-2xl font-extrabold text-center"/>
 
                         <TextInput
                             id="team"
                             ref="team"
                             v-model="form.team"
                             type="text"
-                            class="mt-2 block w-fit px-4 py-2 text-lg text-center bg-slate-300 shadow drop-shadow"
+                            class="block px-4 py-2 mt-2 text-lg text-center shadow w-fit bg-slate-300 drop-shadow"
                             autocomplete="team"
                             value="Non Personal 1"
                             disabled
                         />
                     </div>
-                    <div class="flex justify-between gap-6 w-fit mb-6">
+                    <div class="flex justify-between gap-6 mb-6 w-fit">
                         <!-- PO -->
                         <div>
-                            <InputLabel for="po" value="Nomor PO" class="text-2xl  font-extrabold  text-center"/>
+                            <InputLabel for="po" value="Nomor PO" class="text-2xl font-extrabold text-center"/>
 
                             <TextInput
                                 id="po"
                                 ref="po"
                                 v-model="form.po"
                                 type="number"
-                                class="mt-2 block w-full px-4 py-2 text-lg text-center bg-slate-300 shadow drop-shadow"
+                                class="block w-full px-4 py-2 mt-2 text-lg text-center shadow bg-slate-300 drop-shadow"
                                 autocomplete="po"
                                 value="3000160783"
                                 disabled
@@ -54,14 +101,14 @@ const form = useForm({
 
                         <!-- Nomor OBC -->
                         <div>
-                            <InputLabel for="obc" value="Nomor OBC" class="text-2xl  font-extrabold  text-center"/>
+                            <InputLabel for="obc" value="Nomor OBC" class="text-2xl font-extrabold text-center"/>
 
                             <TextInput
                                 id="obc"
                                 ref="obc"
                                 v-model="form.obc"
                                 type="text"
-                                class="mt-2 block w-full px-4 py-2 text-lg text-center bg-slate-300 shadow drop-shadow"
+                                class="block w-full px-4 py-2 mt-2 text-lg text-center shadow bg-slate-300 drop-shadow"
                                 autocomplete="obc"
                                 value="SID215509"
                                 disabled
@@ -70,31 +117,31 @@ const form = useForm({
 
                         <!-- Seri -->
                         <div>
-                            <InputLabel for="seri" value="Seri" class="text-2xl  font-extrabold  text-center "/>
+                            <InputLabel for="seri" value="Seri" class="text-2xl font-extrabold text-center "/>
 
                             <TextInput
                                 id="seri"
                                 ref="seri"
                                 v-model="form.seri"
                                 type="number"
-                                class="mt-2 block w-full px-4 py-2 text-lg text-center bg-slate-300 shadow drop-shadow"
+                                class="block w-full px-4 py-2 mt-2 text-lg text-center shadow bg-slate-300 drop-shadow"
                                 autocomplete="seri"
                                 value="1"
                             />
                         </div>
                     </div>
 
-                    <div class="flex justify-between gap-6 w-fit mx-auto">
+                    <div class="flex justify-between gap-6 mx-auto w-fit">
                         <!-- Start RIM -->
                         <div>
-                            <InputLabel for="jml_rim" value="Jumlah RIM" class="text-2xl  font-extrabold  text-center"/>
+                            <InputLabel for="jml_rim" value="Jumlah RIM" class="text-2xl font-extrabold text-center"/>
 
                             <TextInput
                                 id="jml_rim"
                                 ref="jml_rim"
                                 v-model="form.jml_rim"
                                 type="number"
-                                class="mt-2 block w-full px-4 py-2 text-lg text-center"
+                                class="block w-full px-4 py-2 mt-2 text-lg text-center"
                                 autocomplete="jml_rim"
                                 value="1"
                             />
@@ -102,14 +149,14 @@ const form = useForm({
 
                         <!-- End Rim -->
                         <div>
-                            <InputLabel for="lbr_ptg" value="Lembar Potong" class="text-2xl  font-extrabold  text-center"/>
+                            <InputLabel for="lbr_ptg" value="Lembar Potong" class="text-2xl font-extrabold text-center"/>
 
                             <TextInput
                                 id="lbr_ptg"
                                 ref="lbr_ptg"
                                 v-model="form.lbr_ptg"
                                 type="text"
-                                class="mt-2 block w-full px-4 py-2 text-lg text-center"
+                                class="block w-full px-4 py-2 mt-2 text-lg text-center"
                                 autocomplete="lbr_ptg"
                                 value="Kiri"
                                 disabled
@@ -119,26 +166,26 @@ const form = useForm({
                 </div>
 
                 <!-- Keypad -->
-                <div class="grid grid-cols-2 gap-6 w-fit mx-auto">
+                <div class="grid grid-cols-2 gap-6 mx-auto w-fit">
                     <div class="grid grid-cols-3 gap-3 mt-10">
-                        <button type="btn" class="w-full px-2 py-4 bg-gradient-to-r from-sky-300 to-sky-400 shadow shadow-sky-400/30 drop-shadow rounded-xl text-start mx-auto flex justify-center text-sky-50 font-extrabold hover:brightness-90 transition ease-in-out duration-150" v-for="n in 9">{{ n }}</button>
-                        <button type="btn" class="w-full px-2 py-4 bg-gradient-to-r from-sky-300 to-sky-400 shadow shadow-sky-400/30 drop-shadow rounded-xl text-start mx-auto flex justify-center text-sky-50 font-extrabold hover:brightness-90 transition ease-in-out duration-150 col-span-2">0</button>
-                        <button type="btn" class="w-full px-2 py-4 bg-gradient-to-r from-sky-300 to-sky-400 shadow shadow-sky-400/30 drop-shadow rounded-xl text-start mx-auto flex justify-center text-sky-50 font-extrabold hover:brightness-90 transition ease-in-out duration-150">Backspace</button>
+                        <button type="btn" class="flex justify-center w-full px-2 py-4 mx-auto font-extrabold transition duration-150 ease-in-out shadow bg-gradient-to-r from-sky-300 to-sky-400 shadow-sky-400/30 drop-shadow rounded-xl text-start text-sky-50 hover:brightness-90" v-for="n in 9">{{ n }}</button>
+                        <button type="btn" class="flex justify-center w-full col-span-2 px-2 py-4 mx-auto font-extrabold transition duration-150 ease-in-out shadow bg-gradient-to-r from-sky-300 to-sky-400 shadow-sky-400/30 drop-shadow rounded-xl text-start text-sky-50 hover:brightness-90">0</button>
+                        <button type="btn" class="flex justify-center w-full px-2 py-4 mx-auto font-extrabold transition duration-150 ease-in-out shadow bg-gradient-to-r from-sky-300 to-sky-400 shadow-sky-400/30 drop-shadow rounded-xl text-start text-sky-50 hover:brightness-90">Backspace</button>
                     </div>
                     <div class="grid grid-cols-2 mt-10">
-                        <button type="btn" class="w-2/3 px-2 py-4 bg-gradient-to-r from-emerald-400 to-emerald-300 shadow shadow-emerald-400/30 rounded-xl text-start mx-auto flex justify-center text-green-50 font-extrabold hover:brightness-90 transition ease-in-out duration-150">
-                            <div class="flex flex-col justify-center items-center gap-4 h-full px-6">
+                        <button type="btn" class="flex justify-center w-2/3 px-2 py-4 mx-auto font-extrabold transition duration-150 ease-in-out shadow bg-gradient-to-r from-emerald-400 to-emerald-300 shadow-emerald-400/30 rounded-xl text-start text-green-50 hover:brightness-90">
+                            <div class="flex flex-col items-center justify-center h-full gap-4 px-6">
                                 <div class="flex gap-2">
-                                    <span class="rounded-full bg-emerald-50 p-2"></span>
+                                    <span class="p-2 rounded-full bg-emerald-50"></span>
                                 </div>
                                 <span class="font-extrabold uppercase">Kiri</span>
                             </div>
                         </button>
-                        <button type="btn" class="w-2/3 px-2 py-4 bg-gradient-to-r from-emerald-300 to-emerald-400 shadow shadow-emerald-400/30 rounded-xl text-start mx-auto flex justify-center text-green-50 font-extrabold hover:brightness-90 transition ease-in-out duration-150">
-                            <div class="flex flex-col justify-center items-center gap-4 h-full px-6">
+                        <button type="btn" class="flex justify-center w-2/3 px-2 py-4 mx-auto font-extrabold transition duration-150 ease-in-out shadow bg-gradient-to-r from-emerald-300 to-emerald-400 shadow-emerald-400/30 rounded-xl text-start text-green-50 hover:brightness-90">
+                            <div class="flex flex-col items-center justify-center h-full gap-4 px-6">
                                 <div class="flex gap-2">
-                                    <span class="rounded-full bg-emerald-50 p-2"></span>
-                                    <span class="rounded-full bg-emerald-50 p-2"></span>
+                                    <span class="p-2 rounded-full bg-emerald-50"></span>
+                                    <span class="p-2 rounded-full bg-emerald-50"></span>
                                 </div>
                                 <span class="font-extrabold uppercase">Kanan</span>
                             </div>
@@ -147,12 +194,12 @@ const form = useForm({
                 </div>
 
                 <!-- Submit -->
-                <div class="flex justify-center w-fit mx-auto gap-6">
-                    <button class="w-fit px-4 py-4 bg-gradient-to-r from-violet-400 to-violet-500 rounded-xl text-start mt-8 mx-auto flex justify-center">
-                        <Link :href="route('np-kepala-newGen')" class="text-violet-50 text-lg font-bold">Clear</Link>
+                <div class="flex justify-center gap-6 mx-auto w-fit">
+                    <button class="flex justify-center px-4 py-4 mx-auto mt-8 w-fit bg-gradient-to-r from-violet-400 to-violet-500 rounded-xl text-start hover:brightness-90 drop-shadow-md shadow-md shadow-violet-500/20">
+                        <Link :href="route('np-kepala-newGen')" class="text-lg font-bold text-violet-50">Clear</Link>
                     </button>
-                    <button class="w-fit px-4 py-4 bg-gradient-to-r from-green-400 to-green-500 rounded-xl text-start mt-8 mx-auto flex justify-center">
-                        <Link :href="route('np-kepala-newGen')" class="text-yellow-50 text-lg font-bold">Generate</Link>
+                    <button type="button" @click="showModal = !showModal" class="flex justify-center px-4 py-4 mx-auto mt-8 w-fit bg-gradient-to-r from-green-400 to-green-500 rounded-xl text-start hover:brightness-90 drop-shadow-md shadow-md shadow-green-500/20">
+                        <div class="text-lg font-bold text-yellow-50">Generate</div>
                     </button>
                 </div>
             </form>

@@ -8,7 +8,7 @@ const showingNavigationDropdown = ref(false);
 </script>
 
 <template>
-    <div class="bg-content bg-cover min-h-screen h-full bg-center">
+    <div class="h-full min-h-screen bg-center bg-cover bg-content2">
         <slot />
     </div>
 </template>
