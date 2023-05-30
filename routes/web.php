@@ -5,6 +5,9 @@ use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
+use App\Http\Controllers\ProductMonitoringController;
+use App\Http\Controllers\GeneratedProductsController;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -28,17 +31,9 @@ Route::get('/np-kepala-menu', function () {
     return Inertia::render('NonPerekat/KepalaMeja/Menu');
 })->name('np-kepala-menu');
 
-Route::get('/np-kepala-monitor', function () {
-    return Inertia::render('NonPerekat/KepalaMeja/Monitor');
-})->name('np-kepala-monitor');
+Route::get('/np/pic/monitor-products',[ProductMonitoringController::class, 'index'])->name('np.pic.monitor-products');
+Route::resource('/np/pic/products',GeneratedProductsController::class,['names' => 'np.products']);
 
-Route::get('/np-kepala-genOrder', function () {
-    return Inertia::render('NonPerekat/KepalaMeja/GeneratedOrders');
-})->name('np-kepala-genOrder');
-
-Route::get('/np-kepala-newGen', function () {
-    return Inertia::render('NonPerekat/KepalaMeja/NewGenerate');
-})->name('np-kepala-newGen');
 
 Route::get('/np-verif-menu', function () {
     return Inertia::render('NonPerekat/Verifikator/Menu');

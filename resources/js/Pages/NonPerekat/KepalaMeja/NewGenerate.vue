@@ -1,24 +1,28 @@
 <script setup>
+import { reactive } from 'vue'
 import ContentLayout from '@/Layouts/ContentLayout.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import TextInput from '@/Components/TextInput.vue';
-import { Link,useForm } from '@inertiajs/vue3';
+import { Link,router } from '@inertiajs/vue3';
 
-const form = useForm({
+const form = reactive({
     po  : '',
     obc : '',
     jml_rim : '',
     seri    : '',
-    start_rim : '',
-    end_rim : '',
+    start_rim : '1',
+    end_rim : '40',
 });
 
+function submit() {
+  router.post(route('np.products.store'), form)
+}
 </script>
 
 <template>
     <ContentLayout>
         <div class="py-12">
-            <form>
+            <form @submit.prevent="submit" method="post">
                 <div class="flex flex-col justify-center gap-6 mx-auto mt-20 w-fit">
                     <!-- Nomor PO -->
                     <div>
@@ -62,6 +66,7 @@ const form = useForm({
                                 class="block w-full px-8 py-2 mt-2 text-2xl text-center"
                                 autocomplete="jml_rim"
                                 placeholder="RIM"
+                                min="1"
                             />
                         </div>
                     </div>
@@ -78,7 +83,7 @@ const form = useForm({
                                 type="number"
                                 class="block w-full px-8 py-2 mt-2 text-2xl text-center"
                                 autocomplete="start_rim"
-                                value="1"
+                                min="1"
                             />
                         </div>
 
@@ -93,17 +98,17 @@ const form = useForm({
                                 type="number"
                                 class="block w-full px-8 py-2 mt-2 text-2xl text-center"
                                 autocomplete="end_rim"
-                                value="40"
+                                min="1"
                             />
                         </div>
                     </div>
                 </div>
                 <div class="flex justify-center gap-6 mx-auto w-fit">
                     <button class="flex justify-center px-8 py-4 mx-auto w-fit bg-gradient-to-r from-violet-400 to-violet-500 rounded-xl text-start mt-11">
-                        <Link :href="route('np-kepala-newGen')" class="text-2xl font-bold text-violet-50">Clear</Link>
+                        <Link :href="route('np.products.create')" class="text-2xl font-bold text-violet-50">Clear</Link>
                     </button>
-                    <button class="flex justify-center px-8 py-4 mx-auto w-fit bg-gradient-to-r from-green-400 to-green-500 rounded-xl text-start mt-11">
-                        <Link :href="route('np-kepala-newGen')" class="text-2xl font-bold text-yellow-50">Generate</Link>
+                    <button type="submit" class="flex justify-center px-8 py-4 mx-auto w-fit bg-gradient-to-r from-green-400 to-green-500 rounded-xl text-start mt-11">
+                        <span class="text-2xl font-bold text-yellow-50">Generate</span>
                     </button>
                 </div>
             </form>

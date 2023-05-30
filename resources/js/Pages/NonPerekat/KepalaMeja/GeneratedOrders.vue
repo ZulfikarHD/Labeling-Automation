@@ -1,6 +1,9 @@
 <script setup>
 import ContentLayout from '@/Layouts/ContentLayout.vue';
 import { Link } from '@inertiajs/vue3';
+
+defineProps({ products:Object })
+
 </script>
 
 <template>
@@ -44,38 +47,38 @@ import { Link } from '@inertiajs/vue3';
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr
+                                <tr v-for="product in products"
                                     class="font-mono transition duration-300 ease-in-out border-b border-slate-300 text-slate-800 hover:bg-slate-400 hover:bg-opacity-10 dark:text-slate-100">
                                     <td class="text-center leading-5 whitespace-nowrap text-sm px-4 py-1.5 font-medium text-slate-950 border-r">
-                                        1
+                                        {{ product.id }}
                                     </td>
                                     <td class="text-center leading-5 whitespace-nowrap text-sm px-4 py-1.5 text-slate-700 border-r">
-                                        3000160783
+                                        {{ product.no_po }}
                                     </td>
                                     <td class="text-center leading-5 whitespace-nowrap text-sm px-4 py-1.5 text-slate-700 border-r">
-                                        SID215509
+                                        {{ product.no_obc }}
                                     </td>
                                     <td class="text-center leading-5 whitespace-nowrap text-sm px-4 py-1.5 text-slate-700 border-r">
-                                        -
+                                        {{ product.assigned_team }}
                                     </td>
                                     <td class="text-center leading-5 whitespace-nowrap text-sm px-4 py-1.5 text-slate-700 border-r">
-                                        04-05-2023 13:17:22
+                                        {{ product.created_at }}
                                     </td>
                                     <td class="text-center leading-5 whitespace-nowrap text-sm px-4 py-1.5 text-slate-700 border-r">
-                                        -
+                                        {{ product.status }}
                                     </td>
                                     <td class="text-center leading-5 whitespace-nowrap text-sm px-4 py-1.5 text-slate-700 border-r">
-                                        -
+                                        {{ product.status }}
                                     </td>
                                     <td class="text-center leading-5 whitespace-nowrap text-sm px-4 py-1.5 text-slate-700">
                                         <div class="flex justify-center gap-2">
-                                             <Link :href="route('np-kepala-newGen')" class="font-bold text-blue-400 transition duration-150 ease-in-out hover:text-blue-700">Info</Link>
-                                             <Link :href="route('np-kepala-newGen')" class="font-bold text-green-400 transition duration-150 ease-in-out hover:text-green-700">Edit</Link>
-                                             <Link :href="route('np-kepala-newGen')" class="font-bold text-red-400 transition duration-150 ease-in-out hover:text-red-700">Delete</Link>
+                                             <Link :href="route('np.products.create')" class="font-bold text-blue-400 transition duration-150 ease-in-out hover:text-blue-700">Info</Link>
+                                             <Link :href="route('np.products.create')" class="font-bold text-green-400 transition duration-150 ease-in-out hover:text-green-700">Edit</Link>
+                                             <Link :href="route('np.products.create')" class="font-bold text-red-400 transition duration-150 ease-in-out hover:text-red-700">Delete</Link>
                                         </div>
                                     </td>
                                 </tr>
-
+<!--
                                 <tr
                                     class="font-mono transition duration-300 ease-in-out border-b border-slate-300 text-slate-800 hover:bg-slate-400 hover:bg-opacity-10 dark:text-slate-100">
                                     <td class="text-center leading-5 whitespace-nowrap text-sm px-4 py-1.5 font-medium text-slate-950 border-r">
@@ -101,7 +104,7 @@ import { Link } from '@inertiajs/vue3';
                                     </td>
                                     <td class="text-center leading-5 whitespace-nowrap text-sm px-4 py-1.5 text-slate-700">
                                         <div class="flex justify-center gap-2">
-                                             <Link :href="route('np-kepala-newGen')" class="font-bold text-blue-400 transition duration-150 ease-in-out hover:text-blue-700">Info</Link>
+                                             <Link :href="route('np.products.create')" class="font-bold text-blue-400 transition duration-150 ease-in-out hover:text-blue-700">Info</Link>
                                         </div>
                                     </td>
                                 </tr>
@@ -131,10 +134,10 @@ import { Link } from '@inertiajs/vue3';
                                     </td>
                                     <td class="text-center leading-5 whitespace-nowrap text-sm px-4 py-1.5 text-slate-700">
                                         <div class="flex justify-center gap-2">
-                                             <Link :href="route('np-kepala-newGen')" class="font-bold text-blue-400 transition duration-150 ease-in-out hover:text-blue-700">Info</Link>
+                                             <Link :href="route('np.products.create')" class="font-bold text-blue-400 transition duration-150 ease-in-out hover:text-blue-700">Info</Link>
                                         </div>
                                     </td>
-                                </tr>
+                                </tr> -->
                             </tbody>
                         </table>
                     </div>
