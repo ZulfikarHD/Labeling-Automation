@@ -29,7 +29,7 @@ const form = useForm({
     <Modal :show="showModal" @close="Modal => showModal = !showModal">
         <div class="px-8 py-6">
             <form>
-                <div class="border-b-2 pb-4 mb-4 border-slate-400">
+                <div class="pb-4 mb-4 border-b-2 border-slate-400">
                     <h3 class="text-2xl font-semibold text-center text-slate-700">Barang Yang Anda Ambil</h3>
                     <div>
                         <h3 class="text-2xl font-semibold text-center text-slate-700">
@@ -53,10 +53,10 @@ const form = useForm({
                     <InputError class="mt-2" :message="form.errors.rfid" />
                 </div>
                 <div class="flex flex-row justify-center gap-4">
-                    <button type="button" @click="showModal = !showModal" class="flex justify-center px-4 py-2 mt-8 w-fit bg-inherit rounded-xl text-start border border-blue-400 hover:brightness-90 drop-shadow-md shadow-md shadow-blue-500/20">
+                    <button type="button" @click="showModal = !showModal" class="flex justify-center px-4 py-2 mt-8 border border-blue-400 shadow-md w-fit bg-inherit rounded-xl text-start hover:brightness-90 drop-shadow-md shadow-blue-500/20">
                         <span class="text-lg font-bold text-blue-500">Cancel</span>
                     </button>
-                    <button type="button" class="flex justify-center px-4 py-2 mt-8 w-fit bg-gradient-to-r from-blue-400 to-blue-500 rounded-xl text-start hover:brightness-90 drop-shadow-md shadow-md shadow-blue-500/20">
+                    <button type="button" class="flex justify-center px-4 py-2 mt-8 shadow-md w-fit bg-gradient-to-r from-blue-400 to-blue-500 rounded-xl text-start hover:brightness-90 drop-shadow-md shadow-blue-500/20">
                         <span class="text-lg font-bold text-indigo-50">Print</span>
                     </button>
                 </div>
@@ -195,10 +195,10 @@ const form = useForm({
 
                 <!-- Submit -->
                 <div class="flex justify-center gap-6 mx-auto w-fit">
-                    <button class="flex justify-center px-4 py-4 mx-auto mt-8 w-fit bg-gradient-to-r from-violet-400 to-violet-500 rounded-xl text-start hover:brightness-90 drop-shadow-md shadow-md shadow-violet-500/20">
-                        <Link :href="route('np-kepala-newGen')" class="text-lg font-bold text-violet-50">Clear</Link>
+                    <button class="flex justify-center px-4 py-4 mx-auto mt-8 shadow-md w-fit bg-gradient-to-r from-violet-400 to-violet-500 rounded-xl text-start hover:brightness-90 drop-shadow-md shadow-violet-500/20">
+                        <Link :href="route('np-verif-genLabel')" class="text-lg font-bold text-violet-50">Clear</Link>
                     </button>
-                    <button type="button" @click="showModal = !showModal" class="flex justify-center px-4 py-4 mx-auto mt-8 w-fit bg-gradient-to-r from-green-400 to-green-500 rounded-xl text-start hover:brightness-90 drop-shadow-md shadow-md shadow-green-500/20">
+                    <button type="button" @click="showModal = !showModal" class="flex justify-center px-4 py-4 mx-auto mt-8 shadow-md w-fit bg-gradient-to-r from-green-400 to-green-500 rounded-xl text-start hover:brightness-90 drop-shadow-md shadow-green-500/20">
                         <div class="text-lg font-bold text-yellow-50">Generate</div>
                     </button>
                 </div>
