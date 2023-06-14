@@ -7,6 +7,7 @@ use Inertia\Inertia;
 
 use App\Http\Controllers\ProductMonitoringController;
 use App\Http\Controllers\GeneratedProductsController;
+use App\Http\Controllers\GeneratedLabelsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -32,18 +33,13 @@ Route::get('/np-kepala-menu', function () {
 })->name('np-kepala-menu');
 
 Route::get('/np/pic/monitor-products',[ProductMonitoringController::class, 'index'])->name('np.pic.monitor-products');
-Route::resource('/np/pic/products',GeneratedProductsController::class,['names' => 'np.products']);
+Route::resource('/np/pic/products' ,GeneratedProductsController::class, ['names' => 'np.products']);
+Route::resource('/np/user/genLabel',GeneratedLabelsController::class,   ['names' => 'np.genLabels']);
 
 
 Route::get('/np-verif-menu', function () {
     return Inertia::render('NonPerekat/Verifikator/Menu');
 })->name('np-verif-menu');
-
-Route::get('/np-verif-chosePo', function () {
-    return Inertia::render('NonPerekat/Verifikator/ChosePo',[
-        'products' => App\Models\GeneratedProducts::all()
-    ]);
-})->name('np-verif-chosePo');
 
 Route::get('/np-verif-genLabel', function () {
     return Inertia::render('NonPerekat/Verifikator/GenerateLabel');

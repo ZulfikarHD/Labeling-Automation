@@ -7,6 +7,7 @@ import TextInput from '@/Components/TextInput.vue';
 import { Link,useForm } from '@inertiajs/vue3';
 
 defineProps({
+    product : Object,
     showModal: {
         type: Boolean,
         default: false,
@@ -22,7 +23,7 @@ const form = useForm({
     lbr_ptg : '',
     rfid    : '',
 });
-
+const team = product.assigned_team;
 </script>
 
 <template>
@@ -78,7 +79,7 @@ const form = useForm({
                             type="text"
                             class="block px-4 py-2 mt-2 text-lg text-center shadow w-fit bg-slate-300 drop-shadow"
                             autocomplete="team"
-                            value="Non Personal 1"
+                            value="{{ team }}"
                             disabled
                         />
                     </div>
@@ -94,7 +95,7 @@ const form = useForm({
                                 type="number"
                                 class="block w-full px-4 py-2 mt-2 text-lg text-center shadow bg-slate-300 drop-shadow"
                                 autocomplete="po"
-                                value="3000160783"
+                                value="{{ product.no_po }}"
                                 disabled
                             />
                         </div>
@@ -110,7 +111,7 @@ const form = useForm({
                                 type="text"
                                 class="block w-full px-4 py-2 mt-2 text-lg text-center shadow bg-slate-300 drop-shadow"
                                 autocomplete="obc"
-                                value="SID215509"
+                                value="product.no_obc"
                                 disabled
                             />
                         </div>

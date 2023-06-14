@@ -6,11 +6,6 @@ import { Link, useForm } from '@inertiajs/vue3';
 
 defineProps({
     products: Object,
-    selected: Boolean,
-});
-
-defineEmits({
-    update: selected,
 });
 
 const form = useForm({
@@ -101,8 +96,10 @@ const form = useForm({
                                         {{ product.created_at }}
                                     </td>
                                     <td class="text-center leading-5 whitespace-nowrap text-sm px-4 py-1.5 text-slate-700">
-                                        <input type="checkbox" value="{{ product.id }}"
-                                            @click="$emit('update:selected', true)">
+                                        <button class="flex justify-center px-4 py-1 mx-auto font-semibold tracking-wide w-fit bg-gradient-to-r from-cyan-300 to-cyan-400 rounded-xl text-start text-cyan-50">
+                                            <Link :href="route('np.genLabels.show', product.id)">Go</Link>
+                                        </button>
+                                        <!-- <input type="checkbox" value="{{ product.id }}"> -->
                                     </td>
                                 </tr>
                             </tbody>

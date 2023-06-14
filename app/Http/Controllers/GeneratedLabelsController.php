@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
+use App\Models\GeneratedProducts;
+
 class GeneratedLabelsController extends Controller
 {
     /**
@@ -13,7 +15,9 @@ class GeneratedLabelsController extends Controller
      */
     public function index()
     {
-
+        return Inertia::render('NonPerekat/Verifikator/ChosePo',[
+            'products' => GeneratedProducts::all()
+        ]);
     }
 
     /**
@@ -37,7 +41,9 @@ class GeneratedLabelsController extends Controller
      */
     public function show(string $id)
     {
-        //
+        return Inertia::render('NonPerekat/Verifikator/GenerateLabel',[
+            'product'   => GeneratedProducts::where('id',$id)->first()
+        ]);
     }
 
     /**
