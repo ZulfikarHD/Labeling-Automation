@@ -6,24 +6,24 @@ import InputError from '@/Components/InputError.vue';
 import TextInput from '@/Components/TextInput.vue';
 import { Link,useForm } from '@inertiajs/vue3';
 
-defineProps({
-    product : Object,
-    showModal: {
-        type: Boolean,
-        default: false,
-    },
-});
+const props = defineProps({
+                product : Object,
+                showModal: {
+                    type: Boolean,
+                    default: false,
+                },
+            });
 
 const form = useForm({
-    po  : '',
-    obc : '',
-    team    : '',
+    po  : props.product.no_po ,
+    obc : props.product.no_obc,
+    team    : props.product.assigned_team,
     seri    : '',
-    jml_rim : '',
-    lbr_ptg : '',
+    jml_rim : '1',
+    lbr_ptg : 'Kiri',
     rfid    : '',
 });
-const team = product.assigned_team;
+
 </script>
 
 <template>
@@ -34,7 +34,7 @@ const team = product.assigned_team;
                     <h3 class="text-2xl font-semibold text-center text-slate-700">Barang Yang Anda Ambil</h3>
                     <div>
                         <h3 class="text-2xl font-semibold text-center text-slate-700">
-                            Berjumlah <span class="text-cyan-600 brightness-110">2 RIM</span>, Dengan Nomor <span class="text-emerald-600 brightness-110">24,25</span>, Sisiran Kiri
+                            Berjumlah <span class="text-cyan-600 brightness-110">{{ form.jml_rim }} RIM</span>, Dengan Nomor <span class="text-emerald-600 brightness-110">24,25</span>, Sisiran {{ form.lbr_ptg }}
                         </h3>
                     </div>
                 </div>
@@ -79,7 +79,6 @@ const team = product.assigned_team;
                             type="text"
                             class="block px-4 py-2 mt-2 text-lg text-center shadow w-fit bg-slate-300 drop-shadow"
                             autocomplete="team"
-                            value="{{ team }}"
                             disabled
                         />
                     </div>
@@ -95,7 +94,6 @@ const team = product.assigned_team;
                                 type="number"
                                 class="block w-full px-4 py-2 mt-2 text-lg text-center shadow bg-slate-300 drop-shadow"
                                 autocomplete="po"
-                                value="{{ product.no_po }}"
                                 disabled
                             />
                         </div>
@@ -111,7 +109,6 @@ const team = product.assigned_team;
                                 type="text"
                                 class="block w-full px-4 py-2 mt-2 text-lg text-center shadow bg-slate-300 drop-shadow"
                                 autocomplete="obc"
-                                value="product.no_obc"
                                 disabled
                             />
                         </div>
@@ -144,7 +141,8 @@ const team = product.assigned_team;
                                 type="number"
                                 class="block w-full px-4 py-2 mt-2 text-lg text-center"
                                 autocomplete="jml_rim"
-                                value="1"
+                                min="1"
+                                max="10"
                             />
                         </div>
 
@@ -159,7 +157,6 @@ const team = product.assigned_team;
                                 type="text"
                                 class="block w-full px-4 py-2 mt-2 text-lg text-center"
                                 autocomplete="lbr_ptg"
-                                value="Kiri"
                                 disabled
                             />
                         </div>
@@ -174,7 +171,8 @@ const team = product.assigned_team;
                         <button type="btn" class="flex justify-center w-full px-2 py-4 mx-auto font-extrabold transition duration-150 ease-in-out shadow bg-gradient-to-r from-sky-300 to-sky-400 shadow-sky-400/30 drop-shadow rounded-xl text-start text-sky-50 hover:brightness-90">Backspace</button>
                     </div>
                     <div class="grid grid-cols-2 mt-10">
-                        <button type="btn" class="flex justify-center w-2/3 px-2 py-4 mx-auto font-extrabold transition duration-150 ease-in-out shadow bg-gradient-to-r from-emerald-400 to-emerald-300 shadow-emerald-400/30 rounded-xl text-start text-green-50 hover:brightness-90">
+                        <button type="button" @click="form.lbr_ptg = 'Kiri'"
+                                class="flex justify-center w-2/3 px-2 py-4 mx-auto font-extrabold transition duration-150 ease-in-out shadow bg-gradient-to-r from-emerald-400 to-emerald-300 shadow-emerald-400/30 rounded-xl text-start text-green-50 hover:brightness-90">
                             <div class="flex flex-col items-center justify-center h-full gap-4 px-6">
                                 <div class="flex gap-2">
                                     <span class="p-2 rounded-full bg-emerald-50"></span>
@@ -182,7 +180,8 @@ const team = product.assigned_team;
                                 <span class="font-extrabold uppercase">Kiri</span>
                             </div>
                         </button>
-                        <button type="btn" class="flex justify-center w-2/3 px-2 py-4 mx-auto font-extrabold transition duration-150 ease-in-out shadow bg-gradient-to-r from-emerald-300 to-emerald-400 shadow-emerald-400/30 rounded-xl text-start text-green-50 hover:brightness-90">
+                        <button type="button" @click="form.lbr_ptg = 'Kanan'"
+                                class="flex justify-center w-2/3 px-2 py-4 mx-auto font-extrabold transition duration-150 ease-in-out shadow bg-gradient-to-r from-emerald-300 to-emerald-400 shadow-emerald-400/30 rounded-xl text-start text-green-50 hover:brightness-90">
                             <div class="flex flex-col items-center justify-center h-full gap-4 px-6">
                                 <div class="flex gap-2">
                                     <span class="p-2 rounded-full bg-emerald-50"></span>
@@ -196,8 +195,9 @@ const team = product.assigned_team;
 
                 <!-- Submit -->
                 <div class="flex justify-center gap-6 mx-auto w-fit">
-                    <button class="flex justify-center px-4 py-4 mx-auto mt-8 shadow-md w-fit bg-gradient-to-r from-violet-400 to-violet-500 rounded-xl text-start hover:brightness-90 drop-shadow-md shadow-violet-500/20">
-                        <Link :href="route('np-verif-genLabel')" class="text-lg font-bold text-violet-50">Clear</Link>
+                    <button type="button" @click="form.jml_rim = '1'"
+                            class="flex justify-center px-4 py-4 mx-auto mt-8 shadow-md w-fit bg-gradient-to-r from-violet-400 to-violet-500 rounded-xl text-start hover:brightness-90 drop-shadow-md shadow-violet-500/20 text-lg font-bold text-violet-50">
+                        Clear
                     </button>
                     <button type="button" @click="showModal = !showModal" class="flex justify-center px-4 py-4 mx-auto mt-8 shadow-md w-fit bg-gradient-to-r from-green-400 to-green-500 rounded-xl text-start hover:brightness-90 drop-shadow-md shadow-green-500/20">
                         <div class="text-lg font-bold text-yellow-50">Generate</div>
