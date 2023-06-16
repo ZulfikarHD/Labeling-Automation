@@ -33,9 +33,9 @@ Route::get('/np-kepala-menu', function () {
 })->name('np-kepala-menu');
 
 Route::get('/np/pic/monitor-products',[ProductMonitoringController::class, 'index'])->name('np.pic.monitor-products');
-Route::resource('/np/pic/products' ,GeneratedProductsController::class, ['names' => 'np.products']);
-Route::resource('/np/user/genLabel',GeneratedLabelsController::class,   ['names' => 'np.genLabels']);
-
+Route::resource('/np/pic/products'   ,GeneratedProductsController::class, ['names' => 'np.products']);
+Route::resource('/np/user/genLabel'  ,GeneratedLabelsController::class,   ['names' => 'np.genLabels']);
+Route::post('/np/user/genLabel/getRim',[GeneratedLabelsController::class,   'getRim'])->name('np.genLabels.getRim');
 
 Route::get('/np-verif-menu', function () {
     return Inertia::render('NonPerekat/Verifikator/Menu');

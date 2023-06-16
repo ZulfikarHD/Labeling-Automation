@@ -7,6 +7,7 @@ use Inertia\Inertia;
 use Inertia\Response;
 
 use App\Models\GeneratedProducts;
+use App\Models\GeneratedLabels;
 
 class GeneratedLabelsController extends Controller
 {
@@ -49,7 +50,7 @@ class GeneratedLabelsController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(string $noPo)
     {
         //
     }
@@ -68,5 +69,11 @@ class GeneratedLabelsController extends Controller
     public function destroy(string $id)
     {
         //
+    }
+
+    public function getRim(Request $request)
+    {
+        // return $request->all();
+        return GeneratedLabels::where('no_po_generated_products',$request->po)->take($request->jml_rim)->get();
     }
 }
