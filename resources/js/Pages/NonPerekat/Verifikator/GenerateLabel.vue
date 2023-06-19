@@ -23,25 +23,35 @@ const form = reactive({
     jml_rim: '1',
     lbr_ptg: 'Kiri',
     no_rim: [],
-    // rfid: '',
+    rfid: '',
 });
 
 const rim = () => {
-    console.log(axios.post(route('np.genLabels.getRim'),form));
+    axios.post(route('np.genLabels.getRim'),form)       // -> post form ke routing, untuk munculkan request data
+         .then(res => {                                 // -> then (kemudian), bikin var buat data yang di tarik contoh(res) terus definisi fungsinya
+            form.no_rim = [];                           // -> reset array di const form yang di atas
+            res.data.forEach((noRim,index) => {         // -> foreach loop data res tadi dengan format seperti sebelah, dan di dalam foreach (value,index)
+                form.no_rim[index] = noRim.no_rim       // -> you know what is this.
+            })
+                console.log(form.no_rim)
+         });
 };
 
+const submit = () => {
+    router.post(route('np.genLabels.store'),form)
+};
 </script>
 
 <template>
     <Modal :show="showModal" @close="Modal => showModal = !showModal">
         <div class="px-8 py-6">
-            <form>
+            <form @submit.prevent="submit">
                 <div class="pb-4 mb-4 border-b-2 border-slate-400">
                     <h3 class="text-2xl font-semibold text-center text-slate-700">Barang Yang Anda Ambil</h3>
                     <div>
                         <h3 class="text-2xl font-semibold text-center text-slate-700">
                             Berjumlah <span class="text-cyan-600 brightness-110">{{ form.jml_rim }} RIM</span>, Dengan Nomor
-                            <span class="text-emerald-600 brightness-110">24,25</span>, Sisiran {{ form.lbr_ptg }}
+                            <span class="text-emerald-600 brightness-110">{{ form.no_rim }}</span>, Sisiran {{ form.lbr_ptg }}
                         </h3>
                     </div>
                 </div>
@@ -58,7 +68,7 @@ const rim = () => {
                         class="flex justify-center px-4 py-2 mt-8 border border-blue-400 shadow-md w-fit bg-inherit rounded-xl text-start hover:brightness-90 drop-shadow-md shadow-blue-500/20">
                         <span class="text-lg font-bold text-blue-500">Cancel</span>
                     </button>
-                    <button type="button"
+                    <button type="submit"
                         class="flex justify-center px-4 py-2 mt-8 shadow-md w-fit bg-gradient-to-r from-blue-400 to-blue-500 rounded-xl text-start hover:brightness-90 drop-shadow-md shadow-blue-500/20">
                         <span class="text-lg font-bold text-indigo-50">Print</span>
                     </button>
@@ -164,7 +174,7 @@ const rim = () => {
                 <!-- Submit -->
                 <div class="flex justify-center gap-6 mx-auto w-fit">
                     <button type="button" @click="form.jml_rim = '1'"
-                        class="flex justify-center px-4 py-4 mx-auto mt-8 shadow-md w-fit bg-gradient-to-r from-violet-400 to-violet-500 rounded-xl text-start hover:brightness-90 drop-shadow-md shadow-violet-500/20 text-lg font-bold text-violet-50">
+                        class="flex justify-center px-4 py-4 mx-auto mt-8 text-lg font-bold shadow-md w-fit bg-gradient-to-r from-violet-400 to-violet-500 rounded-xl text-start hover:brightness-90 drop-shadow-md shadow-violet-500/20 text-violet-50">
                         Clear
                     </button>
                     <button type="button" @click="[rim(), showModal = !showModal]"

@@ -34,7 +34,21 @@ class GeneratedLabelsController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        // return $request->all();
+        foreach($request->no_rim as $rim)
+        {
+            GeneratedLabels::updateOrCreate(
+                [
+                    'no_po_generated_products' => $request->po,
+                    'potongan'  => $request->lbr_ptg,
+                    'no_rim'    => $rim
+                ],
+                [
+                    'np_users'   => $request->rfid,
+                    'start'     => now(),
+                ]
+                );
+        }
     }
 
     /**
@@ -73,7 +87,11 @@ class GeneratedLabelsController extends Controller
 
     public function getRim(Request $request)
     {
-        // return $request->all();
-        return GeneratedLabels::where('no_po_generated_products',$request->po)->take($request->jml_rim)->get();
+        $getRim = GeneratedLabels::where('no_po_generated_products',$request->po)
+                                  ->where('potongan',$request->lbr_ptg)
+                                  ->where('np_users',null)
+                                  ->take($request->jml_rim)
+                                  ->select('no_rim')->get();
+        return $getRim;
     }
 }
