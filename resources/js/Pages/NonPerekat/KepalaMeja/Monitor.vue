@@ -4,11 +4,16 @@ import InputLabel from '@/Components/InputLabel.vue';
 import TextInput from '@/Components/TextInput.vue';
 import { Link,useForm } from '@inertiajs/vue3';
 
+const props = defineProps({
+    'spec' : Object,
+    'dataRim' : Object
+});
+
 const form = useForm({
     team: '',
-    po  : '',
-    obc : '',
-    seri: '',
+    po  : props.spec.no_po,
+    obc : props.spec.no_obc,
+    seri: '3',
 });
 
 </script>
@@ -44,7 +49,6 @@ const form = useForm({
                         type="number"
                         class="block w-full px-0 py-2 mt-2 text-2xl text-center bg-slate-300"
                         autocomplete="po"
-                        value="3000160399"
                         disabled
                     />
                 </div>
@@ -60,7 +64,6 @@ const form = useForm({
                         type="text"
                         class="block w-full px-0 py-2 mt-2 text-2xl text-center bg-slate-300"
                         autocomplete="obc"
-                        value="PST 030001"
                         disabled
                     />
                 </div>
@@ -76,7 +79,6 @@ const form = useForm({
                         type="number"
                         class="block w-full px-0 py-2 mt-2 text-2xl text-center bg-slate-300"
                         autocomplete="seri"
-                        value="1"
                         disabled
                     />
                 </div>
@@ -95,29 +97,33 @@ const form = useForm({
                         <!-- State Kiri -->
                         <div class="grid grid-cols-5 gap-2">
                             <!-- 1 -->
-                            <div class="px-2 py-1 rounded-md shadow bg-gradient-to-br from-green-300 to-green-400 drop-shadow shadow-green-400/30"
-                                 v-for="n in 14">
-                                <div class="flex flex-col justify-center w-[4ch]">
-                                    <span class="text-xs font-extrabold leading-5 text-center text-green-950">7418</span>
-                                    <span class="text-xs font-extrabold leading-5 text-center text-indigo-700">{{ n }}</span>
-                                </div>
-                            </div>
-                            <!-- 1 -->
-                            <div class="px-2 py-1 rounded-md shadow bg-gradient-to-br from-yellow-300 to-yellow-400 drop-shadow shadow-yellow-400/30"
-                                 v-for="n in 8">
-                                <div class="flex flex-col justify-center w-[4ch]">
-                                    <span class="text-xs font-extrabold leading-5 text-center text-yellow-950">7206</span>
-                                    <span class="text-xs font-extrabold leading-5 text-center text-indigo-700">{{ n+12 }}</span>
-                                </div>
-                            </div>
-                            <!-- 1 -->
-                            <div class="px-2 py-1 rounded-md shadow bg-gradient-to-br from-slate-300 to-slate-400 drop-shadow"
-                                 v-for="n in 18">
-                                <div class="flex flex-col justify-center w-[4ch]">
-                                    <span class="text-xs font-extrabold leading-5 text-center text-slate-950">-</span>
-                                    <span class="text-xs font-extrabold leading-5 text-center text-indigo-700">{{ n+22 }}</span>
-                                </div>
-                            </div>
+                            <template  v-for="status in dataRim">
+                                <template v-if="status.potongan == 'Kiri'">
+                                    <!-- V-if Sudah Di Periksa -->
+                                    <div v-if="status.finish != null" class="px-2 py-1 rounded-md shadow bg-gradient-to-br from-green-300 to-green-400 drop-shadow shadow-green-400/30">
+                                        <div class="flex flex-col justify-center w-[4ch]">
+                                            <span class="text-xs font-extrabold leading-5 text-center text-green-950">{{ status.np_users }}</span>
+                                            <span class="text-xs font-extrabold leading-5 text-center text-indigo-700">{{ status.no_rim }}</span>
+                                        </div>
+                                    </div>
+
+                                    <!-- V-if Sedang Di Periksa -->
+                                    <div v-else-if="status.start != null && status.finish == null" class="px-2 py-1 rounded-md shadow bg-gradient-to-br from-yellow-300 to-yellow-400 drop-shadow shadow-yellow-400/30">
+                                        <div class="flex flex-col justify-center w-[4ch]">
+                                            <span class="text-xs font-extrabold leading-5 text-center text-green-950">{{ status.np_users }}</span>
+                                            <span class="text-xs font-extrabold leading-5 text-center text-indigo-700">{{ status.no_rim }}</span>
+                                        </div>
+                                    </div>
+
+                                    <!-- V-if Belum Periksa -->
+                                    <div v-else class="px-2 py-1 rounded-md shadow bg-gradient-to-br from-slate-300 to-slate-400 drop-shadow shadow-slate-400/30">
+                                        <div class="flex flex-col justify-center w-[4ch]">
+                                            <span class="text-xs font-extrabold leading-5 text-center text-green-950">-</span>
+                                            <span class="text-xs font-extrabold leading-5 text-center text-indigo-700">{{ status.no_rim }}</span>
+                                        </div>
+                                    </div>
+                                </template>
+                            </template>
                         </div>
                     </div>
 
@@ -144,32 +150,35 @@ const form = useForm({
                             Lembar Kanan
                         </h3>
 
-                        <!-- State Kiri -->
+                        <!-- State Kanan -->
                         <div class="grid grid-cols-5 gap-2">
-                            <!-- 1 -->
-                            <div class="px-2 py-1 rounded-md shadow bg-gradient-to-br from-green-300 to-green-400 drop-shadow shadow-green-400/30"
-                                 v-for="n in 16">
-                                <div class="flex flex-col justify-center w-[4ch]">
-                                    <span class="text-xs font-extrabold leading-5 text-center text-green-950">7418</span>
-                                    <span class="text-xs font-extrabold leading-5 text-center text-indigo-700">{{ n }}</span>
-                                </div>
-                            </div>
-                            <!-- 1 -->
-                            <div class="px-2 py-1 rounded-md shadow bg-gradient-to-br from-yellow-300 to-yellow-400 drop-shadow shadow-yellow-400/30"
-                                 v-for="n in 10">
-                                <div class="flex flex-col justify-center w-[4ch]">
-                                    <span class="text-xs font-extrabold leading-5 text-center text-yellow-950">7206</span>
-                                    <span class="text-xs font-extrabold leading-5 text-center text-indigo-700">{{ n+16 }}</span>
-                                </div>
-                            </div>
-                            <!-- 1 -->
-                            <div class="px-2 py-1 rounded-md shadow bg-gradient-to-br from-slate-300 to-slate-400 drop-shadow"
-                                 v-for="n in 14">
-                                <div class="flex flex-col justify-center w-[4ch]">
-                                    <span class="text-xs font-extrabold leading-5 text-center text-slate-950">-</span>
-                                    <span class="text-xs font-extrabold leading-5 text-center text-indigo-700">{{ n+26 }}</span>
-                                </div>
-                            </div>
+                            <template  v-for="status in dataRim">
+                                <template v-if="status.potongan == 'Kanan'">
+                                    <!-- V-if Sudah Di Periksa -->
+                                    <div v-if="status.finish != null" class="px-2 py-1 rounded-md shadow bg-gradient-to-br from-green-300 to-green-400 drop-shadow shadow-green-400/30">
+                                        <div class="flex flex-col justify-center w-[4ch]">
+                                            <span class="text-xs font-extrabold leading-5 text-center text-green-950">{{ status.np_users }}</span>
+                                            <span class="text-xs font-extrabold leading-5 text-center text-indigo-700">{{ status.no_rim }}</span>
+                                        </div>
+                                    </div>
+
+                                    <!-- V-if Sedang Di Periksa -->
+                                    <div v-else-if="status.start != null && status.finish == null" class="px-2 py-1 rounded-md shadow bg-gradient-to-br from-yellow-300 to-yellow-400 drop-shadow shadow-yellow-400/30">
+                                        <div class="flex flex-col justify-center w-[4ch]">
+                                            <span class="text-xs font-extrabold leading-5 text-center text-green-950">{{ status.np_users }}</span>
+                                            <span class="text-xs font-extrabold leading-5 text-center text-indigo-700">{{ status.no_rim }}</span>
+                                        </div>
+                                    </div>
+
+                                    <!-- V-if Belum Periksa -->
+                                    <div v-else class="px-2 py-1 rounded-md shadow bg-gradient-to-br from-slate-300 to-slate-400 drop-shadow shadow-slate-400/30">
+                                        <div class="flex flex-col justify-center w-[4ch]">
+                                            <span class="text-xs font-extrabold leading-5 text-center text-green-950">-</span>
+                                            <span class="text-xs font-extrabold leading-5 text-center text-indigo-700">{{ status.no_rim }}</span>
+                                        </div>
+                                    </div>
+                                </template>
+                            </template>
                         </div>
                     </div>
                 </div>

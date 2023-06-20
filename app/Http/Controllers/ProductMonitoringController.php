@@ -7,6 +7,8 @@ use Inertia\Inertia;
 use Inertia\Response;
 
 use App\Models\Workstations;
+use App\Models\GeneratedLabels;
+use App\Models\GeneratedProducts;
 
 class ProductMonitoringController extends Controller
 {
@@ -19,6 +21,15 @@ class ProductMonitoringController extends Controller
 
     public function show(string $id)
     {
-        return Inertia::render('NonPerekat/KepalaMeja/Monitor');
+        $getPo  = GeneratedProducts::where('assigned_team',$id)
+                                   ->where('status',1)
+                                   ->first();
+
+        $listLabel  = GeneratedLabels::where('no_po_generated_products',$getPo->value('no_po'))->get();
+
+        return Inertia::render('NonPerekat/KepalaMeja/Monitor',[
+            'spec'    => $getPo,
+            'dataRim' => $listLabel
+        ]);
     }
 }

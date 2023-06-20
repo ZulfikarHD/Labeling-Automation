@@ -19,8 +19,8 @@ return new class extends Migration
             $table->integer('sum_rim');
             $table->integer('start_rim');
             $table->integer('end_rim');
-            $table->string('assigned_team');
-            $table->string('status');
+            $table->integer('assigned_team')->nullable();
+            $table->integer('status')->nullable();
             $table->timestamps();
         });
     }
