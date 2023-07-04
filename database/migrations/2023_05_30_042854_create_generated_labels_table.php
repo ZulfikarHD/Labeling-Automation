@@ -15,10 +15,10 @@ return new class extends Migration
             $table->id();
             $table->integer('no_po_generated_products');
             $table->integer('no_rim');
-            $table->string('np_users');
+            $table->string('np_users')->nullable();
             $table->string('potongan');
-            $table->dateTime('start');
-            $table->dateTime('finish');
+            $table->dateTime('start')->nullable();
+            $table->dateTime('finish')->nullable();
             $table->timestamps();
         });
     }

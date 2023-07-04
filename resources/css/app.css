@@ -1,3 +1,15 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@media print and (width: 10cm) and (height: 13cm) {
+    @page {
+       margin: 3cm;
+    }
+}
+@page {
+    size: A5;
+    margin-top: 10%;
+    margin-bottom: 10%;
+    margin-left: 20%;
+}
