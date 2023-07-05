@@ -3,8 +3,11 @@ import { reactive } from 'vue'
 import ContentLayout from '@/Layouts/ContentLayout.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import TextInput from '@/Components/TextInput.vue';
+import Modal from '@/Components/Modal.vue'
 import { Link,router } from '@inertiajs/vue3';
-
+const props = defineProps({
+    showModal: Boolean,
+});
 const form = reactive({
     po  : '',
     obc : '',
@@ -14,6 +17,10 @@ const form = reactive({
     end_rim : '40',
 });
 
+// const showModal = () => {
+//     this.show = !this.show
+// };
+
 function submit() {
   router.post(route('np.products.store'), form)
 }
@@ -21,6 +28,11 @@ function submit() {
 
 <template>
     <ContentLayout>
+        <Modal :show="showModal" @close="showModal = !showModal">
+            <div class="bg-white shadow drop-shadow shadow-slate-300/25 rounded-lg px-8 py-4">
+                <h1 class="text-2xl text-green-600 brightness-110 font-bold text-center">Label Berhasil Di Buat</h1>
+            </div>
+        </Modal>
         <div class="py-12">
             <form @submit.prevent="submit" method="post">
                 <div class="flex flex-col justify-center gap-6 mx-auto mt-20 w-fit">
@@ -36,6 +48,7 @@ function submit() {
                             class="block w-full px-8 py-2 mt-2 text-2xl text-center"
                             autocomplete="po"
                             placeholder="Production Order"
+                            required
                         />
                     </div>
                     <div class="flex justify-between gap-6 mb-10 w-fit">
@@ -51,6 +64,7 @@ function submit() {
                                 class="block w-full px-8 py-2 mt-2 text-2xl text-center"
                                 autocomplete="obc"
                                 placeholder="Order Bea Cukai"
+                            required
                             />
                         </div>
 
@@ -67,6 +81,7 @@ function submit() {
                                 autocomplete="jml_rim"
                                 placeholder="RIM"
                                 min="1"
+                            required
                             />
                         </div>
                     </div>
@@ -114,7 +129,7 @@ function submit() {
             </form>
         </div>
         <div class="flex justify-center w-full">
-            <button type="btn" class="flex justify-center px-4 py-2 mx-auto w-fit bg-gradient-to-r from-blue-400 to-blue-500 rounded-xl text-start mt-11">
+            <button type="btn" class="flex justify-center px-4 py-2 mx-auto w-fit bg-gradient-to-r from-blue-400 to-blue-500 rounded-xl text-start mt-11" @click="showModal = !showModal">
                 <Link :href="route('np-kepala-menu')">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 text-blue-50">
                         <path fill-rule="evenodd"

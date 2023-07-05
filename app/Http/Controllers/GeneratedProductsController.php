@@ -26,7 +26,9 @@ class GeneratedProductsController extends Controller
      */
     public function create()
     {
-        return Inertia::render('NonPerekat/KepalaMeja/NewGenerate');
+        return Inertia::render('NonPerekat/KepalaMeja/NewGenerate',[
+            'showModal' => false,
+       ]);
     }
 
     /**
@@ -66,7 +68,9 @@ class GeneratedProductsController extends Controller
                 );
         }
 
-        return back();
+        return Inertia::render('NonPerekat/KepalaMeja/NewGenerate',[
+            'showModal' => true,
+       ]);
     }
 
     /**
