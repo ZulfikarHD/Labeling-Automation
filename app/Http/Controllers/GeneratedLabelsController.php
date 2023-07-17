@@ -8,6 +8,7 @@ use Inertia\Response;
 
 use App\Models\GeneratedProducts;
 use App\Models\GeneratedLabels;
+use App\Models\GeneratedLabelsMmea;
 use App\Models\OrderMmea;
 
 class GeneratedLabelsController extends Controller
@@ -48,6 +49,24 @@ class GeneratedLabelsController extends Controller
                 ]
                 );
         }
+
+    }
+    /**
+     * Store a newly created resource in storage.
+     * For Perekat
+     */
+    public function storeMmea(Request $request)
+    {
+        GeneratedLabelsMmea::create([
+                'nomor_po'  => $request->po,
+                'nomor_obc' => $request->obc,
+                'produk'    => $request->produk,
+                'periksa1'  => $request->periksa1,
+                'periksa2'  => $request->periksa2,
+                'kemasan'   => $request->kemasan,
+                'lbr_kemas' => $request->lbr_kemas,
+                'gol'   => $request->gol,
+            ]);
     }
 
     /**

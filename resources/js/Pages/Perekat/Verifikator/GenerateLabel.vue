@@ -23,6 +23,7 @@ const form = reactive({
     periksa1: '',
     periksa2: '',
     kemasan : '',
+    lbr_kemas : '',
 });
 
 const getData = () => {
@@ -33,6 +34,97 @@ const getData = () => {
                         form.kemasan = Math.ceil(res.data.rencet / 300);
 
                     });
+};
+
+const print = () => {
+    let date = new Date();
+    const months = [
+                    "Jan",
+                    "Feb",
+                    "Mar",
+                    "Apr",
+                    "Mei",
+                    "Jun",
+                    "Jul",
+                    "Agu",
+                    "Sep",
+                    "Okt",
+                    "Nov",
+                    "Des"
+                    ];
+
+    let tgl = date.getDay() + "-" + months[date.getMonth()] + "-" + date.getFullYear();
+    let po  = form.po;
+    let obc = form.obc;
+    let gol = form.gol;
+    let periksa1  = form.periksa1;
+    let periksa2  = form.periksa2;
+    let produk  = form.produk;
+    let kemasan = form.kemasan;
+    let time = '';
+    let stylesHtml = '';
+
+
+    if(date.getHours() >= 5 && date.getHours() < 8 )
+    {
+        time = 'A'
+    }
+    else if (date.getHours() >= 8 && date.getHours() < 10  )
+    {
+        time = 'B'
+    }
+    else if (date.getHours() >= 10 && date.getHours() < 13 )
+    {
+        time = 'C'
+    }
+    else if (date.getHours() >= 13 && date.getHours() < 16 )
+    {
+        time = 'D'
+    }
+    else
+    {
+        time = 'E'
+    }
+
+    let printLabel = '';
+    for (const node of [...document.querySelectorAll('link[rel="stylesheet"], style')]) {
+    stylesHtml += node.outerHTML;
+    }
+
+    let WinPrint = window.open('', '', 'left=0,top=0,width=800,height=900,toolbar=0,scrollbars=0,status=0');
+    for(let i = 0; i < kemasan; i++){
+        printLabel += `<!DOCTYPE html>
+                            <html>
+                                <head>
+                                    ${stylesHtml}
+                                </head>
+                                <body>
+                                    <div class="w-full h-full" style='page-break-after:always'>
+                                        <div class="mt-[52px]">
+                                            <span class="-mt-2 font-semibold text-center">${tgl}</span>
+                                            <h1 class="inline-block ml-10 text-2xl font-semibold text-center">${po}</h1>
+                                            <h1 class="inline-block ml-10 text-2xl font-semibold text-center">${gol}</h1>
+                                        </div>
+                                        <div class="mt-12">
+                                            <h1 class="inline-block ml-10 text-2xl font-semibold text-center">${obc}</h1>
+                                            <h1 class="inline-block ml-10 text-2xl font-semibold text-center">${gol}</h1>
+                                        </div>
+                                        <div class="mt-12">
+                                            <h1 class="inline-block mx-auto ml-40 text-2xl font-medium text-center">${periksa1}</h1>
+                                            <h1 class="inline-block mx-auto ml-40 text-2xl font-medium text-center">${periksa2}</h1>
+                                        </div>
+                                    </div>
+                                </body>
+                            </html>`
+    }
+
+    WinPrint.document.write(printLabel);
+
+    WinPrint.document.close();
+    WinPrint.focus();
+    WinPrint.print();
+    WinPrint.close();
+    router.post(route('p.genLabels.storeMmea'),form)
 };
 </script>
 
@@ -103,7 +195,7 @@ const getData = () => {
                 <button class="px-8 py-2 text-green-500 underline transition duration-200 ease-in-out bg-white border border-green-500 rounded-md shadow hover:border-green-600 drop-shadow shadow-green-500/25">
                     <span class="text-lg font-bold">Clear</span>
                 </button>
-                <button class="px-8 py-2 transition duration-200 ease-in-out bg-green-500 rounded-md shadow hover:bg-green-600 text-green-50 drop-shadow shadow-green-500/25">
+                <button @click="print()" class="px-8 py-2 transition duration-200 ease-in-out bg-green-500 rounded-md shadow hover:bg-green-600 text-green-50 drop-shadow shadow-green-500/25">
                     <span class="text-lg font-bold">Print</span>
                 </button>
             </div>
