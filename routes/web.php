@@ -47,4 +47,29 @@ Route::get('/np-verif-genLabel', function () {
 })->name('np-verif-genLabel');
 
 
+// -------------- Perekat ------------------- //
+
+Route::get('/p-choseUser', function () {
+    return Inertia::render('Perekat/ChoseUser');
+})->name('p-choseUser');
+
+Route::get('/p-kepala-menu', function () {
+    return Inertia::render('NonPerekat/KepalaMeja/Menu');
+})->name('p-kepala-menu');
+
+Route::get('/p/pic/monitor-products',[ProductMonitoringController::class, 'index'])->name('p.pic.monitor-products.index');
+Route::get('/p/pic/monitor-products/{monitor}',[ProductMonitoringController::class, 'show'])->name('p.pic.monitor-products.show');
+Route::resource('/p/pic/products'   ,GeneratedProductsController::class, ['names' => 'p.products']);
+Route::resource('/p/user/genLabel'  ,GeneratedLabelsController::class,   ['names' => 'p.genLabels']);
+Route::post('/p/user/genLabel/callSpec',[GeneratedLabelsController::class,   'callSpec'])->name('p.genLabels.callSpec');
+
+Route::get('/p-verif-menu', function () {
+    return Inertia::render('Perekat/Verifikator/Menu');
+})->name('p-verif-menu');
+
+Route::get('/p-verif-genLabel', function () {
+    return Inertia::render('Perekat/Verifikator/GenerateLabel');
+})->name('p-verif-genLabel');
+
+
 require __DIR__.'/auth.php';

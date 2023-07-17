@@ -8,6 +8,7 @@ use Inertia\Response;
 
 use App\Models\GeneratedProducts;
 use App\Models\GeneratedLabels;
+use App\Models\OrderMmea;
 
 class GeneratedLabelsController extends Controller
 {
@@ -16,9 +17,7 @@ class GeneratedLabelsController extends Controller
      */
     public function index()
     {
-        return Inertia::render('NonPerekat/Verifikator/ChosePo',[
-            'products' => GeneratedProducts::all()
-        ]);
+        return Inertia::render('Perekat/Verifikator/GenerateLabel');
     }
 
     /**
@@ -56,9 +55,7 @@ class GeneratedLabelsController extends Controller
      */
     public function show(string $id)
     {
-        return Inertia::render('NonPerekat/Verifikator/GenerateLabel',[
-            'product'   => GeneratedProducts::where('id',$id)->first()
-        ]);
+        return Inertia::render('Perekat/Verifikator/GenerateLabel');
     }
 
     /**
@@ -93,5 +90,13 @@ class GeneratedLabelsController extends Controller
                                   ->take($request->jml_rim)
                                   ->select('no_rim')->get();
         return $getRim;
+    }
+
+    public function callSpec(Request $request)
+    {
+        $getData = OrderMmea::where('order',$request->po)
+                            ->first();
+
+        return $getData;
     }
 }

@@ -42,7 +42,7 @@ class GeneratedProductsController extends Controller
             ],
             [
                 'no_obc'    => $request->obc,
-                'type'      => "PCHT",
+                'type'      => $request->produk,
                 'sum_rim'   => $request->jml_rim,
                 'start_rim' => $request->start_rim,
                 'end_rim'   => $request->end_rim,
