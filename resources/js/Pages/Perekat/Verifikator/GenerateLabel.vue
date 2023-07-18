@@ -19,6 +19,7 @@ const form = reactive({
     po  : '',
     obc : '',
     gol : '',
+    vol : '',
     produk  : 'MMEA',
     periksa1: '',
     periksa2: '',
@@ -31,6 +32,7 @@ const getData = () => {
                     .then(res => {
                         form.obc    = res.data.no_obc;
                         form.gol    = res.data.gol;
+                        form.vol    = res.data.volume;
                         form.kemasan = Math.ceil(res.data.rencet / 300);
 
                     });
@@ -57,6 +59,7 @@ const print = () => {
     let po  = form.po;
     let obc = form.obc;
     let gol = form.gol;
+    let vol = form.vol;
     let periksa1  = form.periksa1;
     let periksa2  = form.periksa2;
     let produk  = form.produk;
@@ -91,7 +94,7 @@ const print = () => {
     stylesHtml += node.outerHTML;
     }
 
-    let WinPrint = window.open('', '', 'left=0,top=0,width=800,height=900,toolbar=0,scrollbars=0,status=0');
+    let WinPrint = window.open('', '', 'left=0,top=30,width=800,height=900,toolbar=0,scrollbars=0,status=0');
     for(let i = 0; i < kemasan; i++){
         printLabel += `<!DOCTYPE html>
                             <html>
@@ -99,19 +102,19 @@ const print = () => {
                                     ${stylesHtml}
                                 </head>
                                 <body>
-                                    <div class="w-full h-full" style='page-break-after:always'>
-                                        <div class="mt-[52px]">
-                                            <span class="-mt-2 font-semibold text-center">${tgl}</span>
-                                            <h1 class="inline-block ml-10 text-2xl font-semibold text-center">${po}</h1>
-                                            <h1 class="inline-block ml-10 text-2xl font-semibold text-center">${gol}</h1>
+                                    <div class="w-full h-full top-3/4" style='page-break-after:always'>
+                                        <div class="flex gap-8 mt-[525px] items-center">
+                                            <span class="ml-2 -mt-2 font-semibold text-center">${tgl}</span>
+                                            <h1 class="inline-block ml-2 -mt-2 font-semibold text-center">${po}</h1>
+                                            <h1 class="inline-block -mt-1 text-xl font-semibold text-center">${gol}${vol}</h1>
                                         </div>
-                                        <div class="mt-12">
-                                            <h1 class="inline-block ml-10 text-2xl font-semibold text-center">${obc}</h1>
-                                            <h1 class="inline-block ml-10 text-2xl font-semibold text-center">${gol}</h1>
+                                        <div class="flex gap-8 mt-11">
+                                            <h1 class="inline-block ml-32 text-lg font-semibold text-center">${obc}</h1>
+                                            <h1 class="inline-block text-xl font-semibold text-center">${gol}${vol}</h1>
                                         </div>
-                                        <div class="mt-12">
-                                            <h1 class="inline-block mx-auto ml-40 text-2xl font-medium text-center">${periksa1}</h1>
-                                            <h1 class="inline-block mx-auto ml-40 text-2xl font-medium text-center">${periksa2}</h1>
+                                        <div class="mt-[121px] flex justify-center px-24 gap-8">
+                                            <h1 class="inline-block mx-auto text-2xl font-medium text-center">${periksa1}</h1>
+                                            <h1 class="inline-block mx-auto text-2xl font-medium text-center">${periksa2}</h1>
                                         </div>
                                     </div>
                                 </body>
@@ -123,7 +126,7 @@ const print = () => {
     WinPrint.document.close();
     WinPrint.focus();
     WinPrint.print();
-    WinPrint.close();
+    // WinPrint.close();
     router.post(route('p.genLabels.storeMmea'),form)
 };
 </script>
@@ -135,7 +138,7 @@ const print = () => {
             <div class="mx-auto mb-7">
                 <InputLabel for="po" value="Nomor PO" class="text-2xl font-extrabold text-center" />
 
-                <TextInput id="po" ref="po" v-model="form.po" type="number" autofocus @update:model-value="getData()"
+                <TextInput id="po" ref="po" v-model="form.po" type="number" autofocus @update:model-value="getData()" required
                     class="block w-full px-8 py-2 mt-2 text-2xl text-center" autocomplete="po"/>
             </div>
             <div class="flex justify-center gap-4">
@@ -144,7 +147,7 @@ const print = () => {
                 <div class="mx-auto mb-7">
                     <InputLabel for="produk" value="Produk" class="text-2xl font-extrabold text-center" />
 
-                    <TextInput id="produk" ref="produk" v-model="form.produk" type="text"
+                    <TextInput id="produk" ref="produk" v-model="form.produk" type="text" required
                         class="block w-full px-8 py-2 mt-2 text-2xl text-center" autocomplete="produk"/>
                 </div>
 
@@ -152,7 +155,7 @@ const print = () => {
                 <div class="mx-auto mb-7">
                     <InputLabel for="obc" value="Nomor OBC" class="text-2xl font-extrabold text-center" />
 
-                    <TextInput id="obc" ref="obc" v-model="form.obc" type="text"
+                    <TextInput id="obc" ref="obc" v-model="form.obc" type="text" required
                         class="block w-full px-8 py-2 mt-2 text-2xl text-center" autocomplete="obc"/>
                 </div>
 
@@ -160,7 +163,7 @@ const print = () => {
                 <div class="mx-auto mb-7">
                     <InputLabel for="gol" value="Golongan / Volume" class="text-2xl font-extrabold text-center" />
 
-                    <TextInput id="gol" ref="gol" v-model="form.gol" type="text"
+                    <TextInput id="gol" ref="gol" v-model="form.gol" type="text" required
                         class="block w-full px-8 py-2 mt-2 text-2xl text-center" autocomplete="gol"/>
                 </div>
             </div>
@@ -169,7 +172,7 @@ const print = () => {
                 <div class="mx-auto mb-7">
                     <InputLabel for="periksa1" value="Periksa 1" class="text-2xl font-extrabold text-center" />
 
-                    <TextInput id="periksa1" ref="periksa1" v-model="form.periksa1" type="text"
+                    <TextInput id="periksa1" ref="periksa1" v-model="form.periksa1" type="text" required
                         class="block w-full px-8 py-2 mt-2 text-2xl text-center" autocomplete="periksa1"/>
                 </div>
 
@@ -177,7 +180,7 @@ const print = () => {
                 <div class="mx-auto mb-7">
                     <InputLabel for="periksa2" value="Periksa 2" class="text-2xl font-extrabold text-center" />
 
-                    <TextInput id="periksa2" ref="periksa2" v-model="form.periksa2" type="text"
+                    <TextInput id="periksa2" ref="periksa2" v-model="form.periksa2" type="text" required
                         class="block w-full px-8 py-2 mt-2 text-2xl text-center" autocomplete="periksa2"/>
                 </div>
             </div>
@@ -186,7 +189,7 @@ const print = () => {
             <div class="mx-auto mb-7">
                 <InputLabel for="kemasan" value="Jumlah Kemasan" class="text-2xl font-extrabold text-center" />
 
-                <TextInput id="kemasan" ref="kemasan" v-model="form.kemasan" type="number"
+                <TextInput id="kemasan" ref="kemasan" v-model="form.kemasan" type="number" required
                     class="block w-full px-8 py-2 mt-2 text-2xl text-center" autocomplete="kemasan"/>
             </div>
 
