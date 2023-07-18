@@ -18,6 +18,13 @@ class GeneratedLabelsController extends Controller
      */
     public function index()
     {
+        return Inertia::render('NonPerekat/Verifikator/ChosePo',[
+            'products' => GeneratedProducts::all()
+        ]);
+    }
+
+    public function indexMmea()
+    {
         return Inertia::render('Perekat/Verifikator/GenerateLabel');
     }
 
@@ -41,7 +48,7 @@ class GeneratedLabelsController extends Controller
                 [
                     'no_po_generated_products' => $request->po,
                     'potongan'  => $request->lbr_ptg,
-                    'no_rim'    => $rim
+                    'no_rim'    => $rim,
                 ],
                 [
                     'np_users'   => $request->rfid,
@@ -73,6 +80,12 @@ class GeneratedLabelsController extends Controller
      * Display the specified resource.
      */
     public function show(string $id)
+    {
+        return Inertia::render('NonPerekat/Verifikator/GenerateLabel',[
+            'product'   => GeneratedProducts::where('id',$id)->first()
+        ]);
+    }
+    public function showMmea(string $id)
     {
         return Inertia::render('Perekat/Verifikator/GenerateLabel');
     }

@@ -61,6 +61,8 @@ Route::get('/p/pic/monitor-products',[ProductMonitoringController::class, 'index
 Route::get('/p/pic/monitor-products/{monitor}',[ProductMonitoringController::class, 'show'])->name('p.pic.monitor-products.show');
 Route::resource('/p/pic/products'   ,   GeneratedProductsController::class, ['names' => 'p.products']);
 Route::resource('/p/user/genLabel'  ,   GeneratedLabelsController::class,   ['names' => 'p.genLabels']);
+Route::post('/p/user/genLabel',         [GeneratedLabelsController::class,   'indexMmea'])->name('p.genLabels.index');
+Route::post('/p/user/genLabel',         [GeneratedLabelsController::class,   'indexMmea'])->name('p.genLabels.index');
 Route::post('/p/user/genLabel/callSpec',[GeneratedLabelsController::class,   'callSpec'])->name('p.genLabels.callSpec');
 Route::post('/p/user/genLabel/print',   [GeneratedLabelsController::class,   'storeMmea'])->name('p.genLabels.storeMmea');
 

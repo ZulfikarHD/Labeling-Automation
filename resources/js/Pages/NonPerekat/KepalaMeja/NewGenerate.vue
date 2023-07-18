@@ -14,7 +14,9 @@ const form = reactive({
     jml_rim : '',
     seri    : '',
     start_rim : '1',
+    produk  : 'PCHT',
     end_rim : '40',
+    team    : ''
 });
 
 // const showModal = () => {
@@ -29,8 +31,8 @@ function submit() {
 <template>
     <ContentLayout>
         <Modal :show="showModal" @close="showModal = !showModal">
-            <div class="bg-white shadow drop-shadow shadow-slate-300/25 rounded-lg px-8 py-4">
-                <h1 class="text-2xl text-green-600 brightness-110 font-bold text-center">Label Berhasil Di Buat</h1>
+            <div class="px-8 py-4 bg-white rounded-lg shadow drop-shadow shadow-slate-300/25">
+                <h1 class="text-2xl font-bold text-center text-green-600 brightness-110">Label Berhasil Di Buat</h1>
             </div>
         </Modal>
         <div class="py-12">
