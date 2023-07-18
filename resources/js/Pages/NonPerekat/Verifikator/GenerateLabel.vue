@@ -7,6 +7,7 @@ import InputError from '@/Components/InputError.vue';
 import TextInput from '@/Components/TextInput.vue';
 import { Link, useForm, router } from '@inertiajs/vue3';
 
+
 let emptyKanan = false;
 let emptyKiri  = false;
 
@@ -19,7 +20,7 @@ const props = defineProps({
 });
 
 // Form
-const form = reactive({
+const form = useForm({
     po: props.product.no_po,
     obc: props.product.no_obc,
     team: props.product.assigned_team,
@@ -74,6 +75,9 @@ const rim = () => {
 };
 
 const submit = () => {
+
+    // Check Jika Ini Chrome Karena Chrome harus ada TImeout
+    // let is_chrome = function () { return Boolean(window.chrome); }
     let date = new Date();
     const months = [
                     "Jan",
@@ -153,8 +157,8 @@ const submit = () => {
 
     WinPrint.document.close();
     WinPrint.focus();
-    WinPrint.print();
-    WinPrint.close();
+        WinPrint.print();
+        // WinPrint.close();
     router.post(route('np.genLabels.store'),form)
 };
 </script>
