@@ -2,7 +2,7 @@
 import ContentLayout from '@/Layouts/ContentLayout.vue';
 import { Link } from '@inertiajs/vue3';
 
-defineProps({ products:Object })
+defineProps({ products:Object });
 
 </script>
 
@@ -72,9 +72,9 @@ defineProps({ products:Object })
                                     </td>
                                     <td class="text-center leading-5 whitespace-nowrap text-sm px-4 py-1.5 text-slate-700">
                                         <div class="flex justify-center gap-2">
-                                             <Link :href="route('np.products.create')" class="font-bold text-blue-400 transition duration-150 ease-in-out hover:text-blue-700">Info</Link>
-                                             <Link :href="route('np.products.create')" class="font-bold text-green-400 transition duration-150 ease-in-out hover:text-green-700">Edit</Link>
-                                             <Link :href="route('np.products.create')" class="font-bold text-red-400 transition duration-150 ease-in-out hover:text-red-700">Delete</Link>
+                                             <Link :href="route('np.registerProducts.create')" class="font-bold text-blue-400 transition duration-150 ease-in-out hover:text-blue-700">Info</Link>
+                                             <Link :href="route('np.registerProducts.create')" class="font-bold text-green-400 transition duration-150 ease-in-out hover:text-green-700">Edit</Link>
+                                             <Link :href="route('np.registerProducts.create')" class="font-bold text-red-400 transition duration-150 ease-in-out hover:text-red-700">Delete</Link>
                                         </div>
                                     </td>
                                 </tr>
@@ -145,15 +145,13 @@ defineProps({ products:Object })
             </div>
         </div>
         <div class="flex justify-center w-full">
-            <button type="btn" class="flex justify-center px-4 py-2 mx-auto w-fit bg-gradient-to-r from-blue-400 to-blue-500 rounded-xl text-start mt-11">
-                <Link :href="route('np-kepala-menu')">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 text-blue-50">
-                        <path fill-rule="evenodd"
-                            d="M20.25 12a.75.75 0 01-.75.75H6.31l5.47 5.47a.75.75 0 11-1.06 1.06l-6.75-6.75a.75.75 0 010-1.06l6.75-6.75a.75.75 0 111.06 1.06l-5.47 5.47H19.5a.75.75 0 01.75.75z"
-                            clip-rule="evenodd" />
-                    </svg>
-                </Link>
-            </button>
+            <Link :href="route('np.pic')" class="flex justify-center px-4 py-2 mx-auto w-fit bg-gradient-to-r from-blue-400 to-blue-500 rounded-xl text-start mt-11">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 text-blue-50">
+                    <path fill-rule="evenodd"
+                        d="M20.25 12a.75.75 0 01-.75.75H6.31l5.47 5.47a.75.75 0 11-1.06 1.06l-6.75-6.75a.75.75 0 010-1.06l6.75-6.75a.75.75 0 111.06 1.06l-5.47 5.47H19.5a.75.75 0 01.75.75z"
+                        clip-rule="evenodd" />
+                </svg>
+            </Link>
         </div>
     </ContentLayout>
 </template>

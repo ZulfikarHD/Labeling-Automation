@@ -96,9 +96,7 @@ const form = useForm({
                                         {{ product.created_at }}
                                     </td>
                                     <td class="text-center leading-5 whitespace-nowrap text-sm px-4 py-1.5 text-slate-700">
-                                        <button class="flex justify-center px-4 py-1 mx-auto font-semibold tracking-wide w-fit bg-gradient-to-r from-cyan-300 to-cyan-400 rounded-xl text-start text-cyan-50">
-                                            <Link :href="route('np.genLabels.show', product.id)">Go</Link>
-                                        </button>
+                                        <Link :href="route('np.generateLabels.show', product.id)" class="flex justify-center px-4 py-1 mx-auto font-semibold tracking-wide w-fit bg-gradient-to-r from-cyan-300 to-cyan-400 rounded-xl text-start text-cyan-50">Go</Link>
                                         <!-- <input type="checkbox" value="{{ product.id }}"> -->
                                     </td>
                                 </tr>
@@ -108,14 +106,11 @@ const form = useForm({
                 </div>
             </div>
             <div class="flex justify-center gap-6 mx-auto w-fit">
-                <button
-                    class="flex justify-center px-8 py-4 mx-auto w-fit bg-gradient-to-r from-violet-400 to-violet-500 rounded-xl text-start mt-11">
-                    <Link :href="route('np-choseUser')" class="text-2xl font-bold text-violet-50">Clear</Link>
-                </button>
-            <button
+                <Link :href="route('np.choseUser')" class="text-2xl font-bold text-violet-50 flex justify-center px-8 py-4 mx-auto w-fit bg-gradient-to-r from-violet-400 to-violet-500 rounded-xl text-start mt-11">Clear</Link>
+            <!-- <button
                 class="flex justify-center px-8 py-4 mx-auto w-fit bg-gradient-to-r from-green-400 to-green-500 rounded-xl text-start mt-11">
-                <Link :href="route('np-verif-genLabel')" class="text-2xl font-bold text-yellow-50">Next</Link>
-            </button>
+                <Link :href="route('')" class="text-2xl font-bold text-yellow-50">Next</Link>
+            </button> -->
         </div>
     </div>
 </ContentLayout></template>

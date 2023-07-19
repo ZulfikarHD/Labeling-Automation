@@ -17,6 +17,10 @@ const props = defineProps({
         type: Boolean,
         default: false,
     },
+    printUlangModal : {
+        type: Boolean,
+        default: false,
+    }
 });
 
 // Form
@@ -33,7 +37,7 @@ const form = useForm({
 
 // Tarik data nomor Rim yang belum di Isi
 const rim = () => {
-    axios.post(route('np.genLabels.getRim'),form)       // -> post form ke routing, untuk munculkan request data
+    axios.post(route('np.generateLabels.getRim'),form)       // -> post form ke routing, untuk munculkan request data
          .then(res => {                                 // -> then (kemudian), bikin var buat data yang di tarik contoh(res) terus definisi fungsinya
             form.no_rim = [];                           // -> reset array di const form yang di atas
             res.data.forEach((noRim,index) => {         // -> foreach loop data res tadi dengan format seperti sebelah, dan di dalam foreach (value,index)
@@ -58,7 +62,7 @@ const rim = () => {
                 }
 
 
-                axios.post(route('np.genLabels.getRim'),form)       // -> post form ke routing, untuk munculkan request data
+                axios.post(route('np.generateLabels.getRim'),form)       // -> post form ke routing, untuk munculkan request data
                     .then(res => {                                 // -> then (kemudian), bikin var buat data yang di tarik contoh(res) terus definisi fungsinya
                         form.no_rim = [];                           // -> reset array di const form yang di atas
                         res.data.forEach((noRim,index) => {         // -> foreach loop data res tadi dengan format seperti sebelah, dan di dalam foreach (value,index)
@@ -137,16 +141,16 @@ const submit = () => {
                                     ${stylesHtml}
                                 </head>
                                 <body>
-                                    <div class="w-full h-full" style='page-break-after:always'>
-                                        <div class="mt-[52px]">
-                                            <span class="-mt-2 font-semibold text-center">${tgl}</span>
-                                            <h1 class="inline-block ml-10 text-2xl font-semibold text-center">${obc}</h1>
+                                    <div style='page-break-after:always; width:100%; height:100%'>
+                                        <div style="margin-top:52px ">
+                                            <span style="margin-top: -8px; font-weight:600; text-align:center;">${tgl}</span>
+                                            <h1 style="font-size: 24px; line-height: 32px; margin-left:40px; font-weight:600; text-align:center; display:inline-block;">${obc}</h1>
                                         </div>
-                                        <div class="mt-12">
-                                            <h1 class="inline-block mx-auto ml-40 text-2xl font-medium text-center">${np}</h1>
+                                        <div style="margin-top:48px">
+                                            <h1 style="font-size: 24px; line-height: 32px; margin-left:160px; margin-right:auto; ;font-weight:600;text-align:center;display:inline-block;">${np}</h1>
                                         </div>
-                                        <div class="mt-[90px]">
-                                            <h1 class="inline-block mx-auto ml-40 text-xl font-medium text-center">${nomorRim} ${sisiran} ${time}</h1>
+                                        <div style="margin-top:90px;">
+                                            <h1 style="display: inline-block; margin-left: 160px; margin-right: auto; text-align: center; font-size: 20px; line-height: 28px; font-weight:500;">${nomorRim} ${sisiran} ${time}</h1>
                                         </div>
                                     </div>
                                 </body>
@@ -159,11 +163,12 @@ const submit = () => {
     WinPrint.focus();
         WinPrint.print();
         // WinPrint.close();
-    router.post(route('np.genLabels.store'),form)
+    router.post(route('np.generateLabels.store'),form)
 };
 </script>
 
 <template>
+    <!-- Modal Konfirmasi Print -->
     <Modal :show="showModal" @close="Modal => showModal = !showModal">
         <div class="px-8 py-6">
             <form @submit.prevent="submit">
@@ -201,6 +206,15 @@ const submit = () => {
             </form>
         </div>
     </Modal>
+
+    <!-- Modal Prit Ulang -->
+    <Modal :show="printUlangModal" @close="Modal => printUlangModal = !printUlangModal">
+                <InputLabel for="rfid" value="Silahkan Scan RFID mu" class="text-2xl font-semibold text-center"/>
+                <TextInput id="rfid" type="text" class="block w-full mt-4 text-center" v-model="form.rfid" required
+                    autofocus autocomplete="rfid" />
+                <InputError class="mt-2" />
+    </Modal>
+
     <ContentLayout>
         <div class="py-8">
             <form>
@@ -305,6 +319,10 @@ const submit = () => {
                     <button type="button" @click="[rim(), showModal = !showModal]"
                         class="flex justify-center px-4 py-4 mx-auto mt-8 shadow-md w-fit bg-gradient-to-r from-green-400 to-green-500 rounded-xl text-start hover:brightness-90 drop-shadow-md shadow-green-500/20">
                         <div class="text-lg font-bold text-yellow-50">Generate</div>
+                    </button>
+                    <button type="button" @click="[printUlangModal = !printUlangModal]"
+                        class="flex justify-center px-4 py-4 mx-auto mt-8 shadow-md w-fit bg-gradient-to-r from-green-400 to-green-500 rounded-xl text-start hover:brightness-90 drop-shadow-md shadow-green-500/20">
+                        <div class="text-lg font-bold text-yellow-50">Print Ulang</div>
                     </button>
                 </div>
             </form>

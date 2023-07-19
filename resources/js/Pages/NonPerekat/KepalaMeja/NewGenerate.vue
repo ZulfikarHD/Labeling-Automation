@@ -24,7 +24,7 @@ const form = reactive({
 // };
 
 function submit() {
-  router.post(route('np.products.store'), form)
+  router.post(route('np.registerProducts.store'), form)
 }
 </script>
 
@@ -121,9 +121,9 @@ function submit() {
                     </div>
                 </div>
                 <div class="flex justify-center gap-6 mx-auto w-fit">
-                    <button class="flex justify-center px-8 py-4 mx-auto w-fit bg-gradient-to-r from-violet-400 to-violet-500 rounded-xl text-start mt-11">
-                        <Link :href="route('np.products.create')" class="text-2xl font-bold text-violet-50">Clear</Link>
-                    </button>
+                    <Link :href="route('np.registerProducts.create')" class="text-2xl font-bold text-violet-50 flex justify-center px-8 py-4 mx-auto w-fit bg-gradient-to-r from-violet-400 to-violet-500 rounded-xl text-start mt-11">
+                        Clear
+                    </Link>
                     <button type="submit" class="flex justify-center px-8 py-4 mx-auto w-fit bg-gradient-to-r from-green-400 to-green-500 rounded-xl text-start mt-11">
                         <span class="text-2xl font-bold text-yellow-50">Generate</span>
                     </button>
@@ -132,7 +132,7 @@ function submit() {
         </div>
         <div class="flex justify-center w-full">
             <button type="btn" class="flex justify-center px-4 py-2 mx-auto w-fit bg-gradient-to-r from-blue-400 to-blue-500 rounded-xl text-start mt-11" @click="showModal = !showModal">
-                <Link :href="route('np-kepala-menu')">
+                <Link :href="route('np.pic')">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 text-blue-50">
                         <path fill-rule="evenodd"
                             d="M20.25 12a.75.75 0 01-.75.75H6.31l5.47 5.47a.75.75 0 11-1.06 1.06l-6.75-6.75a.75.75 0 010-1.06l6.75-6.75a.75.75 0 111.06 1.06l-5.47 5.47H19.5a.75.75 0 01.75.75z"

@@ -28,7 +28,7 @@ const form = reactive({
 });
 
 const getData = () => {
-    axios.post(route('p.genLabels.callSpec'),form)       // -> post form ke routing, untuk munculkan request data
+    axios.post(route('p.generateLabels.callSpec'),form)       // -> post form ke routing, untuk munculkan request data
                     .then(res => {
                         form.obc    = res.data.no_obc;
                         form.gol    = res.data.gol;
@@ -127,7 +127,7 @@ const print = () => {
     WinPrint.focus();
     WinPrint.print();
     // WinPrint.close();
-    router.post(route('p.genLabels.storeMmea'),form)
+    router.post(route('p.generateLabels.storeMmea'),form)
 };
 </script>
 
