@@ -52,7 +52,7 @@ const form = useForm({
                                     </th>
                                     <th scope="col"
                                         class="pt-6 pb-1.5  px-6 leading-tight border-slate-300 dark:border-slate-500 text-center">
-                                        Range
+                                        Nomor Rim
                                     </th>
                                     <th scope="col"
                                         class="pt-6 pb-1.5  px-6 leading-tight border-slate-300 dark:border-slate-500 text-center">
@@ -60,7 +60,7 @@ const form = useForm({
                                     </th>
                                     <th scope="col"
                                         class="pt-6 pb-1.5  px-6 leading-tight border-slate-300 dark:border-slate-500 text-center">
-                                        Generated At
+                                        Waktu Dibuat
                                     </th>
                                     <th scope="col"
                                         class="pt-6 pb-1.5  px-6 leading-tight border-slate-300 dark:border-slate-500 text-center">
@@ -89,7 +89,7 @@ const form = useForm({
                                     </td>
                                     <td
                                         class="text-center leading-5 whitespace-nowrap text-sm px-4 py-1.5 text-slate-700 border-r">
-                                        Waiting for Verif
+                                        Menunggu Verif
                                     </td>
                                     <td
                                         class="text-center leading-5 whitespace-nowrap text-sm px-4 py-1.5 text-slate-700 border-r">
@@ -106,11 +106,26 @@ const form = useForm({
                 </div>
             </div>
             <div class="flex justify-center gap-6 mx-auto w-fit">
-                <Link :href="route('np.choseUser')" class="text-2xl font-bold text-violet-50 flex justify-center px-8 py-4 mx-auto w-fit bg-gradient-to-r from-violet-400 to-violet-500 rounded-xl text-start mt-11">Clear</Link>
-            <!-- <button
-                class="flex justify-center px-8 py-4 mx-auto w-fit bg-gradient-to-r from-green-400 to-green-500 rounded-xl text-start mt-11">
-                <Link :href="route('')" class="text-2xl font-bold text-yellow-50">Next</Link>
-            </button> -->
+            <!-- Back Button -->
+            <div class="flex gap-6 mt-10">
+                <Link :href="route('np.choseUser')"
+                    class="text-xl font-extrabold text-blue-50 w-fit py-3 px-6 bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl text-start  drop-shadow-md shadow-md flex items-center gap-1.5">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5"
+                    stroke="currentColor" class="w-6 h-6">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 12h-15m0 0l6.75 6.75M4.5 12l6.75-6.75" />
+                </svg>
+                Back
+                </Link>
+                <Link :href="route('dashboard')"
+                    class="text-xl font-extrabold text-blue-50 w-fit py-3    px-6 bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl text-start drop-shadow-md shadow-md flex items-center gap-1.5">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6">
+                    <path
+                        d="M11.47 3.84a.75.75 0 011.06 0l8.69 8.69a.75.75 0 101.06-1.06l-8.689-8.69a2.25 2.25 0 00-3.182 0l-8.69 8.69a.75.75 0 001.061 1.06l8.69-8.69z" />
+                    <path
+                        d="M12 5.432l8.159 8.159c.03.03.06.058.091.086v6.198c0 1.035-.84 1.875-1.875 1.875H15a.75.75 0 01-.75-.75v-4.5a.75.75 0 00-.75-.75h-3a.75.75 0 00-.75.75V21a.75.75 0 01-.75.75H5.625a1.875 1.875 0 01-1.875-1.875v-6.198a2.29 2.29 0 00.091-.086L12 5.43z" />
+                </svg>
+                </Link>
+            </div>
         </div>
     </div>
 </ContentLayout></template>

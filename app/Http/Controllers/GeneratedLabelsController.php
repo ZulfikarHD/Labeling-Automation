@@ -93,9 +93,13 @@ class GeneratedLabelsController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $noPo)
+    public function edit(Request $request)
     {
-        //
+        $getDataRim = GeneratedLabels::where('no_po_generated_products',$request->po)
+                                     ->where('potongan',$request->dataRim)
+                                     ->select('no_rim','np_users','potongan','start','finish')
+                                     ->get();
+        return  $getDataRim;
     }
 
     /**

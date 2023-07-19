@@ -25,11 +25,20 @@ class ProductMonitoringController extends Controller
                                    ->where('status',1)
                                    ->first();
 
-        $listLabel  = GeneratedLabels::where('no_po_generated_products',$getPo->value('no_po'))->get();
+        if($getPo !== null)
+        {
+            $listLabel  = GeneratedLabels::where('no_po_generated_products',$getPo->value('no_po'))->get();
 
-        return Inertia::render('NonPerekat/KepalaMeja/Monitor',[
-            'spec'    => $getPo,
-            'dataRim' => $listLabel
-        ]);
+            return Inertia::render('NonPerekat/KepalaMeja/Monitor',[
+                'spec'    => $getPo,
+                'dataRim' => $listLabel
+            ]);
+        }
+        else
+        {
+            return Inertia::render('NonPerekat/KepalaMeja/TeamLists',[
+                'workstations' => Workstations::all()
+            ]);
+        }
     }
 }
