@@ -41,19 +41,19 @@
 
     <!-- Modal Prit Ulang -->
     <Modal :show="printUlangModal" @close="Modal => printUlangModal = !printUlangModal">
-        <div class="flex flex-col gap-4 py-4 px-4">
+        <div class="flex flex-col gap-4 px-4 py-4">
             <!-- Header -->
-            <h1 class="text-slate-500 text-center font-semibold text-lg border-b-2 border-slate-500/70 py-1">Print Ulang /
+            <h1 class="py-1 text-lg font-semibold text-center border-b-2 text-slate-500 border-slate-500/70">Print Ulang /
                 Ganti Data Rim</h1>
 
             <!-- Keterangan Kiri Kanan -->
-            <TextInput id="dataRim" type="text" class="text-slate-500 text-center font-semibold text-lg border-slate-500/70 py-1 border mx-4 uppercase rounded-mdr" v-model="formPrintUlang.dataRim" required
+            <TextInput id="dataRim" type="text" class="py-1 mx-4 text-lg font-semibold text-center uppercase border text-slate-500 border-slate-500/70 rounded-mdr" v-model="formPrintUlang.dataRim" required
                         disabled autocomplete="rfid" />
 
             <!-- Pilih Potongan -->
             <div class="flex justify-center gap-6">
                 <button type="button" @click="dataRimKiri()"
-                    class="flex gap-1 items-center rounded-lg bg-sky-400 px-6 py-2 text-sky-50 font-semibold hover:brightness-90 drop-shadow-md shadow-md shadow-sky-300/25 transition duration-300 ease-in-out">
+                    class="flex items-center gap-1 px-6 py-2 font-semibold transition duration-300 ease-in-out rounded-lg shadow-md bg-sky-400 text-sky-50 hover:brightness-90 drop-shadow-md shadow-sky-300/25">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5"
                         stroke="currentColor" class="w-6 h-6">
                         <path stroke-linecap="round" stroke-linejoin="round"
@@ -62,7 +62,7 @@
                     KIRI
                 </button>
                 <button type="button" @click="dataRimKanan()"
-                    class="flex gap-1 items-center rounded-lg bg-sky-400 px-6 py-2 text-sky-50 font-semibold hover:brightness-90 drop-shadow-md shadow-md shadow-sky-300/25  transition duration-300 ease-in-out">
+                    class="flex items-center gap-1 px-6 py-2 font-semibold transition duration-300 ease-in-out rounded-lg shadow-md bg-sky-400 text-sky-50 hover:brightness-90 drop-shadow-md shadow-sky-300/25">
                     KANAN
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5"
                         stroke="currentColor" class="w-6 h-6">
@@ -84,34 +84,34 @@
 
             <!-- Form -->
             <form>
-                <div class="flex justify-center gap-4 px-7 mt-4">
+                <div class="flex justify-center gap-4 mt-4 px-7">
                     <!-- Nomor Rim -->
                     <div>
                         <InputLabel for="noRimPU" value="Nomor Rim" class="text-sm font-semibold text-center" />
-                        <TextInput id="noRimPU" type="number" class="block text-center text-sm bg-slate-300" disabled v-model="formPrintUlang.noRim" required autocomplete="noRimPU" />
+                        <TextInput id="noRimPU" type="number" class="block text-sm text-center bg-slate-300" disabled v-model="formPrintUlang.noRim" required autocomplete="noRimPU" />
                     </div>
 
                     <!-- NP Petugas -->
                     <div>
                         <InputLabel for="npPetugasPU" value="NP Petugas" class="text-sm font-semibold text-center" />
-                        <TextInput id="npPetugasPU" type="number" class="block text-center text-sm" v-model="formPrintUlang.npPetugas" required autocomplete="npPetugasPU" />
+                        <TextInput id="npPetugasPU" type="text" class="block text-sm text-center" v-model="formPrintUlang.npPetugas" required autocomplete="npPetugasPU" />
                     </div>
                 </div>
             </form>
 
 
             <!-- Action -->
-            <div class="flex gap-4 justify-center pt-4 px-7">
+            <div class="flex justify-center gap-4 pt-4 px-7">
                 <button type="button"
-                    class="flex mr-auto gap-1 items-center rounded-lg bg-red-50 border border-red-500 px-6 py-2 text-red-500 underline font-semibold hover:brightness-90 drop-shadow-md shadow-md shadow-red-300/25  transition duration-300 ease-in-out">
+                    class="flex items-center gap-1 px-6 py-2 mr-auto font-semibold text-red-500 underline transition duration-300 ease-in-out border border-red-500 rounded-lg shadow-md bg-red-50 hover:brightness-90 drop-shadow-md shadow-red-300/25">
                     Hapus
                 </button>
                 <button type="button"
-                    class="flex gap-1 items-center rounded-lg border bg-sky-50 border-sky-400 px-6 py-2 text-sky-500 underline font-semibold hover:brightness-90 drop-shadow-md shadow-md shadow-sky-300/25  transition duration-300 ease-in-out">
+                    class="flex items-center gap-1 px-6 py-2 font-semibold underline transition duration-300 ease-in-out border rounded-lg shadow-md bg-sky-50 border-sky-400 text-sky-500 hover:brightness-90 drop-shadow-md shadow-sky-300/25">
                     Edit
                 </button>
-                <button type="button"
-                    class="flex gap-1 items-center rounded-lg bg-sky-400 px-6 py-2 text-sky-50 font-semibold hover:brightness-90 drop-shadow-md shadow-md shadow-sky-300/25  transition duration-300 ease-in-out">
+                <button type="button" @click="printUlangLabel()"
+                    class="flex items-center gap-1 px-6 py-2 font-semibold transition duration-300 ease-in-out rounded-lg shadow-md bg-sky-400 text-sky-50 hover:brightness-90 drop-shadow-md shadow-sky-300/25">
                     Print
                 </button>
             </div>
@@ -119,7 +119,7 @@
     </Modal>
 
     <ContentLayout>
-        <div class="py-8 flex justify-center flex-col">
+        <div class="flex flex-col justify-center py-8">
             <form>
                 <div class="flex flex-col justify-center gap-6 mx-auto w-fit">
                     <!-- Team -->
@@ -186,26 +186,26 @@
                         <!-- Num 1 - 3 -->
                         <div class="flex gap-3">
                             <button type="btn"
-                                class="flex justify-center w-fit px-7 py-2 mx-auto font-extrabold transition duration-150 ease-in-out shadow bg-gradient-to-r from-sky-300 to-sky-400 shadow-sky-400/30 drop-shadow rounded-xl text-start text-sky-50 hover:brightness-90"
+                                class="flex justify-center py-2 mx-auto font-extrabold transition duration-150 ease-in-out shadow w-fit px-7 bg-gradient-to-r from-sky-300 to-sky-400 shadow-sky-400/30 drop-shadow rounded-xl text-start text-sky-50 hover:brightness-90"
                                 v-for="n in 3">{{ n }}</button>
                         </div>
                         <!-- Num 3 - 6 -->
                         <div class="flex gap-3">
                             <button type="btn"
-                                class="flex justify-center w-fit px-7 py-2 mx-auto font-extrabold transition duration-150 ease-in-out shadow bg-gradient-to-r from-sky-300 to-sky-400 shadow-sky-400/30 drop-shadow rounded-xl text-start text-sky-50 hover:brightness-90"
+                                class="flex justify-center py-2 mx-auto font-extrabold transition duration-150 ease-in-out shadow w-fit px-7 bg-gradient-to-r from-sky-300 to-sky-400 shadow-sky-400/30 drop-shadow rounded-xl text-start text-sky-50 hover:brightness-90"
                                 v-for="n in 3">{{ n + 3 }}</button>
                         </div>
                         <!-- Num 6 - 9 -->
                         <div class="flex gap-3">
                             <button type="btn"
-                                class="flex justify-center w-fit px-7 py-2 mx-auto font-extrabold transition duration-150 ease-in-out shadow bg-gradient-to-r from-sky-300 to-sky-400 shadow-sky-400/30 drop-shadow rounded-xl text-start text-sky-50 hover:brightness-90"
+                                class="flex justify-center py-2 mx-auto font-extrabold transition duration-150 ease-in-out shadow w-fit px-7 bg-gradient-to-r from-sky-300 to-sky-400 shadow-sky-400/30 drop-shadow rounded-xl text-start text-sky-50 hover:brightness-90"
                                 v-for="n in 3">{{ n + 3 }}</button>
                         </div>
                         <div class="flex gap-3">
                             <button type="btn"
                                 class="flex justify-center w-2/3 col-span-2 px-3 py-2 mx-auto font-extrabold transition duration-150 ease-in-out shadow bg-gradient-to-r from-sky-300 to-sky-400 shadow-sky-400/30 drop-shadow rounded-xl text-start text-sky-50 hover:brightness-90">0</button>
                             <button type="btn"
-                                class="flex flex-grow justify-center px-3 py-2 mx-auto font-extrabold transition duration-150 ease-in-out shadow bg-gradient-to-r from-sky-300 to-sky-400 shadow-sky-400/30 drop-shadow rounded-xl text-start text-sky-50 hover:brightness-90">Backspace</button>
+                                class="flex justify-center flex-grow px-3 py-2 mx-auto font-extrabold transition duration-150 ease-in-out shadow bg-gradient-to-r from-sky-300 to-sky-400 shadow-sky-400/30 drop-shadow rounded-xl text-start text-sky-50 hover:brightness-90">Backspace</button>
                         </div>
                     </div>
                     <div class="grid grid-cols-2 mt-10">
@@ -383,6 +383,87 @@ const rim = () => {
 
 };
 
+const printUlangLabel = () => {
+
+    // Check Jika Ini Chrome Karena Chrome harus ada TImeout
+    // let is_chrome = function () { return Boolean(window.chrome); }
+    let date = new Date();
+    const months = [
+        "Jan",
+        "Feb",
+        "Mar",
+        "Apr",
+        "Mei",
+        "Jun",
+        "Jul",
+        "Agu",
+        "Sep",
+        "Okt",
+        "Nov",
+        "Des"
+    ];
+
+    let obc = formPrintUlang.obc;
+    // let tgl = date.getDay() + "-" + months[date.getMonth()] + "-" + date.getFullYear();
+    let tgl = date.getDate() + "-" + months[date.getMonth()] + "-" + date.getFullYear();
+    let np = formPrintUlang.npPetugas;
+    let noRim = formPrintUlang.noRim;
+    let time = '';
+    let sisiran = formPrintUlang.dataRim == 'Kiri' ? '(*)' : '(**)';
+    let stylesHtml = '';
+
+
+    if (date.getHours() >= 5 && date.getHours() < 8) {
+        time = 'A'
+    }
+    else if (date.getHours() >= 8 && date.getHours() < 10) {
+        time = 'B'
+    }
+    else if (date.getHours() >= 10 && date.getHours() < 13) {
+        time = 'C'
+    }
+    else if (date.getHours() >= 13 && date.getHours() < 16) {
+        time = 'D'
+    }
+    else {
+        time = 'E'
+    }
+
+    let printLabel = '';
+    for (const node of [...document.querySelectorAll('link[rel="stylesheet"], style')]) {
+        stylesHtml += node.outerHTML;
+    }
+
+    let WinPrint = window.open('', '', 'left=0,top=0,width=800,height=900,toolbar=0,scrollbars=0,status=0');
+        printLabel = `<!DOCTYPE html>
+                            <html>
+                                <head>
+                                    ${stylesHtml}
+                                </head>
+                                <body>
+                                    <div style='page-break-after:always; width:100%; height:100%'>
+                                        <div style="margin-top:52px ">
+                                            <span style="margin-top: -8px; font-weight:600; text-align:center;">${tgl}</span>
+                                            <h1 style="font-size: 24px; line-height: 32px; margin-left:40px; font-weight:600; text-align:center; display:inline-block;">${obc}</h1>
+                                        </div>
+                                        <div style="margin-top:48px">
+                                            <h1 style="font-size: 24px; line-height: 32px; margin-left:160px; margin-right:auto; ;font-weight:600;text-align:center;display:inline-block;">${np}</h1>
+                                        </div>
+                                        <div style="margin-top:90px;">
+                                            <h1 style="display: inline-block; margin-left: 160px; margin-right: auto; text-align: center; font-size: 20px; line-height: 28px; font-weight:500;">${noRim} ${sisiran} ${time}</h1>
+                                        </div>
+                                    </div>
+                                </body>
+                            </html>`
+
+    WinPrint.document.write(printLabel);
+
+    WinPrint.document.close();
+    WinPrint.focus();
+    WinPrint.print();
+    // WinPrint.close();
+    // router.post(route('np.generateLabels.store'), form)
+};
 const submit = () => {
 
     // Check Jika Ini Chrome Karena Chrome harus ada TImeout
@@ -404,7 +485,8 @@ const submit = () => {
     ];
 
     let obc = form.obc;
-    let tgl = date.getDay() + "-" + months[date.getMonth()] + "-" + date.getFullYear();
+    // let tgl = date.getDay() + "-" + months[date.getMonth()] + "-" + date.getFullYear();
+    let tgl = date.getDate() + "-" + months[date.getMonth()] + "-" + date.getFullYear();
     let np = form.rfid;
     let noRim = form.no_rim;
     let time = '';
