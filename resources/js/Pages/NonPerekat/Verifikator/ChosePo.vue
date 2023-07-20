@@ -76,7 +76,7 @@ const form = useForm({
                                         {{ product.no_po }}
                                     </td>
                                     <td
-                                        class="text-center leading-5 whitespace-nowrap text-sm px-4 py-1.5 text-slate-700 border-r">
+                                        class="text-center font-semibold leading-5 whitespace-nowrap text-sm px-4 py-1.5 text-slate-900 border-r">
                                         {{ product.no_obc }}
                                     </td>
                                     <td
@@ -89,7 +89,12 @@ const form = useForm({
                                     </td>
                                     <td
                                         class="text-center leading-5 whitespace-nowrap text-sm px-4 py-1.5 text-slate-700 border-r">
-                                        Menunggu Verif
+                                        <div v-if="product.status == 1">
+                                            <span class="px-2 py-1 font-semibold text-white bg-yellow-500 rounded-lg shadow brightness-110 drop-shadow-md">Sedang Di Periksa</span>
+                                        </div>
+                                        <div v-else-if="product.status == 0">
+                                            <span class="px-2 py-1 rounded-lg shadow bg-slate-600 drop-shadow-md text-slate-50">Siap Di Periksa</span>
+                                        </div>
                                     </td>
                                     <td
                                         class="text-center leading-5 whitespace-nowrap text-sm px-4 py-1.5 text-slate-700 border-r">

@@ -46,6 +46,7 @@ class GeneratedProductsController extends Controller
                 'sum_rim'   => $request->jml_rim,
                 'start_rim' => $request->start_rim,
                 'end_rim'   => $request->end_rim,
+                'status'    => 0,
             ]
         );
 

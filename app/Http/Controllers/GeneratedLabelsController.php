@@ -19,7 +19,7 @@ class GeneratedLabelsController extends Controller
     public function index()
     {
         return Inertia::render('NonPerekat/Verifikator/ChosePo',[
-            'products' => GeneratedProducts::all()
+            'products' => GeneratedProducts::where('status','<',2)->get()
         ]);
     }
 

@@ -89,7 +89,9 @@ const form = useForm({
                                     </td>
                                     <td
                                         class="text-center leading-5 whitespace-nowrap text-sm px-4 py-1.5 text-slate-700 border-r">
-                                        Waiting for Verif
+                                        <div v-if="product.status = 1">
+                                            <span class="px-4 py-2 bg-yellow-400 rounded-lg text-yellow-50">Sedang Di Periksa</span>
+                                        </div>
                                     </td>
                                     <td
                                         class="text-center leading-5 whitespace-nowrap text-sm px-4 py-1.5 text-slate-700 border-r">
