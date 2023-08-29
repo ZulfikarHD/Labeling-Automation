@@ -10,7 +10,8 @@
   },
   "main": "background.js",
   "dependencies": {
-    "electron-vue-printer": "^1.3.3"
+    "electron-vue-printer": "^1.3.3",
+    "vue-sweetalert2": "^5.0.5"
   },
   "devDependencies": {
     "@inertiajs/vue3": "^1.0.0",

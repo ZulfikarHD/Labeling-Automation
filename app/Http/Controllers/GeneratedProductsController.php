@@ -101,8 +101,9 @@ class GeneratedProductsController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(string $po)
     {
-        //
+        GeneratedLabels::where('no_po_generated_products',$po)->delete();
+        GeneratedProducts::where('no_po',$po)->delete();
     }
 }
