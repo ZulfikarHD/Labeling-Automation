@@ -13,10 +13,11 @@ return new class extends Migration
     {
         Schema::create('specifications', function (Blueprint $table) {
             $table->id();
-            $table->integer('no_po');
+            $table->bigInteger('no_po');
             $table->string('no_obc');
             $table->integer('seri');
             $table->string('type');
+            $table->integer('rencet');
             $table->timestamps();
         });
     }

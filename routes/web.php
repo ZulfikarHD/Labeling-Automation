@@ -7,6 +7,7 @@ use Inertia\Inertia;
 
 use App\Http\Controllers\ProductMonitoringController;
 use App\Http\Controllers\GeneratedProductsController;
+use App\Http\Controllers\GenerateLabelsPersonalController;
 use App\Http\Controllers\GeneratedLabelsController;
 
 /*
@@ -28,39 +29,50 @@ use App\Http\Controllers\GeneratedLabelsController;
  // Group Non Perekat //
 //-------------------//
 
-    // Pilih User
-        // Kepala Meja
-            Route::get('/np/chooseUser', function(){
-                return Inertia::render('NonPerekat/ChoseUser');
-            })->name('np.choseUser');
+    //Pilih Personal atau Non Pesonal
+        Route::get('/np/choseType', function(){
+            return Inertia::render('NonPerekat/ChoseType');
+        })->name('np.choseType');
 
-        // Verifikator
-            Route::get('/np/generateLabels',[GeneratedLabelsController::class, 'index'])
-                ->name('np.generateLabels.index');
+     // Section Non Perekat, Personal //
+    //-------------------------------//
+        Route::get('/np/personal',[GenerateLabelsPersonalController::class, 'index'])
+            ->name('np.personal');
+     // Section Non Perekat, Non Personal //
+    //-----------------------------------//
+        // Pilih User
+            // Kepala Meja
+                Route::get('/np/chooseUser', function(){
+                    return Inertia::render('NonPerekat/ChoseUser');
+                })->name('np.choseUser');
 
-    // Section Kepala Meja Non Perekat //
-   //---------------------------------//
-        // Menu Kepala Meja
-            Route::get('/np/pic', function(){
-                return Inertia::render('NonPerekat/KepalaMeja/Menu');
-            })->name('np.pic');
+            // Verifikator
+                Route::get('/np/generateLabels',[GeneratedLabelsController::class, 'index'])
+                    ->name('np.generateLabels.index');
 
-        // Monitoring Barang
-            Route::get('/np/pic/monitorProducts',[ProductMonitoringController::class, 'index'])
-                ->name('np.monitor.index');
-            Route::get('/np/pic/monitorProducts/{id}',[ProductMonitoringController::class, 'show'])
-                ->name('np.monitor.show');
+         // Section Kepala Meja Non Perekat //
+        //---------------------------------//
+            // Menu Kepala Meja
+                Route::get('/np/pic', function(){
+                    return Inertia::render('NonPerekat/KepalaMeja/Menu');
+                })->name('np.pic');
 
-        // List Generated Product
-            Route::resource('/np/listProducts',GeneratedProductsController::class,['names' => 'np.listProducts']);
+            // Monitoring Barang
+                Route::get('/np/pic/monitorProducts',[ProductMonitoringController::class, 'index'])
+                    ->name('np.monitor.index');
+                Route::get('/np/pic/monitorProducts/{id}',[ProductMonitoringController::class, 'show'])
+                    ->name('np.monitor.show');
 
-        // Generate Product
-            Route::get('/np/registerProducts/create',[GeneratedProductsController::class, 'create'])
-                ->name('np.registerProducts.create');
-            Route::post('/np/registerProducts',[GeneratedProductsController::class, 'store'])
-                ->name('np.registerProducts.store');
-            Route::post('/np/generateLabels',[GeneratedLabelsController::class, 'store'])
-                ->name('np.generateLabels.store');
+            // List Generated Product
+                Route::resource('/np/listProducts',GeneratedProductsController::class,['names' => 'np.listProducts']);
+
+            // Generate Product
+                Route::get('/np/registerProducts/create',[GeneratedProductsController::class, 'create'])
+                    ->name('np.registerProducts.create');
+                Route::post('/np/registerProducts',[GeneratedProductsController::class, 'store'])
+                    ->name('np.registerProducts.store');
+                Route::post('/np/generateLabels',[GeneratedLabelsController::class, 'store'])
+                    ->name('np.generateLabels.store');
 
     // Section Verifikator Non Perekat //
    //---------------------------------//

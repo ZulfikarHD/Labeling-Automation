@@ -6,23 +6,26 @@ import { Link } from "@inertiajs/vue3";
 <template>
     <AuthenticatedLayout>
         <div class="absolute top-[35%] left-28">
+            <!-- Menu Non Personal -->
             <Link
-                :href="route('np.pic')"
+                :href="route('np.choseUser')"
                 class="text-6xl font-extrabold text-sky-50 w-fit px-24 py-6 bg-gradient-to-r from-sky-300 to-sky-400 rounded-xl flex align-middle justify-center drop-shadow-md shadow-md"
             >
-                Kepala Meja
+                Non Personal
             </Link>
+
+            <!-- Menu Personal -->
             <Link
-                :href="route('np.generateLabels.index')"
+                :href="route('np.personal')"
                 class="text-6xl font-extrabold text-yellow-50 w-fit py-6 px-24 bg-gradient-to-r from-yellow-400 to-yellow-500 rounded-xl text-start mt-10 ml-12 flex justify-center drop-shadow-md shadow-md"
             >
-                Verifikator
+                Personal
             </Link>
 
             <!-- Back Button -->
             <div class="flex gap-6 mt-10 ml-12">
                 <Link
-                    :href="route('np.choseType')"
+                    :href="route('dashboard')"
                     class="text-xl font-extrabold text-blue-50 w-fit py-3 px-6 bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl text-start drop-shadow-md shadow-md flex items-center gap-1.5"
                 >
                     <svg

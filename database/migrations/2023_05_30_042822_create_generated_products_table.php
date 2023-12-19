@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('generated_products', function (Blueprint $table) {
             $table->id();
-            $table->integer('no_po')->unique();
+            $table->bigInteger('no_po')->unique();
             $table->string('no_obc')->nullable();
             $table->string('type');
             $table->integer('sum_rim');

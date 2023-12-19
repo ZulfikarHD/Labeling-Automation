@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('generated_labels', function (Blueprint $table) {
             $table->id();
-            $table->integer('no_po_generated_products');
+            $table->bigInteger('no_po_generated_products');
             $table->integer('no_rim');
             $table->string('np_users')->nullable();
             $table->string('potongan');
