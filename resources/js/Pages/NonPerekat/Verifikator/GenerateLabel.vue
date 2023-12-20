@@ -299,12 +299,13 @@ const props = defineProps({
 });
 
 // Form
+
 const form = useForm({
     po: props.product.no_po,
     obc: props.product.no_obc,
     team: props.product.assigned_team,
-    seri: '',
-    jml_rim: '1',
+    seri: 0,
+    jml_rim: 1,
     lbr_ptg: 'Kiri',
     no_rim: [],
     rfid: '',
@@ -442,14 +443,14 @@ const printUlangLabel = () => {
                                 </head>
                                 <body>
                                     <div style='page-break-after:always; width:100%; height:100%'>
-                                        <div style="margin-top:52px ">
+                                        <div style="margin-top:44px ">
                                             <span style="margin-top: -8px; font-weight:600; text-align:center;">${tgl}</span>
-                                            <h1 style="font-size: 24px; line-height: 32px; margin-left:40px; font-weight:600; text-align:center; display:inline-block;">${obc}</h1>
+                                            <h1 style="font-size: 24px; line-height: 32px; margin-left:25px; font-weight:600; text-align:center; display:inline-block;">${obc}</h1>
                                         </div>
-                                        <div style="margin-top:48px">
-                                            <h1 style="font-size: 24px; line-height: 32px; margin-left:160px; margin-right:auto; ;font-weight:600;text-align:center;display:inline-block;">${np}</h1>
+                                        <div style="margin-top:45px">
+                                            <h1 style="font-size: 24px; line-height: 32px; margin-left:155px; margin-right:auto; ;font-weight:600;text-align:center;display:inline-block;">${np}</h1>
                                         </div>
-                                        <div style="margin-top:90px;">
+                                        <div style="margin-top:77px;">
                                             <h1 style="display: inline-block; margin-left: 160px; margin-right: auto; text-align: center; font-size: 20px; line-height: 28px; font-weight:500;">${noRim} ${sisiran} ${time}</h1>
                                         </div>
                                     </div>
@@ -524,15 +525,15 @@ const submit = () => {
                                 </head>
                                 <body>
                                     <div style='page-break-after:always; width:100%; height:100%'>
-                                        <div style="margin-top:52px ">
+                                        <div style="margin-top:44px ">
                                             <span style="margin-top: -8px; font-weight:600; text-align:center;">${tgl}</span>
-                                            <h1 style="font-size: 24px; line-height: 32px; margin-left:40px; font-weight:600; text-align:center; display:inline-block;">${obc}</h1>
+                                            <h1 style="font-size: 24px; line-height: 32px; margin-left:25px; font-weight:600; text-align:center; display:inline-block;">${obc}</h1>
                                         </div>
-                                        <div style="margin-top:48px">
-                                            <h1 style="font-size: 24px; line-height: 32px; margin-left:160px; margin-right:auto; ;font-weight:600;text-align:center;display:inline-block;">${np}</h1>
+                                        <div style="margin-top:45px">
+                                            <h1 style="font-size: 24px; line-height: 32px; margin-left:155px; margin-right:auto; ;font-weight:600;text-align:center;display:inline-block;">${np}</h1>
                                         </div>
-                                        <div style="margin-top:90px;">
-                                            <h1 style="display: inline-block; margin-left: 160px; margin-right: auto; text-align: center; font-size: 20px; line-height: 28px; font-weight:500;">${nomorRim} ${sisiran} ${time}</h1>
+                                        <div style="margin-top:77px;">
+                                            <h1 style="display: inline-block; margin-left: 160px; margin-right: auto; text-align: center; font-size: 20px; line-height: 28px; font-weight:500;">${noRim} ${sisiran} ${time}</h1>
                                         </div>
                                     </div>
                                 </body>
@@ -546,5 +547,6 @@ const submit = () => {
     WinPrint.print();
     // WinPrint.close();
     router.post(route('np.generateLabels.store'), form)
+    router.put('/api/gen-nonPerso-po/'+form.po)
 };
 </script>

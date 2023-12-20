@@ -8,6 +8,7 @@ use Inertia\Response;
 
 use App\Models\GeneratedProducts;
 use App\Models\GeneratedLabels;
+use App\Models\Specification;
 
 class GeneratedProductsController extends Controller
 {
@@ -79,7 +80,9 @@ class GeneratedProductsController extends Controller
      */
     public function show(string $id)
     {
-        //
+        return Specification::where('no_po',$id)
+                    ->select('no_po','no_obc','seri','type','rencet')
+                    ->firstOrFail();
     }
 
     /**
@@ -105,5 +108,21 @@ class GeneratedProductsController extends Controller
     {
         GeneratedLabels::where('no_po_generated_products',$po)->delete();
         GeneratedProducts::where('no_po',$po)->delete();
+    }
+
+    public function updateStatus(string $po)
+    {
+        if(count(GeneratedLabels::where('no_po_generated_products',$po)->where('np_users',null)->get()) > 0 )
+        {
+            GeneratedProducts::where('no_po',$po)->update([
+                'status'    => 1
+            ]);
+        }
+        else
+        {
+            GeneratedProducts::where('no_po',$po)->update([
+                'status'    => 2
+            ]);
+        }
     }
 }

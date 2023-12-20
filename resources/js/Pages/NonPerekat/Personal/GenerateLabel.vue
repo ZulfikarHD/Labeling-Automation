@@ -11,10 +11,23 @@ import axios from "axios";
 const form = reactive({
     po: "",
     obc: "",
+    jml_lembar: "",
     jml_label: "",
     seri: "",
     npPeriksa : "",
 });
+
+const fetchData = () => {
+    axios.get('/api/gen-perso-label/'+form.po)
+        .then(res => {
+            let total_label = Math.ceil(res.data.rencet / 500)
+
+            form.obc    = res.data.no_obc
+            form.jml_lembar = res.data.rencet+' / '+total_label+' Rim'
+            form.jml_label  = total_label
+        })
+}
+
 </script>
 
 <template>
@@ -50,6 +63,7 @@ const form = reactive({
                             id="po"
                             ref="po"
                             v-model="form.po"
+                            @input="fetchData"
                             type="number"
                             class="block w-full px-8 py-2 mt-2 text-2xl text-center"
                             autocomplete="po"
@@ -76,6 +90,27 @@ const form = reactive({
                                 autocomplete="obc"
                                 placeholder="Order Bea Cukai"
                                 required
+                            />
+                        </div>
+
+                        <!-- Jumlah Lembar/Rim -->
+                        <div>
+                            <InputLabel
+                                for="jml_lembar"
+                                value="Lembar / Rim"
+                                class="text-4xl font-extrabold text-center"
+                            />
+
+                            <TextInput
+                                id="jml_lembar"
+                                ref="jml_lembar"
+                                v-model="form.jml_lembar"
+                                type="text"
+                                class="block w-full px-8 py-2 mt-2 text-2xl text-center bg-slate-200/70"
+                                autocomplete="jml_lembar"
+                                placeholder="Lembar/Rim"
+                                min="1"
+                                disabled
                             />
                         </div>
 

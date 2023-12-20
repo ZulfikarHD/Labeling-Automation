@@ -69,7 +69,7 @@ use App\Http\Controllers\GeneratedLabelsController;
             // Generate Product
                 Route::get('/np/registerProducts/create',[GeneratedProductsController::class, 'create'])
                     ->name('np.registerProducts.create');
-                Route::post('/np/registerProducts',[GeneratedProductsController::class, 'store'])
+                Route::post('/np/registerProducts/create',[GeneratedProductsController::class, 'store'])
                     ->name('np.registerProducts.store');
                 Route::post('/np/generateLabels',[GeneratedLabelsController::class, 'store'])
                     ->name('np.generateLabels.store');
