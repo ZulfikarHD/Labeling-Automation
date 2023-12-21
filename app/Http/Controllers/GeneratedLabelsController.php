@@ -41,21 +41,40 @@ class GeneratedLabelsController extends Controller
      */
     public function store(Request $request)
     {
-        // return $request->all();
-        foreach($request->no_rim as $rim)
+        // foreach($request->no_rim as $rim)
+        // {
+        //     GeneratedLabels::where('no_po_generated_products',$request->po)
+        //             ->where('potongan',$request->lbr_ptg)
+        //             ->where('no_rim',$rim)
+        //             ->update([
+        //                 'np_users'  => $request->rfid,
+        //                 'start'     => now()
+        //             ]);
+        // }
+
+        GeneratedLabels::where('no_po_generated_products',$request->po)
+                ->where('potongan',$request->lbr_ptg)
+                ->where('no_rim',$request->no_rim)
+                ->update([
+                    'np_users'  => $request->rfid,
+                    'start'     => now()
+                ]);
+
+        if(count(GeneratedLabels::where('no_po_generated_products',$request->po)->where('np_users',null)->get()) > 0 )
         {
-            GeneratedLabels::updateOrCreate(
-                [
-                    'no_po_generated_products' => $request->po,
-                    'potongan'  => $request->lbr_ptg,
-                    'no_rim'    => $rim,
-                ],
-                [
-                    'np_users'   => $request->rfid,
-                    'start'     => now(),
-                ]
-                );
+            GeneratedProducts::where('no_po',$request->po)->update([
+                'status'    => 1,
+                'assigned_team' => $request->team,
+            ]);
         }
+        else
+        {
+            GeneratedProducts::where('no_po',$request->po)->update([
+                'status'    => 2,
+                'assigned_team' => $request->team,
+            ]);
+        }
+
 
     }
     /**
@@ -81,10 +100,16 @@ class GeneratedLabelsController extends Controller
      */
     public function show(string $id)
     {
+        $product = GeneratedProducts::where('id',$id)->first();
         return Inertia::render('NonPerekat/Verifikator/GenerateLabel',[
-            'product'   => GeneratedProducts::where('id',$id)->first()
+            'product'   => $product,
+            'listTeam'  => \App\Models\Workstations::select('id','workstation')->get(),
+            'noRim'     => $this->fetcNoRim($product->no_po)['noRim'],
+            'potongan'  => $this->fetcNoRim($product->no_po)['potongan'],
         ]);
+
     }
+
     public function showMmea(string $id)
     {
         return Inertia::render('Perekat/Verifikator/GenerateLabel');
@@ -134,5 +159,42 @@ class GeneratedLabelsController extends Controller
                             ->first();
 
         return $getData;
+    }
+
+    public function fetcNoRim(String $po)
+    {
+        $lastKiri   = GeneratedLabels::where('no_po_generated_products',$po)
+                                ->where('potongan','Kiri')
+                                ->where('np_users',null)
+                                ->first();
+
+        $lastKanan  = GeneratedLabels::where('no_po_generated_products',$po)
+                                ->where('potongan','Kanan')
+                                ->where('np_users',null)
+                                ->first();
+
+        if(is_null($lastKiri) && is_null($lastKanan)){
+            $noRim = 0;
+            $potongan = 'Finished';
+        }
+        elseif(is_null($lastKiri)){
+            $noRim  = $lastKanan->no_rim;
+            $potongan = 'Kanan';
+        }
+        else{
+            if($lastKiri->no_rim === $lastKanan->no_rim){
+                $noRim  = $lastKiri->no_rim;
+                $potongan = 'Kiri';
+            }
+            elseif($lastKiri->no_rim > $lastKanan->no_rim){
+                $noRim  = $lastKanan->no_rim;
+                $potongan = 'Kanan';
+            }
+        }
+
+        return [
+            'noRim' => $noRim,
+            'potongan' => $potongan
+        ];
     }
 }

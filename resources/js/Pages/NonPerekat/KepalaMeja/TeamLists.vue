@@ -22,7 +22,7 @@ const props = defineProps({
             <!-- Main Body -->
             <div class="grid h-full grid-cols-3 gap-6 mt-36 mx-36">
                 <Link :href="route('np.monitor.show', workstation.id)" v-for="workstation in workstations"
-                    class="w-full px-8 py-4 text-lg font-bold tracking-wide shadow rounded-xl text-blue-50 bg-gradient-to-br from-blue-400 to-green-300 brightness-110 drop-shadow-md">
+                    class="w-full px-8 py-4 text-lg font-bold tracking-wide shadow rounded-xl text-blue-50 bg-blue-700 brightness-110 drop-shadow-md">
                 {{ workstation.workstation }}
                 </Link>
             </div>

@@ -27,8 +27,7 @@ class ProductMonitoringController extends Controller
 
         if($getPo !== null)
         {
-            $listLabel  = GeneratedLabels::where('no_po_generated_products',$getPo->value('no_po'))->get();
-
+            $listLabel  = GeneratedLabels::where('no_po_generated_products',$getPo->no_po)->get();
             return Inertia::render('NonPerekat/KepalaMeja/Monitor',[
                 'spec'    => $getPo,
                 'dataRim' => $listLabel

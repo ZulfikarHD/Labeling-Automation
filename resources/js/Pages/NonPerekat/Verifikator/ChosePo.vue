@@ -23,7 +23,7 @@ const form = useForm({
                 <InputLabel for="team" value="Team" class="text-4xl font-extrabold text-center" />
 
                 <TextInput id="team" ref="team" v-model="form.team" type="text"
-                    class="block px-8 py-2 mt-2 text-2xl text-center w-fit" autocomplete="team" value="Non Personal 1"
+                    class="block px-8 py-2 mt-2 text-2xl text-center w-fit" autocomplete="team" value=""
                     disabled />
             </div>
             <!-- Header -->

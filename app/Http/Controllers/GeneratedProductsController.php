@@ -110,7 +110,7 @@ class GeneratedProductsController extends Controller
         GeneratedProducts::where('no_po',$po)->delete();
     }
 
-    public function updateStatus(string $po)
+    public function updateStatus($po)
     {
         if(count(GeneratedLabels::where('no_po_generated_products',$po)->where('np_users',null)->get()) > 0 )
         {

@@ -25,4 +25,4 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 // Generate Label Category Non-Personal API
     Route::get('/gen-nonPerso-po/{noPo}',[GeneratedProductsController::class, 'show']);
-    Route::put('/gen-nonPerso-po/{noPo}',[GeneratedProductsController::class, 'updateStatus']);
+    Route::put('/nonPers-upStat/{noPo}',[GeneratedProductsController::class, 'updateStatus']);

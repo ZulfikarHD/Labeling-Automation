@@ -95,7 +95,7 @@ const form = useForm({
                         </h3>
 
                         <!-- State Kiri -->
-                        <div class="grid grid-cols-5 gap-2">
+                        <div class="grid grid-cols-6 gap-2">
                             <!-- 1 -->
                             <template  v-for="status in dataRim">
                                 <template v-if="status.potongan == 'Kiri'">
@@ -151,7 +151,7 @@ const form = useForm({
                         </h3>
 
                         <!-- State Kanan -->
-                        <div class="grid grid-cols-5 gap-2">
+                        <div class="grid grid-cols-6 gap-2">
                             <template  v-for="status in dataRim">
                                 <template v-if="status.potongan == 'Kanan'">
                                     <!-- V-if Sudah Di Periksa -->
