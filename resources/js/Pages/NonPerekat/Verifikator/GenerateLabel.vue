@@ -386,8 +386,6 @@ import TextInput from "@/Components/TextInput.vue";
 import { Link, useForm, router } from "@inertiajs/vue3";
 import axios from "axios";
 
-let emptyKanan = false;
-let emptyKiri = false;
 let dataPrintUlang = Object;
 
 const props = defineProps({
@@ -406,7 +404,6 @@ const props = defineProps({
 });
 
 // Form
-
 const form = useForm({
     id: props.product.id,
     po: props.product.no_po,
@@ -480,52 +477,28 @@ const printUlangLabel = () => {
         date.getFullYear();
     let np = formPrintUlang.npPetugas;
     let noRim = formPrintUlang.noRim;
-    let time = "";
+    let time = date.getHours() + " : " + date.getMinutes();
     let sisiran = formPrintUlang.dataRim == "Kiri" ? "(*)" : "(**)";
-    let stylesHtml = "";
-
-    // if (date.getHours() >= 5 && date.getHours() < 8) {
-    //     time = "A";
-    // } else if (date.getHours() >= 8 && date.getHours() < 10) {
-    //     time = "B";
-    // } else if (date.getHours() >= 10 && date.getHours() < 13) {
-    //     time = "C";
-    // } else if (date.getHours() >= 13 && date.getHours() < 16) {
-    //     time = "D";
-    // } else {
-    //     time = "E";
-    // }
-
-    time= date.getHours()+' : '+date.getMinutes();
-
-    let printLabel = "";
-    for (const node of [
-        ...document.querySelectorAll('link[rel="stylesheet"], style'),
-    ]) {
-        stylesHtml += node.outerHTML;
-    }
-
     let WinPrint = window.open(
         "",
         "",
         "left=0,top=0,width=800,height=900,toolbar=0,scrollbars=0,status=0"
     );
-    printLabel = `<!DOCTYPE html>
+    let printLabel = `<!DOCTYPE html>
                             <html>
                                 <head>
-                                    ${stylesHtml}
                                 </head>
                                 <body>
-                                    <div style='page-break-after:always; width:100%; height:100%'>
-                                        <div style="margin-top:44px ">
-                                            <span style="margin-top: -8px; font-weight:600; text-align:center;">${tgl}</span>
+                                    <div style='page-break-after:always; width:100%; height:100%;'>
+                                        <div style="margin-top:19vh; margin-left:17vh">
+                                            <span style=" font-weight:600; text-align:center;">${tgl}</span>
                                             <h1 style="font-size: 24px; line-height: 32px; margin-left:25px; font-weight:600; text-align:center; display:inline-block;">${obc}</h1>
                                         </div>
-                                        <div style="margin-top:45px">
+                                        <div style="margin-top:14px; margin-left:16vh">
                                             <h1 style="font-size: 24px; line-height: 32px; margin-left:155px; margin-right:auto; ;font-weight:600;text-align:center;display:inline-block;">${np}</h1>
                                         </div>
-                                        <div style="margin-top:77px;">
-                                            <h1 style="display: inline-block; margin-left: 160px; margin-right: auto; text-align: center; font-size: 20px; line-height: 28px; font-weight:500;">${noRim} ${sisiran} ${time}</h1>
+                                        <div style="margin-top:43px; margin-left:13vh">
+                                            <h1 style="display: inline-block; margin-left: 160px; margin-right: auto; text-align: center; font-size: 20px; line-height: 28px; font-weight:500;">${noRim} ${sisiran} <span style="font-size:12px; margin-left:8px">${time}</span></h1>
                                         </div>
                                     </div>
                                 </body>
@@ -536,9 +509,12 @@ const printUlangLabel = () => {
     WinPrint.document.close();
     WinPrint.focus();
     WinPrint.print();
-    // WinPrint.close();
-    // router.post(route('np.generateLabels.store'), form)
+    WinPrint.close();
+    router.post("/np/generateLabels", form,{
+        onFinish: visit => {router.get("/np/generateLabels/"+form.id)},
+    });
 };
+
 const submit = () => {
     // Check Jika Ini Chrome Karena Chrome harus ada TImeout
     // let is_chrome = function () { return Boolean(window.chrome); }
@@ -559,7 +535,6 @@ const submit = () => {
     ];
 
     let obc = form.obc;
-    // let tgl = date.getDay() + "-" + months[date.getMonth()] + "-" + date.getFullYear();
     let tgl =
         date.getDate() +
         "-" +
@@ -568,52 +543,29 @@ const submit = () => {
         date.getFullYear();
     let np = form.rfid;
     let noRim = form.no_rim;
-    let time = "";
+    let time =
+        date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
     let sisiran = form.lbr_ptg == "Kiri" ? "(*)" : "(**)";
-    let stylesHtml = "";
-
-    // if (date.getHours() >= 5 && date.getHours() < 8) {
-    //     time = "A";
-    // } else if (date.getHours() >= 8 && date.getHours() < 10) {
-    //     time = "B";
-    // } else if (date.getHours() >= 10 && date.getHours() < 13) {
-    //     time = "C";
-    // } else if (date.getHours() >= 13 && date.getHours() < 16) {
-    //     time = "D";
-    // } else {
-    //     time = "E";
-    // }
-    time= date.getHours()+' : '+date.getMinutes();
-
-    let printLabel = "";
-    for (const node of [
-        ...document.querySelectorAll('link[rel="stylesheet"], style'),
-    ]) {
-        stylesHtml += node.outerHTML;
-    }
-
     let WinPrint = window.open(
         "",
         "",
         "left=0,top=0,width=800,height=900,toolbar=0,scrollbars=0,status=0"
     );
-
-    printLabel = `<!DOCTYPE html>
+    let printLabel = `<!DOCTYPE html>
                             <html>
                                 <head>
-                                    ${stylesHtml}
                                 </head>
                                 <body>
-                                    <div style='page-break-after:always; width:100%; height:100%'>
-                                        <div style="margin-top:44px ">
-                                            <span style="margin-top: -8px; font-weight:600; text-align:center;">${tgl}</span>
+                                    <div style='page-break-after:always; width:100%; height:100%;'>
+                                        <div style="margin-top:19.5vh; margin-left:17vh">
+                                            <span style="font-weight:600; text-align:center;">${tgl}</span>
                                             <h1 style="font-size: 24px; line-height: 32px; margin-left:25px; font-weight:600; text-align:center; display:inline-block;">${obc}</h1>
                                         </div>
-                                        <div style="margin-top:45px">
+                                        <div style="margin-top:14px; margin-left:16vh">
                                             <h1 style="font-size: 24px; line-height: 32px; margin-left:155px; margin-right:auto; ;font-weight:600;text-align:center;display:inline-block;">${np}</h1>
                                         </div>
-                                        <div style="margin-top:77px;">
-                                            <h1 style="display: inline-block; margin-left: 160px; margin-right: auto; text-align: center; font-size: 20px; line-height: 28px; font-weight:500;">${noRim} ${sisiran} ${time}</h1>
+                                        <div style="margin-top:43px; margin-left:13vh">
+                                            <h1 style="display: inline-block; margin-left: 160px; margin-right: auto; text-align: center; font-size: 20px; line-height: 28px; font-weight:500;">${noRim} ${sisiran} <span style="font-size:12px; margin-left:8px">${time}</span></h1>
                                         </div>
                                     </div>
                                 </body>
@@ -624,8 +576,10 @@ const submit = () => {
     WinPrint.document.close();
     WinPrint.focus();
     WinPrint.print();
-    // WinPrint.close();
-    router.post("/np/generateLabels", form);
+    WinPrint.close();
+    router.post("/np/generateLabels", form,{
+        onFinish: visit => {router.get("/np/generateLabels/"+form.id)},
+    });
     form.rfid = null;
 };
 </script>
