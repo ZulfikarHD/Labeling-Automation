@@ -8,6 +8,7 @@ import { Link, router } from "@inertiajs/vue3";
 import axios from "axios";
 const props = defineProps({
     showModal: Boolean,
+    workstation: Object,
 });
 const form = reactive({
     po: "",
@@ -18,7 +19,7 @@ const form = reactive({
     start_rim: 1,
     produk: "PCHT",
     end_rim: "40",
-    team: "",
+    team: 1,
 });
 
 const fetchData = () => {
@@ -31,8 +32,12 @@ const fetchData = () => {
 };
 
 const calcEndRim = () => {
-    form.end_rim = form.jml_lembar > 500 ? parseInt(form.start_rim) + parseInt(Math.ceil(((form.jml_lembar / 500)/2) - 1)) : parseInt(form.start_rim)
-    form.jml_rim = Math.ceil(form.jml_lembar / 500)
+    form.end_rim =
+        form.jml_lembar > 500
+            ? parseInt(form.start_rim) +
+              parseInt(Math.ceil(form.jml_lembar / 500 / 2 - 1))
+            : parseInt(form.start_rim);
+    form.jml_rim = Math.ceil(form.jml_lembar / 500);
 };
 
 // const showModal = () => {
@@ -60,7 +65,7 @@ function submit() {
         <div class="py-12">
             <form @submit.prevent="submit" method="post">
                 <div
-                    class="flex flex-col justify-center gap-6 mx-auto mt-20 w-fit"
+                    class="flex flex-col justify-center gap-6 mx-auto mt-12 w-fit"
                 >
                     <!-- Nomor PO -->
                     <div>
@@ -82,7 +87,32 @@ function submit() {
                             required
                         />
                     </div>
-                    <div class="flex justify-between gap-6 mb-10 w-fit">
+
+                    <!-- Assigned Team -->
+                    <div>
+                        <InputLabel
+                            for="team"
+                            value="Team Periksa"
+                            class="text-4xl font-extrabold text-center"
+                        />
+
+                        <select
+                            id="team"
+                            ref="team"
+                            v-model="form.team"
+                            class="block w-full px-8 py-2 mt-2 text-2xl border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
+                            required
+                        >
+                            <option
+                                v-for="team in workstation"
+                                :value="team.id"
+                            >
+                                {{ team.workstation }}
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="flex justify-between gap-6 w-fit">
                         <!-- Nomor OBC -->
                         <div>
                             <InputLabel

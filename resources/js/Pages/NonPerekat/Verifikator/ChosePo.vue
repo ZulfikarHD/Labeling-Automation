@@ -70,7 +70,7 @@ const form = useForm({
                             </thead>
                             <tbody>
                                 <tr v-for="product in products"
-                                    class="font-mono transition duration-300 ease-in-out border-b border-slate-300 text-slate-800 hover:bg-slate-400 hover:bg-opacity-10 dark:text-slate-100">
+                                    class="font-mono transition py-4 duration-300 ease-in-out border-b border-slate-300 text-slate-800 hover:bg-slate-400 hover:bg-opacity-10 dark:text-slate-100">
                                     <td
                                         class="text-center leading-5 whitespace-nowrap text-sm px-4 py-1.5 text-slate-700 border-r">
                                         {{ product.no_po }}
@@ -88,12 +88,12 @@ const form = useForm({
                                         {{ product.start_rim }} - {{ product.end_rim }}
                                     </td>
                                     <td
-                                        class="text-center leading-5 whitespace-nowrap text-sm px-4 py-1.5 text-slate-700 border-r">
+                                        class="text-center leading-5 whitespace-nowrap text-sm px-4 py-2 text-slate-700 border-r">
                                         <div v-if="product.status == 1">
-                                            <span class="px-2 py-1 font-semibold text-white bg-yellow-500 rounded-lg shadow brightness-110 drop-shadow-md">Sedang Di Periksa</span>
+                                            <span class="px-4 py-1.5 font-semibold text-yellow-900 bg-yellow-300 rounded-lg shadow drop-shadow-md">Sedang Di Periksa</span>
                                         </div>
                                         <div v-else-if="product.status == 0">
-                                            <span class="px-2 py-1 rounded-lg shadow bg-slate-600 drop-shadow-md text-slate-50">Siap Di Periksa</span>
+                                            <span class="px-4 py-1.5 rounded-lg shadow bg-slate-600 drop-shadow-md text-slate-50">Siap Di Periksa</span>
                                         </div>
                                     </td>
                                     <td
@@ -101,7 +101,7 @@ const form = useForm({
                                         {{ product.created_at }}
                                     </td>
                                     <td class="text-center leading-5 whitespace-nowrap text-sm px-4 py-1.5 text-slate-700">
-                                        <Link :href="route('np.generateLabels.show', product.id)" class="flex justify-center px-4 py-1 mx-auto font-semibold tracking-wide w-fit bg-gradient-to-r from-cyan-300 to-cyan-400 rounded-xl text-start text-cyan-50">Go</Link>
+                                        <Link :href="route('np.generateLabels.show', product.id)" class="flex justify-center px-6 py-2 mx-auto font-semibold drop-shadow-md shadow tracking-wide w-fit bg-blue-600 rounded-xl text-start text-cyan-50">Go</Link>
                                         <!-- <input type="checkbox" value="{{ product.id }}"> -->
                                     </td>
                                 </tr>

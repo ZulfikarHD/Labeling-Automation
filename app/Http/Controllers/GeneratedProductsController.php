@@ -9,6 +9,7 @@ use Inertia\Response;
 use App\Models\GeneratedProducts;
 use App\Models\GeneratedLabels;
 use App\Models\Specification;
+use App\Models\Workstations;
 
 class GeneratedProductsController extends Controller
 {
@@ -29,6 +30,7 @@ class GeneratedProductsController extends Controller
     {
         return Inertia::render('NonPerekat/KepalaMeja/NewGenerate',[
             'showModal' => false,
+            'workstation' => Workstations::orderBy('workstation')->select('id','workstation')->get(),
        ]);
     }
 
@@ -48,6 +50,7 @@ class GeneratedProductsController extends Controller
                 'start_rim' => $request->start_rim,
                 'end_rim'   => $request->end_rim,
                 'status'    => 0,
+                'assigned_team' => $request->team,
             ]
         );
 

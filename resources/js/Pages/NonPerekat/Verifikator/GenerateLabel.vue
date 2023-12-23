@@ -297,8 +297,9 @@
                     </div>
                 </div>
 
-                <!-- Submit -->
+                <!-- Button  -->
                 <div class="flex justify-center gap-6 mx-auto w-fit">
+                    <!-- Reset Form -->
                     <button
                         type="button"
                         @click="form.jml_rim = '1'"
@@ -306,6 +307,8 @@
                     >
                         Clear
                     </button>
+
+                    <!-- Submit -->
                     <button
                         type="submit"
                         class="flex justify-center px-4 py-4 mx-auto mt-8 shadow-md w-fit bg-gradient-to-r from-green-400 to-green-500 rounded-xl text-start hover:brightness-90 drop-shadow-md shadow-green-500/20"
@@ -314,6 +317,8 @@
                             Generate
                         </div>
                     </button>
+
+                    <!-- Print Ulang -->
                     <button
                         type="button"
                         @click="
@@ -373,7 +378,7 @@
 </template>
 
 <script setup>
-import { reactive,ref } from "vue";
+import { reactive, ref } from "vue";
 import Modal from "@/Components/Modal.vue";
 import ContentLayout from "@/Layouts/ContentLayout.vue";
 import InputLabel from "@/Components/InputLabel.vue";
@@ -422,19 +427,18 @@ const formPrintUlang = reactive({
 });
 
 const dataRimKanan = async () => {
-    formPrintUlang.dataRim = "Kanan"
+    formPrintUlang.dataRim = "Kanan";
     getDataRim();
 };
 
 const dataRimKiri = async () => {
-    formPrintUlang.dataRim = "Kiri"
+    formPrintUlang.dataRim = "Kiri";
     getDataRim();
 };
 
 // Tarik Data Untuk Perint Ulang Rim
 const getDataRim = () => {
-    axios.post(route("np.generateLabels.edit"), formPrintUlang)
-        .then(res => {
+    axios.post(route("np.generateLabels.edit"), formPrintUlang).then((res) => {
         dataPrintUlang.value = res.data;
     });
 };
