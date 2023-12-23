@@ -4,91 +4,92 @@
         :show="printUlangModal"
         @close="(Modal) => (printUlangModal = !printUlangModal)"
     >
-        <div class="flex flex-col gap-4 px-4 py-4">
-            <!-- Header -->
-            <h1
-                class="py-1 text-lg font-semibold text-center border-b-2 text-slate-500 border-slate-500/70"
-            >
-                Print Ulang / Ganti Data Rim
-            </h1>
-
-            <!-- Keterangan Kiri Kanan -->
-            <TextInput
-                id="dataRim"
-                type="text"
-                class="py-1 mx-4 text-lg font-semibold text-center uppercase border text-slate-500 border-slate-500/70 rounded-mdr"
-                v-model="formPrintUlang.dataRim"
-                required
-                disabled
-                autocomplete="rfid"
-            />
-
-            <!-- Pilih Potongan -->
-            <div class="flex justify-center gap-6">
-                <button
-                    type="button"
-                    @click="dataRimKiri()"
-                    class="flex items-center gap-1 px-6 py-2 font-semibold transition duration-300 ease-in-out rounded-lg shadow-md bg-sky-400 text-sky-50 hover:brightness-90 drop-shadow-md shadow-sky-300/25"
+        <form @submit.prevent="printUlangLabel">
+            <div class="flex flex-col gap-4 px-4 py-4">
+                <!-- Header -->
+                <h1
+                    class="py-1 text-lg font-semibold text-center border-b-2 text-slate-500 border-slate-500/70"
                 >
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke-width="2.5"
-                        stroke="currentColor"
-                        class="w-6 h-6"
+                    Print Ulang / Ganti Data Rim
+                </h1>
+
+                <!-- Keterangan Kiri Kanan -->
+                <TextInput
+                    id="dataRim"
+                    name="dataRim"
+                    type="text"
+                    class="py-1 mx-4 text-lg font-semibold text-center uppercase border text-slate-500 border-slate-500/70 rounded-mdr"
+                    v-model="formPrintUlang.dataRim"
+                    required
+                    disabled
+                    autocomplete="rfid"
+                />
+
+                <!-- Pilih Potongan -->
+                <div class="flex justify-center gap-6">
+                    <button
+                        type="button"
+                        @click="dataRimKiri()"
+                        class="flex items-center gap-1 px-6 py-2 font-semibold transition duration-300 ease-in-out rounded-lg shadow-md bg-sky-400 text-sky-50 hover:brightness-90 drop-shadow-md shadow-sky-300/25"
                     >
-                        <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            d="M19.5 12h-15m0 0l6.75 6.75M4.5 12l6.75-6.75"
-                        />
-                    </svg>
-                    KIRI
-                </button>
-                <button
-                    type="button"
-                    @click="dataRimKanan()"
-                    class="flex items-center gap-1 px-6 py-2 font-semibold transition duration-300 ease-in-out rounded-lg shadow-md bg-sky-400 text-sky-50 hover:brightness-90 drop-shadow-md shadow-sky-300/25"
-                >
-                    KANAN
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke-width="2.5"
-                        stroke="currentColor"
-                        class="w-6 h-6"
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke-width="2.5"
+                            stroke="currentColor"
+                            class="w-6 h-6"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                d="M19.5 12h-15m0 0l6.75 6.75M4.5 12l6.75-6.75"
+                            />
+                        </svg>
+                        KIRI
+                    </button>
+                    <button
+                        type="button"
+                        @click="dataRimKanan()"
+                        class="flex items-center gap-1 px-6 py-2 font-semibold transition duration-300 ease-in-out rounded-lg shadow-md bg-sky-400 text-sky-50 hover:brightness-90 drop-shadow-md shadow-sky-300/25"
                     >
-                        <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            d="M4.5 12h15m0 0l-6.75-6.75M19.5 12l-6.75 6.75"
-                        />
-                    </svg>
-                </button>
-            </div>
+                        KANAN
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke-width="2.5"
+                            stroke="currentColor"
+                            class="w-6 h-6"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                d="M4.5 12h15m0 0l-6.75-6.75M19.5 12l-6.75 6.75"
+                            />
+                        </svg>
+                    </button>
+                </div>
 
-            <!-- List Nomor -->
-            <div class="flex flex-wrap justify-center gap-4 mt-4">
-                <button
-                    v-for="n in dataPrintUlang"
-                    type="button"
-                    v-bind:key="refresh"
-                    @click="pilihRim(n.no_rim, n.np_users)"
-                    class="min-w-[8ch] px-4 py-2 text-xs bg-slate-500 text-slate-50 hover:brightness-95 duration-300 transition ease-in-out rounded drop-shadow shadow"
-                >
-                    <div class="flex flex-col">
-                        <span class="font-semibold">{{ n.np_users }}</span>
-                        <span class="font-bold text-yellow-300">{{
-                            n.no_rim
-                        }}</span>
-                    </div>
-                </button>
-            </div>
+                <!-- List Nomor -->
+                <div class="flex flex-wrap justify-center gap-4 mt-4">
+                    <button
+                        v-for="n in dataPrintUlang"
+                        type="button"
+                        v-bind:key="refresh"
+                        @click="pilihRim(n.no_rim, n.np_users)"
+                        class="min-w-[8ch] px-4 py-2 text-xs bg-slate-500 text-slate-50 hover:brightness-95 duration-300 transition ease-in-out rounded drop-shadow shadow"
+                    >
+                        <div class="flex flex-col">
+                            <span class="font-semibold">{{ n.np_users }}</span>
+                            <span class="font-bold text-yellow-300">{{
+                                n.no_rim
+                            }}</span>
+                        </div>
+                    </button>
+                </div>
 
-            <!-- Form -->
-            <form>
+                <!-- Form -->
                 <div class="flex justify-center gap-4 mt-4 px-7">
                     <!-- Nomor Rim -->
                     <div>
@@ -100,6 +101,7 @@
                         <TextInput
                             id="noRimPU"
                             type="number"
+                            name="dataRim"
                             class="block text-sm text-center bg-slate-300"
                             disabled
                             v-model="formPrintUlang.noRim"
@@ -125,33 +127,27 @@
                         />
                     </div>
                 </div>
-            </form>
 
-            <!-- Action -->
-            <div class="flex justify-center gap-4 pt-4 px-7">
-                <button
-                    type="button"
-                    class="flex items-center gap-1 px-6 py-2 mr-auto font-semibold text-red-500 underline transition duration-300 ease-in-out border border-red-500 rounded-lg shadow-md bg-red-50 hover:brightness-90 drop-shadow-md shadow-red-300/25"
-                >
-                    Hapus
-                </button>
-                <button
-                    type="button"
-                    class="flex items-center gap-1 px-6 py-2 font-semibold underline transition duration-300 ease-in-out border rounded-lg shadow-md bg-sky-50 border-sky-400 text-sky-500 hover:brightness-90 drop-shadow-md shadow-sky-300/25"
-                >
-                    Edit
-                </button>
-                <button
-                    type="button"
-                    @click="printUlangLabel()"
-                    class="flex items-center gap-1 px-6 py-2 font-semibold transition duration-300 ease-in-out rounded-lg shadow-md bg-sky-400 text-sky-50 hover:brightness-90 drop-shadow-md shadow-sky-300/25"
-                >
-                    Print
-                </button>
+                <!-- Action -->
+                <div class="flex justify-center gap-4 pt-4 px-7">
+                    <button
+                        type="button"
+                        class="flex items-center gap-1 px-6 py-2 mr-auto font-semibold text-red-500 underline transition duration-300 ease-in-out border border-red-500 rounded-lg shadow-md bg-red-50 hover:brightness-90 drop-shadow-md shadow-red-300/25"
+                    >
+                        Hapus
+                    </button>
+                    <button
+                        type="submit"
+                        class="flex items-center gap-1 px-6 py-2 font-semibold transition duration-300 ease-in-out rounded-lg shadow-md bg-sky-400 text-sky-50 hover:brightness-90 drop-shadow-md shadow-sky-300/25"
+                    >
+                        Print
+                    </button>
+                </div>
             </div>
-        </div>
+        </form>
     </Modal>
 
+    <!-- Content -->
     <ContentLayout>
         <div class="flex flex-col justify-center py-8">
             <form @submit.prevent="submit">
@@ -377,7 +373,7 @@
 </template>
 
 <script setup>
-import { reactive } from "vue";
+import { reactive,ref } from "vue";
 import Modal from "@/Components/Modal.vue";
 import ContentLayout from "@/Layouts/ContentLayout.vue";
 import InputLabel from "@/Components/InputLabel.vue";
@@ -385,8 +381,6 @@ import InputError from "@/Components/InputError.vue";
 import TextInput from "@/Components/TextInput.vue";
 import { Link, useForm, router } from "@inertiajs/vue3";
 import axios from "axios";
-
-let dataPrintUlang = Object;
 
 const props = defineProps({
     product: Object,
@@ -403,6 +397,8 @@ const props = defineProps({
     },
 });
 
+const dataPrintUlang = ref();
+
 // Form
 const form = useForm({
     id: props.product.id,
@@ -418,28 +414,28 @@ const form = useForm({
 
 // Form Print Ulang / Edit data Rim
 const formPrintUlang = reactive({
-    dataRim: "",
+    dataRim: "Kiri",
     noRim: "",
     npPetugas: "",
     po: props.product.no_po,
     obc: props.product.no_obc,
 });
 
-const dataRimKanan = () => {
-    formPrintUlang.dataRim = "Kanan";
+const dataRimKanan = async () => {
+    formPrintUlang.dataRim = "Kanan"
     getDataRim();
 };
 
-const dataRimKiri = () => {
-    formPrintUlang.dataRim = "Kiri";
+const dataRimKiri = async () => {
+    formPrintUlang.dataRim = "Kiri"
     getDataRim();
 };
 
 // Tarik Data Untuk Perint Ulang Rim
 const getDataRim = () => {
-    axios.post(route("np.generateLabels.edit"), formPrintUlang).then((res) => {
-        console.log(res.data);
-        dataPrintUlang = res.data;
+    axios.post(route("np.generateLabels.edit"), formPrintUlang)
+        .then(res => {
+        dataPrintUlang.value = res.data;
     });
 };
 
@@ -510,8 +506,10 @@ const printUlangLabel = () => {
     WinPrint.focus();
     WinPrint.print();
     WinPrint.close();
-    router.post("/np/generateLabels", form,{
-        onFinish: visit => {router.get("/np/generateLabels/"+form.id)},
+    router.put("/np/generateLabels/update", formPrintUlang, {
+        onFinish: (visit) => {
+            router.get("/np/generateLabels/" + form.id);
+        },
     });
 };
 
@@ -577,8 +575,10 @@ const submit = () => {
     WinPrint.focus();
     WinPrint.print();
     WinPrint.close();
-    router.post("/np/generateLabels", form,{
-        onFinish: visit => {router.get("/np/generateLabels/"+form.id)},
+    router.post("/np/generateLabels", form, {
+        onFinish: (visit) => {
+            router.get("/np/generateLabels/" + form.id);
+        },
     });
     form.rfid = null;
 };

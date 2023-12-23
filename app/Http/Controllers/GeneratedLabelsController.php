@@ -41,17 +41,6 @@ class GeneratedLabelsController extends Controller
      */
     public function store(Request $request)
     {
-        // foreach($request->no_rim as $rim)
-        // {
-        //     GeneratedLabels::where('no_po_generated_products',$request->po)
-        //             ->where('potongan',$request->lbr_ptg)
-        //             ->where('no_rim',$rim)
-        //             ->update([
-        //                 'np_users'  => $request->rfid,
-        //                 'start'     => now()
-        //             ]);
-        // }
-
         GeneratedLabels::where('no_po_generated_products',$request->po)
                 ->where('potongan',$request->lbr_ptg)
                 ->where('no_rim',$request->no_rim)
@@ -74,8 +63,6 @@ class GeneratedLabelsController extends Controller
                 'assigned_team' => $request->team,
             ]);
         }
-
-
     }
     /**
      * Store a newly created resource in storage.
@@ -130,9 +117,14 @@ class GeneratedLabelsController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request)
     {
-
+        GeneratedLabels::where('no_po_generated_products',$request->po)
+                ->where('potongan',$request->dataRim)
+                ->where('no_rim',$request->noRim)
+                ->update([
+                    'np_users'  => $request->npPetugas,
+                ]);
     }
 
     /**

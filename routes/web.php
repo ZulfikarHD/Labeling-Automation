@@ -83,6 +83,8 @@ use App\Http\Controllers\GeneratedLabelsController;
                 ->name('np.generateLabels.edit');
             Route::post('/np/generateLabels/getRim',[GeneratedLabelsController::class, 'getRim'])
                 ->name('np.generateLabels.getRim');
+            Route::put('/np/generateLabels/update',[GeneratedLabelsController::class, 'update'])
+                ->name('np.generateLabels.update');
 
  // Group Perekat //
 //---------------//
