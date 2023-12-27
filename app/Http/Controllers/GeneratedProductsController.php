@@ -18,65 +18,11 @@ class GeneratedProductsController extends Controller
      */
     public function index()
     {
-        return Inertia::render('NonPerekat/KepalaMeja/GeneratedOrders',[
+        return Inertia::render('NonPerekat/NonPersonal/Pic/ListPo',[
             'products' => GeneratedProducts::all(),
         ]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        return Inertia::render('NonPerekat/KepalaMeja/NewGenerate',[
-            'showModal' => false,
-            'workstation' => Workstations::orderBy('workstation')->select('id','workstation')->get(),
-       ]);
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        GeneratedProducts::updateOrCreate(
-            [
-                'no_po' => $request->po,
-            ],
-            [
-                'no_obc'    => $request->obc,
-                'type'      => $request->produk,
-                'sum_rim'   => $request->jml_rim,
-                'start_rim' => $request->start_rim,
-                'end_rim'   => $request->end_rim,
-                'status'    => 0,
-                'assigned_team' => $request->team,
-            ]
-        );
-
-        for($i = 0 ; $i < $request->jml_rim ; $i++)
-        {
-            GeneratedLabels::updateOrCreate(
-                [
-                    'no_po_generated_products' => $request->po,
-                    'no_rim'    => $request->start_rim + $i,
-                    'potongan'  => "Kiri"
-                ]
-                );
-
-            GeneratedLabels::updateOrCreate(
-                [
-                    'no_po_generated_products' => $request->po,
-                    'no_rim'    => $request->start_rim + $i,
-                    'potongan'  => "Kanan"
-                ]
-                );
-        }
-
-        return Inertia::render('NonPerekat/KepalaMeja/NewGenerate',[
-            'showModal' => true,
-       ]);
-    }
 
     /**
      * Display the specified resource.

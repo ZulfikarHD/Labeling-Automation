@@ -14,7 +14,7 @@ class ProductMonitoringController extends Controller
 {
     public function index()
     {
-        return Inertia::render('NonPerekat/KepalaMeja/TeamLists',[
+        return Inertia::render('NonPerekat/NonPersonal/Pic/TeamList',[
             'workstations' => Workstations::all()
         ]);
     }
@@ -28,14 +28,14 @@ class ProductMonitoringController extends Controller
         if($getPo !== null)
         {
             $listLabel  = GeneratedLabels::where('no_po_generated_products',$getPo->no_po)->get();
-            return Inertia::render('NonPerekat/KepalaMeja/Monitor',[
+            return Inertia::render('NonPerekat/NonPersonal/Pic/Monitor',[
                 'spec'    => $getPo,
                 'dataRim' => $listLabel
             ]);
         }
         else
         {
-            return Inertia::render('NonPerekat/KepalaMeja/TeamLists',[
+            return Inertia::render('NonPerekat/NonPersonal/Pic/TeamList',[
                 'workstations' => Workstations::all()
             ]);
         }

@@ -335,7 +335,7 @@
             <!-- Back Button -->
             <div class="flex gap-6 mx-auto mt-10">
                 <Link
-                    :href="route('np.generateLabels.index')"
+                    :href="route('nonPer.nonPersonal.verif.index')"
                     class="text-xl font-extrabold text-blue-50 w-fit py-3 px-6 bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl text-start drop-shadow-md shadow-md flex items-center gap-1.5"
                 >
                     <svg
@@ -438,7 +438,7 @@ const dataRimKiri = async () => {
 
 // Tarik Data Untuk Perint Ulang Rim
 const getDataRim = () => {
-    axios.post(route("np.generateLabels.edit"), formPrintUlang).then((res) => {
+    axios.post(route("nonPer.nonPersonal.verif.printLabels.edit"), formPrintUlang).then((res) => {
         dataPrintUlang.value = res.data;
     });
 };
@@ -510,9 +510,9 @@ const printUlangLabel = () => {
     WinPrint.focus();
     WinPrint.print();
     WinPrint.close();
-    router.put("/np/generateLabels/update", formPrintUlang, {
+    router.put("/non-perekat/non-personal/verif/printLabels/update", formPrintUlang, {
         onFinish: (visit) => {
-            router.get("/np/generateLabels/" + form.id);
+            router.get("/non-perekat/non-personal/verif/printLabels/" + form.id);
         },
     });
 };
@@ -579,9 +579,9 @@ const submit = () => {
     WinPrint.focus();
     WinPrint.print();
     WinPrint.close();
-    router.post("/np/generateLabels", form, {
+    router.post("/non-perekat/generateLabels", form, {
         onFinish: (visit) => {
-            router.get("/np/generateLabels/" + form.id);
+            router.get("/non-perekat/generateLabels/" + form.id);
         },
     });
     form.rfid = null;

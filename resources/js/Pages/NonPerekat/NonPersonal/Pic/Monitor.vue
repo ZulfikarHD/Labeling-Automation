@@ -187,7 +187,7 @@ const form = useForm({
         <div class="flex justify-center w-full">
             <!-- Back Button -->
             <div class="flex gap-6 mt-10 ml-12">
-                <Link :href="route('np.monitor.index')"
+                <Link :href="route('nonPer.nonPersonal.monitor.index')"
                     class="text-xl font-extrabold text-blue-50 w-fit py-3 px-6 bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl text-start  drop-shadow-md shadow-md flex items-center gap-1.5">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5"
                     stroke="currentColor" class="w-6 h-6">

@@ -101,7 +101,7 @@ const form = useForm({
                                         {{ product.created_at }}
                                     </td>
                                     <td class="text-center leading-5 whitespace-nowrap text-sm px-4 py-1.5 text-slate-700">
-                                        <Link :href="route('np.generateLabels.show', product.id)" class="flex justify-center px-6 py-2 mx-auto font-semibold drop-shadow-md shadow tracking-wide w-fit bg-blue-600 rounded-xl text-start text-cyan-50">Go</Link>
+                                        <Link :href="route('nonPer.nonPersonal.verif.printLabels.show', product.id)" class="flex justify-center px-6 py-2 mx-auto font-semibold drop-shadow-md shadow tracking-wide w-fit bg-blue-600 rounded-xl text-start text-cyan-50">Go</Link>
                                         <!-- <input type="checkbox" value="{{ product.id }}"> -->
                                     </td>
                                 </tr>
@@ -113,7 +113,7 @@ const form = useForm({
             <div class="flex justify-center gap-6 mx-auto w-fit">
             <!-- Back Button -->
             <div class="flex gap-6 mt-10">
-                <Link :href="route('np.choseUser')"
+                <Link :href="route('nonPer.nonPersonal.index')"
                     class="text-xl font-extrabold text-blue-50 w-fit py-3 px-6 bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl text-start  drop-shadow-md shadow-md flex items-center gap-1.5">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5"
                     stroke="currentColor" class="w-6 h-6">

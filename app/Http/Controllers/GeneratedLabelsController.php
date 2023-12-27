@@ -18,7 +18,7 @@ class GeneratedLabelsController extends Controller
      */
     public function index()
     {
-        return Inertia::render('NonPerekat/Verifikator/ChosePo',[
+        return Inertia::render('NonPerekat/NonPersonal/Verifikator/ChosePo',[
             'products' => GeneratedProducts::where('status','<',2)->get()
         ]);
     }
@@ -88,7 +88,7 @@ class GeneratedLabelsController extends Controller
     public function show(string $id)
     {
         $product = GeneratedProducts::where('id',$id)->first();
-        return Inertia::render('NonPerekat/Verifikator/GenerateLabel',[
+        return Inertia::render('NonPerekat/NonPersonal/Verifikator/GenerateLabel',[
             'product'   => $product,
             'listTeam'  => \App\Models\Workstations::select('id','workstation')->get(),
             'noRim'     => $this->fetcNoRim($product->no_po)['noRim'],

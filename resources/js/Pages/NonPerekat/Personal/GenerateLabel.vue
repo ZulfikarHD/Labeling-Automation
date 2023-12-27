@@ -183,7 +183,7 @@ const fetchData = () => {
             </form>
         </div>
         <div class="flex justify-center w-full">
-            <Link :href="route('np.choseType')">
+            <Link :href="route('nonPer.choseType')">
                 <button
                     class="flex justify-center px-4 py-2 mx-auto w-fit bg-gradient-to-r from-blue-400 to-blue-500 rounded-xl text-start mt-11"
                     type="button"

@@ -9,6 +9,7 @@ use App\Http\Controllers\ProductMonitoringController;
 use App\Http\Controllers\GeneratedProductsController;
 use App\Http\Controllers\GenerateLabelsPersonalController;
 use App\Http\Controllers\GeneratedLabelsController;
+use App\Http\Controllers\GenerateLabelsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -30,72 +31,58 @@ use App\Http\Controllers\GeneratedLabelsController;
 //-------------------//
 
     //Pilih Personal atau Non Pesonal
-        Route::get('/np/choseType', function(){
-            return Inertia::render('NonPerekat/ChoseType');
-        })->name('np.choseType');
+        Route::get('/non-perekat', function(){
+            return Inertia::render('NonPerekat/IndexNonPerekat');
+        })->name('nonPer.index');
 
      // Section Non Perekat, Personal //
     //-------------------------------//
-        Route::get('/np/personal',[GenerateLabelsPersonalController::class, 'index'])
-            ->name('np.personal');
+        Route::get('/non-perekat/personal',[GenerateLabelsPersonalController::class, 'index'])
+            ->name('nonPer.personal');
      // Section Non Perekat, Non Personal //
     //-----------------------------------//
         // Pilih User
             // Kepala Meja
-                Route::get('/np/chooseUser', function(){
-                    return Inertia::render('NonPerekat/ChoseUser');
-                })->name('np.choseUser');
+                Route::get('/non-perekat/non-personal', function(){
+                    return Inertia::render('NonPerekat/NonPersonal/Index');
+                })->name('nonPer.nonPersonal.index');
 
             // Verifikator
-                Route::get('/np/generateLabels',[GeneratedLabelsController::class, 'index'])
-                    ->name('np.generateLabels.index');
+                Route::get('/non-perekat/non-personal/verif',[GeneratedLabelsController::class, 'index'])->name('nonPer.nonPersonal.verif.index');
 
          // Section Kepala Meja Non Perekat //
         //---------------------------------//
             // Menu Kepala Meja
-                Route::get('/np/pic', function(){
-                    return Inertia::render('NonPerekat/KepalaMeja/Menu');
-                })->name('np.pic');
+                Route::get('/non-perekat/non-personal/pic', function(){
+                    return Inertia::render('NonPerekat/NonPersonal/Pic/Menu');
+                })->name('nonPer.nonPersonal.pic.index');
 
             // Monitoring Barang
-                Route::get('/np/pic/monitorProducts',[ProductMonitoringController::class, 'index'])
-                    ->name('np.monitor.index');
-                Route::get('/np/pic/monitorProducts/{id}',[ProductMonitoringController::class, 'show'])
-                    ->name('np.monitor.show');
+                Route::get('/non-perekat/non-personal/pic/monitorVerifikasi',[ProductMonitoringController::class, 'index'])->name('nonPer.nonPersonal.monitor.index');
+                Route::get('/non-perekat/non-personal/pic/monitorVerifikasi/{id}',[ProductMonitoringController::class, 'show'])->name('nonPer.nonPersonal.monitor.show');
 
             // List Generated Product
-                Route::resource('/np/listProducts',GeneratedProductsController::class,['names' => 'np.listProducts']);
+                Route::resource('/non-perekat/non-personal/pic/listPo',GeneratedProductsController::class,['names' => 'nonPer.nonPersonal.listPo']);
 
             // Generate Product
-                Route::get('/np/registerProducts/create',[GeneratedProductsController::class, 'create'])
-                    ->name('np.registerProducts.create');
-                Route::post('/np/registerProducts/create',[GeneratedProductsController::class, 'store'])
-                    ->name('np.registerProducts.store');
-                Route::post('/np/generateLabels',[GeneratedLabelsController::class, 'store'])
-                    ->name('np.generateLabels.store');
+                Route::get('/non-perekat/non-personal/generateLabels', [GenerateLabelsController::class, 'index'])->name('nonPer.nonPersonal.generateLabels.index');
+                // Route::post('/non-perekat/non-personal/generateLabels',[GenerateLabelsController::class, 'store'])->name('nonPer.nonPersonal.generateLabels.store');
 
     // Section Verifikator Non Perekat //
    //---------------------------------//
         // List Generated Labels (Barang Yang Siap Periksa)
-            Route::get('/np/generateLabels/{id}',[GeneratedLabelsController::class, 'show'])
-                ->name('np.generateLabels.show');
-            Route::post('/np/generateLabels/edit',[GeneratedLabelsController::class, 'edit'])
-                ->name('np.generateLabels.edit');
-            Route::post('/np/generateLabels/getRim',[GeneratedLabelsController::class, 'getRim'])
-                ->name('np.generateLabels.getRim');
-            Route::put('/np/generateLabels/update',[GeneratedLabelsController::class, 'update'])
-                ->name('np.generateLabels.update');
+            Route::get('/non-perekat/non-personal/verif/printLabels/{id}',   [GeneratedLabelsController::class, 'show'])->name('nonPer.nonPersonal.verif.printLabels.show');
+            Route::post('/non-perekat/non-personal/verif/printLabels/edit',  [GeneratedLabelsController::class, 'edit'])->name('nonPer.nonPersonal.verif.printLabels.edit');
+            Route::post('/non-perekat/non-personal/verif/printLabels/getRim',[GeneratedLabelsController::class, 'getRim'])->name('nonPer.nonPersonal.verif.printLabels.getRim');
+            Route::put('/non-perekat/non-personal/verif/printLabels/update', [GeneratedLabelsController::class, 'update'])->name('nonPer.nonPersonal.verif.printLabels.update');
 
  // Group Perekat //
 //---------------//
 
         // Generate Label
-            Route::get('/p/generateLabels',[GeneratedLabelsController::class, 'indexMmea'])
-                ->name('p.generateLabels');
-            Route::post('/p/generateLabels/callSpec',[GeneratedLabelsController::class, 'callSpec'])
-                ->name('p.generateLabels.callSpec');
-            Route::post('/p/generateLabels/storeMmea',[GeneratedLabelsController::class, 'storeMmea'])
-                ->name('p.generateLabels.storeMmea');
+            Route::get('/p/generateLabels',[GeneratedLabelsController::class, 'indexMmea'])->name('p.generateLabels');
+            Route::post('/p/generateLabels/callSpec', [GeneratedLabelsController::class, 'callSpec'])->name('p.generateLabels.callSpec');
+            Route::post('/p/generateLabels/storeMmea',[GeneratedLabelsController::class, 'storeMmea'])->name('p.generateLabels.storeMmea');
 
 
 

@@ -1,16 +1,17 @@
 <script setup>
-import { reactive } from "vue";
+import { inject } from "vue";
 import ContentLayout from "@/Layouts/ContentLayout.vue";
 import InputLabel from "@/Components/InputLabel.vue";
 import TextInput from "@/Components/TextInput.vue";
-import Modal from "@/Components/Modal.vue";
-import { Link, router } from "@inertiajs/vue3";
+import { Link, router, useForm } from "@inertiajs/vue3";
 import axios from "axios";
+
+const swal = inject('$swal');
 const props = defineProps({
-    showModal: Boolean,
     workstation: Object,
 });
-const form = reactive({
+
+const form = useForm({
     po: "",
     obc: "",
     jml_rim: "",
@@ -23,7 +24,7 @@ const form = reactive({
 });
 
 const fetchData = () => {
-    axios.get("/api/gen-nonPerso-po/" + form.po).then((res) => {
+    axios.get("/api/gen-labels/non-personal/" + form.po).then((res) => {
         form.obc = res.data.no_obc;
         form.jml_lembar = res.data.rencet;
         form.jml_rim = Math.ceil(res.data.rencet / 500);
@@ -40,28 +41,23 @@ const calcEndRim = () => {
     form.jml_rim = Math.ceil(form.jml_lembar / 500);
 };
 
-// const showModal = () => {
-//     this.show = !this.show
-// };
 
 function submit() {
-    router.post(route("np.registerProducts.store"), form);
+    router.post("/api/gen-labels/non-personal",form,{
+        onSuccess: () => {
+            swal.fire({
+                icon: 'success',
+                title: 'Success',
+                text : 'Label Berhasil Dibuat',
+            });
+            form.reset();
+        }
+    });
 }
 </script>
 
 <template>
     <ContentLayout>
-        <Modal :show="showModal" @close="showModal = !showModal">
-            <div
-                class="px-8 py-4 bg-white rounded-lg shadow drop-shadow shadow-slate-300/25"
-            >
-                <h1
-                    class="text-2xl font-bold text-center text-green-600 brightness-110"
-                >
-                    Label Berhasil Di Buat
-                </h1>
-            </div>
-        </Modal>
         <div class="py-12">
             <form @submit.prevent="submit" method="post">
                 <div
@@ -223,7 +219,7 @@ function submit() {
                 </div>
                 <div class="flex justify-center gap-6 mx-auto w-fit">
                     <Link
-                        :href="route('np.registerProducts.create')"
+                        :href="route('nonPer.nonPersonal.generateLabels.index')"
                         class="text-2xl font-bold text-violet-50 flex justify-center px-8 py-4 mx-auto w-fit bg-gradient-to-r from-violet-400 to-violet-500 rounded-xl text-start mt-11"
                     >
                         Clear
@@ -243,7 +239,7 @@ function submit() {
             <!-- Back Button -->
             <div class="flex gap-6">
                 <Link
-                    :href="route('np.pic')"
+                    :href="route('nonPer.nonPersonal.pic.index')"
                     class="text-xl font-extrabold text-blue-50 w-fit py-3 px-6 bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl text-start drop-shadow-md shadow-md flex items-center gap-1.5"
                 >
                     <svg

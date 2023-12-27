@@ -24,7 +24,7 @@ const form = useForm({
 })
 
 const deleteOrder = () => {
-    router.delete(route('np.listProducts.destroy',form.po), {
+    router.delete(route('nonPer.listProducts.destroy',form.po), {
         onSuccess: () => {
             // @ts-ignore
             swal.fire({
@@ -189,12 +189,12 @@ const deleteOrder = () => {
                                     </td>
                                     <td class="text-center leading-5 whitespace-nowrap text-sm px-4 py-1.5 text-slate-700">
                                         <div class="flex justify-center gap-2">
-                                            <Link :href="route('np.registerProducts.create')"
+                                            <!-- <Link :href="route('nonPer.registerProducts.create')"
                                                 class="font-bold text-blue-400 transition duration-150 ease-in-out hover:text-blue-700">
                                             Info</Link>
-                                            <Link :href="route('np.registerProducts.create')"
+                                            <Link :href="route('nonPer.registerProducts.create')"
                                                 class="font-bold text-green-400 transition duration-150 ease-in-out hover:text-green-700">
-                                            Edit</Link>
+                                            Edit</Link> -->
                                             <button type="button"
                                                 @click.prevent="deleteModal = !deleteModal; form.id = product.id; form.po = product.no_po"
                                                 class="font-bold text-red-400 transition duration-150 ease-in-out hover:text-red-700">Delete</button>
@@ -210,7 +210,7 @@ const deleteOrder = () => {
         <div class="flex justify-center w-full">
             <!-- Back Button -->
             <div class="flex gap-6">
-                <Link :href="route('np.pic')"
+                <Link :href="route('nonPer.nonPersonal.pic.index')"
                     class="text-xl font-extrabold text-blue-50 w-fit py-3 px-6 bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl text-start  drop-shadow-md shadow-md flex items-center gap-1.5">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5"
                     stroke="currentColor" class="w-6 h-6">
