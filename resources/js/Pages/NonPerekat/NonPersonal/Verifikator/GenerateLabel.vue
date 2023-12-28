@@ -120,7 +120,7 @@
                         <TextInput
                             id="npPetugasPU"
                             type="text"
-                            class="block text-sm text-center"
+                            class="block text-sm text-center uppercase"
                             v-model="formPrintUlang.npPetugas"
                             required
                             autocomplete="npPetugasPU"
@@ -286,7 +286,7 @@
                         <TextInput
                             id="rfid"
                             type="text"
-                            class="block w-full mt-4 text-center"
+                            class="block w-full mt-4 text-center uppercase"
                             v-model="form.rfid"
                             required
                             autofocus
@@ -302,7 +302,7 @@
                     <!-- Reset Form -->
                     <button
                         type="button"
-                        @click="form.jml_rim = '1'"
+                        @click="form.rfid = null"
                         class="flex justify-center px-4 py-4 mx-auto mt-8 text-lg font-bold shadow-md w-fit bg-gradient-to-r from-violet-400 to-violet-500 rounded-xl text-start hover:brightness-90 drop-shadow-md shadow-violet-500/20 text-violet-50"
                     >
                         Clear
@@ -438,7 +438,7 @@ const dataRimKiri = async () => {
 
 // Tarik Data Untuk Perint Ulang Rim
 const getDataRim = () => {
-    axios.post(route("nonPer.nonPersonal.verif.printLabels.edit"), formPrintUlang).then((res) => {
+    axios.post('/api/non-perekat/non-personal/print-label/edit', formPrintUlang).then((res) => {
         dataPrintUlang.value = res.data;
     });
 };
@@ -490,11 +490,11 @@ const printUlangLabel = () => {
                                 </head>
                                 <body>
                                     <div style='page-break-after:always; width:100%; height:100%;'>
-                                        <div style="margin-top:19vh; margin-left:17vh">
-                                            <span style=" font-weight:600; text-align:center;">${tgl}</span>
-                                            <h1 style="font-size: 24px; line-height: 32px; margin-left:25px; font-weight:600; text-align:center; display:inline-block;">${obc}</h1>
+                                        <div style="margin-top:19.8vh; margin-left:17vh">
+                                            <span style="font-weight:600; text-align:center;">${tgl}</span>
+                                            <h1 style="font-size: 24px; line-height: 32px; margin-left:25px; font-weight:600; text-align:center; display:inline-block; padding-top:6px">${obc}</h1>
                                         </div>
-                                        <div style="margin-top:14px; margin-left:16vh">
+                                        <div style="margin-top:12px; margin-left:16vh">
                                             <h1 style="font-size: 24px; line-height: 32px; margin-left:155px; margin-right:auto; ;font-weight:600;text-align:center;display:inline-block;">${np}</h1>
                                         </div>
                                         <div style="margin-top:43px; margin-left:13vh">
@@ -510,9 +510,9 @@ const printUlangLabel = () => {
     WinPrint.focus();
     WinPrint.print();
     WinPrint.close();
-    router.put("/non-perekat/non-personal/verif/printLabels/update", formPrintUlang, {
-        onFinish: (visit) => {
-            router.get("/non-perekat/non-personal/verif/printLabels/" + form.id);
+    router.post("/api/non-perekat/non-personal/print-label/update", formPrintUlang, {
+        onFinish: () => {
+            router.get("/non-perekat/non-personal/print-label/" + form.id);
         },
     });
 };
@@ -559,11 +559,11 @@ const submit = () => {
                                 </head>
                                 <body>
                                     <div style='page-break-after:always; width:100%; height:100%;'>
-                                        <div style="margin-top:19.5vh; margin-left:17vh">
+                                        <div style="margin-top:19.8vh; margin-left:17vh">
                                             <span style="font-weight:600; text-align:center;">${tgl}</span>
-                                            <h1 style="font-size: 24px; line-height: 32px; margin-left:25px; font-weight:600; text-align:center; display:inline-block;">${obc}</h1>
+                                            <h1 style="font-size: 24px; line-height: 32px; margin-left:25px; font-weight:600; text-align:center; display:inline-block; padding-top:6px">${obc}</h1>
                                         </div>
-                                        <div style="margin-top:14px; margin-left:16vh">
+                                        <div style="margin-top:12px; margin-left:16vh">
                                             <h1 style="font-size: 24px; line-height: 32px; margin-left:155px; margin-right:auto; ;font-weight:600;text-align:center;display:inline-block;">${np}</h1>
                                         </div>
                                         <div style="margin-top:43px; margin-left:13vh">
@@ -579,9 +579,9 @@ const submit = () => {
     WinPrint.focus();
     WinPrint.print();
     WinPrint.close();
-    router.post("/non-perekat/generateLabels", form, {
-        onFinish: (visit) => {
-            router.get("/non-perekat/generateLabels/" + form.id);
+    router.post("/api/non-perekat/non-personal/print-label", form, {
+        onFinish: () => {
+            router.get("/non-perekat/non-personal/print-label/" + form.id);
         },
     });
     form.rfid = null;

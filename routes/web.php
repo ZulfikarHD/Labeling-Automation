@@ -10,6 +10,7 @@ use App\Http\Controllers\GeneratedProductsController;
 use App\Http\Controllers\GenerateLabelsPersonalController;
 use App\Http\Controllers\GeneratedLabelsController;
 use App\Http\Controllers\GenerateLabelsController;
+use App\Http\Controllers\PrintLabelController;
 
 /*
 |--------------------------------------------------------------------------
@@ -71,10 +72,8 @@ use App\Http\Controllers\GenerateLabelsController;
     // Section Verifikator Non Perekat //
    //---------------------------------//
         // List Generated Labels (Barang Yang Siap Periksa)
-            Route::get('/non-perekat/non-personal/verif/printLabels/{id}',   [GeneratedLabelsController::class, 'show'])->name('nonPer.nonPersonal.verif.printLabels.show');
-            Route::post('/non-perekat/non-personal/verif/printLabels/edit',  [GeneratedLabelsController::class, 'edit'])->name('nonPer.nonPersonal.verif.printLabels.edit');
-            Route::post('/non-perekat/non-personal/verif/printLabels/getRim',[GeneratedLabelsController::class, 'getRim'])->name('nonPer.nonPersonal.verif.printLabels.getRim');
-            Route::put('/non-perekat/non-personal/verif/printLabels/update', [GeneratedLabelsController::class, 'update'])->name('nonPer.nonPersonal.verif.printLabels.update');
+            Route::get('/non-perekat/non-personal/print-label/{id}', [PrintLabelController::class, 'index'])
+                ->name('nonPer.nonPersonal.printLabel.index');
 
  // Group Perekat //
 //---------------//

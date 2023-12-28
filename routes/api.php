@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\GeneratedProductsController;
 use App\Http\Controllers\GenerateLabelsPersonalController;
 use App\Http\Controllers\GenerateLabelsController;
+use App\Http\Controllers\PrintLabelController;
 
 /*
 |--------------------------------------------------------------------------
@@ -27,6 +28,10 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     Route::put('/nonPers-upStat/{noPo}',[GeneratedProductsController::class, 'updateStatus']);
 
 // Generate Label Category Non-Personal API
-
     Route::get('/gen-labels/non-personal/{noPo}',[GenerateLabelsController::class, 'show']);    // Fetch Spesifikasi Order
     Route::post('/gen-labels/non-personal',[GenerateLabelsController::class, 'store']);         // Store Created Labels
+
+// Print Label Non Personal
+    Route::post('/non-perekat/non-personal/print-label',[PrintLabelController::class, 'store']);
+    Route::post('/non-perekat/non-personal/print-label/edit', [PrintLabelController::class, 'edit']);
+    Route::post('/non-perekat/non-personal/print-label/update',[PrintLabelController::class, 'update']);
