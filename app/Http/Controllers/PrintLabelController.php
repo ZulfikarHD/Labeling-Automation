@@ -31,13 +31,28 @@ class PrintLabelController extends Controller
      */
     public function store(Request $request)
     {
+        // Jangan rubah Urutannya
+        $cnt_prog = count(GeneratedLabels::where('np_users',$request->rfid)->pluck('finish'));
+        if($cnt_prog > 1){
+            GeneratedLabels::where('np_users',$request->rfid)
+                    ->where('finish',null)
+                    ->update([
+                        'np_users'  => $request->rfid,
+                        'finish'     => now()
+                    ]);
+
         GeneratedLabels::where('no_po_generated_products',$request->po)
-                ->where('potongan',$request->lbr_ptg)
-                ->where('no_rim',$request->no_rim)
-                ->update([
-                    'np_users'  => $request->rfid,
-                    'start'     => now()
-                ]);
+            ->where('potongan',$request->lbr_ptg)
+            ->where('no_rim',$request->no_rim)
+            ->update([
+                'np_users'  => $request->rfid,
+                'start'     => now(),
+                'finish'    => null,
+            ]);
+
+        }else{
+            // do nothing
+        }
 
         if(count(GeneratedLabels::where('no_po_generated_products',$request->po)->where('np_users',null)->get()) > 0 )
         {
