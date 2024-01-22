@@ -20,43 +20,78 @@ class GenerateLabelsController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Save / Buat Label berdasarkan PO dan Jumlah Rimnnya
      */
     public function store(Request $request)
     {
+
         $sumRim = $request->jml_rim > 0 ? ceil($request->jml_rim / 2) : 0;
-        GeneratedProducts::updateOrCreate(
-            [
-                'no_po' => $request->po,
-            ],
-            [
-                'no_obc'    => $request->obc,
-                'type'      => $request->produk,
-                'sum_rim'   => $sumRim,
-                'start_rim' => $request->start_rim,
-                'end_rim'   => $request->end_rim,
-                'status'    => 0,
-                'assigned_team' => $request->team,
-            ]
-        );
-
-        for($i = 0 ; $i < $sumRim ; $i++)
-        {
-            GeneratedLabels::updateOrCreate(
+        $cnt_gen_po = count(GeneratedLabels::where('no_po_generated_products',$request->po)->pluck('no_po_generated_products'));
+        if($cnt_gen_po === 0){
+            // Save PO ke table generated_products
+            GeneratedProducts::updateOrCreate(
                 [
-                    'no_po_generated_products' => $request->po,
-                    'no_rim'    => $request->start_rim + $i,
-                    'potongan'  => "Kiri"
-                ]
-                );
-
-            GeneratedLabels::updateOrCreate(
+                    'no_po' => $request->po,
+                ],
                 [
-                    'no_po_generated_products' => $request->po,
-                    'no_rim'    => $request->start_rim + $i,
-                    'potongan'  => "Kanan"
+                    'no_obc'    => $request->obc,
+                    'type'      => $request->produk,
+                    'sum_rim'   => $sumRim,
+                    'start_rim' => $request->start_rim,
+                    'end_rim'   => $request->end_rim,
+                    'status'    => 0,
+                    'assigned_team' => $request->team,
                 ]
+            );
+
+            // Save label ke table generated_labels
+            for($i = 0 ; $i < $sumRim ; $i++)
+            {
+                GeneratedLabels::updateOrCreate(
+                    [
+                        'no_po_generated_products' => $request->po,
+                        'no_rim'    => $request->start_rim + $i,
+                        'potongan'  => "Kiri"
+                    ]
+                    );
+
+                GeneratedLabels::updateOrCreate(
+                    [
+                        'no_po_generated_products' => $request->po,
+                        'no_rim'    => $request->start_rim + $i,
+                        'potongan'  => "Kanan"
+                    ]
+                    );
+            }
+        }
+        else{
+            $current_start_rim = GeneratedProducts::where('no_po',$request->po)->value('start_rim');
+            // dd($current_start_rim);
+            if($current_start_rim !== $request->start_rim){
+                // Save label ke table generated_labels
+                for($i = 0 ; $i < ($sumRim*2) ; $i++)
+                {
+                    $current_id = GeneratedLabels::where('no_po_generated_products',$request->po)->value('id');
+                        GeneratedLabels::where('id',$current_id+$i)
+                                ->update(['no_rim' => $i === 0 ? $request->start_rim : $request->start_rim+floor($i/2)]);
+
+                }
+                // Save PO ke table generated_products
+                GeneratedProducts::updateOrCreate(
+                    [
+                        'no_po' => $request->po,
+                    ],
+                    [
+                        'no_obc'    => $request->obc,
+                        'type'      => $request->produk,
+                        'sum_rim'   => $sumRim,
+                        'start_rim' => $request->start_rim,
+                        'end_rim'   => $request->end_rim,
+                        'status'    => 0,
+                        'assigned_team' => $request->team,
+                    ]
                 );
+            }
         }
 
         return redirect()->back();

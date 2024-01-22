@@ -165,7 +165,7 @@
                             ref="team"
                             v-model="form.team"
                             type="text"
-                            class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block px-4 py-2 mt-2 text-lg text-center w-fit drop-shadow"
+                            class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block px-10 py-2 mt-2 text-lg w-full drop-shadow"
                         >
                             <option
                                 v-for="team in props.listTeam"
