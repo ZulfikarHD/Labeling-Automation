@@ -106,4 +106,5 @@ class GenerateLabelsController extends Controller
                     ->select('no_po','no_obc','seri','type','rencet')
                     ->firstOrFail();
     }
+
 }

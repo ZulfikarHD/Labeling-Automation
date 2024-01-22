@@ -191,10 +191,10 @@ const deleteOrder = () => {
                                         <div class="flex justify-center gap-2">
                                             <!-- <Link :href="route('nonPer.registerProducts.create')"
                                                 class="font-bold text-blue-400 transition duration-150 ease-in-out hover:text-blue-700">
-                                            Info</Link>
-                                            <Link :href="route('nonPer.registerProducts.create')"
+                                            Info</Link> -->
+                                            <Link :href="route('nonPer.nonPersonal.generateLabels.index')"
                                                 class="font-bold text-green-400 transition duration-150 ease-in-out hover:text-green-700">
-                                            Edit</Link> -->
+                                            Edit</Link>
                                             <button type="button"
                                                 @click.prevent="deleteModal = !deleteModal; form.id = product.id; form.po = product.no_po"
                                                 class="font-bold text-red-400 transition duration-150 ease-in-out hover:text-red-700">Delete</button>
