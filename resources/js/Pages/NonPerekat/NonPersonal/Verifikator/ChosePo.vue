@@ -4,12 +4,14 @@ import InputLabel from '@/Components/InputLabel.vue';
 import TextInput from '@/Components/TextInput.vue';
 import { Link, useForm } from '@inertiajs/vue3';
 
-defineProps({
-    products: Object,
-});
+const props = defineProps({
+                    products: Object,
+                    teamList: Object,
+                    crntTeam: Object,
+                });
 
 const form = useForm({
-    team: '',
+    team: props.crntTeam,
 });
 
 
@@ -22,9 +24,10 @@ const form = useForm({
             <div class="mx-auto w-fit">
                 <InputLabel for="team" value="Team" class="text-4xl font-extrabold text-center" />
 
-                <TextInput id="team" ref="team" v-model="form.team" type="text"
-                    class="block px-8 py-2 mt-2 text-2xl text-center w-fit" autocomplete="team" value=""
-                    disabled />
+                <select id="team" ref="team" v-model="form.team" type="text"
+                    class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm text-3xl mt-2 w-full" autocomplete="team">
+                    <option class="px-10 py-4" v-for="teams in props.teamList" :value="teams.id">{{ teams.workstation }}</option>
+                </select>
             </div>
             <!-- Header -->
             <h3 class="my-10 text-3xl font-extrabold text-center uppercase text-slate-700">List Produk Siap Periksa</h3>
@@ -72,19 +75,24 @@ const form = useForm({
                                 <tr v-for="product in products"
                                     class="font-mono transition py-4 duration-300 ease-in-out border-b border-slate-300 text-slate-800 hover:bg-slate-400 hover:bg-opacity-10 dark:text-slate-100">
                                     <td
-                                        class="text-center leading-5 whitespace-nowrap text-sm px-4 py-1.5 text-slate-700 border-r">
+                                        class="text-center leading-5 whitespace-nowrap px-4 py-1.5 text-slate-700 border-r">
                                         {{ product.no_po }}
                                     </td>
                                     <td
-                                        class="text-center font-semibold leading-5 whitespace-nowrap text-sm px-4 py-1.5 text-slate-900 border-r">
-                                        {{ product.no_obc }}
+                                        class="text-center font-semibold leading-5 whitespace-nowrap px-4 py-1.5 text-slate-900 border-r">
+                                        <span v-if="product.no_obc.substr(4,1) == 3" class="text-red-800">
+                                            {{ product.no_obc }}
+                                        </span>
+                                        <span v-else class="text-blue-800">
+                                            {{ product.no_obc }}
+                                        </span>
                                     </td>
                                     <td
-                                        class="text-center leading-5 whitespace-nowrap text-sm px-4 py-1.5 text-slate-700 border-r">
+                                        class="text-center leading-5 whitespace-nowrap px-4 py-1.5 text-slate-700 border-r">
                                         {{ product.type }}
                                     </td>
                                     <td
-                                        class="text-center leading-5 whitespace-nowrap text-sm px-4 py-1.5 text-slate-700 border-r">
+                                        class="text-center leading-5 whitespace-nowrap px-4 py-1.5 text-slate-700 border-r">
                                         {{ product.start_rim }} - {{ product.end_rim }}
                                     </td>
                                     <td

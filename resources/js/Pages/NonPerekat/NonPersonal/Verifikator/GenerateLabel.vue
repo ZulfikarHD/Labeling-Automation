@@ -229,7 +229,7 @@
                                 type="number"
                                 class="block w-full px-4 py-2 mt-2 text-lg text-center shadow bg-slate-300 drop-shadow"
                                 autocomplete="seri"
-                                value="1"
+                                disabled
                             />
                         </div>
                     </div>
@@ -410,7 +410,7 @@ const form = useForm({
     po: props.product.no_po,
     obc: props.product.no_obc,
     team: 1,
-    seri: 0,
+    seri: props.product.no_obc.substr(4,1),
     jml_rim: 1,
     lbr_ptg: props.potongan,
     no_rim: props.noRim,
@@ -490,7 +490,7 @@ const printUlangLabel = () => {
                                 </head>
                                 <body>
                                     <div style='page-break-after:always; width:100%; height:100%;'>
-                                        <div style="margin-top:19.8vh; margin-left:17vh">
+                                        <div style="margin-top:19.5vh; margin-left:17vh">
                                             <span style="font-weight:600; text-align:center;">${tgl}</span>
                                             <h1 style="font-size: 24px; line-height: 32px; margin-left:25px; font-weight:600; text-align:center; display:inline-block; padding-top:6px">${obc}</h1>
                                         </div>
@@ -559,7 +559,7 @@ const submit = () => {
                                 </head>
                                 <body>
                                     <div style='page-break-after:always; width:100%; height:100%;'>
-                                        <div style="margin-top:19.8vh; margin-left:17vh">
+                                        <div style="margin-top:19.5vh; margin-left:17vh">
                                             <span style="font-weight:600; text-align:center;">${tgl}</span>
                                             <h1 style="font-size: 24px; line-height: 32px; margin-left:25px; font-weight:600; text-align:center; display:inline-block; padding-top:6px">${obc}</h1>
                                         </div>

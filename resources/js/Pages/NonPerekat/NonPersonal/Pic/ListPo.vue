@@ -189,9 +189,9 @@ const deleteOrder = () => {
                                     </td>
                                     <td class="text-center leading-5 whitespace-nowrap text-sm px-4 py-1.5 text-slate-700">
                                         <div class="flex justify-center gap-2">
-                                            <!-- <Link :href="route('nonPer.registerProducts.create')"
+                                            <Link :href="route('nonPer.nonPersonal.printLabel.index', product.id)"
                                                 class="font-bold text-blue-400 transition duration-150 ease-in-out hover:text-blue-700">
-                                            Info</Link> -->
+                                            Info</Link>
                                             <Link :href="route('nonPer.nonPersonal.generateLabels.index')"
                                                 class="font-bold text-green-400 transition duration-150 ease-in-out hover:text-green-700">
                                             Edit</Link>
