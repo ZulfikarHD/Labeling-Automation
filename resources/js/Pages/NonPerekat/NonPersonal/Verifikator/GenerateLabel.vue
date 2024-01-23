@@ -332,28 +332,11 @@
                     </button>
                 </div>
             </form>
-            <!-- Back Button -->
             <div class="flex gap-6 mx-auto mt-10">
-                <Link
-                    :href="route('nonPer.nonPersonal.verif.index')"
-                    class="text-xl font-extrabold text-blue-50 w-fit py-3 px-6 bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl text-start drop-shadow-md shadow-md flex items-center gap-1.5"
-                >
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke-width="2.5"
-                        stroke="currentColor"
-                        class="w-6 h-6"
-                    >
-                        <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            d="M19.5 12h-15m0 0l6.75 6.75M4.5 12l6.75-6.75"
-                        />
-                    </svg>
-                    Back
-                </Link>
+                <!-- Back Button -->
+                <NavigateBackButton/>
+
+                <!-- Home Button -->
                 <Link
                     :href="route('dashboard')"
                     class="text-xl font-extrabold text-blue-50 w-fit py-3 px-6 bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl text-start drop-shadow-md shadow-md flex items-center gap-1.5"
@@ -386,6 +369,7 @@ import InputError from "@/Components/InputError.vue";
 import TextInput from "@/Components/TextInput.vue";
 import { Link, useForm, router } from "@inertiajs/vue3";
 import axios from "axios";
+import NavigateBackButton from "@/Components/NavigateBackButton.vue";
 
 const props = defineProps({
     product: Object,
@@ -467,6 +451,7 @@ const printUlangLabel = () => {
         "Des",
     ];
 
+    let obc_color = form.seri == 3 ? "#b91c1c" : "#1d4ed8"
     let obc = formPrintUlang.obc;
     // let tgl = date.getDay() + "-" + months[date.getMonth()] + "-" + date.getFullYear();
     let tgl =
@@ -492,10 +477,10 @@ const printUlangLabel = () => {
                                     <div style='page-break-after:always; width:100%; height:100%;'>
                                         <div style="margin-top:19.5vh; margin-left:17vh">
                                             <span style="font-weight:600; text-align:center;">${tgl}</span>
-                                            <h1 style="font-size: 24px; line-height: 32px; margin-left:25px; font-weight:600; text-align:center; display:inline-block; padding-top:6px">${obc}</h1>
+                                            <h1 style="font-size: 24px; line-height: 32px; margin-left:25px; font-weight:600; text-align:center; display:inline-block; padding-top:6px; text-color:${obc_color}">${obc}</h1>
                                         </div>
-                                        <div style="margin-top:12px; margin-left:16vh">
-                                            <h1 style="font-size: 24px; line-height: 32px; margin-left:155px; margin-right:auto; ;font-weight:600;text-align:center;display:inline-block;">${np}</h1>
+                                        <div style="margin-top:11.5px; margin-left:16vh">
+                                            <h1 style="font-size: 24px; line-height: 32px; margin-left:155px; margin-right:auto; ;font-weight:600;text-align:center;display:inline-block;text-transform: uppercase;">${np}</h1>
                                         </div>
                                         <div style="margin-top:43px; margin-left:13vh">
                                             <h1 style="display: inline-block; margin-left: 160px; margin-right: auto; text-align: center; font-size: 20px; line-height: 28px; font-weight:500;">${noRim} ${sisiran} <span style="font-size:12px; margin-left:8px">${time}</span></h1>
@@ -536,6 +521,7 @@ const submit = () => {
         "Des",
     ];
 
+    let obc_color = form.seri == 3 ? "#b91c1c" : "#1d4ed8"
     let obc = form.obc;
     let tgl =
         date.getDate() +
@@ -561,10 +547,10 @@ const submit = () => {
                                     <div style='page-break-after:always; width:100%; height:100%;'>
                                         <div style="margin-top:19.5vh; margin-left:17vh">
                                             <span style="font-weight:600; text-align:center;">${tgl}</span>
-                                            <h1 style="font-size: 24px; line-height: 32px; margin-left:25px; font-weight:600; text-align:center; display:inline-block; padding-top:6px">${obc}</h1>
+                                            <h1 style="font-size: 24px; line-height: 32px; margin-left:25px; font-weight:600; text-align:center; display:inline-block; padding-top:6px; color:${obc_color}">${obc}</h1>
                                         </div>
-                                        <div style="margin-top:12px; margin-left:16vh">
-                                            <h1 style="font-size: 24px; line-height: 32px; margin-left:155px; margin-right:auto; ;font-weight:600;text-align:center;display:inline-block;">${np}</h1>
+                                        <div style="margin-top:11.5px; margin-left:16vh">
+                                            <h1 style="font-size: 24px; line-height: 32px; margin-left:155px; margin-right:auto; ;font-weight:600;text-align:center;display:inline-block;text-transform: uppercase;">${np}</h1>
                                         </div>
                                         <div style="margin-top:43px; margin-left:13vh">
                                             <h1 style="display: inline-block; margin-left: 160px; margin-right: auto; text-align: center; font-size: 20px; line-height: 28px; font-weight:500;">${noRim} ${sisiran} <span style="font-size:12px; margin-left:8px">${time}</span></h1>

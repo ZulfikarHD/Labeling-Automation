@@ -27,11 +27,15 @@ class GeneratedProductsController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(string $po)
     {
-        return Specification::where('no_po',$id)
-                    ->select('no_po','no_obc','seri','type','rencet')
-                    ->firstOrFail();
+        return Inertia::render('NonPerekat/NonPersonal/Pic/Monitor',[
+            'dataRim'   => GeneratedLabels::where('no_po_generated_products',$po)->get(),
+            'spec'  => GeneratedProducts::where('no_po',$po)->firstOrFail(),
+        ]);
+        // return Specification::where('no_po',$id)
+        //             ->select('no_po','no_obc','seri','type','rencet')
+        //             ->firstOrFail();
     }
 
     /**

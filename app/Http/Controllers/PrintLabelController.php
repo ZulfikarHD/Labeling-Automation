@@ -99,6 +99,11 @@ class PrintLabelController extends Controller
         return redirect()->back();
     }
 
+    public function delete(String $id)
+    {
+
+    }
+
     /**
      * Get Nomor Rim dan Potongan
      */

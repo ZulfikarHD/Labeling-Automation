@@ -3,6 +3,7 @@ import { inject } from 'vue';
 import ContentLayout from '@/Layouts/ContentLayout.vue';
 import { Link, router, useForm } from '@inertiajs/vue3';
 import Modal from '@/Components/Modal.vue';
+import NavigateBackButton from '@/Components/NavigateBackButton.vue';
 
 const swal = inject('$swal');
 
@@ -187,17 +188,34 @@ const deleteOrder = () => {
                                         class="text-center leading-5 whitespace-nowrap text-sm px-4 py-1.5 text-slate-700 border-r">
                                         {{ product.status }}
                                     </td>
-                                    <td class="text-center leading-5 whitespace-nowrap text-sm px-4 py-1.5 text-slate-700">
+                                    <td class="text-center leading-5 whitespace-nowrap text-sm px-4 py-1.5 text-slate-700 brightness-110">
                                         <div class="flex justify-center gap-2">
+                                            <Link :href="route('nonPer.nonPersonal.listPo.show', product.no_po)"
+                                                class="font-bold text-blue-600 transition duration-150 ease-in-out hover:text-blue-700">
+                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5">
+                                                    <path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11ZM2 9a7 7 0 1 1 12.452 4.391l3.328 3.329a.75.75 0 1 1-1.06 1.06l-3.329-3.328A7 7 0 0 1 2 9Z" clip-rule="evenodd" />
+                                                </svg>
+                                        </Link>
                                             <Link :href="route('nonPer.nonPersonal.printLabel.index', product.id)"
-                                                class="font-bold text-blue-400 transition duration-150 ease-in-out hover:text-blue-700">
-                                            Info</Link>
+                                                class="font-bold text-indigo-700 transition duration-150 ease-in-out hover:text-blue-500">
+                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5">
+                                                    <path fill-rule="evenodd" d="M5 2.75C5 1.784 5.784 1 6.75 1h6.5c.966 0 1.75.784 1.75 1.75v3.552c.377.046.752.097 1.126.153A2.212 2.212 0 0 1 18 8.653v4.097A2.25 2.25 0 0 1 15.75 15h-.241l.305 1.984A1.75 1.75 0 0 1 14.084 19H5.915a1.75 1.75 0 0 1-1.73-2.016L4.492 15H4.25A2.25 2.25 0 0 1 2 12.75V8.653c0-1.082.775-2.034 1.874-2.198.374-.056.75-.107 1.127-.153L5 6.25v-3.5Zm8.5 3.397a41.533 41.533 0 0 0-7 0V2.75a.25.25 0 0 1 .25-.25h6.5a.25.25 0 0 1 .25.25v3.397ZM6.608 12.5a.25.25 0 0 0-.247.212l-.693 4.5a.25.25 0 0 0 .247.288h8.17a.25.25 0 0 0 .246-.288l-.692-4.5a.25.25 0 0 0-.247-.212H6.608Z" clip-rule="evenodd" />
+                                                </svg>
+                                            </Link>
                                             <Link :href="route('nonPer.nonPersonal.generateLabels.index')"
-                                                class="font-bold text-green-400 transition duration-150 ease-in-out hover:text-green-700">
-                                            Edit</Link>
+                                                class="font-bold text-green-600 transition duration-150 ease-in-out hover:text-green-700">
+                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5">
+                                                    <path d="m5.433 13.917 1.262-3.155A4 4 0 0 1 7.58 9.42l6.92-6.918a2.121 2.121 0 0 1 3 3l-6.92 6.918c-.383.383-.84.685-1.343.886l-3.154 1.262a.5.5 0 0 1-.65-.65Z" />
+                                                    <path d="M3.5 5.75c0-.69.56-1.25 1.25-1.25H10A.75.75 0 0 0 10 3H4.75A2.75 2.75 0 0 0 2 5.75v9.5A2.75 2.75 0 0 0 4.75 18h9.5A2.75 2.75 0 0 0 17 15.25V10a.75.75 0 0 0-1.5 0v5.25c0 .69-.56 1.25-1.25 1.25h-9.5c-.69 0-1.25-.56-1.25-1.25v-9.5Z" />
+                                                </svg>
+                                            </Link>
                                             <button type="button"
                                                 @click.prevent="deleteModal = !deleteModal; form.id = product.id; form.po = product.no_po"
-                                                class="font-bold text-red-400 transition duration-150 ease-in-out hover:text-red-700">Delete</button>
+                                                class="font-bold text-red-600 transition duration-150 ease-in-out hover:text-red-700">
+                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5">
+                                                    <path fill-rule="evenodd" d="M8.75 1A2.75 2.75 0 0 0 6 3.75v.443c-.795.077-1.584.176-2.365.298a.75.75 0 1 0 .23 1.482l.149-.022.841 10.518A2.75 2.75 0 0 0 7.596 19h4.807a2.75 2.75 0 0 0 2.742-2.53l.841-10.52.149.023a.75.75 0 0 0 .23-1.482A41.03 41.03 0 0 0 14 4.193V3.75A2.75 2.75 0 0 0 11.25 1h-2.5ZM10 4c.84 0 1.673.025 2.5.075V3.75c0-.69-.56-1.25-1.25-1.25h-2.5c-.69 0-1.25.56-1.25 1.25v.325C8.327 4.025 9.16 4 10 4ZM8.58 7.72a.75.75 0 0 0-1.5.06l.3 7.5a.75.75 0 1 0 1.5-.06l-.3-7.5Zm4.34.06a.75.75 0 1 0-1.5-.06l-.3 7.5a.75.75 0 1 0 1.5.06l.3-7.5Z" clip-rule="evenodd" />
+                                                </svg>
+                                            </button>
                                         </div>
                                     </td>
                                 </tr>
@@ -208,16 +226,11 @@ const deleteOrder = () => {
             </div>
         </div>
         <div class="flex justify-center w-full">
-            <!-- Back Button -->
             <div class="flex gap-6">
-                <Link :href="route('nonPer.nonPersonal.pic.index')"
-                    class="text-xl font-extrabold text-blue-50 w-fit py-3 px-6 bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl text-start  drop-shadow-md shadow-md flex items-center gap-1.5">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5"
-                    stroke="currentColor" class="w-6 h-6">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 12h-15m0 0l6.75 6.75M4.5 12l6.75-6.75" />
-                </svg>
-                Back
-                </Link>
+                <!-- Back Button -->
+                <NavigateBackButton></NavigateBackButton>
+
+                <!-- Home Button -->
                 <Link :href="route('dashboard')"
                     class="text-xl font-extrabold text-blue-50 w-fit py-3    px-6 bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl text-start drop-shadow-md shadow-md flex items-center gap-1.5">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6">
