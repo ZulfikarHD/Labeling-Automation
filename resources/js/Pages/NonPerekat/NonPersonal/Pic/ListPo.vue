@@ -24,7 +24,7 @@ const form = useForm({
 })
 
 const deleteOrder = () => {
-    router.delete(route('nonPer.listProducts.destroy',form.po), {
+    router.delete(route('nonPer.nonPersonal.listPo.destroy',form.po), {
         onSuccess: () => {
             // @ts-ignore
             swal.fire({
