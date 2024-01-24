@@ -38,3 +38,5 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     Route::post('/non-perekat/non-personal/print-label/update',[PrintLabelController::class, 'update']);
 
     Route::get('/non-perekat/non-personal/verif/{team}',[GeneratedLabelsController::class, 'fetchWorkPo']);
+    Route::get('/non-perekat/non-personal/pic/listPo/{team}',[GeneratedProductsController::class, 'data_products']);
+    Route::get('/non-perekat/non-personal/pic/listPo/{team}/{keyword}',[GeneratedProductsController::class, 'data_products']);

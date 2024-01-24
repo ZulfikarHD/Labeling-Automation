@@ -18,24 +18,35 @@ class GeneratedProductsController extends Controller
      */
     public function index()
     {
-        $product = GeneratedProducts::with('workstation')
+        return Inertia::render('NonPerekat/NonPersonal/Pic/ListPo',[
+            'products' => $this->data_products(0,''),
+            'listTeam' => Workstations::select('id','workstation')->get(),
+        ]);
+    }
+
+    public function data_products(String $team,String $search = '')
+    {
+        $team_filter = $team == 0 ? "!=" : "=";
+        $data_product = GeneratedProducts::query()
+                                ->with('workstation')
+                                ->where('no_po','LIKE',"%{$search}%")
+                                ->orWhere('no_obc','LIKE',"%{$search}%")
+                                ->orderBy('created_at','desc')
                                 ->get()
+                                ->where('assigned_team',$team_filter,$team)
                                 ->transform(function ($q){
                                     return [
                                         'id'    => $q->id,
                                         'no_po' => $q->no_po,
                                         'no_obc'=> $q->no_obc,
                                         'workstation' => $q->workstation->workstation,
-                                        'created_at'  => $q->created_at->format('d-m-Y h:m:i'),
-                                        'updated_at'  => $q->updated_at->format('d-m-Y h:m:i'),
+                                        'created_at'  => $q->created_at->format('d-m-y h:m:i'),
+                                        'updated_at'  => $q->updated_at->format('d-m-y h:m:i'),
                                         'status'    => $q->status,
                                         'assigned_team' => $q->assigned_team,
                                     ];
                                 });
-        // dd($product);
-        return Inertia::render('NonPerekat/NonPersonal/Pic/ListPo',[
-            'products' => $product,
-        ]);
+        return $data_product == null ? '' : $data_product;
     }
 
 

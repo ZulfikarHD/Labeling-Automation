@@ -20,7 +20,7 @@ class GeneratedLabelsController extends Controller
     public function index()
     {
         return Inertia::render('NonPerekat/NonPersonal/Verifikator/ChosePo',[
-            'products' => GeneratedProducts::where('status','<',2)->get(),
+            'products' => GeneratedProducts::where('assigned_team',1)->where('status','<',2)->get(),
             'teamList' => Workstations::all(),
             'crntTeam' => Workstations::first()->value('id'),
         ]);

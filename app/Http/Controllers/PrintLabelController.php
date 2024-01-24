@@ -111,38 +111,70 @@ class PrintLabelController extends Controller
      */
     private function fetcNoRim(String $po)
     {
-        $lastKiri   = GeneratedLabels::where('no_po_generated_products',$po)
+        $nullKiri   = GeneratedLabels::where('no_po_generated_products',$po)
                                 ->where('potongan','Kiri')
                                 ->where('np_users',null)
                                 ->get();
 
-        $lastKanan  = GeneratedLabels::where('no_po_generated_products',$po)
+        $nullKanan  = GeneratedLabels::where('no_po_generated_products',$po)
                                 ->where('potongan','Kanan')
                                 ->where('np_users',null)
                                 ->get();
 
-        $noRim = 0;
-        $potongan = "Finished";
-        if(count($lastKiri) < 1 && count($lastKanan) < 1){
+        $lastKiri   = GeneratedLabels::where('no_po_generated_products',$po)
+                            ->where('potongan','Kiri')
+                            ->where('np_users',null)
+                            ->first();
+
+        $lastKanan   = GeneratedLabels::where('no_po_generated_products',$po)
+                            ->where('potongan','Kanan')
+                            ->where('np_users',null)
+                            ->first();
+        // dd(count($nullKiri));
+        if(count($nullKiri) < 1 && count($nullKanan) < 1){
             $noRim = 0;
             $potongan = 'Finished';
         }
-        elseif(count($lastKanan) > count($lastKiri)){
-            $noRim  = $lastKanan->value('no_rim');
-            $potongan = 'Kanan';
-        }
-        else{
-            if($lastKiri->value('no_rim') === $lastKanan->value('no_rim')){
-                $noRim  = $lastKiri->value('no_rim');
+        elseif(count($nullKiri) == count($nullKanan)){
+            if($lastKiri->no_rim == $lastKanan->no_rim){
+                $noRim  = $lastKiri->no_rim;
                 $potongan = 'Kiri';
             }
-            elseif($lastKanan->value('no_rim') > $lastKiri->value('no_rim') && count($lastKiri) > count($lastKanan)){
-                $noRim  = $lastKiri->value('no_rim');
-                $potongan = 'Kiri';
-            }
-            elseif($lastKiri->value('no_rim') > $lastKanan->value('no_rim') && count($lastKanan) > count($lastKiri)){
-                $noRim  = $lastKanan->value('no_rim');
+            elseif($lastKiri->no_rim > $lastKanan->no_rim){
+                $noRim  = $lastKanan->no_rim;
                 $potongan = 'Kanan';
+            }
+            elseif($lastKanan->no_rim > $lastKiri->no_rim){
+                $noRim  = $lastKiri->no_rim;
+                $potongan = 'Kiri';
+            }
+        }
+        elseif(count($nullKanan) > count($nullKiri)){
+            if($lastKiri->no_rim == $lastKanan->no_rim){
+                $noRim  = $lastKiri->no_rim;
+                $potongan = 'Kiri';
+            }
+            elseif($lastKiri->no_rim > $lastKanan->no_rim){
+                $noRim  = $lastKanan->no_rim;
+                $potongan = 'Kanan';
+            }
+            elseif($lastKanan->no_rim > $lastKiri->no_rim){
+                $noRim  = $lastKiri->no_rim;
+                $potongan = 'Kiri';
+            }
+        }
+        elseif(count($nullKiri) > count($nullKanan)){
+            if($lastKiri->no_rim == $lastKanan->no_rim){
+                $noRim  = $lastKiri->no_rim;
+                $potongan = 'Kiri';
+            }
+            elseif($lastKiri->no_rim > $lastKanan->no_rim){
+                $noRim  = $lastKanan->no_rim;
+                $potongan = 'Kanan';
+            }
+            elseif($lastKanan->no_rim > $lastKiri->no_rim){
+                $noRim  = $lastKiri->no_rim;
+                $potongan = 'Kiri';
             }
         }
 

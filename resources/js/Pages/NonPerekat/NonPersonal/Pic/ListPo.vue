@@ -1,14 +1,18 @@
 <script setup>
 import { inject } from 'vue';
 import ContentLayout from '@/Layouts/ContentLayout.vue';
+import InputLabel from "@/Components/InputLabel.vue";
+import TextInput from '@/Components/TextInput.vue';
 import { Link, router, useForm } from '@inertiajs/vue3';
 import Modal from '@/Components/Modal.vue';
 import NavigateBackButton from '@/Components/NavigateBackButton.vue';
+import { ref } from 'vue';
 
 const swal = inject('$swal');
 
 const props = defineProps({
     products: Object,
+    listTeam: Object,
     deleteModal: {
         type: Boolean,
         default: false,
@@ -19,10 +23,40 @@ const props = defineProps({
     },
 });
 
+const listProduct = ref(props.products)
+
 const form = useForm({
     id: '',
     po: '',
+    team: 0,
+    search: '',
 })
+
+// Function Filter By Team
+const filterTeam = () =>  {
+    axios.get('/api/non-perekat/non-personal/pic/listPo/'+form.team).then((res) => {
+                listProduct.value = res.data;
+            });
+}
+
+// Function Search Box
+const search = () => {
+    if(form.search){
+        // Jika Mengandung whitespace only
+        if(/^\s*$/.test(form.search)){
+                listProduct.value = props.products;
+        }
+        // Jika mengandung selain whitespace
+        else{
+            axios.get('/api/non-perekat/non-personal/pic/listPo/'+form.team+'/'+form.search).then((res) => {
+                listProduct.value = res.data;
+            });
+        }
+    }
+    else{
+        listProduct.value = props.products;
+    }
+}
 
 const deleteOrder = () => {
     router.delete(route('nonPer.nonPersonal.listPo.destroy',form.po), {
@@ -111,9 +145,35 @@ const deleteOrder = () => {
 
     <ContentLayout>
         <div class="py-12">
+
             <!-- Header -->
             <h3 class="my-10 text-3xl font-extrabold text-center uppercase text-slate-700">List Generated Labels</h3>
 
+
+            <div class="flex justify-between gap-3 mb-4 mx-auto w-full max-w-5xl">
+                <!-- Filter By Team -->
+                <div class="w-fit">
+                    <select id="team" ref="team" v-model="form.team" @change="filterTeam"
+                        class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm text-sm mt-2 w-full" autocomplete="team">
+                        <option class="px-10 py-4" selected value='0'>All Team</option>
+                        <option class="px-10 py-4" v-for="teams in props.listTeam" :value="teams.id">
+                            {{ teams.workstation }}
+                        </option>
+                    </select>
+                </div>
+
+                <!-- search box -->
+                <div class="flex flex-row align-middle">
+                    <TextInput
+                        id="search"
+                        @keyup="search"
+                        v-model="form.search"
+                        type="search"
+                        placeholder="Search"
+                        class="block drop-shadow-md shadow-md w-full px-4 py-2 mt-2 text-sm font-bold"
+                    />
+                </div>
+            </div>
             <!-- Table -->
             <div
                 class="h-full px-4 py-4 mx-auto bg-white w-fit md:py-6 drop-shadow-sm rounded-xl dark:bg-slate-800 dark:bg-opacity-60 dark:backdrop-blur-sm dark:backdrop-filter">
@@ -158,7 +218,7 @@ const deleteOrder = () => {
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr v-for="product in products"
+                                <tr v-for="product in listProduct"
                                     class="font-mono transition duration-300 ease-in-out border-b border-slate-300 text-slate-800 hover:bg-slate-400 hover:bg-opacity-10 dark:text-slate-100">
                                     <td
                                         class="text-center leading-5 whitespace-nowrap text-sm px-4 py-1.5 font-medium text-slate-950 border-r">
@@ -178,11 +238,11 @@ const deleteOrder = () => {
                                         </span>
                                     </td>
                                     <td
-                                        class="text-center leading-5 whitespace-nowrap text-sm px-4 py-1.5 text-slate-700 border-r">
+                                        class="text-center leading-5 text-sm px-4 py-1.5 text-slate-700 border-r">
                                         {{ product.workstation }}
                                     </td>
                                     <td
-                                        class="text-center leading-5 whitespace-nowrap text-sm px-4 py-1.5 text-slate-700 border-r">
+                                        class="text-center leading-5 text-sm px-4 py-1.5 text-slate-700 border-r">
                                         {{ product.created_at }}
                                     </td>
                                     <td
@@ -198,7 +258,7 @@ const deleteOrder = () => {
                                         </div>
                                     </td>
                                     <td
-                                        class="text-center leading-5 whitespace-nowrap text-sm px-4 py-1.5 text-slate-700 border-r">
+                                        class="text-center leading-5 text-sm px-4 py-1.5 text-slate-700 border-r">
                                         <span v-if="product.status == 2">
                                             {{ product.updated_at }}
                                         </span>

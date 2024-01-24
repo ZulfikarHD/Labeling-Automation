@@ -29,7 +29,7 @@ const changeTeam = () => {
 <template>
     <ContentLayout>
         <div class="py-12">
-            <!-- Nomor PO -->
+            <!-- Change Team -->
             <div class="mx-auto w-fit">
                 <InputLabel for="team" value="Team" class="text-4xl font-extrabold text-center" />
 
