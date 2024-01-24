@@ -18,8 +18,23 @@ class GeneratedProductsController extends Controller
      */
     public function index()
     {
+        $product = GeneratedProducts::with('workstation')
+                                ->get()
+                                ->transform(function ($q){
+                                    return [
+                                        'id'    => $q->id,
+                                        'no_po' => $q->no_po,
+                                        'no_obc'=> $q->no_obc,
+                                        'workstation' => $q->workstation->workstation,
+                                        'created_at'  => $q->created_at->format('d-m-Y h:m:i'),
+                                        'updated_at'  => $q->updated_at->format('d-m-Y h:m:i'),
+                                        'status'    => $q->status,
+                                        'assigned_team' => $q->assigned_team,
+                                    ];
+                                });
+        // dd($product);
         return Inertia::render('NonPerekat/NonPersonal/Pic/ListPo',[
-            'products' => GeneratedProducts::all(),
+            'products' => $product,
         ]);
     }
 

@@ -137,7 +137,7 @@ const deleteOrder = () => {
                                     </th>
                                     <th scope="col"
                                         class="pt-6 pb-1.5 px-6 leading-tight text-center border-slate-300 dark:border-slate-500">
-                                        Group
+                                        Team
                                     </th>
                                     <th scope="col"
                                         class="pt-6 pb-1.5  px-6 leading-tight border-slate-300 dark:border-slate-500 text-center">
@@ -145,7 +145,7 @@ const deleteOrder = () => {
                                     </th>
                                     <th scope="col"
                                         class="pt-6 pb-1.5  px-6 leading-tight border-slate-300 dark:border-slate-500 text-center">
-                                        Start
+                                        Status
                                     </th>
                                     <th scope="col"
                                         class="pt-6 pb-1.5  px-6 leading-tight border-slate-300 dark:border-slate-500 text-center">
@@ -170,11 +170,16 @@ const deleteOrder = () => {
                                     </td>
                                     <td
                                         class="text-center leading-5 whitespace-nowrap text-sm px-4 py-1.5 text-slate-700 border-r">
-                                        {{ product.no_obc }}
+                                        <span v-if="product.no_obc.substr(4,1) == 3" class="text-red-800">
+                                            {{ product.no_obc }}
+                                        </span>
+                                        <span v-else class="text-blue-800">
+                                            {{ product.no_obc }}
+                                        </span>
                                     </td>
                                     <td
                                         class="text-center leading-5 whitespace-nowrap text-sm px-4 py-1.5 text-slate-700 border-r">
-                                        {{ product.assigned_team }}
+                                        {{ product.workstation }}
                                     </td>
                                     <td
                                         class="text-center leading-5 whitespace-nowrap text-sm px-4 py-1.5 text-slate-700 border-r">
@@ -182,11 +187,24 @@ const deleteOrder = () => {
                                     </td>
                                     <td
                                         class="text-center leading-5 whitespace-nowrap text-sm px-4 py-1.5 text-slate-700 border-r">
-                                        {{ product.status }}
+                                        <div v-if="product.status == 1">
+                                            <span class="px-2 text-xs font-semibold text-yellow-900 bg-yellow-300 rounded-lg shadow drop-shadow-md">Sedang Di Periksa</span>
+                                        </div>
+                                        <div v-else-if="product.status == 0">
+                                            <span class="px-2 text-xs rounded-lg shadow bg-slate-600 drop-shadow-md text-slate-50">Siap Di Periksa</span>
+                                        </div>
+                                        <div v-else-if="product.status == 2">
+                                            <span class="px-2 text-xs rounded-lg shadow bg-green-600 drop-shadow-md text-green-50">Selesai Periksa</span>
+                                        </div>
                                     </td>
                                     <td
                                         class="text-center leading-5 whitespace-nowrap text-sm px-4 py-1.5 text-slate-700 border-r">
-                                        {{ product.status }}
+                                        <span v-if="product.status == 2">
+                                            {{ product.updated_at }}
+                                        </span>
+                                        <span v-else>
+                                            -
+                                        </span>
                                     </td>
                                     <td class="text-center leading-5 whitespace-nowrap text-sm px-4 py-1.5 text-slate-700 brightness-110">
                                         <div class="flex justify-center gap-2">
