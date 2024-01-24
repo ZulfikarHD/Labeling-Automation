@@ -14,13 +14,14 @@ class PrintLabelController extends Controller
     /**
      * Index
      */
-    public function index(String $id)
+    public function index(String $workstation, String $id)
     {
         $product = GeneratedProducts::where('id',$id)->first();
 
         return Inertia::render('NonPerekat/NonPersonal/Verifikator/GenerateLabel',[
             'product'   => GeneratedProducts::where('id',$id)->first(),
             'listTeam'  => Workstations::select('id','workstation')->get(),
+            'crntTeam'  => Workstations::where('id',$workstation)->value('id'),
             'noRim'     => $this->fetcNoRim($product->no_po)['noRim'],
             'potongan'  => $this->fetcNoRim($product->no_po)['potongan'],
         ]);
@@ -104,6 +105,7 @@ class PrintLabelController extends Controller
 
     }
 
+
     /**
      * Get Nomor Rim dan Potongan
      */
@@ -119,6 +121,7 @@ class PrintLabelController extends Controller
                                 ->where('np_users',null)
                                 ->first();
 
+        $noRim = 0;
         if(is_null($lastKiri) && is_null($lastKanan)){
             $noRim = 0;
             $potongan = 'Finished';
@@ -139,7 +142,7 @@ class PrintLabelController extends Controller
         }
 
         return [
-            'noRim' => $noRim,
+            'noRim' => $noRim ,
             'potongan' => $potongan
         ];
     }

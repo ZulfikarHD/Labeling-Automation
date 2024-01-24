@@ -165,6 +165,7 @@
                             ref="team"
                             v-model="form.team"
                             type="text"
+                            disabled
                             class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block px-10 py-2 mt-2 text-lg w-full drop-shadow"
                         >
                             <option
@@ -374,6 +375,7 @@ import NavigateBackButton from "@/Components/NavigateBackButton.vue";
 const props = defineProps({
     product: Object,
     listTeam: Object,
+    crntTeam: Number,
     noRim: Number,
     potongan: String,
     showModal: {
@@ -393,7 +395,7 @@ const form = useForm({
     id: props.product.id,
     po: props.product.no_po,
     obc: props.product.no_obc,
-    team: 1,
+    team: props.crntTeam,
     seri: props.product.no_obc.substr(4,1),
     jml_rim: 1,
     lbr_ptg: props.potongan,
@@ -477,7 +479,7 @@ const printUlangLabel = () => {
                                     <div style='page-break-after:always; width:100%; height:100%;'>
                                         <div style="margin-top:19.5vh; margin-left:17vh">
                                             <span style="font-weight:600; text-align:center;">${tgl}</span>
-                                            <h1 style="font-size: 24px; line-height: 32px; margin-left:25px; font-weight:600; text-align:center; display:inline-block; padding-top:6px; text-color:${obc_color}">${obc}</h1>
+                                            <h1 style="font-size: 24px; line-height: 32px; margin-left:25px; font-weight:600; text-align:center; display:inline-block; padding-top:6px; color:${obc_color}">${obc}</h1>
                                         </div>
                                         <div style="margin-top:11.5px; margin-left:16vh">
                                             <h1 style="font-size: 24px; line-height: 32px; margin-left:155px; margin-right:auto; ;font-weight:600;text-align:center;display:inline-block;text-transform: uppercase;">${np}</h1>
@@ -497,7 +499,7 @@ const printUlangLabel = () => {
     WinPrint.close();
     router.post("/api/non-perekat/non-personal/print-label/update", formPrintUlang, {
         onFinish: () => {
-            router.get("/non-perekat/non-personal/print-label/" + form.id);
+            router.get("/non-perekat/non-personal/print-label/"+ form.team +"/" + form.id);
         },
     });
 };
@@ -567,7 +569,7 @@ const submit = () => {
     WinPrint.close();
     router.post("/api/non-perekat/non-personal/print-label", form, {
         onFinish: () => {
-            router.get("/non-perekat/non-personal/print-label/" + form.id);
+            router.get("/non-perekat/non-personal/print-label/"+ form.team +"/" + form.id);
         },
     });
     form.rfid = null;

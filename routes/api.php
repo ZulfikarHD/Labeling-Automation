@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\GeneratedProductsController;
 use App\Http\Controllers\GenerateLabelsPersonalController;
 use App\Http\Controllers\GenerateLabelsController;
+use App\Http\Controllers\GeneratedLabelsController;
 use App\Http\Controllers\PrintLabelController;
 
 /*
@@ -35,3 +36,5 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     Route::post('/non-perekat/non-personal/print-label',[PrintLabelController::class, 'store']);
     Route::post('/non-perekat/non-personal/print-label/edit', [PrintLabelController::class, 'edit']);
     Route::post('/non-perekat/non-personal/print-label/update',[PrintLabelController::class, 'update']);
+
+    Route::get('/non-perekat/non-personal/verif/{team}',[GeneratedLabelsController::class, 'fetchWorkPo']);

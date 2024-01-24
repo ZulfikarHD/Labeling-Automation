@@ -78,4 +78,10 @@ class GeneratedLabelsController extends Controller
 
         return $getData;
     }
+
+    public function fetchWorkPo (String $team)
+    {
+        return GeneratedProducts::where('assigned_team',$team)
+                            ->where('status','<',2)->get();
+    }
 }

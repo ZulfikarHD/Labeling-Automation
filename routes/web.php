@@ -72,7 +72,7 @@ use App\Http\Controllers\PrintLabelController;
     // Section Verifikator Non Perekat //
    //---------------------------------//
         // List Generated Labels (Barang Yang Siap Periksa)
-            Route::get('/non-perekat/non-personal/print-label/{id}', [PrintLabelController::class, 'index'])
+            Route::get('/non-perekat/non-personal/print-label/{workstation}/{id}', [PrintLabelController::class, 'index'])
                 ->name('nonPer.nonPersonal.printLabel.index');
 
  // Group Perekat //

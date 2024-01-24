@@ -4,6 +4,7 @@ import InputLabel from '@/Components/InputLabel.vue';
 import TextInput from '@/Components/TextInput.vue';
 import { Link, useForm } from '@inertiajs/vue3';
 import NavigateBackButton from '@/Components/NavigateBackButton.vue';
+import { ref } from 'vue';
 
 const props = defineProps({
                     products: Object,
@@ -11,10 +12,17 @@ const props = defineProps({
                     crntTeam: Object,
                 });
 
+const listProduct = ref(props.products);
+
 const form = useForm({
     team: props.crntTeam,
 });
 
+const changeTeam = () => {
+    axios.get('/api/non-perekat/non-personal/verif/'+form.team).then((res) => {
+        listProduct.value = res.data;
+    });
+}
 
 </script>
 
@@ -25,7 +33,7 @@ const form = useForm({
             <div class="mx-auto w-fit">
                 <InputLabel for="team" value="Team" class="text-4xl font-extrabold text-center" />
 
-                <select id="team" ref="team" v-model="form.team" type="text"
+                <select id="team" ref="team" v-model="form.team" type="text" @change="changeTeam"
                     class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm text-3xl mt-2 w-full" autocomplete="team">
                     <option class="px-10 py-4" v-for="teams in props.teamList" :value="teams.id">{{ teams.workstation }}</option>
                 </select>
@@ -73,7 +81,7 @@ const form = useForm({
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr v-for="product in products"
+                                <tr v-for="product in listProduct"
                                     class="font-mono transition py-4 duration-300 ease-in-out border-b border-slate-300 text-slate-800 hover:bg-slate-400 hover:bg-opacity-10 dark:text-slate-100">
                                     <td
                                         class="text-center leading-5 whitespace-nowrap px-4 py-1.5 text-slate-700 border-r">
@@ -110,7 +118,7 @@ const form = useForm({
                                         {{ product.created_at }}
                                     </td>
                                     <td class="text-center leading-5 whitespace-nowrap text-sm px-4 py-1.5 text-slate-700">
-                                        <Link :href="route('nonPer.nonPersonal.printLabel.index', product.id)" class="flex justify-center px-6 py-2 mx-auto font-semibold drop-shadow-md shadow tracking-wide w-fit bg-blue-600 rounded-xl text-start text-cyan-50">Go</Link>
+                                        <Link :href="route('nonPer.nonPersonal.printLabel.index', {workstation : form.team, id : product.id})" class="flex justify-center px-6 py-2 mx-auto font-semibold drop-shadow-md shadow tracking-wide w-fit bg-blue-600 rounded-xl text-start text-cyan-50">Go</Link>
                                         <!-- <input type="checkbox" value="{{ product.id }}"> -->
                                     </td>
                                 </tr>
