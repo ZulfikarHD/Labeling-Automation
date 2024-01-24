@@ -73,20 +73,49 @@
 
                 <!-- List Nomor -->
                 <div class="flex flex-wrap justify-center gap-4 mt-4">
+                    <template v-for="n in dataPrintUlang" v-bind:key="refresh">
                     <button
-                        v-for="n in dataPrintUlang"
+                        v-if="n.np_users !== null && n.start !== null && n.finish === null"
                         type="button"
-                        v-bind:key="refresh"
                         @click="pilihRim(n.no_rim, n.np_users)"
-                        class="min-w-[8ch] px-4 py-2 text-xs bg-slate-500 text-slate-50 hover:brightness-95 duration-300 transition ease-in-out rounded drop-shadow shadow"
+                        class="min-w-[8ch] px-4 py-2 text-xs bg-yellow-300 text-yellow-900 hover:brightness-95 duration-300 transition ease-in-out rounded drop-shadow shadow"
                     >
                         <div class="flex flex-col">
-                            <span class="font-semibold">{{ n.np_users }}</span>
+                            <span class="font-semibold text-yellow-950">{{ n.np_users }}</span>
+                            <span class="font-bold text-green-700">{{
+                                n.no_rim
+                            }}</span>
+                        </div>
+                    </button>
+                    <button
+                        v-else-if="n.np_users !== null && n.start !== null && n.finish !== null"
+                        type="button"
+                        @click="pilihRim(n.no_rim, n.np_users)"
+                        class="min-w-[8ch] px-4 py-2 text-xs bg-green-400 text-green-900 hover:brightness-95 duration-300 transition ease-in-out rounded drop-shadow shadow"
+                    >
+                        <div class="flex flex-col">
+                            <span class="font-semibold text-green-950">{{ n.np_users }}</span>
+                            <span class="font-bold text-indigo-700">{{
+                                n.no_rim
+                            }}</span>
+                        </div>
+                    </button>
+
+                    <!-- Disable Jika NP Null -->
+                    <button
+                        v-else
+                        type="button"
+                        class="min-w-[8ch] px-4 py-2 text-xs bg-slate-500 text-slate-50 rounded drop-shadow shadow"
+                        disabled
+                    >
+                        <div class="flex flex-col">
+                            <span class="font-semibold">-</span>
                             <span class="font-bold text-yellow-300">{{
                                 n.no_rim
                             }}</span>
                         </div>
                     </button>
+                    </template>
                 </div>
 
                 <!-- Form -->
