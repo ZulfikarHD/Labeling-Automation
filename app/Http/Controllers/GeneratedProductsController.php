@@ -19,22 +19,26 @@ class GeneratedProductsController extends Controller
     public function index()
     {
         return Inertia::render('NonPerekat/NonPersonal/Pic/ListPo',[
-            'products' => $this->data_products(0,''),
+            'products' => $this->data_products(request()->merge(['team' => 0,'search'=>''])),
             'listTeam' => Workstations::select('id','workstation')->get(),
         ]);
     }
 
-    public function data_products(String $team,String $search = '')
+    public function data_products(Request $request)
     {
+        $search = $request->search;
+        $team   = $request->team;
         $team_filter = $team == 0 ? "!=" : "=";
         $data_product = GeneratedProducts::query()
                                 ->with('workstation')
-                                ->where('no_po','LIKE',"%{$search}%")
-                                ->orWhere('no_obc','LIKE',"%{$search}%")
-                                ->orderBy('created_at','desc')
-                                ->get()
                                 ->where('assigned_team',$team_filter,$team)
-                                ->transform(function ($q){
+                                ->where(function($query) use($search){
+                                    $query->where('no_po','LIKE',"%{$search}%")
+                                          ->orWhere('no_obc','LIKE',"%{$search}%");
+                                })
+                                ->orderBy('created_at','desc')
+                                ->paginate(10)
+                                ->through(function ($q){
                                     return [
                                         'id'    => $q->id,
                                         'no_po' => $q->no_po,
@@ -46,6 +50,7 @@ class GeneratedProductsController extends Controller
                                         'assigned_team' => $q->assigned_team,
                                     ];
                                 });
+
         return $data_product == null ? '' : $data_product;
     }
 

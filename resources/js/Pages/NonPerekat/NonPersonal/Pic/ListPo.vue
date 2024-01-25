@@ -6,6 +6,7 @@ import TextInput from '@/Components/TextInput.vue';
 import { Link, router, useForm } from '@inertiajs/vue3';
 import Modal from '@/Components/Modal.vue';
 import NavigateBackButton from '@/Components/NavigateBackButton.vue';
+import PaginateLink from '@/Components/PaginateLink.vue';
 import { ref } from 'vue';
 
 const swal = inject('$swal');
@@ -24,6 +25,7 @@ const props = defineProps({
 });
 
 const listProduct = ref(props.products)
+const paginateUrl = ref(props.products)
 
 const form = useForm({
     id: '',
@@ -34,9 +36,9 @@ const form = useForm({
 
 // Function Filter By Team
 const filterTeam = () =>  {
-    axios.get('/api/non-perekat/non-personal/pic/listPo/'+form.team).then((res) => {
-                listProduct.value = res.data;
-            });
+        axios.get('/api/non-perekat/non-personal/pic/listPo/',form).then((res) => {
+                    listProduct.value = res.data;
+                });
 }
 
 // Function Search Box
@@ -44,11 +46,13 @@ const search = () => {
     if(form.search){
         // Jika Mengandung whitespace only
         if(/^\s*$/.test(form.search)){
-                listProduct.value = props.products;
+                axios.get('/api/non-perekat/non-personal/pic/listPo/',form).then((res) => {
+                            listProduct.value = res.data;
+                        });
         }
         // Jika mengandung selain whitespace
         else{
-            axios.get('/api/non-perekat/non-personal/pic/listPo/'+form.team+'/'+form.search).then((res) => {
+            axios.get('/api/non-perekat/non-personal/pic/listPo/',form+'/'+form.search).then((res) => {
                 listProduct.value = res.data;
             });
         }
@@ -218,7 +222,7 @@ const deleteOrder = () => {
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr v-for="product in listProduct"
+                                <tr v-for="product in listProduct.data"
                                     class="font-mono transition duration-300 ease-in-out border-b border-slate-300 text-slate-800 hover:bg-slate-400 hover:bg-opacity-10 dark:text-slate-100">
                                     <td
                                         class="text-center leading-5 whitespace-nowrap text-sm px-4 py-1.5 font-medium text-slate-950 border-r">
@@ -302,6 +306,7 @@ const deleteOrder = () => {
                                 </tr>
                             </tbody>
                         </table>
+                        <PaginateLink :links="listProduct.links"></PaginateLink>
                     </div>
                 </div>
             </div>
