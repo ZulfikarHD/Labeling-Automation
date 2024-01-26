@@ -130,51 +130,43 @@ class PrintLabelController extends Controller
                             ->where('potongan','Kanan')
                             ->where('np_users',null)
                             ->first();
-        // dd(count($nullKiri));
+
+        $lastRimKiri  = $lastKiri  !== null ? $lastKiri->no_rim : GeneratedLabels::where('no_po_generated_products',$po)->where('potongan','kiri')->latest('no_rim')->first()->no_rim;
+        $lastRimKanan = $lastKanan !== null ? $lastKanan->no_rim : GeneratedLabels::where('no_po_generated_products',$po)->where('potongan','kanan')->latest('no_rim')->first()->no_rim;
+
+        // Cek jika label bagian kiri dan kana sudah isi semua
         if(count($nullKiri) < 1 && count($nullKanan) < 1){
             $noRim = 0;
             $potongan = 'Finished';
         }
-        elseif(count($nullKiri) == count($nullKanan)){
-            if($lastKiri->no_rim == $lastKanan->no_rim){
-                $noRim  = $lastKiri->no_rim;
-                $potongan = 'Kiri';
+        else{
+            if(count($nullKiri) > 0){
+                if($lastRimKiri == $lastRimKanan){
+                    $noRim  = $lastKiri->no_rim;
+                    $potongan = "Kiri";
+                }
+                elseif($lastRimKiri > $lastRimKanan){
+                    $noRim  = $lastKanan->no_rim;
+                    $potongan = "Kanan";
+                }
+                elseif($lastRimKiri < $lastRimKanan){
+                    $noRim  = $lastKiri->no_rim;
+                    $potongan = "Kiri";
+                }
             }
-            elseif($lastKiri->no_rim > $lastKanan->no_rim){
-                $noRim  = $lastKanan->no_rim;
-                $potongan = 'Kanan';
-            }
-            elseif($lastKanan->no_rim > $lastKiri->no_rim){
-                $noRim  = $lastKiri->no_rim;
-                $potongan = 'Kiri';
-            }
-        }
-        elseif(count($nullKanan) > count($nullKiri)){
-            if($lastKiri->no_rim == $lastKanan->no_rim){
-                $noRim  = $lastKiri->no_rim;
-                $potongan = 'Kiri';
-            }
-            elseif($lastKiri->no_rim > $lastKanan->no_rim){
-                $noRim  = $lastKanan->no_rim;
-                $potongan = 'Kanan';
-            }
-            elseif($lastKanan->no_rim > $lastKiri->no_rim){
-                $noRim  = $lastKiri->no_rim;
-                $potongan = 'Kiri';
-            }
-        }
-        elseif(count($nullKiri) > count($nullKanan)){
-            if($lastKiri->no_rim == $lastKanan->no_rim){
-                $noRim  = $lastKiri->no_rim;
-                $potongan = 'Kiri';
-            }
-            elseif($lastKiri->no_rim > $lastKanan->no_rim){
-                $noRim  = $lastKanan->no_rim;
-                $potongan = 'Kanan';
-            }
-            elseif($lastKanan->no_rim > $lastKiri->no_rim){
-                $noRim  = $lastKiri->no_rim;
-                $potongan = 'Kiri';
+            else{
+                if($lastRimKanan == $lastRimKiri){
+                    $noRim  = $lastKanan->no_rim;
+                    $potongan  = "Kanan";
+                }
+                elseif($lastRimKanan > $lastRimKiri){
+                    $noRim  = $lastKiri->no_rim;
+                    $potongan = "Kiri";
+                }
+                elseif($lastRimKanan < $lastRimKiri){
+                    $noRim  = $lastKanan->no_rim;
+                    $potongan  = "Kanan";
+                }
             }
         }
 
