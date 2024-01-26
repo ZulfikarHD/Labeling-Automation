@@ -605,7 +605,12 @@ const submit = () => {
     WinPrint.close();
     router.post("/api/non-perekat/non-personal/print-label", form, {
         onFinish: () => {
-            router.get("/non-perekat/non-personal/print-label/"+ form.team +"/" + form.id);
+            if(props.noRim !== 0){
+                router.get("/non-perekat/non-personal/print-label/"+ form.team +"/" + form.id);
+            }
+            else{
+                router.get("/non-perekat/non-personal/verif");
+            }
         },
     });
     form.rfid = null;
