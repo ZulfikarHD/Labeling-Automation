@@ -66,9 +66,6 @@ class GeneratedProductsController extends Controller
             'spec'  => GeneratedProducts::where('no_po',$po)->firstOrFail(),
             'team'  => Workstations::where('id',$assigned_team)->firstOrFail(),
         ]);
-        // return Specification::where('no_po',$id)
-        //             ->select('no_po','no_obc','seri','type','rencet')
-        //             ->firstOrFail();
     }
 
     /**

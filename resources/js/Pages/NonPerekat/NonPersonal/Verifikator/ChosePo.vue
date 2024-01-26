@@ -130,7 +130,7 @@ const changeTeam = () => {
             <div class="flex justify-center gap-6 mx-auto w-fit">
                 <div class="flex gap-6 mt-10">
                 <!-- Back Button -->
-                <NavigateBackButton/>
+                <NavigateBackButton :link="route('nonPer.nonPersonal.index')"/>
 
                 <!-- Home BUtton -->
                 <Link :href="route('dashboard')"

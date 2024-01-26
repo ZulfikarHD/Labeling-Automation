@@ -25,7 +25,7 @@ import { Link } from "@inertiajs/vue3";
 
             <div class="flex gap-6 mt-10 ml-12">
                 <!-- Back Button -->
-                <NavigateBackButton/>
+                <NavigateBackButton :link="route('dashboard')"/>
 
                 <!-- Home Button -->
                 <Link

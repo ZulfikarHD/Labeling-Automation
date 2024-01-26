@@ -239,7 +239,7 @@ function submit() {
         <div class="flex justify-center w-full">
             <div class="flex gap-6">
                 <!-- Back Button -->
-                <NavigateBackButton></NavigateBackButton>
+                <NavigateBackButton :link="route('nonPer.nonPersonal.pic.index')"/>
 
                 <!-- Home Button -->
                 <Link

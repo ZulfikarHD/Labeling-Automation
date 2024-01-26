@@ -30,7 +30,7 @@ const props = defineProps({
 
             <div class="flex gap-6 mt-10 mx-auto">
                 <!-- Back Button -->
-                <NavigateBackButton/>
+                <NavigateBackButton :link="route('nonPer.nonPersonal.pic.index')" />
 
                 <!-- Home Button -->
                 <Link :href="route('dashboard')"

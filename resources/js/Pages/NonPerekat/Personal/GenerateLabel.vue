@@ -7,6 +7,7 @@ import InputError from "@/Components/InputError.vue";
 import TextInput from "@/Components/TextInput.vue";
 import { Link, useForm, router } from "@inertiajs/vue3";
 import axios from "axios";
+import NavigateBackButton from "@/Components/NavigateBackButton.vue";
 
 const form = reactive({
     po: "",
@@ -183,25 +184,7 @@ const fetchData = () => {
             </form>
         </div>
         <div class="flex justify-center w-full">
-            <Link :href="route('nonPer.choseType')">
-                <button
-                    class="flex justify-center px-4 py-2 mx-auto w-fit bg-gradient-to-r from-blue-400 to-blue-500 rounded-xl text-start mt-11"
-                    type="button"
-                >
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 24 24"
-                        fill="currentColor"
-                        class="w-6 h-6 text-blue-50"
-                    >
-                        <path
-                            fill-rule="evenodd"
-                            d="M20.25 12a.75.75 0 01-.75.75H6.31l5.47 5.47a.75.75 0 11-1.06 1.06l-6.75-6.75a.75.75 0 010-1.06l6.75-6.75a.75.75 0 111.06 1.06l-5.47 5.47H19.5a.75.75 0 01.75.75z"
-                            clip-rule="evenodd"
-                        />
-                    </svg>
-                </button>
-            </Link>
+            <NavigateBackButton :link="route('nonPer.index')"/>
         </div>
     </ContentLayout>
 </template>

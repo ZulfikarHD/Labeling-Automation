@@ -31,7 +31,7 @@ import { Link } from "@inertiajs/vue3";
             <!-- Return Buttons -->
             <div class="flex gap-6 mt-10 ml-44">
                 <!-- Back Button -->
-                <NavigateBackButton></NavigateBackButton>
+                <NavigateBackButton :link="route('nonPer.nonPersonal.index')" />
 
                 <!-- Home Button -->
                 <Link
