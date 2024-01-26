@@ -7,22 +7,28 @@ import { Link } from "@inertiajs/vue3";
 <template>
     <AuthenticatedLayout>
         <div class="absolute top-[30%] left-24">
+            <!-- Monitoring Verifikasi -->
             <Link
                 :href="route('nonPer.nonPersonal.monitor.index')"
                 class="text-6xl font-extrabold text-sky-50 w-fit px-20 py-6 bg-gradient-to-r from-sky-300 to-sky-400 rounded-xl flex align-middle justify-center"
                 >Monitor Verifikasi</Link
             >
+
+            <!-- List PO yang dibuat -->
             <Link
-                :href="route('nonPer.nonPersonal.listPo.index')"
+                :href="route('nonPer.nonPersonal.listPo.index',0)"
                 class="text-6xl font-extrabold text-yellow-50 flex justify-center px-16 py-6 ml-20 w-fit bg-gradient-to-r from-yellow-400 to-yellow-500 rounded-xl text-start mt-11"
                 >List PO Terdaftar</Link
             >
+
+            <!-- Membuat Label Baru -->
             <Link
                 :href="route('nonPer.nonPersonal.generateLabels.index')"
                 class="text-6xl font-extrabold text-yellow-50 w-fit px-16 py-6 bg-gradient-to-r from-green-400 to-green-500 rounded-xl text-start mt-11 ml-44 flex justify-center"
                 >Buat Label Baru</Link
             >
 
+            <!-- Return Buttons -->
             <div class="flex gap-6 mt-10 ml-44">
                 <!-- Back Button -->
                 <NavigateBackButton></NavigateBackButton>

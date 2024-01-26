@@ -16,18 +16,18 @@ class GeneratedProductsController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(String $team)
     {
         return Inertia::render('NonPerekat/NonPersonal/Pic/ListPo',[
-            'products' => $this->data_products(request()->merge(['team' => 0,'search'=>''])),
+            'products' => $this->data_products($team,request()->merge(['search'=>''])),
             'listTeam' => Workstations::select('id','workstation')->get(),
+            'crntTeam' => $team,
         ]);
     }
 
-    public function data_products(Request $request)
+    public function data_products(String $team, Request $request)
     {
         $search = $request->search;
-        $team   = $request->team;
         $team_filter = $team == 0 ? "!=" : "=";
         $data_product = GeneratedProducts::query()
                                 ->with('workstation')

@@ -14,6 +14,7 @@ const swal = inject('$swal');
 const props = defineProps({
     products: Object,
     listTeam: Object,
+    crntTeam: String,
     deleteModal: {
         type: Boolean,
         default: false,
@@ -30,36 +31,22 @@ const paginateUrl = ref(props.products)
 const form = useForm({
     id: '',
     po: '',
-    team: 0,
+    team: props.crntTeam,
     search: '',
 })
 
 // Function Filter By Team
 const filterTeam = () =>  {
-        axios.get('/api/non-perekat/non-personal/pic/listPo/',form).then((res) => {
+        axios.post('/non-perekat/non-personal/pic/listPo/'+form.team,form).then((res) => {
                     listProduct.value = res.data;
                 });
 }
 
 // Function Search Box
 const search = () => {
-    if(form.search){
-        // Jika Mengandung whitespace only
-        if(/^\s*$/.test(form.search)){
-                axios.get('/api/non-perekat/non-personal/pic/listPo/',form).then((res) => {
-                            listProduct.value = res.data;
-                        });
-        }
-        // Jika mengandung selain whitespace
-        else{
-            axios.get('/api/non-perekat/non-personal/pic/listPo/',form+'/'+form.search).then((res) => {
+    axios.post('/non-perekat/non-personal/pic/listPo/'+form.team,form).then((res) => {
                 listProduct.value = res.data;
             });
-        }
-    }
-    else{
-        listProduct.value = props.products;
-    }
 }
 
 const deleteOrder = () => {
@@ -153,160 +140,166 @@ const deleteOrder = () => {
             <!-- Header -->
             <h3 class="my-10 text-3xl font-extrabold text-center uppercase text-slate-700">List Generated Labels</h3>
 
+            <div class="max-w-7xl mx-auto px-2">
+                <div class="flex justify-between gap-3 mb-4 mx-auto w-full">
+                    <!-- Filter By Team -->
+                    <div class="w-fit">
+                        <select id="team" ref="team" v-model="form.team" @change="filterTeam"
+                            class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm text-sm mt-2 w-full" autocomplete="team">
+                            <option class="px-10 py-4" selected value='0'>All Team</option>
+                            <option class="px-10 py-4" v-for="teams in props.listTeam" :value="teams.id">
+                                {{ teams.workstation }}
+                            </option>
+                        </select>
+                    </div>
 
-            <div class="flex justify-between gap-3 mb-4 mx-auto w-full max-w-5xl">
-                <!-- Filter By Team -->
-                <div class="w-fit">
-                    <select id="team" ref="team" v-model="form.team" @change="filterTeam"
-                        class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm text-sm mt-2 w-full" autocomplete="team">
-                        <option class="px-10 py-4" selected value='0'>All Team</option>
-                        <option class="px-10 py-4" v-for="teams in props.listTeam" :value="teams.id">
-                            {{ teams.workstation }}
-                        </option>
-                    </select>
+                    <!-- search box -->
+                    <div class="flex flex-row align-middle">
+                        <TextInput
+                            id="search"
+                            @input="search"
+                            v-model="form.search"
+                            type="search"
+                            placeholder="Search"
+                            class="block drop-shadow-md shadow-md w-full px-4 py-2 mt-2 text-sm font-bold"
+                        />
+                    </div>
                 </div>
-
-                <!-- search box -->
-                <div class="flex flex-row align-middle">
-                    <TextInput
-                        id="search"
-                        @keyup="search"
-                        v-model="form.search"
-                        type="search"
-                        placeholder="Search"
-                        class="block drop-shadow-md shadow-md w-full px-4 py-2 mt-2 text-sm font-bold"
-                    />
-                </div>
-            </div>
-            <!-- Table -->
-            <div
-                class="h-full px-4 py-4 mx-auto bg-white w-fit md:py-6 drop-shadow-sm rounded-xl dark:bg-slate-800 dark:bg-opacity-60 dark:backdrop-blur-sm dark:backdrop-filter">
-                <div>
-                    <div class="-mx-4 -mt-6 overflow-hidden rounded-t-xl">
-                        <table class="min-w-full table-auto">
-                            <thead
-                                class="pb-4 font-bold border-b-2 border-slate-300 text-slate-700 dark:border-slate-500 dark:text-slate-400 bg-slate-200">
-                                <tr>
-                                    <th scope="col"
-                                        class="pt-6 pb-1.5 px-4 leading-tight text-center border-slate-300 dark:border-slate-500">
-                                        No
-                                    </th>
-                                    <th scope="col"
-                                        class="pt-6 pb-1.5 px-6 leading-tight text-left border-slate-300 dark:border-slate-500 ">
-                                        Nomor PO
-                                    </th>
-                                    <th scope="col"
-                                        class="pt-6 pb-1.5 px-6 leading-tight text-left border-slate-300 dark:border-slate-500">
-                                        OBC
-                                    </th>
-                                    <th scope="col"
-                                        class="pt-6 pb-1.5 px-6 leading-tight text-center border-slate-300 dark:border-slate-500">
-                                        Team
-                                    </th>
-                                    <th scope="col"
-                                        class="pt-6 pb-1.5  px-6 leading-tight border-slate-300 dark:border-slate-500 text-center">
-                                        Generated At
-                                    </th>
-                                    <th scope="col"
-                                        class="pt-6 pb-1.5  px-6 leading-tight border-slate-300 dark:border-slate-500 text-center">
-                                        Status
-                                    </th>
-                                    <th scope="col"
-                                        class="pt-6 pb-1.5  px-6 leading-tight border-slate-300 dark:border-slate-500 text-center">
-                                        Finish
-                                    </th>
-                                    <th scope="col"
-                                        class="pt-6 pb-1.5  px-6 leading-tight border-slate-300 dark:border-slate-500 text-center">
-                                        Action
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr v-for="product in listProduct.data"
-                                    class="font-mono transition duration-300 ease-in-out border-b border-slate-300 text-slate-800 hover:bg-slate-400 hover:bg-opacity-10 dark:text-slate-100">
-                                    <td
-                                        class="text-center leading-5 whitespace-nowrap text-sm px-4 py-1.5 font-medium text-slate-950 border-r">
-                                        {{ product.id }}
-                                    </td>
-                                    <td
-                                        class="text-center leading-5 whitespace-nowrap text-sm px-4 py-1.5 text-slate-700 border-r">
-                                        {{ product.no_po }}
-                                    </td>
-                                    <td
-                                        class="text-center leading-5 whitespace-nowrap text-sm px-4 py-1.5 text-slate-700 border-r">
-                                        <span v-if="product.no_obc.substr(4,1) == 3" class="text-red-800">
-                                            {{ product.no_obc }}
-                                        </span>
-                                        <span v-else class="text-blue-800">
-                                            {{ product.no_obc }}
-                                        </span>
-                                    </td>
-                                    <td
-                                        class="text-center leading-5 text-sm px-4 py-1.5 text-slate-700 border-r">
-                                        {{ product.workstation }}
-                                    </td>
-                                    <td
-                                        class="text-center leading-5 text-sm px-4 py-1.5 text-slate-700 border-r">
-                                        {{ product.created_at }}
-                                    </td>
-                                    <td
-                                        class="text-center leading-5 whitespace-nowrap text-sm px-4 py-1.5 text-slate-700 border-r">
-                                        <div v-if="product.status == 1">
-                                            <span class="px-2 text-xs font-semibold text-yellow-900 bg-yellow-300 rounded-lg shadow drop-shadow-md">Sedang Di Periksa</span>
-                                        </div>
-                                        <div v-else-if="product.status == 0">
-                                            <span class="px-2 text-xs rounded-lg shadow bg-slate-600 drop-shadow-md text-slate-50">Siap Di Periksa</span>
-                                        </div>
-                                        <div v-else-if="product.status == 2">
-                                            <span class="px-2 text-xs rounded-lg shadow bg-green-600 drop-shadow-md text-green-50">Selesai Periksa</span>
-                                        </div>
-                                    </td>
-                                    <td
-                                        class="text-center leading-5 text-sm px-4 py-1.5 text-slate-700 border-r">
-                                        <span v-if="product.status == 2">
-                                            {{ product.updated_at }}
-                                        </span>
-                                        <span v-else>
-                                            -
-                                        </span>
-                                    </td>
-                                    <td class="text-center leading-5 whitespace-nowrap text-sm px-4 py-1.5 text-slate-700 brightness-110">
-                                        <div class="flex justify-center gap-2">
-                                            <!-- Monitor -->
-                                            <Link :href="route('nonPer.nonPersonal.listPo.show', product.no_po)"
-                                                class="font-bold text-blue-600 transition duration-150 ease-in-out hover:text-blue-700">
-                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5">
-                                                    <path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11ZM2 9a7 7 0 1 1 12.452 4.391l3.328 3.329a.75.75 0 1 1-1.06 1.06l-3.329-3.328A7 7 0 0 1 2 9Z" clip-rule="evenodd" />
-                                                </svg>
-                                        </Link>
-                                        <!-- Print Ulang -->
-                                            <Link :href="route('nonPer.nonPersonal.printLabel.index',{workstation : product.assigned_team, id : product.id})"
-                                                class="font-bold text-indigo-700 transition duration-150 ease-in-out hover:text-blue-500">
-                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5">
-                                                    <path fill-rule="evenodd" d="M5 2.75C5 1.784 5.784 1 6.75 1h6.5c.966 0 1.75.784 1.75 1.75v3.552c.377.046.752.097 1.126.153A2.212 2.212 0 0 1 18 8.653v4.097A2.25 2.25 0 0 1 15.75 15h-.241l.305 1.984A1.75 1.75 0 0 1 14.084 19H5.915a1.75 1.75 0 0 1-1.73-2.016L4.492 15H4.25A2.25 2.25 0 0 1 2 12.75V8.653c0-1.082.775-2.034 1.874-2.198.374-.056.75-.107 1.127-.153L5 6.25v-3.5Zm8.5 3.397a41.533 41.533 0 0 0-7 0V2.75a.25.25 0 0 1 .25-.25h6.5a.25.25 0 0 1 .25.25v3.397ZM6.608 12.5a.25.25 0 0 0-.247.212l-.693 4.5a.25.25 0 0 0 .247.288h8.17a.25.25 0 0 0 .246-.288l-.692-4.5a.25.25 0 0 0-.247-.212H6.608Z" clip-rule="evenodd" />
-                                                </svg>
+                <!-- Table -->
+                <div
+                    class="h-full w-full px-4 py-4 mx-auto bg-white w-fit md:py-6 drop-shadow-sm rounded-xl dark:bg-slate-800 dark:bg-opacity-60 dark:backdrop-blur-sm dark:backdrop-filter">
+                    <div>
+                        <div class="-mx-4 -mt-6 overflow-hidden rounded-t-xl">
+                            <table class="min-w-full table-auto">
+                                <thead
+                                    class="pb-4 font-bold border-b-2 border-slate-300 text-slate-700 dark:border-slate-500 dark:text-slate-400 bg-slate-200">
+                                    <tr>
+                                        <th scope="col"
+                                            class="pt-6 pb-1.5 px-4 leading-tight text-center border-slate-300 dark:border-slate-500">
+                                            No
+                                        </th>
+                                        <th scope="col"
+                                            class="pt-6 pb-1.5 px-6 leading-tight text-left border-slate-300 dark:border-slate-500 ">
+                                            Nomor PO
+                                        </th>
+                                        <th scope="col"
+                                            class="pt-6 pb-1.5 px-6 leading-tight text-left border-slate-300 dark:border-slate-500">
+                                            OBC
+                                        </th>
+                                        <th scope="col"
+                                            class="pt-6 pb-1.5 px-6 leading-tight text-center border-slate-300 dark:border-slate-500">
+                                            Team
+                                        </th>
+                                        <th scope="col"
+                                            class="pt-6 pb-1.5  px-6 leading-tight border-slate-300 dark:border-slate-500 text-center">
+                                            Generated At
+                                        </th>
+                                        <th scope="col"
+                                            class="pt-6 pb-1.5  px-6 leading-tight border-slate-300 dark:border-slate-500 text-center">
+                                            Status
+                                        </th>
+                                        <th scope="col"
+                                            class="pt-6 pb-1.5  px-6 leading-tight border-slate-300 dark:border-slate-500 text-center">
+                                            Finish
+                                        </th>
+                                        <th scope="col"
+                                            class="pt-6 pb-1.5  px-6 leading-tight border-slate-300 dark:border-slate-500 text-center">
+                                            Action
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="product,index in listProduct.data" :key="index"
+                                        class="font-mono transition duration-300 ease-in-out border-b border-slate-300 text-slate-800 hover:bg-slate-400 hover:bg-opacity-10 dark:text-slate-100">
+                                        <td
+                                            class="text-center leading-5 whitespace-nowrap text-sm px-4 py-1.5 font-medium text-slate-950 border-r">
+                                            <p v-if="listProduct.current_page == 1">
+                                                {{ index+1 }}
+                                            </p>
+                                            <p v-else>
+                                                {{ (index+1)+(listProduct.current_page*10) }}
+                                            </p>
+                                        </td>
+                                        <td
+                                            class="text-center leading-5 whitespace-nowrap text-sm px-4 py-1.5 text-slate-700 border-r">
+                                            {{ product.no_po }}
+                                        </td>
+                                        <td
+                                            class="text-center leading-5 whitespace-nowrap text-sm px-4 py-1.5 text-slate-700 border-r">
+                                            <span v-if="product.no_obc.substr(4,1) == 3" class="text-red-800">
+                                                {{ product.no_obc }}
+                                            </span>
+                                            <span v-else class="text-blue-800">
+                                                {{ product.no_obc }}
+                                            </span>
+                                        </td>
+                                        <td
+                                            class="text-center leading-5 text-sm px-4 py-1.5 text-slate-700 border-r">
+                                            {{ product.workstation }}
+                                        </td>
+                                        <td
+                                            class="text-center leading-5 text-sm px-4 py-1.5 text-slate-700 border-r">
+                                            {{ product.created_at }}
+                                        </td>
+                                        <td
+                                            class="text-center leading-5 whitespace-nowrap text-sm px-4 py-1.5 text-slate-700 border-r">
+                                            <div v-if="product.status == 1">
+                                                <span class="px-2 text-xs font-semibold text-yellow-900 bg-yellow-300 rounded-lg shadow drop-shadow-md">Sedang Di Periksa</span>
+                                            </div>
+                                            <div v-else-if="product.status == 0">
+                                                <span class="px-2 text-xs rounded-lg shadow bg-slate-600 drop-shadow-md text-slate-50">Siap Di Periksa</span>
+                                            </div>
+                                            <div v-else-if="product.status == 2">
+                                                <span class="px-2 text-xs rounded-lg shadow bg-green-600 drop-shadow-md text-green-50">Selesai Periksa</span>
+                                            </div>
+                                        </td>
+                                        <td
+                                            class="text-center leading-5 text-sm px-4 py-1.5 text-slate-700 border-r">
+                                            <span v-if="product.status == 2">
+                                                {{ product.updated_at }}
+                                            </span>
+                                            <span v-else>
+                                                -
+                                            </span>
+                                        </td>
+                                        <td class="text-center leading-5 whitespace-nowrap text-sm px-4 py-1.5 text-slate-700 brightness-110">
+                                            <div class="flex justify-center gap-2">
+                                                <!-- Monitor -->
+                                                <Link :href="route('nonPer.nonPersonal.listPo.show', product.no_po)"
+                                                    class="font-bold text-blue-600 transition duration-150 ease-in-out hover:text-blue-700">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5">
+                                                        <path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11ZM2 9a7 7 0 1 1 12.452 4.391l3.328 3.329a.75.75 0 1 1-1.06 1.06l-3.329-3.328A7 7 0 0 1 2 9Z" clip-rule="evenodd" />
+                                                    </svg>
                                             </Link>
-                                            <!--  Edit -->
-                                            <Link :href="route('nonPer.nonPersonal.generateLabels.index')"
-                                                class="font-bold text-green-600 transition duration-150 ease-in-out hover:text-green-700">
-                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5">
-                                                    <path d="m5.433 13.917 1.262-3.155A4 4 0 0 1 7.58 9.42l6.92-6.918a2.121 2.121 0 0 1 3 3l-6.92 6.918c-.383.383-.84.685-1.343.886l-3.154 1.262a.5.5 0 0 1-.65-.65Z" />
-                                                    <path d="M3.5 5.75c0-.69.56-1.25 1.25-1.25H10A.75.75 0 0 0 10 3H4.75A2.75 2.75 0 0 0 2 5.75v9.5A2.75 2.75 0 0 0 4.75 18h9.5A2.75 2.75 0 0 0 17 15.25V10a.75.75 0 0 0-1.5 0v5.25c0 .69-.56 1.25-1.25 1.25h-9.5c-.69 0-1.25-.56-1.25-1.25v-9.5Z" />
-                                                </svg>
-                                            </Link>
-                                            <button type="button"
-                                                @click.prevent="deleteModal = !deleteModal; form.id = product.id; form.po = product.no_po"
-                                                class="font-bold text-red-600 transition duration-150 ease-in-out hover:text-red-700">
-                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5">
-                                                    <path fill-rule="evenodd" d="M8.75 1A2.75 2.75 0 0 0 6 3.75v.443c-.795.077-1.584.176-2.365.298a.75.75 0 1 0 .23 1.482l.149-.022.841 10.518A2.75 2.75 0 0 0 7.596 19h4.807a2.75 2.75 0 0 0 2.742-2.53l.841-10.52.149.023a.75.75 0 0 0 .23-1.482A41.03 41.03 0 0 0 14 4.193V3.75A2.75 2.75 0 0 0 11.25 1h-2.5ZM10 4c.84 0 1.673.025 2.5.075V3.75c0-.69-.56-1.25-1.25-1.25h-2.5c-.69 0-1.25.56-1.25 1.25v.325C8.327 4.025 9.16 4 10 4ZM8.58 7.72a.75.75 0 0 0-1.5.06l.3 7.5a.75.75 0 1 0 1.5-.06l-.3-7.5Zm4.34.06a.75.75 0 1 0-1.5-.06l-.3 7.5a.75.75 0 1 0 1.5.06l.3-7.5Z" clip-rule="evenodd" />
-                                                </svg>
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                        <PaginateLink :links="listProduct.links"></PaginateLink>
+                                            <!-- Print Ulang -->
+                                                <Link :href="route('nonPer.nonPersonal.printLabel.index',{workstation : product.assigned_team, id : product.id})"
+                                                    class="font-bold text-indigo-700 transition duration-150 ease-in-out hover:text-blue-500">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5">
+                                                        <path fill-rule="evenodd" d="M5 2.75C5 1.784 5.784 1 6.75 1h6.5c.966 0 1.75.784 1.75 1.75v3.552c.377.046.752.097 1.126.153A2.212 2.212 0 0 1 18 8.653v4.097A2.25 2.25 0 0 1 15.75 15h-.241l.305 1.984A1.75 1.75 0 0 1 14.084 19H5.915a1.75 1.75 0 0 1-1.73-2.016L4.492 15H4.25A2.25 2.25 0 0 1 2 12.75V8.653c0-1.082.775-2.034 1.874-2.198.374-.056.75-.107 1.127-.153L5 6.25v-3.5Zm8.5 3.397a41.533 41.533 0 0 0-7 0V2.75a.25.25 0 0 1 .25-.25h6.5a.25.25 0 0 1 .25.25v3.397ZM6.608 12.5a.25.25 0 0 0-.247.212l-.693 4.5a.25.25 0 0 0 .247.288h8.17a.25.25 0 0 0 .246-.288l-.692-4.5a.25.25 0 0 0-.247-.212H6.608Z" clip-rule="evenodd" />
+                                                    </svg>
+                                                </Link>
+                                                <!--  Edit -->
+                                                <Link :href="route('nonPer.nonPersonal.generateLabels.index')"
+                                                    class="font-bold text-green-600 transition duration-150 ease-in-out hover:text-green-700">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5">
+                                                        <path d="m5.433 13.917 1.262-3.155A4 4 0 0 1 7.58 9.42l6.92-6.918a2.121 2.121 0 0 1 3 3l-6.92 6.918c-.383.383-.84.685-1.343.886l-3.154 1.262a.5.5 0 0 1-.65-.65Z" />
+                                                        <path d="M3.5 5.75c0-.69.56-1.25 1.25-1.25H10A.75.75 0 0 0 10 3H4.75A2.75 2.75 0 0 0 2 5.75v9.5A2.75 2.75 0 0 0 4.75 18h9.5A2.75 2.75 0 0 0 17 15.25V10a.75.75 0 0 0-1.5 0v5.25c0 .69-.56 1.25-1.25 1.25h-9.5c-.69 0-1.25-.56-1.25-1.25v-9.5Z" />
+                                                    </svg>
+                                                </Link>
+                                                <button type="button"
+                                                    @click.prevent="deleteModal = !deleteModal; form.id = product.id; form.po = product.no_po"
+                                                    class="font-bold text-red-600 transition duration-150 ease-in-out hover:text-red-700">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5">
+                                                        <path fill-rule="evenodd" d="M8.75 1A2.75 2.75 0 0 0 6 3.75v.443c-.795.077-1.584.176-2.365.298a.75.75 0 1 0 .23 1.482l.149-.022.841 10.518A2.75 2.75 0 0 0 7.596 19h4.807a2.75 2.75 0 0 0 2.742-2.53l.841-10.52.149.023a.75.75 0 0 0 .23-1.482A41.03 41.03 0 0 0 14 4.193V3.75A2.75 2.75 0 0 0 11.25 1h-2.5ZM10 4c.84 0 1.673.025 2.5.075V3.75c0-.69-.56-1.25-1.25-1.25h-2.5c-.69 0-1.25.56-1.25 1.25v.325C8.327 4.025 9.16 4 10 4ZM8.58 7.72a.75.75 0 0 0-1.5.06l.3 7.5a.75.75 0 1 0 1.5-.06l-.3-7.5Zm4.34.06a.75.75 0 1 0-1.5-.06l-.3 7.5a.75.75 0 1 0 1.5.06l.3-7.5Z" clip-rule="evenodd" />
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <PaginateLink :links="listProduct.links"></PaginateLink>
+                        </div>
                     </div>
                 </div>
             </div>
