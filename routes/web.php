@@ -64,8 +64,9 @@ use App\Http\Controllers\PrintLabelController;
 
             // List Generated Product
                 Route::get('/non-perekat/non-personal/pic/listPo/{team}',[GeneratedProductsController::class, 'index'])->name('nonPer.nonPersonal.listPo.index');
+                Route::get('/non-perekat/non-personal/pic/listPo/{team}/{po}',[GeneratedProductsController::class, 'show'])->name('nonPer.nonPersonal.listPo.show');
                 Route::post('/non-perekat/non-personal/pic/listPo/{team}',[GeneratedProductsController::class, 'data_products']);
-                Route::resource('/non-perekat/non-personal/pic/listPo',GeneratedProductsController::class,['names' => 'nonPer.nonPersonal.listPo'])->except(['index']);
+                Route::resource('/non-perekat/non-personal/pic/listPo',GeneratedProductsController::class,['names' => 'nonPer.nonPersonal.listPo'])->except(['index','show']);
 
             // Generate Product
                 Route::get('/non-perekat/non-personal/generateLabels', [GenerateLabelsController::class, 'index'])->name('nonPer.nonPersonal.generateLabels.index');

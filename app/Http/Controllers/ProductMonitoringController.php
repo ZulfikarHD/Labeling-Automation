@@ -30,7 +30,8 @@ class ProductMonitoringController extends Controller
             $listLabel  = GeneratedLabels::where('no_po_generated_products',$getPo->no_po)->get();
             return Inertia::render('NonPerekat/NonPersonal/Pic/Monitor',[
                 'spec'    => $getPo,
-                'dataRim' => $listLabel
+                'dataRim' => $listLabel,
+                'team'  => Workstations::where('id',$getPo->assigned_team)->firstOrFail(),
             ]);
         }
         else

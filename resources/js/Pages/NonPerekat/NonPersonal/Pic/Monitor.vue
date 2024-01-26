@@ -7,11 +7,12 @@ import { Link,useForm } from '@inertiajs/vue3';
 
 const props = defineProps({
     spec: Object,
-    dataRim : Object
+    dataRim : Object,
+    team: Object,
 });
 
 const form = useForm({
-    team: '',
+    team: props.team.workstation,
     po  : props.spec.no_po,
     obc : props.spec.no_obc,
     seri: props.spec.no_obc.substr(4,1),
@@ -34,7 +35,6 @@ const form = useForm({
                     type="text"
                     class="block w-full px-4 py-2 mt-2 text-2xl text-center bg-slate-300"
                     autocomplete="team"
-                    value="Pita Cukai NP 1"
                     disabled
                 />
             </div>

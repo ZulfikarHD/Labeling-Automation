@@ -58,11 +58,13 @@ class GeneratedProductsController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $po)
+    public function show(String $team,string $po)
     {
+        $assigned_team = GeneratedProducts::where('no_po',$po)->firstOrFail()->assigned_team;
         return Inertia::render('NonPerekat/NonPersonal/Pic/Monitor',[
             'dataRim'   => GeneratedLabels::where('no_po_generated_products',$po)->get(),
             'spec'  => GeneratedProducts::where('no_po',$po)->firstOrFail(),
+            'team'  => Workstations::where('id',$assigned_team)->firstOrFail(),
         ]);
         // return Specification::where('no_po',$id)
         //             ->select('no_po','no_obc','seri','type','rencet')

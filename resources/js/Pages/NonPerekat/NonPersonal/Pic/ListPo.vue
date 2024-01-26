@@ -167,7 +167,7 @@ const deleteOrder = () => {
                 </div>
                 <!-- Table -->
                 <div
-                    class="h-full w-full px-4 py-4 mx-auto bg-white w-fit md:py-6 drop-shadow-sm rounded-xl dark:bg-slate-800 dark:bg-opacity-60 dark:backdrop-blur-sm dark:backdrop-filter">
+                    class="h-full w-full px-4 py-4 mx-auto bg-white md:py-6 drop-shadow-sm rounded-xl dark:bg-slate-800 dark:bg-opacity-60 dark:backdrop-blur-sm dark:backdrop-filter">
                     <div>
                         <div class="-mx-4 -mt-6 overflow-hidden rounded-t-xl">
                             <table class="min-w-full table-auto">
@@ -265,7 +265,7 @@ const deleteOrder = () => {
                                         <td class="text-center leading-5 whitespace-nowrap text-sm px-4 py-1.5 text-slate-700 brightness-110">
                                             <div class="flex justify-center gap-2">
                                                 <!-- Monitor -->
-                                                <Link :href="route('nonPer.nonPersonal.listPo.show', product.no_po)"
+                                                <Link :href="route('nonPer.nonPersonal.listPo.show', {team : form.team , po:product.no_po})"
                                                     class="font-bold text-blue-600 transition duration-150 ease-in-out hover:text-blue-700">
                                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5">
                                                         <path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11ZM2 9a7 7 0 1 1 12.452 4.391l3.328 3.329a.75.75 0 1 1-1.06 1.06l-3.329-3.328A7 7 0 0 1 2 9Z" clip-rule="evenodd" />
