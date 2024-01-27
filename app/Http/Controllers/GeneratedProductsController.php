@@ -10,9 +10,12 @@ use App\Models\GeneratedProducts;
 use App\Models\GeneratedLabels;
 use App\Models\Specification;
 use App\Models\Workstations;
+use App\Traits\UpdateStatusProgress;
 
 class GeneratedProductsController extends Controller
 {
+    use UpdateStatusProgress;
+
     /**
      * Display a listing of the resource.
      */
@@ -93,19 +96,8 @@ class GeneratedProductsController extends Controller
         GeneratedProducts::where('no_po',$po)->delete();
     }
 
-    public function updateStatus($po)
+    public function updateStatusFinish(String $po)
     {
-        if(count(GeneratedLabels::where('no_po_generated_products',$po)->where('np_users',null)->get()) > 0 )
-        {
-            GeneratedProducts::where('no_po',$po)->update([
-                'status'    => 1
-            ]);
-        }
-        else
-        {
-            GeneratedProducts::where('no_po',$po)->update([
-                'status'    => 2
-            ]);
-        }
+        $this->updateProgress($po,2);
     }
 }

@@ -7,6 +7,7 @@ use App\Http\Controllers\GenerateLabelsPersonalController;
 use App\Http\Controllers\GenerateLabelsController;
 use App\Http\Controllers\GeneratedLabelsController;
 use App\Http\Controllers\PrintLabelController;
+use App\Http\Controllers\PendapatanHarianController;
 
 /*
 |--------------------------------------------------------------------------
@@ -25,8 +26,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 // Generate Label Category Personal API
     Route::get('/gen-perso-label/{noPo}',[GenerateLabelsPersonalController::class, 'show']);
-
-    Route::put('/nonPers-upStat/{noPo}',[GeneratedProductsController::class, 'updateStatus']);
+    Route::put('/nonPers-finish-order/{noPo}', [GeneratedProductsController::class, 'updateStatusFinish']);
 
 // Generate Label Category Non-Personal API
     Route::get('/gen-labels/non-personal/{noPo}',[GenerateLabelsController::class, 'show']);    // Fetch Spesifikasi Order
@@ -38,4 +38,6 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     Route::post('/non-perekat/non-personal/print-label/update',[PrintLabelController::class, 'update']);
 
     Route::get('/non-perekat/non-personal/verif/{team}',[GeneratedLabelsController::class, 'fetchWorkPo']);
-    Route::get('/non-perekat/non-personal/pic/listPo/{team}',[GeneratedProductsController::class, 'data_products']);
+
+// Calculation
+    Route::get('/pendapatan-harian', [PendapatanHarianController::class, 'gradeHarian']);

@@ -193,7 +193,6 @@
                             id="team"
                             ref="team"
                             v-model="form.team"
-                            type="text"
                             disabled
                             class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block px-10 py-2 mt-2 text-lg w-full drop-shadow"
                         >
@@ -205,7 +204,7 @@
                             </option>
                         </select>
                     </div>
-                    <div class="flex justify-between gap-6 mb-6 w-fit">
+                    <div class="flex justify-between gap-4 mb-2 w-fit">
                         <!-- PO -->
                         <div>
                             <InputLabel
@@ -361,6 +360,16 @@
                         </div>
                     </button>
                 </div>
+                    <!-- Finish Order -->
+                    <button
+                        type="button"
+                        @click="finish_order"
+                        class="flex justify-center px-4 py-4 mx-auto mt-8 shadow-md max-w-sm w-full bg-gradient-to-r from-cyan-400 to-cyan-500 rounded-xl text-start hover:brightness-90 drop-shadow-md shadow-green-500/20"
+                    >
+                        <div class="text-lg font-bold text-yellow-50">
+                            Selesaikan Order
+                        </div>
+                    </button>
             </form>
             <div class="flex gap-6 mx-auto mt-10">
                 <!-- Back Button -->
@@ -615,4 +624,9 @@ const submit = () => {
     });
     form.rfid = null;
 };
+
+const finish_order = () => {
+    axios.put("/api/nonPers-finish-order/"+form.po)
+    router.get("/non-perekat/non-personal/verif")
+}
 </script>

@@ -8,9 +8,12 @@ use Inertia\Inertia;
 use App\Models\Workstations;
 use App\Models\GeneratedProducts;
 use App\Models\GeneratedLabels;
+use App\Traits\UpdateStatusProgress;
 
 class PrintLabelController extends Controller
 {
+    use UpdateStatusProgress;
+
     /**
      * Index
      */
@@ -25,6 +28,11 @@ class PrintLabelController extends Controller
             'noRim'     => $this->fetcNoRim($product->no_po)['noRim'],
             'potongan'  => $this->fetcNoRim($product->no_po)['potongan'],
         ]);
+    }
+
+    private function countNullNp(String $po)
+    {
+        return count(GeneratedLabels::where('no_po_generated_products',$po)->where('np_users',null)->get());
     }
 
     /**
@@ -54,19 +62,11 @@ class PrintLabelController extends Controller
                 'finish'    => null,
             ]);
 
-        if(count(GeneratedLabels::where('no_po_generated_products',$request->po)->where('np_users',null)->get()) > 0 )
-        {
-            GeneratedProducts::where('no_po',$request->po)->update([
-                'status'    => 1,
-                'assigned_team' => $request->team,
-            ]);
+        if($this->countNullNp($request->po) > 0 ){
+            $this->updateProgress($request->po,1);
         }
-        else
-        {
-            GeneratedProducts::where('no_po',$request->po)->update([
-                'status'    => 2,
-                'assigned_team' => $request->team,
-            ]);
+        else{
+            $this->updateProgress($request->po,2);
         }
 
         return redirect()->back();

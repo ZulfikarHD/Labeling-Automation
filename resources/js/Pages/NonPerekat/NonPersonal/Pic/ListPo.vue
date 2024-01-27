@@ -298,7 +298,9 @@ const deleteOrder = () => {
                                     </tr>
                                 </tbody>
                             </table>
-                            <PaginateLink :links="listProduct.links"></PaginateLink>
+                            <div class="flex justify-center mt-4">
+                                <PaginateLink :links="listProduct.links"></PaginateLink>
+                            </div>
                         </div>
                     </div>
                 </div>
