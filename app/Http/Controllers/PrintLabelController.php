@@ -27,6 +27,7 @@ class PrintLabelController extends Controller
             'crntTeam'  => Workstations::where('id',$workstation)->value('id'),
             'noRim'     => $this->fetcNoRim($product->no_po)['noRim'],
             'potongan'  => $this->fetcNoRim($product->no_po)['potongan'],
+            'date'      => now(),
         ]);
     }
 
