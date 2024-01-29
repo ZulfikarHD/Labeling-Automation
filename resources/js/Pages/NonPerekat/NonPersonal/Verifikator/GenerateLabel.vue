@@ -508,6 +508,7 @@ const formPrintUlang = reactive({
     npPetugas: "",
     po: props.product.no_po,
     obc: props.product.no_obc,
+    team: props.crntTeam,
 });
 
 const dataRimKanan = async () => {

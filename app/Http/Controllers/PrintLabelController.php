@@ -58,9 +58,10 @@ class PrintLabelController extends Controller
             ->where('potongan',$request->lbr_ptg)
             ->where('no_rim',$request->no_rim)
             ->update([
-                'np_users'  => strtoupper($request->rfid),
-                'start'     => now(),
-                'finish'    => null,
+                'np_users'    => strtoupper($request->rfid),
+                'start'       => now(),
+                'finish'      => null,
+                'workstation' => $request->team
             ]);
 
         if($this->countNullNp($request->po) > 0 ){
@@ -96,6 +97,7 @@ class PrintLabelController extends Controller
                 ->where('no_rim',$request->noRim)
                 ->update([
                     'np_users'  => $request->npPetugas,
+                    'workstation' => $request->team
                 ]);
 
         return redirect()->back();
