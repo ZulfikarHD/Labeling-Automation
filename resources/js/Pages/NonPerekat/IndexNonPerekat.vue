@@ -6,11 +6,12 @@ import { Link } from "@inertiajs/vue3";
 
 <template>
     <AuthenticatedLayout>
-        <div class="absolute top-[35%] left-28">
+        <div class="min-w-screen min-h-screen flex flex-col gap-10 justify-center items-center">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 px-4">
             <!-- Menu Non Personal -->
             <Link
                 :href="route('nonPer.nonPersonal.index')"
-                class="text-6xl font-extrabold text-sky-50 w-fit px-24 py-6 bg-gradient-to-r from-sky-300 to-sky-400 rounded-xl flex align-middle justify-center drop-shadow-md shadow-md"
+                class="text-5xl  font-extrabold text-blue-50 w-full px-12 py-6 bg-gradient-to-br from-blue-400 to-blue-600 rounded-xl text-center drop-shadow-md shadow-md shadow-blue-300/40"
             >
                 Non Personal
             </Link>
@@ -18,12 +19,13 @@ import { Link } from "@inertiajs/vue3";
             <!-- Menu Personal -->
             <Link
                 :href="route('nonPer.personal')"
-                class="text-6xl font-extrabold text-yellow-50 w-fit py-6 px-24 bg-gradient-to-r from-yellow-400 to-yellow-500 rounded-xl text-start mt-10 ml-12 flex justify-center drop-shadow-md shadow-md"
+                class="text-5xl font-extrabold text-amber-50 w-full px-12 py-6 bg-gradient-to-br  from-amber-400 to-amber-500 rounded-xl text-center drop-shadow-md shadow-md shadow-amber-500/40"
             >
                 Personal
             </Link>
+            </div>
 
-            <div class="flex gap-6 mt-10 ml-12">
+            <div class="flex gap-6">
                 <!-- Back Button -->
                 <NavigateBackButton :link="route('dashboard')"/>
 

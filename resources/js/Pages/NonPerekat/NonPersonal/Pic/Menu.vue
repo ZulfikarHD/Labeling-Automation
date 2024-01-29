@@ -6,30 +6,33 @@ import { Link } from "@inertiajs/vue3";
 
 <template>
     <AuthenticatedLayout>
-        <div class="absolute top-[30%] left-24">
+        <div
+            class="min-w-screen min-h-screen flex flex-col gap-10 justify-center items-center"
+        >
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 px-4">
+            <!-- Membuat Label Baru -->
+            <Link
+                :href="route('nonPer.nonPersonal.generateLabels.index')"
+                    class="text-5xl col-span-1 lg:col-span-2 font-extrabold text-blue-50 w-full px-12 py-6 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-xl text-center drop-shadow-md shadow-md shadow-emerald-300/40"
+                >Buat Label Baru</Link
+            >
+
             <!-- Monitoring Verifikasi -->
             <Link
                 :href="route('nonPer.nonPersonal.monitor.index')"
-                class="text-6xl font-extrabold text-sky-50 w-fit px-20 py-6 bg-gradient-to-r from-sky-300 to-sky-400 rounded-xl flex align-middle justify-center"
+                    class="text-5xl col-span-2 lg:col-span-1 font-extrabold text-blue-50 w-full px-12 py-6 bg-gradient-to-br from-sky-400 to-sky-600 rounded-xl text-center drop-shadow-md shadow-md shadow-sky-300/40"
                 >Monitor Verifikasi</Link
             >
 
             <!-- List PO yang dibuat -->
             <Link
                 :href="route('nonPer.nonPersonal.listPo.index',0)"
-                class="text-6xl font-extrabold text-yellow-50 flex justify-center px-16 py-6 ml-20 w-fit bg-gradient-to-r from-yellow-400 to-yellow-500 rounded-xl text-start mt-11"
-                >List PO Terdaftar</Link
+                    class="text-5xl col-span-2 lg:col-span-1 font-extrabold text-blue-50 w-full px-12 py-6 bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-xl text-center drop-shadow-md shadow-md shadow-yellow-300/40"
+                >Daftar Label Dibuat</Link
             >
-
-            <!-- Membuat Label Baru -->
-            <Link
-                :href="route('nonPer.nonPersonal.generateLabels.index')"
-                class="text-6xl font-extrabold text-yellow-50 w-fit px-16 py-6 bg-gradient-to-r from-green-400 to-green-500 rounded-xl text-start mt-11 ml-44 flex justify-center"
-                >Buat Label Baru</Link
-            >
-
+            </div>
             <!-- Return Buttons -->
-            <div class="flex gap-6 mt-10 ml-44">
+            <div class="flex gap-6">
                 <!-- Back Button -->
                 <NavigateBackButton :link="route('nonPer.nonPersonal.index')" />
 

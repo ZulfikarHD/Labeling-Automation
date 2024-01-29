@@ -14,6 +14,7 @@
         @routes
         @vite(['resources/js/app.js', "resources/js/Pages/{$page['component']}.vue"])
         @inertiaHead
+        {{-- <script src="./plugin/v-animate-css.js"></script> --}}
     </head>
     <body class="font-sans antialiased">
         @inertia
