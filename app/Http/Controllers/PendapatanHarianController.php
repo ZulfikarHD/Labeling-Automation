@@ -12,19 +12,31 @@ class PendapatanHarianController extends Controller
     {
         $date = $request->date !== null ? $request->date : now();
 
-        $q = GeneratedLabels::query()
-                        ->whereBetween('start',$this->dateBetween($date))
-                        ->get()
-                        ->groupBy('np_users')
-                        ->map(function($q, $key){
-                            return count($q) * 500;
-                        });
+        $verifPegawai = $this->verifHarian($date,$request->team);
 
-        return $q->sortDesc();
+        return $verifPegawai;
     }
 
     private function dateBetween($date)
     {
         return [Carbon::parse($date)->startOfDay(),Carbon::parse($date)->endOfDay()];
+    }
+
+    /**
+     * Kalkulasi hasil verifikasi harian pegawai
+     */
+    public function verifHarian(String $date, String $team)
+    {
+        return GeneratedLabels::query()
+                        ->whereBetween('start',$this->dateBetween($date))
+                        ->where('workstation',$team)
+                        ->get()
+                        ->groupBy('np_users')
+                        ->map(function($q, $key){
+                            return [
+                                'pegawai'    => $key,
+                                'verifikasi' => count($q) * 500,
+                            ];
+                        })->sortByDesc('verifikasi')->values();
     }
 }

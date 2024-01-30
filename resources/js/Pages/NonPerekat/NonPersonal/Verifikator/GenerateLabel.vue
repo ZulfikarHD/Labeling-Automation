@@ -414,6 +414,10 @@
                                 <tr>
                                     <th scope="col"
                                         class="pt-6 pb-1.5 px-6 leading-tight text-left border-slate-300 dark:border-slate-500 ">
+                                        No
+                                    </th>
+                                    <th scope="col"
+                                        class="pt-6 pb-1.5 px-6 leading-tight text-left border-slate-300 dark:border-slate-500 ">
                                         NP
                                     </th>
                                     <th scope="col"
@@ -429,18 +433,24 @@
                             <td>
                             </td>
                             <tbody>
-                                    <tr v-for="verif,index in verifPegawai" :key="index"
+                                    <tr v-for="produksi,index in verifPegawai" :key="index"
                                         class="font-mono transition duration-300 ease-in-out border-b border-slate-300 text-slate-800 hover:bg-slate-400 hover:bg-opacity-10 dark:text-slate-100">
                                         <td
                                             class="text-center leading-5 whitespace-nowrap text-sm px-4 py-1.5 font-medium text-slate-950 border-r">
                                             <p>
-                                                {{ index }}
+                                                {{ index+1 }}
+                                            </p>
+                                        </td>
+                                        <td
+                                            class="text-center leading-5 whitespace-nowrap text-sm px-4 py-1.5 font-medium text-slate-950 border-r">
+                                            <p>
+                                                {{ produksi.pegawai }}
                                             </p>
                                         </td>
                                         <td
                                             class="leading-5 whitespace-nowrap text-sm px-4 py-1.5 font-medium text-slate-950 border-r text-end">
                                             <p>
-                                                {{ Number(verif).toLocaleString() }} Lbr / {{ verif/500 }} RIM
+                                                {{ Number(produksi.verifikasi).toLocaleString() }} Lbr / {{ [produksi.verifikasi]/500 }} RIM
                                             </p>
                                         </td>
                                         <td
@@ -474,7 +484,7 @@ const props = defineProps({
     crntTeam: Number,
     noRim: Number,
     potongan: String,
-    data:String,
+    date:String,
     showModal: {
         type: Boolean,
         default: false,
@@ -523,13 +533,13 @@ const dataRimKiri = async () => {
 
 const verifPegawai = ref()
 
-const fetchVerifPegawai = () => {
-    axios.get('/api/pendapatan-harian', form).then((res) => {
+const produksiPegawai = () => {
+    axios.get('/api/pendapatan-harian?date='+form.date+'&team='+form.team).then((res) => {
         verifPegawai.value = res.data;
     });
 }
 
-fetchVerifPegawai()
+produksiPegawai()
 
 // Tarik Data Untuk Perint Ulang Rim
 const getDataRim = () => {
