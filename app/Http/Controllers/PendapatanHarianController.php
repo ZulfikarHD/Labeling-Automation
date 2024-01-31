@@ -27,9 +27,12 @@ class PendapatanHarianController extends Controller
      */
     public function verifHarian(String $date, String $team)
     {
+        $teamFilter = $team == 0 ? '!=' : '=' ;
+        // $teamFilter = '!=';
+
         return GeneratedLabels::query()
                         ->whereBetween('start',$this->dateBetween($date))
-                        ->where('workstation',$team)
+                        ->where('workstation',$teamFilter,$team)
                         ->get()
                         ->groupBy('np_users')
                         ->map(function($q, $key){

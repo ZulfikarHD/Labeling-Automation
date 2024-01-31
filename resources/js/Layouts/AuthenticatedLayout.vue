@@ -27,6 +27,7 @@ import { Link } from '@inertiajs/vue3';
                 <NavLink :href="'/non-perekat/non-personal/pic/monitorVerifikasi'">Monitoring Verifikasi</NavLink>
                 <NavLink :href="'/non-perekat/non-personal/verif'">Pilih Barang Verifikasi</NavLink>
                 <NavLink :href="'/non-perekat/personal'">Cetak Label Personal</NavLink>
+                <NavLink :href="'/produksi-pegawai'">Produksi Pegawai</NavLink>
             </div>
 
             <!-- Option -->

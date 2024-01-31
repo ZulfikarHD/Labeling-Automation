@@ -86,8 +86,12 @@ use App\Http\Controllers\PrintLabelController;
             Route::post('/p/generateLabels/callSpec', [GeneratedLabelsController::class, 'callSpec'])->name('p.generateLabels.callSpec');
             Route::post('/p/generateLabels/storeMmea',[GeneratedLabelsController::class, 'storeMmea'])->name('p.generateLabels.storeMmea');
 
-
-
+// Table Hasil Laporan Produksi
+            Route::get('/produksi-pegawai',function(){
+                return Inertia::render('ProduksiPegawai',[
+                    'teams' => \App\Models\Workstations::all(),
+                ]);
+            });
 
 
 require __DIR__.'/auth.php';
