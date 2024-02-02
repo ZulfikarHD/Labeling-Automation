@@ -60,6 +60,16 @@
                         </button>
 
                         <!-- Disable Jika NP Null -->
+                        <button v-else-if="n.no_rim === 999" type="button"
+                            @click="pilihRim(n.no_rim, n.np_users)"
+                            class="min-w-[8ch] px-4 py-2 text-xs bg-violet-500 text-violet-50 active:bg-violet-700 hover:bg-violet-600 transition ease-in-out duration-200 rounded drop-shadow shadow" >
+                            <div class="flex flex-col">
+                                <span class="font-semibold">{{ n.np_users }}</span>
+                                <span class="font-bold text-violet-50">Inschiet</span>
+                            </div>
+                        </button>
+
+                        <!-- Disable Jika NP Null -->
                         <button v-else type="button"
                             class="min-w-[8ch] px-4 py-2 text-xs bg-slate-500 text-slate-50 rounded drop-shadow shadow"
                             disabled>
@@ -78,8 +88,16 @@
                     <!-- Nomor Rim -->
                     <div>
                         <InputLabel for="noRimPU" value="Nomor Rim" class="text-sm font-semibold text-center" />
-                        <TextInput id="noRimPU" type="number" name="dataRim" class="block text-sm text-center bg-slate-300"
-                            disabled v-model="formPrintUlang.noRim" required autocomplete="noRimPU" />
+                        <template v-if="formPrintUlang.noRim === 999">
+                            <TextInput id="noRimPU" type="hidden" name="dataRim" class="block text-sm text-center bg-slate-300"
+                                disabled v-model="formPrintUlang.noRim" required autocomplete="noRimPU" />
+                            <TextInput id="noRimPU" type="text" name="dataRim" class="block text-sm text-center bg-slate-300"
+                                disabled value="Inschiet" required autocomplete="noRimPU" />
+                        </template>
+                        <template v-else>
+                            <TextInput id="noRimPU" type="number" name="dataRim" class="block text-sm text-center bg-slate-300"
+                                disabled v-model="formPrintUlang.noRim" required autocomplete="noRimPU" />
+                        </template>
                     </div>
 
                     <!-- NP Petugas -->
@@ -155,9 +173,19 @@
                         <div>
                             <InputLabel for="no_rim" value="Nomor Rim" class="text-2xl font-extrabold text-center" />
 
-                            <TextInput id="no_rim" ref="no_rim" v-model="form.no_rim" type="number"
-                                class="block bg-slate-300/80 drop-shadow-md shadow-md w-full px-4 py-2 mt-2 text-lg text-center font-bold"
-                                autocomplete="no_rim" min="1" disabled />
+                            <template v-if="form.no_rim !== 999">
+                                <TextInput id="no_rim" ref="no_rim" v-model="form.no_rim" type="number"
+                                    class="block bg-slate-300/80 drop-shadow-md shadow-md w-full px-4 py-2 mt-2 text-lg text-center font-bold"
+                                    autocomplete="no_rim" min="1" disabled />
+                            </template>
+                            <template v-else>
+                                <TextInput id="no_rim" ref="no_rim" v-model="form.no_rim" type="hidden"
+                                    class="block bg-slate-300/80 drop-shadow-md shadow-md w-full px-4 py-2 mt-2 text-lg text-center font-bold"
+                                    autocomplete="no_rim" min="1" disabled />
+                                <TextInput type="text" value="Inschiet"
+                                    class="block bg-slate-300/80 drop-shadow-md shadow-md w-full px-4 py-2 mt-2 text-lg text-center font-bold"
+                                    autocomplete="no_rim" min="1" disabled />
+                            </template>
                         </div>
 
                         <!-- Lembar Potong -->
@@ -255,7 +283,6 @@ import TextInput from "@/Components/TextInput.vue";
 import TableVerifikasiPegawai from "@/Components/TableVerifikasiPegawai.vue";
 import { Link, useForm, router } from "@inertiajs/vue3";
 import axios from "axios";
-import NavigateBackButton from "@/Components/NavigateBackButton.vue";
 
 const props = defineProps({
     product: Object,
@@ -361,7 +388,7 @@ const printUlangLabel = () => {
         "-" +
         date.getFullYear();
     let np = formPrintUlang.npPetugas;
-    let noRim = formPrintUlang.noRim;
+    let noRim = formPrintUlang.noRim !== 999 ? formPrintUlang.noRim : "INS"
     let time = date.getHours() + " : " + date.getMinutes();
     let sisiran = formPrintUlang.dataRim == "Kiri" ? "(*)" : "(**)";
     let WinPrint = window.open(
@@ -375,14 +402,14 @@ const printUlangLabel = () => {
                                 </head>
                                 <body>
                                     <div style='page-break-after:always; width:100%; height:100%;'>
-                                        <div style="margin-top:19.5vh; margin-left:17vh">
+                                        <div style="margin-top:19.5vh; margin-left:18vh">
                                             <span style="font-weight:600; text-align:center;">${tgl}</span>
                                             <h1 style="font-size: 24px; line-height: 32px; margin-left:25px; font-weight:600; text-align:center; display:inline-block; padding-top:6px; color:${obc_color}">${obc}</h1>
                                         </div>
-                                        <div style="margin-top:11.5px; margin-left:16vh">
-                                            <h1 style="font-size: 24px; line-height: 32px; margin-left:155px; margin-right:auto; ;font-weight:600;text-align:center;display:inline-block;text-transform: uppercase;">${np}</h1>
+                                        <div style="margin-top:16.2px; margin-left:16vh">
+                                            <h1 style="font-size: 20px; line-height: 32px; margin-left:155px; margin-right:auto; ;font-weight:600;text-align:center;display:inline-block;text-transform: uppercase;">${np}</h1>
                                         </div>
-                                        <div style="margin-top:43px; margin-left:13vh">
+                                        <div style="margin-top:47.5px; margin-left:13vh">
                                             <h1 style="display: inline-block; margin-left: 160px; margin-right: auto; text-align: center; font-size: 20px; line-height: 28px; font-weight:500;">${noRim} ${sisiran} <span style="font-size:12px; margin-left:8px">${time}</span></h1>
                                         </div>
                                     </div>
@@ -430,7 +457,7 @@ const submit = () => {
         "-" +
         date.getFullYear();
     let np = form.rfid;
-    let noRim = form.no_rim;
+    let noRim = form.no_rim !== 999 ? form.no_rim : "INS";
     let time =
         date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
     let sisiran = form.lbr_ptg == "Kiri" ? "(*)" : "(**)";
@@ -445,14 +472,14 @@ const submit = () => {
                                 </head>
                                 <body>
                                     <div style='page-break-after:always; width:100%; height:100%;'>
-                                        <div style="margin-top:19.5vh; margin-left:17vh">
+                                        <div style="margin-top:19.5vh; margin-left:18vh">
                                             <span style="font-weight:600; text-align:center;">${tgl}</span>
                                             <h1 style="font-size: 24px; line-height: 32px; margin-left:25px; font-weight:600; text-align:center; display:inline-block; padding-top:6px; color:${obc_color}">${obc}</h1>
                                         </div>
-                                        <div style="margin-top:11.5px; margin-left:16vh">
-                                            <h1 style="font-size: 24px; line-height: 32px; margin-left:155px; margin-right:auto; ;font-weight:600;text-align:center;display:inline-block;text-transform: uppercase;">${np}</h1>
+                                        <div style="margin-top:16.2px; margin-left:16vh">
+                                            <h1 style="font-size: 20px; line-height: 32px; margin-left:155px; margin-right:auto; ;font-weight:600;text-align:center;display:inline-block;text-transform: uppercase;">${np}</h1>
                                         </div>
-                                        <div style="margin-top:43px; margin-left:13vh">
+                                        <div style="margin-top:47.5px; margin-left:13vh">
                                             <h1 style="display: inline-block; margin-left: 160px; margin-right: auto; text-align: center; font-size: 20px; line-height: 28px; font-weight:500;">${noRim} ${sisiran} <span style="font-size:12px; margin-left:8px">${time}</span></h1>
                                         </div>
                                     </div>

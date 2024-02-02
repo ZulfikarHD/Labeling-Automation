@@ -21,6 +21,7 @@ const form = useForm({
     start_rim: 1,
     produk: "PCHT",
     end_rim: "40",
+    inschiet: 0,
     team: 1,
 });
 
@@ -29,7 +30,9 @@ const fetchData = () => {
         form.obc = res.data.no_obc;
         form.jml_lembar = res.data.rencet;
         form.jml_rim = Math.ceil(res.data.rencet / 500);
-        form.end_rim = Math.ceil(res.data.rencet / 500 / 2);
+        form.end_rim = Math.floor(res.data.rencet / 500 / 2);
+        form.inschiet = res.data.rencet - (Math.floor(res.data.rencet / 500) * 500);
+        console.log(form.inschiet)
     });
 };
 
@@ -37,9 +40,11 @@ const calcEndRim = () => {
     form.end_rim =
         form.jml_lembar > 500
             ? parseInt(form.start_rim) +
-              parseInt(Math.ceil(form.jml_lembar / 500 / 2 - 1))
+              parseInt(Math.floor(form.jml_lembar / 500 / 2 - 1))
             : parseInt(form.start_rim);
     form.jml_rim = Math.ceil(form.jml_lembar / 500);
+    form.inschiet = form.jml_lembar - (Math.floor(form.jml_lembar / 500) * 500);
+    console.log(form.inschiet)
 };
 
 
@@ -59,7 +64,7 @@ function submit() {
 
 <template>
     <ContentLayout>
-        <div class="py-12">
+        <div class="py-12 px-4">
             <form @submit.prevent="submit" method="post">
                 <div
                     class="flex flex-col justify-center gap-6 mx-auto mt-12 w-fit"
@@ -69,7 +74,7 @@ function submit() {
                         <InputLabel
                             for="po"
                             value="Nomor PO"
-                            class="text-4xl font-extrabold text-center"
+                            class="text-3xl font-extrabold text-center"
                         />
 
                         <TextInput
@@ -77,7 +82,7 @@ function submit() {
                             ref="po"
                             v-model="form.po"
                             type="number"
-                            class="block w-full px-8 py-2 mt-2 text-2xl text-center"
+                            class="block w-full px-8 py-2 mt-2 text-xl text-center"
                             autocomplete="po"
                             placeholder="Production Order"
                             @input="fetchData"
@@ -90,14 +95,14 @@ function submit() {
                         <InputLabel
                             for="team"
                             value="Team Periksa"
-                            class="text-4xl font-extrabold text-center"
+                            class="text-3xl font-extrabold text-center"
                         />
 
                         <select
                             id="team"
                             ref="team"
                             v-model="form.team"
-                            class="block w-full px-8 py-2 mt-2 text-2xl border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
+                            class="block w-full px-8 py-2 mt-2 text-xl border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
                             required
                         >
                             <option
@@ -115,7 +120,7 @@ function submit() {
                             <InputLabel
                                 for="obc"
                                 value="Nomor OBC"
-                                class="text-4xl font-extrabold text-center"
+                                class="text-3xl font-extrabold text-center"
                             />
 
                             <TextInput
@@ -123,7 +128,7 @@ function submit() {
                                 ref="obc"
                                 v-model="form.obc"
                                 type="text"
-                                class="block w-full px-8 py-2 mt-2 text-2xl text-center"
+                                class="block w-full px-8 py-2 mt-2 text-xl text-center"
                                 autocomplete="obc"
                                 placeholder="Order Bea Cukai"
                                 required
@@ -135,7 +140,7 @@ function submit() {
                             <InputLabel
                                 for="jml_lembar"
                                 value="Jumlah Cetak"
-                                class="text-4xl font-extrabold text-center"
+                                class="text-3xl font-extrabold text-center"
                             />
 
                             <TextInput
@@ -143,8 +148,30 @@ function submit() {
                                 ref="jml_lembar"
                                 v-model="form.jml_lembar"
                                 type="number"
-                                class="block w-full px-8 py-2 mt-2 text-2xl text-center"
+                                class="block w-full px-8 py-2 mt-2 text-xl text-center"
                                 autocomplete="jml_lembar"
+                                placeholder="Lembar"
+                                min="1"
+                                @input="calcEndRim"
+                                required
+                            />
+                        </div>
+
+                        <!-- Inschiet -->
+                        <div>
+                            <InputLabel
+                                for="inschiet"
+                                value="Inschiet"
+                                class="text-3xl font-extrabold text-center"
+                            />
+
+                            <TextInput
+                                id="inschiet"
+                                ref="inschiet"
+                                v-model="form.inschiet"
+                                type="number"
+                                class="block w-full px-8 py-2 mt-2 text-xl text-center"
+                                autocomplete="inschiet"
                                 placeholder="Lembar"
                                 min="1"
                                 @input="calcEndRim"
@@ -157,7 +184,7 @@ function submit() {
                             <InputLabel
                                 for="jml_rim"
                                 value="Jumlah Rim"
-                                class="text-4xl font-extrabold text-center"
+                                class="text-3xl font-extrabold text-center"
                             />
 
                             <TextInput
@@ -165,7 +192,7 @@ function submit() {
                                 ref="jml_rim"
                                 v-model="form.jml_rim"
                                 type="number"
-                                class="block w-full px-8 py-2 mt-2 text-2xl text-center bg-slate-200"
+                                class="block w-full px-8 py-2 mt-2 text-xl text-center bg-slate-200"
                                 autocomplete="jml_rim"
                                 placeholder="RIM"
                                 min="1"
@@ -173,7 +200,7 @@ function submit() {
                             />
                         </div>
                     </div>
-                    <h4 class="text-4xl font-semibold text-center">
+                    <h4 class="text-3xl font-semibold text-center">
                         Nomor RIM
                     </h4>
                     <div class="flex justify-center gap-6 w-full">
@@ -182,7 +209,7 @@ function submit() {
                             <InputLabel
                                 for="start_rim"
                                 value="Dari"
-                                class="text-4xl font-extrabold text-center"
+                                class="text-3xl font-extrabold text-center"
                             />
 
                             <TextInput
@@ -190,7 +217,7 @@ function submit() {
                                 ref="start_rim"
                                 v-model="form.start_rim"
                                 type="number"
-                                class="block w-full px-8 py-2 mt-2 text-2xl text-center"
+                                class="block w-full px-8 py-2 mt-2 text-xl text-center"
                                 autocomplete="start_rim"
                                 @input="calcEndRim"
                                 min="1"
@@ -202,7 +229,7 @@ function submit() {
                             <InputLabel
                                 for="end_rim"
                                 value="Sampai"
-                                class="text-4xl font-extrabold text-center"
+                                class="text-3xl font-extrabold text-center"
                             />
 
                             <TextInput
@@ -210,7 +237,7 @@ function submit() {
                                 ref="end_rim"
                                 v-model="form.end_rim"
                                 type="number"
-                                class="block w-full px-8 py-2 mt-2 text-2xl text-center bg-slate-200"
+                                class="block w-full px-8 py-2 mt-2 text-xl text-center bg-slate-200"
                                 autocomplete="end_rim"
                                 disabled
                                 min="1"
@@ -221,7 +248,7 @@ function submit() {
                 <div class="flex justify-center gap-6 mx-auto w-fit">
                     <Link
                         :href="route('nonPer.nonPersonal.generateLabels.index')"
-                        class="text-2xl font-bold text-violet-50 flex justify-center px-8 py-4 mx-auto w-fit bg-gradient-to-r from-violet-400 to-violet-500 rounded-xl text-start mt-11"
+                        class="text-xl font-bold text-violet-50 flex justify-center px-8 py-4 mx-auto w-fit bg-gradient-to-r from-violet-400 to-violet-500 rounded-xl text-start mt-11"
                     >
                         Clear
                     </Link>
@@ -229,7 +256,7 @@ function submit() {
                         type="submit"
                         class="flex justify-center px-8 py-4 mx-auto w-fit bg-gradient-to-r from-green-400 to-green-500 rounded-xl text-start mt-11"
                     >
-                        <span class="text-2xl font-bold text-yellow-50"
+                        <span class="text-xl font-bold text-yellow-50"
                             >Buat Label</span
                         >
                     </button>

@@ -9,6 +9,7 @@ use App\Models\Workstations;
 use App\Models\GeneratedLabels;
 use App\Models\GeneratedProducts;
 use App\Models\Specification;
+use App\Models\DataInschiet;
 
 class GenerateLabelsController extends Controller
 {
@@ -92,6 +93,30 @@ class GenerateLabelsController extends Controller
                     ]
                 );
             }
+        }
+
+        if($request->inschiet > 0){
+            GeneratedLabels::updateOrCreate(
+                [
+                    'no_po_generated_products' => $request->po,
+                    'no_rim'    => 999,
+                    'potongan'  => "Kiri"
+                ]);
+
+            GeneratedLabels::updateOrCreate(
+                [
+                    'no_po_generated_products' => $request->po,
+                    'no_rim'    => 999,
+                    'potongan'  => "Kanan"
+                ]);
+
+            DataInschiet::updateOrCreate([
+                'no_po'  => $request->po,
+                'inschiet' => $request->inschiet,
+            ]);
+        }
+        else{
+            //
         }
 
         return redirect()->back();

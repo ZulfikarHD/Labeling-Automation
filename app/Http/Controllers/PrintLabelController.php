@@ -9,6 +9,7 @@ use App\Models\Workstations;
 use App\Models\GeneratedProducts;
 use App\Models\GeneratedLabels;
 use App\Traits\UpdateStatusProgress;
+use App\Models\DataInschiet;
 
 class PrintLabelController extends Controller
 {
@@ -70,6 +71,21 @@ class PrintLabelController extends Controller
         else{
             $this->updateProgress($request->po,2);
         }
+        if($request->no_rim === 999 && $request->potongan === "Kiri"){
+            DataInschiet::where('no_po_generated_products',$request->po)
+                    ->update([
+                            'np_kiri' => $request->rfid
+                    ]);
+        }
+        elseif($request->no_rim === 999 && $request->potongan === "Kanan"){
+            DataInschiet::where('no_po',$request->po)
+                    ->update([
+                            'np_kanan' => $request->rfid
+                    ]);
+        }
+        else{
+
+        }
 
         return redirect()->back();
     }
@@ -99,6 +115,21 @@ class PrintLabelController extends Controller
                     'np_users'  => $request->npPetugas,
                     'workstation' => $request->team
                 ]);
+
+            if($request->no_rim === 999 && $request->potongan === "Kiri"){
+                DataInschiet::where('no_po_generated_products',$request->po)
+                        ->update([
+                                'np_kiri' => $request->rfid
+                        ]);
+            }
+            elseif($request->no_rim === 999 && $request->potongan === "Kanan"){
+                DataInschiet::where('no_po',$request->po)
+                        ->update([
+                                'np_kanan' => $request->rfid
+                        ]);
+            }
+            else{
+            }
 
         return redirect()->back();
     }
