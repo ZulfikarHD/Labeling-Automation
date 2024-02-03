@@ -71,16 +71,16 @@ class PrintLabelController extends Controller
         else{
             $this->updateProgress($request->po,2);
         }
-        if($request->no_rim === 999 && $request->potongan === "Kiri"){
-            DataInschiet::where('no_po_generated_products',$request->po)
-                    ->update([
-                            'np_kiri' => $request->rfid
-                    ]);
-        }
-        elseif($request->no_rim === 999 && $request->potongan === "Kanan"){
+        if($request->no_rim === 999 && $request->lbr_ptg === "Kiri"){
             DataInschiet::where('no_po',$request->po)
                     ->update([
-                            'np_kanan' => $request->rfid
+                            'np_kiri' => strtoupper($request->rfid)
+                    ]);
+        }
+        elseif($request->no_rim === 999 && $request->lbr_ptg === "Kanan"){
+            DataInschiet::where('no_po',$request->po)
+                    ->update([
+                            'np_kanan' => strtoupper($request->rfid)
                     ]);
         }
         else{
@@ -112,20 +112,22 @@ class PrintLabelController extends Controller
                 ->where('potongan',$request->dataRim)
                 ->where('no_rim',$request->noRim)
                 ->update([
-                    'np_users'  => $request->npPetugas,
-                    'workstation' => $request->team
+                    'np_users'  => strtoupper($request->npPetugas),
+                    'workstation' => $request->team,
+                    'start'     => now()
                 ]);
 
-            if($request->no_rim === 999 && $request->potongan === "Kiri"){
-                DataInschiet::where('no_po_generated_products',$request->po)
-                        ->update([
-                                'np_kiri' => $request->rfid
-                        ]);
-            }
-            elseif($request->no_rim === 999 && $request->potongan === "Kanan"){
+            if($request->noRim === 999 && $request->dataRim === "Kiri"){
                 DataInschiet::where('no_po',$request->po)
                         ->update([
-                                'np_kanan' => $request->rfid
+                                'np_kiri' => strtoupper($request->npPetugas)
+                        ]);
+
+            }
+            elseif($request->noRim === 999 && $request->dataRim === "Kanan"){
+                DataInschiet::where('no_po',$request->po)
+                        ->update([
+                                'np_kanan' => strtoupper($request->npPetugas)
                         ]);
             }
             else{

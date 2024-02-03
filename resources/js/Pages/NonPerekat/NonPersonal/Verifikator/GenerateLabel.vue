@@ -268,7 +268,7 @@
             </div>
 
             <!-- Table -->
-            <TableVerifikasiPegawai :team="form.team" :date="form.date"/>
+            <!-- <TableVerifikasiPegawai :team="form.team" :date="form.date"/> -->
         </div>
     </ContentLayout>
 </template>

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Models\GeneratedLabels;
+use App\Models\DataInschiet;
 
 class PendapatanHarianController extends Controller
 {
@@ -36,9 +37,11 @@ class PendapatanHarianController extends Controller
                         ->get()
                         ->groupBy('np_users')
                         ->map(function($q, $key){
+                            $calculate_verif = count($q->whereNotIn('no_rim',999)) * 500;
+                            // $sum_inschiet    =
                             return [
                                 'pegawai'    => $key,
-                                'verifikasi' => count($q) * 500,
+                                'verifikasi' => count($q->whereNotIn('no_rim',999)) * 500,
                             ];
                         })->sortByDesc('verifikasi')->values();
     }
