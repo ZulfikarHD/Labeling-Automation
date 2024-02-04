@@ -37,11 +37,23 @@ class PendapatanHarianController extends Controller
                         ->get()
                         ->groupBy('np_users')
                         ->map(function($q, $key){
+                            $ins_date = [
+                                carbon::parse($q->value('start'))->startOfDay(),
+                                carbon::parse($q->value('start'))->endOfDay()];
+
+                            $sum_ins_kiri   = DataInschiet::where('np_kiri',$key)
+                                                    ->whereBetween('updated_at',$ins_date)
+                                                    ->sum('inschiet');
+
+                            $sum_ins_kanan  = DataInschiet::where('np_kanan',$key)
+                                                    ->whereBetween('updated_at',$ins_date)
+                                                    ->sum('inschiet');
+
                             $calculate_verif = count($q->whereNotIn('no_rim',999)) * 500;
-                            // $sum_inschiet    =
+                            $sum_inschiet    = round(divnum($sum_ins_kiri,2)) + round(divnum($sum_ins_kanan,2));
                             return [
                                 'pegawai'    => $key,
-                                'verifikasi' => count($q->whereNotIn('no_rim',999)) * 500,
+                                'verifikasi' => $calculate_verif + $sum_inschiet,
                             ];
                         })->sortByDesc('verifikasi')->values();
     }

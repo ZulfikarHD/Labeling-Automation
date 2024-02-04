@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('potongan');
             $table->dateTime('start')->nullable();
             $table->dateTime('finish')->nullable();
-            $table->integer('team')->default(1);
+            $table->integer('workstation')->nullable();
             $table->timestamps();
         });
     }

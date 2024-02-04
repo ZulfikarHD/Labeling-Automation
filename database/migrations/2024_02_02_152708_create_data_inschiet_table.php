@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('data_inchiet', function (Blueprint $table) {
+        Schema::create('data_inschiet', function (Blueprint $table) {
             $table->bigInteger('no_po')->unique();
             $table->integer('inschiet')->default(0);
             $table->string('np_kiri')->nullable();
@@ -25,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('data_inchiet');
+        Schema::dropIfExists('data_inschiet');
     }
 };
