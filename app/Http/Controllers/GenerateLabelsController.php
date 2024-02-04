@@ -112,6 +112,8 @@ class GenerateLabelsController extends Controller
 
             DataInschiet::updateOrCreate([
                 'no_po'  => $request->po,
+            ],
+            [
                 'inschiet' => $request->inschiet,
             ]);
         }

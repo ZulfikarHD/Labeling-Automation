@@ -31,8 +31,19 @@ const fetchData = () => {
         form.jml_lembar = res.data.rencet;
         form.jml_rim = Math.ceil(res.data.rencet / 500);
         form.end_rim = Math.floor(res.data.rencet / 500 / 2);
-        form.inschiet = res.data.rencet - (Math.floor(res.data.rencet / 500) * 500);
-        console.log(form.inschiet)
+
+        const cekInschiet = res.data.rencet - (Math.floor(res.data.rencet / 500) * 500);
+        if(res.data.rencet % 1000 === 0){
+            form.inschiet = cekInschiet
+        }
+        else{
+            // if((cekInschiet + (form.jml_lembar % 1000)) > 500){
+            //     form.inschiet = cekInschiet;
+            // }
+            // else{
+                form.inschiet = res.data.rencet % 1000;
+            // }
+        }
     });
 };
 
@@ -43,8 +54,18 @@ const calcEndRim = () => {
               parseInt(Math.floor(form.jml_lembar / 500 / 2 - 1))
             : parseInt(form.start_rim);
     form.jml_rim = Math.ceil(form.jml_lembar / 500);
-    form.inschiet = form.jml_lembar - (Math.floor(form.jml_lembar / 500) * 500);
-    console.log(form.inschiet)
+    const cekInschiet = form.jml_lembar - (Math.floor(form.jml_lembar / 500) * 500);
+    if(form.jml_lembar % 1000 === 0){
+        form.inschiet = cekInschiet
+    }
+    else{
+        // if((cekInschiet + (form.jml_lembar % 1000)) > 500){
+        //     form.inschiet = cekInschiet;
+        // }
+        // else{
+            form.inschiet = form.jml_lembar % 1000;
+        // }
+    }
 };
 
 
