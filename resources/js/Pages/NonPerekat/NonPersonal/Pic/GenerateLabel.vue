@@ -194,9 +194,7 @@ function submit() {
                                 class="block w-full px-8 py-2 mt-2 text-xl text-center"
                                 autocomplete="inschiet"
                                 placeholder="Lembar"
-                                min="1"
                                 @input="calcEndRim"
-                                required
                             />
                         </div>
 
