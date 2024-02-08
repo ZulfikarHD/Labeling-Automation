@@ -26,7 +26,7 @@ class GenerateLabelsController extends Controller
     public function store(Request $request)
     {
 
-        $sumRim = $request->jml_rim > 0 ? floor($request->jml_rim / 2) : 0;
+        $sumRim = $request->jml_lembar > 0 ? floor($request->jml_lembar / 1000) : 0;
         $cnt_gen_po = count(GeneratedLabels::where('no_po_generated_products',$request->po)->pluck('no_po_generated_products'));
         if($cnt_gen_po === 0){
             // Save PO ke table generated_products
