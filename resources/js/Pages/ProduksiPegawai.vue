@@ -20,16 +20,16 @@ const today = ref(form.date)
 </script>
 <template>
     <ContentLayout>
-        <div class="px-4 py-6 container mx-auto">
-            <div class="px-10 mx-4 mb-4">
+        <div class="px-4 py-6 mx-auto">
+            <div class="px-10 mx-4 mb-4 ml-28">
                 <InputLabel for="dateFilter" class="pb-2 pl-1">Tanggal Produksi</InputLabel>
                 <TextInput id="dateFilter" type="date" v-model="form.date"/>
             </div>
-            <div class="w-full flex flex-wrap justify-center items-baseline gap-6 mb-10  ">
+            <div class="w-full flex flex-wrap justify-center items-baseline gap-6 mb-10">
                 <!-- Team Verifikasi-->
                 <template v-for="team in props.teams" :key="'team'+team.id">
                     <div class="flex flex-col justify-center gap-2">
-                        <h3 class="text-xl font-semibold text-slate-950 text-center">Team {{ team.workstation }}</h3>
+                        <h3 class="text-xl font-semibold text-slate-950 text-center mb-2">Team {{ team.workstation }}</h3>
                         <TableVerifikasiPegawai :team="team.id" :date="form.date" />
                     </div>
                 </template>
@@ -37,7 +37,7 @@ const today = ref(form.date)
 
             <!-- All Team -->
             <div class="flex flex-col justify-center">
-                <h3 class="text-xl font-semibold text-slate-950 text-center">All Team</h3>
+                <h3 class="text-xl font-semibold text-slate-950 text-center mb-2">All Team</h3>
                 <TableVerifikasiPegawai :team="0" :date="form.date" />
             </div>
         </div>

@@ -8,7 +8,7 @@ const showingNavigationDropdown = ref(false);
 </script>
 
 <template>
-    <div class="h-full min-h-screen bg-gradient-to-br from-slate-50 to-slate-200">
+    <div class="h-full min-h-screen bg-gradient-to-b from-slate-50 to-slate-100">
         <div class="w-full bg-slate-50 drop-shadow-md px-8 py-4 flex justify-between gap-4 items-center sticky top-0 z-50">
             <!-- Logo Peruri -->
             <img :src="'/img/peruri.png'" class="w-24" />

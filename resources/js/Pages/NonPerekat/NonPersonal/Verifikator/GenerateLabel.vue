@@ -16,7 +16,7 @@
                 <!-- Pilih Potongan -->
                 <div class="flex justify-center gap-6">
                     <button type="button" @click="dataRimKiri()"
-                        class="flex items-center gap-1 px-6 py-2 font-semibold transition duration-300 ease-in-out rounded-lg shadow-md bg-sky-400 text-sky-50 hover:brightness-90 drop-shadow-md shadow-sky-300/25">
+                        class="flex items-center gap-1 px-6 py-2 font-semibold transition duration-300 ease-in-out rounded-lg shadow bg-sky-400 text-sky-50 hover:brightness-90 drop-shadow shadow-sky-300/25">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5"
                             stroke="currentColor" class="w-6 h-6">
                             <path stroke-linecap="round" stroke-linejoin="round"
@@ -25,7 +25,7 @@
                         KIRI
                     </button>
                     <button type="button" @click="dataRimKanan()"
-                        class="flex items-center gap-1 px-6 py-2 font-semibold transition duration-300 ease-in-out rounded-lg shadow-md bg-sky-400 text-sky-50 hover:brightness-90 drop-shadow-md shadow-sky-300/25">
+                        class="flex items-center gap-1 px-6 py-2 font-semibold transition duration-300 ease-in-out rounded-lg shadow bg-sky-400 text-sky-50 hover:brightness-90 drop-shadow shadow-sky-300/25">
                         KANAN
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5"
                             stroke="currentColor" class="w-6 h-6">
@@ -111,11 +111,11 @@
                 <!-- Action -->
                 <div class="flex justify-center gap-4 pt-4 px-7">
                     <button type="button"
-                        class="flex items-center gap-1 px-6 py-2 mr-auto font-semibold text-red-500 underline transition duration-300 ease-in-out border border-red-500 rounded-lg shadow-md bg-red-50 hover:brightness-90 drop-shadow-md shadow-red-300/25">
+                        class="flex items-center gap-1 px-6 py-2 mr-auto font-semibold text-red-500 underline transition duration-300 ease-in-out border border-red-500 rounded-lg shadow bg-red-50 hover:brightness-90 drop-shadow shadow-red-300/25">
                         Hapus
                     </button>
                     <button type="submit"
-                        class="flex items-center gap-1 px-6 py-2 font-semibold transition duration-300 ease-in-out rounded-lg shadow-md bg-sky-400 text-sky-50 hover:brightness-90 drop-shadow-md shadow-sky-300/25">
+                        class="flex items-center gap-1 px-6 py-2 font-semibold transition duration-300 ease-in-out rounded-lg shadow bg-sky-400 text-sky-50 hover:brightness-90 drop-shadow shadow-sky-300/25">
                         Print
                     </button>
                 </div>
@@ -127,73 +127,74 @@
     <ContentLayout>
         <div class="flex flex-col justify-center py-8">
             <form @submit.prevent="submit">
-                <div class="flex flex-col justify-center gap-6 mx-auto w-fit">
+                <div class="flex flex-col justify-center gap-6 mx-auto px-8 max-w-2xl">
                     <!-- Team -->
-                    <div class="mx-auto mb-7">
+                    <div class="mx-auto w-full">
                         <InputLabel for="team" value="Team" class="text-2xl font-extrabold text-center" />
 
                         <select id="team" ref="team" v-model="form.team" disabled
-                            class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block px-10 py-2 mt-2 text-lg w-full drop-shadow">
+                            class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block px-10 py-2 mt-2 text-lg w-full drop-shadow flex-grow">
                             <option v-for="team in props.listTeam" :value="team.id">
                                 {{ team.workstation }}
                             </option>
                         </select>
                     </div>
-                    <div class="flex justify-between gap-4 mb-2 w-fit">
+
+                    <div class="flex justify-between gap-4 w-full">
                         <!-- PO -->
-                        <div>
+                        <div class="flex-grow">
                             <InputLabel for="po" value="Nomor PO" class="text-2xl font-extrabold text-center" />
 
                             <TextInput id="po" ref="po" v-model="form.po" type="number"
-                                class="block w-full px-4 py-2 mt-2 text-lg text-center shadow bg-slate-300 drop-shadow"
+                                class="block w-full px-4 py-2 mt-2 text-lg text-center shadow bg-slate-200/80 drop-shadow"
                                 autocomplete="po" disabled />
                         </div>
 
                         <!-- Nomor OBC -->
-                        <div>
+                        <div class="flex-grow">
                             <InputLabel for="obc" value="Nomor OBC" class="text-2xl font-extrabold text-center" />
 
                             <TextInput id="obc" ref="obc" v-model="form.obc" type="text"
-                                class="block w-full px-4 py-2 mt-2 text-lg text-center shadow bg-slate-300 drop-shadow"
+                                class="block w-full px-4 py-2 mt-2 text-lg text-center shadow bg-slate-200/80 drop-shadow"
                                 autocomplete="obc" disabled />
                         </div>
 
                         <!-- Seri -->
-                        <div>
+                        <div class="flex-grow">
                             <InputLabel for="seri" value="Seri" class="text-2xl font-extrabold text-center" />
 
                             <TextInput id="seri" ref="seri" v-model="form.seri" type="number"
-                                class="block w-full px-4 py-2 mt-2 text-lg text-center shadow bg-slate-300 drop-shadow"
+                                class="block w-full px-4 py-2 mt-2 text-lg text-center shadow bg-slate-200/80 drop-shadow"
                                 autocomplete="seri" disabled />
                         </div>
                     </div>
 
-                    <div class="flex justify-between gap-6 mx-auto w-fit">
+                    <div class="flex justify-between gap-6 mx-auto w-full">
                         <!-- No Rim -->
-                        <div>
+                        <div class="flex-grow">
                             <InputLabel for="no_rim" value="Nomor Rim" class="text-2xl font-extrabold text-center" />
 
                             <template v-if="form.no_rim !== 999">
                                 <TextInput id="no_rim" ref="no_rim" v-model="form.no_rim" type="number"
-                                    class="block bg-slate-300/80 drop-shadow-md shadow-md w-full px-4 py-2 mt-2 text-lg text-center font-bold"
+                                    class="block bg-slate-200/80  drop-shadow shadow w-full px-4 py-2 mt-2 text-lg text-center font-bold"
                                     autocomplete="no_rim" min="1" disabled />
                             </template>
                             <template v-else>
                                 <TextInput id="no_rim" ref="no_rim" v-model="form.no_rim" type="hidden"
-                                    class="block bg-slate-300/80 drop-shadow-md shadow-md w-full px-4 py-2 mt-2 text-lg text-center font-bold"
+                                    class="block bg-slate-200/80  drop-shadow shadow w-full px-4 py-2 mt-2 text-lg text-center font-bold"
                                     autocomplete="no_rim" min="1" disabled />
                                 <TextInput type="text" value="Inschiet"
-                                    class="block bg-slate-300/80 drop-shadow-md shadow-md w-full px-4 py-2 mt-2 text-lg text-center font-bold"
+                                    class="block bg-slate-200/80  drop-shadow shadow w-full px-4 py-2 mt-2 text-lg text-center font-bold"
                                     autocomplete="no_rim" min="1" disabled />
                             </template>
                         </div>
 
                         <!-- Lembar Potong -->
-                        <div>
+                        <div class="flex-grow">
                             <InputLabel for="lbr_ptg" value="Lembar Potong" class="text-2xl font-extrabold text-center" />
 
                             <TextInput id="lbr_ptg" ref="lbr_ptg" v-model="form.lbr_ptg" type="text"
-                                class="block bg-slate-300/80 drop-shadow-md shadow-md w-full px-4 py-2 mt-2 text-lg text-center font-bold"
+                                class="block bg-slate-200/80  drop-shadow shadow w-full px-4 py-2 mt-2 text-lg text-center font-bold"
                                 autocomplete="lbr_ptg" disabled />
                         </div>
                     </div>
@@ -213,13 +214,13 @@
                 <div class="flex justify-center gap-6 mx-auto w-fit">
                     <!-- Reset Form -->
                     <button type="button" @click="form.rfid = null"
-                        class="flex justify-center px-4 py-4 mx-auto mt-8 text-lg font-bold shadow-md w-fit bg-gradient-to-r from-violet-400 to-violet-500 rounded-xl text-start hover:brightness-90 drop-shadow-md shadow-violet-500/20 text-violet-50">
+                        class="flex justify-center px-4 py-4 mx-auto mt-8 text-lg font-bold shadow w-fit bg-gradient-to-r from-violet-400 to-violet-500 rounded-xl text-start hover:brightness-90 drop-shadow shadow-violet-500/20 text-violet-50">
                         Clear
                     </button>
 
                     <!-- Submit -->
                     <button type="submit"
-                        class="flex justify-center px-4 py-4 mx-auto mt-8 shadow-md w-fit bg-gradient-to-r from-green-400 to-green-500 rounded-xl text-start hover:brightness-90 drop-shadow-md shadow-green-500/20">
+                        class="flex justify-center px-4 py-4 mx-auto mt-8 shadow w-fit bg-gradient-to-r from-green-400 to-green-500 rounded-xl text-start hover:brightness-90 drop-shadow shadow-green-500/20">
                         <div class="text-lg font-bold text-yellow-50">
                             Generate
                         </div>
@@ -229,7 +230,7 @@
                     <button type="button" @click="
                         [getDataRim(), (printUlangModal = !printUlangModal)]
                         "
-                        class="flex justify-center px-4 py-4 mx-auto mt-8 shadow-md w-fit bg-gradient-to-r from-green-400 to-green-500 rounded-xl text-start hover:brightness-90 drop-shadow-md shadow-green-500/20">
+                        class="flex justify-center px-4 py-4 mx-auto mt-8 shadow w-fit bg-gradient-to-r from-green-400 to-green-500 rounded-xl text-start hover:brightness-90 drop-shadow shadow-green-500/20">
                         <div class="text-lg font-bold text-yellow-50">
                             Print Ulang
                         </div>
@@ -237,7 +238,7 @@
                 </div>
                 <!-- Finish Order -->
                 <button type="button" @click="finish_order"
-                    class="flex justify-center px-4 py-4 mx-auto mt-8 shadow-md max-w-sm w-full bg-gradient-to-r from-cyan-400 to-cyan-500 rounded-xl text-start hover:brightness-90 drop-shadow-md shadow-green-500/20">
+                    class="flex justify-center px-4 py-4 mx-auto mt-8 shadow max-w-sm w-full bg-gradient-to-r from-cyan-400 to-cyan-500 rounded-xl text-start hover:brightness-90 drop-shadow shadow-green-500/20">
                     <div class="text-lg font-bold text-yellow-50">
                         Selesaikan Order
                     </div>
@@ -246,7 +247,7 @@
             <div class="flex gap-6 mx-auto mt-10">
                 <!-- Back Button -->
                 <a href="#" onclick="history.back()"
-                    class="text-xl font-extrabold text-blue-50 w-fit py-3 px-6 bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl text-start  drop-shadow-md shadow-md flex items-center gap-1.5">
+                    class="text-xl font-extrabold text-blue-50 w-fit py-3 px-6 bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl text-start  drop-shadow shadow flex items-center gap-1.5">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5"
                         stroke="currentColor" class="w-6 h-6">
                         <path stroke-linecap="round" stroke-linejoin="round"
@@ -257,7 +258,7 @@
 
                 <!-- Home Button -->
                 <Link :href="route('dashboard')"
-                    class="text-xl font-extrabold text-blue-50 w-fit py-3 px-6 bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl text-start drop-shadow-md shadow-md flex items-center gap-1.5">
+                    class="text-xl font-extrabold text-blue-50 w-fit py-3 px-6 bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl text-start drop-shadow shadow flex items-center gap-1.5">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6">
                     <path
                         d="M11.47 3.84a.75.75 0 011.06 0l8.69 8.69a.75.75 0 101.06-1.06l-8.689-8.69a2.25 2.25 0 00-3.182 0l-8.69 8.69a.75.75 0 001.061 1.06l8.69-8.69z" />
@@ -267,9 +268,9 @@
                 </Link>
             </div>
 
-            <!-- Table -->
-            <TableVerifikasiPegawai :team="form.team" :date="form.date"/>
         </div>
+        <!-- Table -->
+        <TableVerifikasiPegawai :team="form.team" :date="form.date"/>
     </ContentLayout>
 </template>
 
