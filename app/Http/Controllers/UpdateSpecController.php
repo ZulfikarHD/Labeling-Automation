@@ -9,14 +9,17 @@ class UpdateSpecController extends Controller
 {
     public function updateSpec(Request $request)
     {
+        $validatedData = $request->validate([
+            '*.no_obc'  => 'required|string',
+            '*.seri'    => 'required|integer|max:5',
+            '*.jenis'   => 'required|string|max:1',
+            '*.rencet'  => 'required|integer',
+            '*.mesin'   => 'string|nullable',
+        ]);
+
         try {
-            // Process each item in the request array
-            foreach ($request->all() as $key => $value) {
-
-                if(!isset($key) || !isset($value['no_obc'])) {
-                    continue;
-                }
-
+            // Process each item in the validated data array
+            foreach ($validatedData as $key => $value) {
                 Specification::updateOrCreate(
                     [
                         'no_po'  => $key,
@@ -31,10 +34,9 @@ class UpdateSpecController extends Controller
                 );
             }
 
-            return response()->json(['status' => 'success', 'data' => $request->all()]);
+            return response()->json(['status' => 'success', 'data' => $validatedData]);
         } catch (\Exception $e) {
             return response()->json(['status' => 'error', 'message' => 'Failed to update spec.'], 500);
         }
-
     }
 }
