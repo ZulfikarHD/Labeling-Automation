@@ -7,10 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class Specification extends Model
 {
+    // Specify the database connection if not default
+    protected $connection = 'mysql';
+    protected $table = 'specifications';
     use HasFactory;
-    protected $guarded = [
-        'id',
-        'created_at',
-        'updated_at',
-    ];
+    protected $fillable = ['no_po', 'no_obc', 'seri', 'type', 'rencet', 'mesin'];
 }

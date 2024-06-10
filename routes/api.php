@@ -8,6 +8,7 @@ use App\Http\Controllers\GenerateLabelsController;
 use App\Http\Controllers\GeneratedLabelsController;
 use App\Http\Controllers\PrintLabelController;
 use App\Http\Controllers\PendapatanHarianController;
+use App\Http\Controllers\UpdateSpecController;
 
 /*
 |--------------------------------------------------------------------------
@@ -41,3 +42,6 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 // Calculation
     Route::get('/pendapatan-harian', [PendapatanHarianController::class, 'gradeHarian']);
+
+// Update Spec
+    Route::post('/update-spec', [UpdateSpecController::class, 'updateSpec']);
