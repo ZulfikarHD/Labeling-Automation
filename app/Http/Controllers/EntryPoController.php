@@ -11,11 +11,11 @@ use App\Models\GeneratedProducts;
 use App\Models\Specification;
 use App\Models\DataInschiet;
 
-class GenerateLabelsController extends Controller
+class EntryPoController extends Controller
 {
     public function index()
     {
-        return Inertia::render('NonPerekat/NonPersonal/Pic/GenerateLabel',[
+        return Inertia::render('NonPerekat/NonPersonal/Pic/EntryPo',[
             'workstation' => Workstations::orderBy('workstation')->select('id','workstation')->get(),
        ]);
     }

@@ -19,10 +19,10 @@ const showingNavigationDropdown = ref(false);
                         ? true
                         : false
                     ">Pilih Produk</NavLink>
-                <NavLink :href="'/non-perekat/non-personal/generateLabels'" :active="$page.url === '/non-perekat/non-personal/generateLabels'
+                <NavLink :href="'/non-perekat/non-personal/entry-po'" :active="$page.url === '/non-perekat/non-personal/entry-po'
                         ? true
                         : false
-                    ">Generate Label Verifikasi</NavLink>
+                    ">Entry PO</NavLink>
                 <NavLink :href="'/non-perekat/non-personal/pic/listPo/0'" :active="$page.url === '/non-perekat/non-personal/pic/listPo/0'
                         ? true
                         : false

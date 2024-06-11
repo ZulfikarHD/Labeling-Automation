@@ -12,9 +12,9 @@ import { Link } from "@inertiajs/vue3";
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 px-4">
             <!-- Membuat Label Baru -->
             <Link
-                :href="route('nonPer.nonPersonal.generateLabels.index')"
+                :href="route('nonPer.nonPersonal.entryPo.index')"
                     class="text-5xl col-span-1 lg:col-span-2 font-extrabold text-blue-50 w-full px-12 py-6 bg-gradient-to-br from-emerald-400 to-emerald-600 rounded-xl text-center drop-shadow-md shadow-md shadow-emerald-300/40"
-                >Buat Label Baru</Link
+                >Entry Po</Link
             >
 
             <!-- Monitoring Verifikasi -->

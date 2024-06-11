@@ -18,7 +18,8 @@ module.exports = {
                 'menu'  : "url('/img/menu.jpg')",
                 'content'  : "url('/img/content.jpg')",
                 'content2'  : "url('/img/content2.jpg')",
-                'scatter-forcefield' : "url('/img/scattered-forcefields.svg')"
+                'scatter-forcefield' : "url('/img/scattered-forcefields.svg')",
+                'geometric' : "url('/img/geometric.svg')",
             },
         },
     },
