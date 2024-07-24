@@ -126,7 +126,7 @@
                     <div class="mx-auto w-full">
                         <InputLabel for="team" value="Team" class="text-2xl font-extrabold text-center" />
 
-                        <select id="team" ref="team" v-model="form.team" disabled
+                        <select id="team" ref="team" v-model="form.team"
                             class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block px-10 py-2 mt-2 text-lg w-full drop-shadow flex-grow">
                             <option v-for="team in props.listTeam" :key="team.id" :value="team.id">
                                 {{ team.workstation }}

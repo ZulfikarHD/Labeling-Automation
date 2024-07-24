@@ -223,7 +223,7 @@ function submit() {
                         <select id="team" ref="team" v-model="form.team"
                             class="block w-full px-8 py-2 mt-2 text-xl border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
                             required>
-                            <option v-for="team in workstation" :value="team.id">
+                            <option v-for="team in workstation" :key="team.id" :value="team.id">
                                 {{ team.workstation }}
                             </option>
                         </select>
@@ -296,14 +296,14 @@ function submit() {
                     </div>
                 </div>
                 <div class="flex justify-center gap-6 mx-auto w-fit">
+                    <button type="submit"
+                    class="flex justify-center px-8 py-4 mx-auto w-fit bg-gradient-to-r from-green-400 to-green-500 rounded-xl text-start mt-11">
+                        <span class="text-xl font-bold text-yellow-50">Buat Label</span>
+                    </button>
                     <Link :href="route('nonPer.nonPersonal.entryPo.index')"
                         class="text-xl font-bold text-violet-50 flex justify-center px-8 py-4 mx-auto w-fit bg-gradient-to-r from-violet-400 to-violet-500 rounded-xl text-start mt-11">
                     Clear
                     </Link>
-                    <button type="submit"
-                        class="flex justify-center px-8 py-4 mx-auto w-fit bg-gradient-to-r from-green-400 to-green-500 rounded-xl text-start mt-11">
-                        <span class="text-xl font-bold text-yellow-50">Buat Label</span>
-                    </button>
                 </div>
             </form>
         </div>

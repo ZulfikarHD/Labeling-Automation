@@ -56,6 +56,8 @@ class PrintLabelController extends Controller
      */
     public function store(Request $request)
     {
+        // dd($request);
+
         $rfid = strtoupper($request->rfid); // Mengubah RFID menjadi huruf kapital
         $cnt_prog = GeneratedLabels::where('np_users',$rfid)->where('finish',null)->count(); // Menghitung jumlah label yang belum selesai
 
@@ -79,6 +81,8 @@ class PrintLabelController extends Controller
                 'finish'      => null,
                 'workstation' => $request->team
             ]);
+
+        GeneratedProducts::where('no_po',$request->po)->update(['assigned_team' => $request->team]);
 
         // Memperbarui progres berdasarkan jumlah label yang np_users-nya null
         $this->updateProgress($request->po, $this->countNullNp($request->po) > 0 ? 1 : 2);
