@@ -1,5 +1,5 @@
 <template>
-    <!-- Modal Prit Ulang -->
+    <!-- Modal for Reprinting -->
     <Modal :show="printUlangModal" @close="(Modal) => (printUlangModal = !printUlangModal)">
         <form @submit.prevent="printUlangLabel">
             <div class="flex flex-col gap-4 px-4 py-4">
@@ -8,12 +8,12 @@
                     Print Ulang / Ganti Data Rim
                 </h1>
 
-                <!-- Keterangan Kiri Kanan -->
+                <!-- Rim Data Description -->
                 <TextInput id="dataRim" name="dataRim" type="text"
                     class="py-1 mx-4 text-lg font-semibold text-center uppercase border text-slate-500 border-slate-500/70 rounded-mdr"
                     v-model="formPrintUlang.dataRim" required disabled autocomplete="rfid" />
 
-                <!-- Pilih Potongan -->
+                <!-- Select Rim Side -->
                 <div class="flex justify-center gap-6">
                     <button type="button" @click="dataRimKiri()"
                         class="flex items-center gap-1 px-6 py-2 font-semibold transition duration-300 ease-in-out rounded-lg shadow bg-sky-400 text-sky-50 hover:brightness-90 drop-shadow shadow-sky-300/25">
@@ -35,17 +35,15 @@
                     </button>
                 </div>
 
-                <!-- List Nomor -->
+                <!-- List of Rim Numbers -->
                 <div class="flex flex-wrap justify-center gap-4 mt-4">
-                    <template v-for="n in dataPrintUlang" v-bind:key="refresh">
+                    <template v-for="n in dataPrintUlang" v-bind:key="n.no_rim">
                         <button v-if="n.np_users !== null && n.start !== null && n.finish === null" type="button"
                             @click="pilihRim(n.no_rim, n.np_users)"
                             class="min-w-[8ch] px-4 py-2 text-xs bg-yellow-300 text-yellow-900 hover:brightness-95 duration-300 transition ease-in-out rounded drop-shadow shadow">
                             <div class="flex flex-col">
                                 <span class="font-semibold text-yellow-950">{{ n.np_users }}</span>
-                                <span class="font-bold text-green-700">{{
-                                    n.no_rim
-                                }}</span>
+                                <span class="font-bold text-green-700">{{ n.no_rim }}</span>
                             </div>
                         </button>
                         <button v-else-if="n.np_users !== null && n.start !== null && n.finish !== null" type="button"
@@ -53,39 +51,35 @@
                             class="min-w-[8ch] px-4 py-2 text-xs bg-green-400 text-green-900 hover:brightness-95 duration-300 transition ease-in-out rounded drop-shadow shadow">
                             <div class="flex flex-col">
                                 <span class="font-semibold text-green-950">{{ n.np_users }}</span>
-                                <span class="font-bold text-indigo-700">{{
-                                    n.no_rim
-                                }}</span>
+                                <span class="font-bold text-indigo-700">{{ n.no_rim }}</span>
                             </div>
                         </button>
 
-                        <!-- Disable Jika NP Null -->
+                        <!-- Disable if NP is Null -->
                         <button v-else-if="n.no_rim === 999" type="button"
                             @click="pilihRim(n.no_rim, n.np_users)"
-                            class="min-w-[8ch] px-4 py-2 text-xs bg-violet-500 text-violet-50 active:bg-violet-700 hover:bg-violet-600 transition ease-in-out duration-200 rounded drop-shadow shadow" >
+                            class="min-w-[8ch] px-4 py-2 text-xs bg-violet-500 text-violet-50 active:bg-violet-700 hover:bg-violet-600 transition ease-in-out duration-200 rounded drop-shadow shadow">
                             <div class="flex flex-col">
                                 <span class="font-semibold">{{ n.np_users }}</span>
                                 <span class="font-bold text-violet-50">Inschiet</span>
                             </div>
                         </button>
 
-                        <!-- Disable Jika NP Null -->
+                        <!-- Disable if NP is Null -->
                         <button v-else type="button"
                             class="min-w-[8ch] px-4 py-2 text-xs bg-slate-500 text-slate-50 rounded drop-shadow shadow"
                             disabled>
                             <div class="flex flex-col">
                                 <span class="font-semibold">-</span>
-                                <span class="font-bold text-yellow-300">{{
-                                    n.no_rim
-                                }}</span>
+                                <span class="font-bold text-yellow-300">{{ n.no_rim }}</span>
                             </div>
                         </button>
                     </template>
                 </div>
 
-                <!-- Form -->
+                <!-- Form Section -->
                 <div class="flex justify-center gap-4 mt-4 px-7">
-                    <!-- Nomor Rim -->
+                    <!-- Rim Number -->
                     <div>
                         <InputLabel for="noRimPU" value="Nomor Rim" class="text-sm font-semibold text-center" />
                         <template v-if="formPrintUlang.noRim === 999">
@@ -100,7 +94,7 @@
                         </template>
                     </div>
 
-                    <!-- NP Petugas -->
+                    <!-- NP Officer -->
                     <div>
                         <InputLabel for="npPetugasPU" value="NP Petugas" class="text-sm font-semibold text-center" />
                         <TextInput id="npPetugasPU" type="text" class="block text-sm text-center uppercase"
@@ -108,7 +102,7 @@
                     </div>
                 </div>
 
-                <!-- Action -->
+                <!-- Action Buttons -->
                 <div class="flex justify-center gap-4 pt-4 px-7">
                     <button type="button"
                         class="flex items-center gap-1 px-6 py-2 mr-auto font-semibold text-red-500 underline transition duration-300 ease-in-out border border-red-500 rounded-lg shadow bg-red-50 hover:brightness-90 drop-shadow shadow-red-300/25">
@@ -123,25 +117,25 @@
         </form>
     </Modal>
 
-    <!-- Content -->
+    <!-- Main Content -->
     <ContentLayout>
         <div class="flex flex-col justify-center py-8">
             <form @submit.prevent="submit">
                 <div class="flex flex-col justify-center gap-6 mx-auto px-8 max-w-2xl">
-                    <!-- Team -->
+                    <!-- Team Selection -->
                     <div class="mx-auto w-full">
                         <InputLabel for="team" value="Team" class="text-2xl font-extrabold text-center" />
 
                         <select id="team" ref="team" v-model="form.team" disabled
                             class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block px-10 py-2 mt-2 text-lg w-full drop-shadow flex-grow">
-                            <option v-for="team in props.listTeam" :value="team.id">
+                            <option v-for="team in props.listTeam" :key="team.id" :value="team.id">
                                 {{ team.workstation }}
                             </option>
                         </select>
                     </div>
 
                     <div class="flex justify-between gap-4 w-full">
-                        <!-- PO -->
+                        <!-- PO Number -->
                         <div class="flex-grow">
                             <InputLabel for="po" value="Nomor PO" class="text-2xl font-extrabold text-center" />
 
@@ -150,7 +144,7 @@
                                 autocomplete="po" disabled />
                         </div>
 
-                        <!-- Nomor OBC -->
+                        <!-- OBC Number -->
                         <div class="flex-grow">
                             <InputLabel for="obc" value="Nomor OBC" class="text-2xl font-extrabold text-center" />
 
@@ -159,7 +153,7 @@
                                 autocomplete="obc" disabled />
                         </div>
 
-                        <!-- Seri -->
+                        <!-- Series -->
                         <div class="flex-grow">
                             <InputLabel for="seri" value="Seri" class="text-2xl font-extrabold text-center" />
 
@@ -170,7 +164,7 @@
                     </div>
 
                     <div class="flex justify-between gap-6 mx-auto w-full">
-                        <!-- No Rim -->
+                        <!-- Rim Number -->
                         <div class="flex-grow">
                             <InputLabel for="no_rim" value="Nomor Rim" class="text-2xl font-extrabold text-center" />
 
@@ -189,7 +183,7 @@
                             </template>
                         </div>
 
-                        <!-- Lembar Potong -->
+                        <!-- Cutting Sheet -->
                         <div class="flex-grow">
                             <InputLabel for="lbr_ptg" value="Lembar Potong" class="text-2xl font-extrabold text-center" />
 
@@ -199,7 +193,7 @@
                         </div>
                     </div>
 
-                    <!-- NP Pemeriksa -->
+                    <!-- NP Inspector -->
                     <div>
                         <InputLabel for="rfid" value="Silahkan Scan NP mu" class="text-2xl font-semibold text-center" />
 
@@ -210,7 +204,7 @@
                     </div>
                 </div>
 
-                <!-- Button  -->
+                <!-- Buttons -->
                 <div class="flex justify-center gap-6 mx-auto w-fit">
                     <!-- Reset Form -->
                     <button type="button" @click="form.rfid = null"
@@ -226,7 +220,7 @@
                         </div>
                     </button>
 
-                    <!-- Print Ulang -->
+                    <!-- Reprint -->
                     <button type="button" @click="
                         [getDataRim(), (printUlangModal = !printUlangModal)]
                         "
@@ -269,11 +263,10 @@
             </div>
 
         </div>
-        <!-- Table -->
+        <!-- Verification Table -->
         <TableVerifikasiPegawai :team="form.team" :date="form.date"/>
     </ContentLayout>
 </template>
-
 <script setup>
 import { reactive, ref } from "vue";
 import Modal from "@/Components/Modal.vue";
@@ -285,229 +278,154 @@ import TableVerifikasiPegawai from "@/Components/TableVerifikasiPegawai.vue";
 import { Link, useForm, router } from "@inertiajs/vue3";
 import axios from "axios";
 
+// Mendefinisikan properti komponen
 const props = defineProps({
-    product: Object,
-    listTeam: Object,
-    crntTeam: Number,
-    noRim: Number,
-    potongan: String,
-    date: String,
+    product: Object, // Detail produk
+    listTeam: Object, // Daftar tim
+    crntTeam: Number, // ID tim saat ini
+    noRim: Number, // Nomor rim
+    potongan: String, // Spesifikasi pemotongan
+    date: String, // Tanggal untuk operasi
     showModal: {
         type: Boolean,
-        default: false,
+        default: false, // Visibilitas modal
     },
     printUlangModal: {
         type: Boolean,
-        default: false,
+        default: false, // Visibilitas modal cetak ulang
     },
 });
 
+// Referensi reaktif untuk data cetak ulang
 const dataPrintUlang = ref();
 
-// Form
+// Data formulir untuk operasi utama
 const form = useForm({
-    id: props.product.id,
-    po: props.product.no_po,
-    obc: props.product.no_obc,
-    team: props.crntTeam,
-    seri: props.product.no_obc.substr(4, 1),
-    jml_rim: 1,
-    lbr_ptg: props.potongan,
-    no_rim: props.noRim,
-    rfid: "",
-    date: props.date,
+    id: props.product.id, // ID produk
+    po: props.product.no_po, // Nomor pesanan
+    obc: props.product.no_obc, // Nomor OBC
+    team: props.crntTeam, // Tim saat ini
+    seri: props.product.no_obc.substr(4, 1), // Seri yang diambil dari OBC
+    jml_rim: 1, // Jumlah rim
+    lbr_ptg: props.potongan, // Spesifikasi pemotongan
+    no_rim: props.noRim, // Nomor rim
+    rfid: "", // RFID untuk pemindaian
+    date: props.date, // Tanggal untuk operasi
 });
 
-// Form Print Ulang / Edit data Rim
+// Form reaktif untuk mencetak ulang atau mengedit data rim
 const formPrintUlang = reactive({
-    dataRim: "Kiri",
-    noRim: "",
-    npPetugas: "",
-    po: props.product.no_po,
-    obc: props.product.no_obc,
-    team: props.crntTeam,
+    dataRim: "Kiri", // Sisi rim default
+    noRim: "", // Nomor rim
+    npPetugas: "", // NP petugas
+    po: props.product.no_po, // Nomor pesanan
+    obc: props.product.no_obc, // Nomor OBC
+    team: props.crntTeam, // Tim saat ini
 });
 
+// Fungsi untuk memilih rim kanan
 const dataRimKanan = async () => {
-    formPrintUlang.dataRim = "Kanan";
-    getDataRim();
+    formPrintUlang.dataRim = "Kanan"; // Mengatur sisi rim ke kanan
+    getDataRim(); // Mengambil data untuk rim yang dipilih
 };
 
+// Fungsi untuk memilih rim kiri
 const dataRimKiri = async () => {
-    formPrintUlang.dataRim = "Kiri";
-    getDataRim();
+    formPrintUlang.dataRim = "Kiri"; // Mengatur sisi rim ke kiri
+    getDataRim(); // Mengambil data untuk rim yang dipilih
 };
 
+// Referensi reaktif untuk verifikasi pegawai
 const verifPegawai = ref()
 
+// Fungsi untuk mengambil pendapatan harian untuk verifikasi
 const produksiPegawai = () => {
     axios.get('/api/pendapatan-harian?date=' + form.date + '&team=' + form.team).then((res) => {
-        verifPegawai.value = res.data;
+        verifPegawai.value = res.data; // Menyimpan data yang diambil
     });
 }
 
+// Panggilan awal untuk mengambil data pegawai
 produksiPegawai()
 
-// Tarik Data Untuk Perint Ulang Rim
+// Fungsi untuk mengambil data untuk mencetak ulang rim
 const getDataRim = () => {
     axios.post('/api/non-perekat/non-personal/print-label/edit', formPrintUlang).then((res) => {
-        dataPrintUlang.value = res.data;
+        dataPrintUlang.value = res.data; // Menyimpan data yang diambil
     });
 };
 
+// Fungsi untuk memilih rim berdasarkan nomor dan petugas
 const pilihRim = (noRim, np) => {
-    formPrintUlang.noRim = noRim;
-    formPrintUlang.npPetugas = np;
+    formPrintUlang.noRim = noRim; // Mengatur nomor rim yang dipilih
+    formPrintUlang.npPetugas = np; // Mengatur NP petugas yang dipilih
 };
 
+// Fungsi untuk menghasilkan HTML label cetak
+const generatePrintLabel = (obc, np, noRim, sisiran) => {
+    let date = new Date(); // Tanggal saat ini
+    const months = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
+    let tgl = `${date.getDate()}-${months[date.getMonth()]}-${date.getFullYear()}`; // Tanggal yang diformat
+    let time = `${date.getHours()} : ${date.getMinutes()}`; // Waktu saat ini
+    let obc_color = form.seri == 3 ? "#b91c1c" : "#1d4ed8"; // Warna berdasarkan seri
+
+    // Mengembalikan struktur HTML untuk pencetakan
+    return `<!DOCTYPE html>
+        <html>
+            <head></head>
+            <body>
+                <div style='page-break-after:always; width:100%; height:100%;'>
+                    <div style="margin-top:19.5vh; margin-left:18vh">
+                        <span style="font-weight:600; text-align:center;">${tgl}</span>
+                        <h1 style="font-size: 24px; line-height: 32px; margin-left:25px; font-weight:600; text-align:center; display:inline-block; padding-top:6px; color:${obc_color}">${obc}</h1>
+                    </div>
+                    <div style="margin-top:16.2px; margin-left:16vh">
+                        <h1 style="font-size: 20px; line-height: 32px; margin-left:155px; margin-right:auto; font-weight:600;text-align:center;display:inline-block;text-transform: uppercase;">${np}</h1>
+                    </div>
+                    <div style="margin-top:47.5px; margin-left:13vh">
+                        <h1 style="display: inline-block; margin-left: 160px; margin-right: auto; text-align: center; font-size: 20px; line-height: 28px; font-weight:500;">${noRim} ${sisiran} <span style="font-size:12px; margin-left:8px">${time}</span></h1>
+                    </div>
+                </div>
+            </body>
+        </html>`;
+};
+
+// Fungsi untuk mencetak label cetak ulang
 const printUlangLabel = () => {
-    // Check Jika Ini Chrome Karena Chrome harus ada TImeout
-    // let is_chrome = function () { return Boolean(window.chrome); }
-    let date = new Date();
-    const months = [
-        "Jan",
-        "Feb",
-        "Mar",
-        "Apr",
-        "Mei",
-        "Jun",
-        "Jul",
-        "Agu",
-        "Sep",
-        "Okt",
-        "Nov",
-        "Des",
-    ];
-
-    let obc_color = form.seri == 3 ? "#b91c1c" : "#1d4ed8"
-    let obc = formPrintUlang.obc;
-    // let tgl = date.getDay() + "-" + months[date.getMonth()] + "-" + date.getFullYear();
-    let tgl =
-        date.getDate() +
-        "-" +
-        months[date.getMonth()] +
-        "-" +
-        date.getFullYear();
-    let np = formPrintUlang.npPetugas;
-    let noRim = formPrintUlang.noRim !== 999 ? formPrintUlang.noRim : "INS"
-    let time = date.getHours() + " : " + date.getMinutes();
-    let sisiran = formPrintUlang.dataRim == "Kiri" ? "(*)" : "(**)";
-    let WinPrint = window.open(
-        "",
-        "",
-        "left=0,top=0,width=800,height=900,toolbar=0,scrollbars=0,status=0"
-    );
-    let printLabel = `<!DOCTYPE html>
-                            <html>
-                                <head>
-                                </head>
-                                <body>
-                                    <div style='page-break-after:always; width:100%; height:100%;'>
-                                        <div style="margin-top:19.5vh; margin-left:18vh">
-                                            <span style="font-weight:600; text-align:center;">${tgl}</span>
-                                            <h1 style="font-size: 24px; line-height: 32px; margin-left:25px; font-weight:600; text-align:center; display:inline-block; padding-top:6px; color:${obc_color}">${obc}</h1>
-                                        </div>
-                                        <div style="margin-top:16.2px; margin-left:16vh">
-                                            <h1 style="font-size: 20px; line-height: 32px; margin-left:155px; margin-right:auto; ;font-weight:600;text-align:center;display:inline-block;text-transform: uppercase;">${np}</h1>
-                                        </div>
-                                        <div style="margin-top:47.5px; margin-left:13vh">
-                                            <h1 style="display: inline-block; margin-left: 160px; margin-right: auto; text-align: center; font-size: 20px; line-height: 28px; font-weight:500;">${noRim} ${sisiran} <span style="font-size:12px; margin-left:8px">${time}</span></h1>
-                                        </div>
-                                    </div>
-                                </body>
-                            </html>`;
-
-    WinPrint.document.write(printLabel);
-
+    let printLabel = generatePrintLabel(formPrintUlang.obc, formPrintUlang.npPetugas, formPrintUlang.noRim !== 999 ? formPrintUlang.noRim : "INS", formPrintUlang.dataRim == "Kiri" ? "(*)" : "(**)");
+    let WinPrint = window.open("", "", "left=0,top=0,width=800,height=900,toolbar=0,scrollbars=0,status=0");
+    WinPrint.document.write(printLabel); // Menulis label yang dihasilkan ke jendela baru
     WinPrint.document.close();
     WinPrint.focus();
-    WinPrint.print();
+    WinPrint.print(); // Memicu pencetakan
     WinPrint.close();
     router.post("/api/non-perekat/non-personal/print-label/update", formPrintUlang, {
         onFinish: () => {
-            router.get("/non-perekat/non-personal/print-label/" + form.team + "/" + form.id);
+            router.get("/non-perekat/non-personal/print-label/" + form.team + "/" + form.id); // Mengalihkan setelah pembaruan
         },
     });
 };
 
+// Fungsi untuk mengirim formulir utama
 const submit = () => {
-    // Check Jika Ini Chrome Karena Chrome harus ada TImeout
-    // let is_chrome = function () { return Boolean(window.chrome); }
-    let date = new Date();
-    const months = [
-        "Jan",
-        "Feb",
-        "Mar",
-        "Apr",
-        "Mei",
-        "Jun",
-        "Jul",
-        "Agu",
-        "Sep",
-        "Okt",
-        "Nov",
-        "Des",
-    ];
-
-    let obc_color = form.seri == 3 ? "#b91c1c" : "#1d4ed8"
-    let obc = form.obc;
-    let tgl =
-        date.getDate() +
-        "-" +
-        months[date.getMonth()] +
-        "-" +
-        date.getFullYear();
-    let np = form.rfid;
-    let noRim = form.no_rim !== 999 ? form.no_rim : "INS";
-    let time =
-        date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
-    let sisiran = form.lbr_ptg == "Kiri" ? "(*)" : "(**)";
-    let WinPrint = window.open(
-        "",
-        "",
-        "left=0,top=0,width=800,height=900,toolbar=0,scrollbars=0,status=0"
-    );
-    let printLabel = `<!DOCTYPE html>
-                            <html>
-                                <head>
-                                </head>
-                                <body>
-                                    <div style='page-break-after:always; width:100%; height:100%;'>
-                                        <div style="margin-top:19.5vh; margin-left:18vh">
-                                            <span style="font-weight:600; text-align:center;">${tgl}</span>
-                                            <h1 style="font-size: 24px; line-height: 32px; margin-left:25px; font-weight:600; text-align:center; display:inline-block; padding-top:6px; color:${obc_color}">${obc}</h1>
-                                        </div>
-                                        <div style="margin-top:16.2px; margin-left:16vh">
-                                            <h1 style="font-size: 20px; line-height: 32px; margin-left:155px; margin-right:auto; ;font-weight:600;text-align:center;display:inline-block;text-transform: uppercase;">${np}</h1>
-                                        </div>
-                                        <div style="margin-top:47.5px; margin-left:13vh">
-                                            <h1 style="display: inline-block; margin-left: 160px; margin-right: auto; text-align: center; font-size: 20px; line-height: 28px; font-weight:500;">${noRim} ${sisiran} <span style="font-size:12px; margin-left:8px">${time}</span></h1>
-                                        </div>
-                                    </div>
-                                </body>
-                            </html>`;
-
-    WinPrint.document.write(printLabel);
-
+    let printLabel = generatePrintLabel(form.obc, form.rfid, form.no_rim !== 999 ? form.no_rim : "INS", form.lbr_ptg == "Kiri" ? "(*)" : "(**)");
+    let WinPrint = window.open("", "", "left=0,top=0,width=800,height=900,toolbar=0,scrollbars=0,status=0");
+    WinPrint.document.write(printLabel); // Menulis label yang dihasilkan ke jendela baru
     WinPrint.document.close();
     WinPrint.focus();
-    WinPrint.print();
+    WinPrint.print(); // Memicu pencetakan
     WinPrint.close();
     router.post("/api/non-perekat/non-personal/print-label", form, {
         onFinish: () => {
-            if (props.noRim !== 0) {
-                router.get("/non-perekat/non-personal/print-label/" + form.team + "/" + form.id);
-            }
-            else {
-                router.get("/non-perekat/non-personal/verif");
-            }
+            router.get(props.noRim !== 0 ? "/non-perekat/non-personal/print-label/" + form.team + "/" + form.id : "/non-perekat/non-personal/verif"); // Mengalihkan setelah pengiriman
         },
     });
-    form.rfid = null;
+    form.rfid = null; // Menghapus RFID setelah pengiriman
 };
 
+// Fungsi untuk menyelesaikan pesanan
 const finish_order = () => {
-    axios.put("/api/nonPers-finish-order/" + form.po)
-    router.get("/non-perekat/non-personal/verif")
+    axios.put("/api/nonPers-finish-order/" + form.po) // Memperbarui status pesanan
+    router.get("/non-perekat/non-personal/verif") // Mengalihkan ke halaman verifikasi
 }
 </script>
