@@ -28,7 +28,7 @@ Route::get('/login', function () {
     return Inertia::render('Login');
 })->name('login');
 
-Route::middleware(['auth'])->group(function () {
+// Route::middleware(['auth'])->group(function () {
     Route::get('/', function () {
         return Inertia::render('Dashboard');
     })->name('dashboard');
@@ -97,7 +97,7 @@ Route::middleware(['auth'])->group(function () {
             'teams' => \App\Models\Workstations::all(),
         ]);
     });
-});
+// });
 
 
 
