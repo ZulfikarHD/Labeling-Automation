@@ -16,137 +16,147 @@ class PrintLabelController extends Controller
     use UpdateStatusProgress;
 
     /**
-     * Index
+     * Menampilkan halaman untuk menghasilkan label.
+     *
+     * @param String $workstation ID workstation yang sedang digunakan
+     * @param String $id ID produk yang akan ditampilkan
+     * @return \Inertia\Response
      */
     public function index(String $workstation, String $id)
     {
         $product = GeneratedProducts::where('id',$id)->first();
 
         return Inertia::render('NonPerekat/NonPersonal/Verifikator/GenerateLabel',[
-            'product'   => GeneratedProducts::where('id',$id)->first(),
-            'listTeam'  => Workstations::select('id','workstation')->get(),
-            'crntTeam'  => Workstations::where('id',$workstation)->value('id'),
-            'noRim'     => $this->fetcNoRim($product->no_po)['noRim'],
-            'potongan'  => $this->fetcNoRim($product->no_po)['potongan'],
-            'date'      => now(),
+            'product'   => $product, // Produk yang diambil
+            'listTeam'  => Workstations::select('id','workstation')->get(), // Daftar workstation
+            'crntTeam'  => $workstation, // Workstation saat ini
+            'noRim'     => $this->fetcNoRim($product->no_po)['noRim'], // Nomor rim yang diambil
+            'potongan'  => $this->fetcNoRim($product->no_po)['potongan'], // Potongan yang diambil
+            'date'      => now(), // Tanggal saat ini
         ]);
     }
 
+    /**
+     * Menghitung jumlah label yang np_users-nya null berdasarkan PO.
+     *
+     * @param String $po Nomor PO yang akan dihitung
+     * @return int Jumlah label yang np_users-nya null
+     */
     private function countNullNp(String $po)
     {
-        return count(GeneratedLabels::where('no_po_generated_products',$po)->where('np_users',null)->get());
+        // Menghitung jumlah label yang np_users-nya null
+        return GeneratedLabels::where('no_po_generated_products',$po)->where('np_users',null)->count();
     }
 
     /**
-     * Print Label dan Simpan data user ke Database
+     * Menyimpan data label dan memperbarui status pengguna.
+     *
+     * @param Request $request Data yang diterima dari permintaan
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function store(Request $request)
     {
-        // Jangan rubah Urutannya
-        $cnt_prog = count(GeneratedLabels::where('np_users',$request->rfid)->pluck('finish'));
-        if($cnt_prog > 0){
-            GeneratedLabels::where('np_users',$request->rfid)
+        $rfid = strtoupper($request->rfid); // Mengubah RFID menjadi huruf kapital
+        $cnt_prog = GeneratedLabels::where('np_users',$rfid)->where('finish',null)->count(); // Menghitung jumlah label yang belum selesai
+
+        // Memperbarui label jika ada yang belum selesai
+        if ($cnt_prog > 0) {
+            GeneratedLabels::where('np_users',$rfid)
                     ->where('finish',null)
                     ->update([
-                        'np_users'  => strtoupper($request->rfid),
+                        'np_users'  => $rfid,
                         'finish'     => now()
                     ]);
-        }else{
-            // do nothing
         }
 
+        // Memperbarui data label baru
         GeneratedLabels::where('no_po_generated_products',$request->po)
             ->where('potongan',$request->lbr_ptg)
             ->where('no_rim',$request->no_rim)
             ->update([
-                'np_users'    => strtoupper($request->rfid),
+                'np_users'    => $rfid,
                 'start'       => now(),
                 'finish'      => null,
                 'workstation' => $request->team
             ]);
 
-        if($this->countNullNp($request->po) > 0 ){
-            $this->updateProgress($request->po,1);
-        }
-        else{
-            $this->updateProgress($request->po,2);
-        }
-        if($request->no_rim === 999 && $request->lbr_ptg === "Kiri"){
-            DataInschiet::where('no_po',$request->po)
-                    ->update([
-                            'np_kiri' => strtoupper($request->rfid)
-                    ]);
-        }
-        elseif($request->no_rim === 999 && $request->lbr_ptg === "Kanan"){
-            DataInschiet::where('no_po',$request->po)
-                    ->update([
-                            'np_kanan' => strtoupper($request->rfid)
-                    ]);
-        }
-        else{
+        // Memperbarui progres berdasarkan jumlah label yang np_users-nya null
+        $this->updateProgress($request->po, $this->countNullNp($request->po) > 0 ? 1 : 2);
 
+        // Memperbarui data di DataInschiet jika no_rim adalah 999
+        if ($request->no_rim === 999) {
+            $field = $request->lbr_ptg === "Kiri" ? 'np_kiri' : 'np_kanan'; // Menentukan field berdasarkan potongan
+            DataInschiet::where('no_po',$request->po)->update([$field => $rfid]);
         }
 
-        return redirect()->back();
+        return redirect()->back(); // Kembali ke halaman sebelumnya
     }
 
 
     /**
-     * Show the form for editing the specified resource.
+     * Menampilkan data untuk mengedit label yang ditentukan.
+     *
+     * @param Request $request Data yang diterima dari permintaan
+     * @return \Illuminate\Database\Eloquent\Collection
      */
     public function edit(Request $request)
     {
-        $getDataRim = GeneratedLabels::where('no_po_generated_products',$request->po)
+        // Mengambil data label berdasarkan PO dan potongan
+        return GeneratedLabels::where('no_po_generated_products',$request->po)
                                      ->where('potongan',$request->dataRim)
                                      ->select('no_rim','np_users','potongan','start','finish')
                                      ->get();
-        return  $getDataRim;
     }
 
     /**
-     * Update the specified resource in storage.
+     * Memperbarui data label yang ditentukan.
+     *
+     * @param Request $request Data yang diterima dari permintaan
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function update(Request $request)
     {
+        $npPetugas = strtoupper($request->npPetugas); // Mengubah nama petugas menjadi huruf kapital
+
+        // Memperbarui data label
         GeneratedLabels::where('no_po_generated_products',$request->po)
                 ->where('potongan',$request->dataRim)
                 ->where('no_rim',$request->noRim)
                 ->update([
-                    'np_users'  => strtoupper($request->npPetugas),
+                    'np_users'  => $npPetugas,
                     'workstation' => $request->team,
                     'start'     => now()
                 ]);
 
-            if($request->noRim === 999 && $request->dataRim === "Kiri"){
-                DataInschiet::where('no_po',$request->po)
-                        ->update([
-                                'np_kiri' => strtoupper($request->npPetugas)
-                        ]);
+        // Memperbarui data di DataInschiet jika noRim adalah 999
+        if ($request->noRim === 999) {
+            $field = $request->dataRim === "Kiri" ? 'np_kiri' : 'np_kanan'; // Menentukan field berdasarkan potongan
+            DataInschiet::where('no_po',$request->po)->update([$field => $npPetugas]);
+        }
 
-            }
-            elseif($request->noRim === 999 && $request->dataRim === "Kanan"){
-                DataInschiet::where('no_po',$request->po)
-                        ->update([
-                                'np_kanan' => strtoupper($request->npPetugas)
-                        ]);
-            }
-            else{
-            }
-
-        return redirect()->back();
+        return redirect()->back(); // Kembali ke halaman sebelumnya
     }
 
+    /**
+     * Menghapus label berdasarkan ID.
+     *
+     * @param String $id ID label yang akan dihapus
+     */
     public function delete(String $id)
     {
-
+        // Implementasi penghapusan label
     }
 
 
     /**
-     * Get Nomor Rim dan Potongan
+     * Mengambil nomor rim dan potongan berdasarkan PO.
+     *
+     * @param String $po Nomor PO yang akan diambil
+     * @return array Mengembalikan nomor rim dan potongan
      */
     private function fetcNoRim(String $po)
     {
+        // Mengambil data label yang belum terisi untuk potongan Kiri dan Kanan
         $nullKiri   = GeneratedLabels::where('no_po_generated_products',$po)
                                 ->where('potongan','Kiri')
                                 ->where('np_users',null)
@@ -157,6 +167,7 @@ class PrintLabelController extends Controller
                                 ->where('np_users',null)
                                 ->get();
 
+        // Mengambil label terakhir untuk potongan Kiri dan Kanan
         $lastKiri   = GeneratedLabels::where('no_po_generated_products',$po)
                             ->where('potongan','Kiri')
                             ->where('np_users',null)
@@ -167,39 +178,61 @@ class PrintLabelController extends Controller
                             ->where('np_users',null)
                             ->first();
 
-        $lastRimKiri  = $lastKiri  !== null ? $lastKiri->no_rim : GeneratedLabels::where('no_po_generated_products',$po)->where('potongan','kiri')->latest('no_rim')->first()->no_rim;
+        // Mengambil nomor rim terakhir untuk potongan Kiri dan Kanan
+        $lastRimKiri  = $lastKiri !== null ? $lastKiri->no_rim : GeneratedLabels::where('no_po_generated_products',$po)->where('potongan','kiri')->latest('no_rim')->first()->no_rim;
         $lastRimKanan = $lastKanan !== null ? $lastKanan->no_rim : GeneratedLabels::where('no_po_generated_products',$po)->where('potongan','kanan')->latest('no_rim')->first()->no_rim;
 
-        // Cek jika label bagian kiri dan kana sudah isi semua
-        if(count($nullKiri) < 1 && count($nullKanan) < 1){
+        // Cek jika ada no_rim "999" dan "np_users" masih kosong, maka jadikan itu urutan pertama
+        $rim999Kiri = GeneratedLabels::where('no_po_generated_products', $po)
+            ->where('potongan', 'Kiri')
+            ->where('no_rim', 999)
+            ->where('np_users', null)
+            ->first();
+
+        $rim999Kanan = GeneratedLabels::where('no_po_generated_products', $po)
+            ->where('potongan', 'Kanan')
+            ->where('no_rim', 999)
+            ->where('np_users', null)
+            ->first();
+
+        if ($rim999Kiri) {
+            return [
+                'noRim' => 999, // Nomor rim yang diambil
+                'potongan' => 'Kiri' // Potongan yang diambil
+            ];
+        }
+
+        if ($rim999Kanan) {
+            return [
+                'noRim' => 999, // Nomor rim yang diambil
+                'potongan' => 'Kanan' // Potongan yang diambil
+            ];
+        }
+
+        // Cek jika label bagian kiri dan kanan sudah terisi semua
+        if (count($nullKiri) < 1 && count($nullKanan) < 1) {
             $noRim = 0;
             $potongan = 'Finished';
-        }
-        else{
-            if(count($nullKiri) > 0){
-                if($lastRimKiri == $lastRimKanan){
+        } else {
+            if (count($nullKiri) > 0) {
+                if ($lastRimKiri == $lastRimKanan) {
                     $noRim  = $lastKiri->no_rim;
                     $potongan = "Kiri";
-                }
-                elseif($lastRimKiri > $lastRimKanan){
+                } elseif ($lastRimKiri > $lastRimKanan) {
                     $noRim  = $lastKanan->no_rim;
                     $potongan = "Kanan";
-                }
-                elseif($lastRimKiri < $lastRimKanan){
+                } else {
                     $noRim  = $lastKiri->no_rim;
                     $potongan = "Kiri";
                 }
-            }
-            else{
-                if($lastRimKanan == $lastRimKiri){
+            } else {
+                if ($lastRimKanan == $lastRimKiri) {
                     $noRim  = $lastKanan->no_rim;
                     $potongan  = "Kanan";
-                }
-                elseif($lastRimKanan > $lastRimKiri){
+                } elseif ($lastRimKanan > $lastRimKiri) {
                     $noRim  = $lastKiri->no_rim;
                     $potongan = "Kiri";
-                }
-                elseif($lastRimKanan < $lastRimKiri){
+                } else {
                     $noRim  = $lastKanan->no_rim;
                     $potongan  = "Kanan";
                 }
@@ -207,8 +240,8 @@ class PrintLabelController extends Controller
         }
 
         return [
-            'noRim' => $noRim ,
-            'potongan' => $potongan
+            'noRim' => $noRim, // Nomor rim yang diambil
+            'potongan' => $potongan // Potongan yang diambil
         ];
     }
 }
