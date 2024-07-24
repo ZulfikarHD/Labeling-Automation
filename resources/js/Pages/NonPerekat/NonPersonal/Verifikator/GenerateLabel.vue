@@ -266,6 +266,7 @@
         <!-- Verification Table -->
         <TableVerifikasiPegawai :team="form.team" :date="form.date"/>
     </ContentLayout>
+    <iframe ref="printFrame" style="display: none;"></iframe>
 </template>
 <script setup>
 import { reactive, ref } from "vue";
@@ -374,31 +375,63 @@ const generatePrintLabel = (obc, np, noRim, sisiran) => {
         <html>
             <head></head>
             <body>
-                <div style='page-break-after:always; width:100%; height:100%;'>
-                    <div style="margin-top:19.5vh; margin-left:18vh">
+                <div style='page-break-after:avoid; width:100%; height:fit-content;'>
+                    <div style="margin-top:19.5vh; margin-left:18.5vh">
                         <span style="font-weight:600; text-align:center;">${tgl}</span>
                         <h1 style="font-size: 24px; line-height: 32px; margin-left:25px; font-weight:600; text-align:center; display:inline-block; padding-top:6px; color:${obc_color}">${obc}</h1>
                     </div>
-                    <div style="margin-top:16.2px; margin-left:16vh">
+                    <div style="margin-top:0.75rem; margin-left:16vh">
                         <h1 style="font-size: 20px; line-height: 32px; margin-left:155px; margin-right:auto; font-weight:600;text-align:center;display:inline-block;text-transform: uppercase;">${np}</h1>
                     </div>
                     <div style="margin-top:47.5px; margin-left:13vh">
-                        <h1 style="display: inline-block; margin-left: 160px; margin-right: auto; text-align: center; font-size: 20px; line-height: 28px; font-weight:500;">${noRim} ${sisiran} <span style="font-size:12px; margin-left:8px">${time}</span></h1>
+                        <h1 style="display: inline-block; margin-left: 160px; margin-right: auto; text-align: center; font-size: 20px; line-height: 28px; font-weight:500; color:${obc_color}">${noRim} ${sisiran} <span style="font-size:12px; margin-left:8px">${time}</span></h1>
                     </div>
                 </div>
             </body>
         </html>`;
 };
 
+const printFrame = ref(null);
+
+const printWithoutDialog = (content) => {
+    const iframe = printFrame.value;
+    const doc = iframe.contentWindow.document;
+    doc.open();
+    // Add styles to hide header and footer and limit to the first page
+    doc.write(`
+        <style>
+            @media print {
+                @page {
+                    margin: 3rem; /* Remove default margins */
+                }
+                body {
+                    margin: 0; /* Remove body margin */
+                }
+                header, footer {
+                    display: none !important; /* Hide header and footer */
+                }
+                * {
+                    -webkit-print-color-adjust: exact; /* Ensure colors are printed correctly */
+                    print-color-adjust: exact; /* Ensure colors are printed correctly */
+                }
+            }
+        </style>
+        ${content}
+    `);
+    doc.close();
+    iframe.contentWindow.focus();
+
+    // Use a timeout to allow the content to load before printing
+    setTimeout(() => {
+        iframe.contentWindow.print();
+    }, 100); // Adjust the timeout as necessary
+};
+
 // Fungsi untuk mencetak label cetak ulang
 const printUlangLabel = () => {
     let printLabel = generatePrintLabel(formPrintUlang.obc, formPrintUlang.npPetugas, formPrintUlang.noRim !== 999 ? formPrintUlang.noRim : "INS", formPrintUlang.dataRim == "Kiri" ? "(*)" : "(**)");
-    let WinPrint = window.open("", "", "left=0,top=0,width=800,height=900,toolbar=0,scrollbars=0,status=0");
-    WinPrint.document.write(printLabel); // Menulis label yang dihasilkan ke jendela baru
-    WinPrint.document.close();
-    WinPrint.focus();
-    WinPrint.print(); // Memicu pencetakan
-    WinPrint.close();
+    printWithoutDialog(printLabel);
+
     router.post("/api/non-perekat/non-personal/print-label/update", formPrintUlang, {
         onFinish: () => {
             router.get("/non-perekat/non-personal/print-label/" + form.team + "/" + form.id); // Mengalihkan setelah pembaruan
@@ -409,12 +442,7 @@ const printUlangLabel = () => {
 // Fungsi untuk mengirim formulir utama
 const submit = () => {
     let printLabel = generatePrintLabel(form.obc, form.rfid, form.no_rim !== 999 ? form.no_rim : "INS", form.lbr_ptg == "Kiri" ? "(*)" : "(**)");
-    let WinPrint = window.open("", "", "left=0,top=0,width=800,height=900,toolbar=0,scrollbars=0,status=0");
-    WinPrint.document.write(printLabel); // Menulis label yang dihasilkan ke jendela baru
-    WinPrint.document.close();
-    WinPrint.focus();
-    WinPrint.print(); // Memicu pencetakan
-    WinPrint.close();
+    printWithoutDialog(printLabel);
     router.post("/api/non-perekat/non-personal/print-label", form, {
         onFinish: () => {
             router.get(props.noRim !== 0 ? "/non-perekat/non-personal/print-label/" + form.team + "/" + form.id : "/non-perekat/non-personal/verif"); // Mengalihkan setelah pengiriman
