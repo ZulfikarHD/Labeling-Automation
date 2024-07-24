@@ -104,7 +104,7 @@ produksiPegawai()
                             </td>
                             <td
                                 class="leading-5 whitespace-nowrap text-sm px-4 py-1.5 text-emerald-700 border-r text-end">
-                                <p class="font-semibold">{{ Number(produksi.verifikasi) / 500 }}
+                                <p class="font-semibold">{{ Math.ceil(Number(produksi.verifikasi) / 500) }}
                                     <span class="text-slate-600">RIM</span>
                                 </p>
                             </td>
