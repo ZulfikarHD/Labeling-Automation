@@ -122,6 +122,7 @@
         <div class="flex flex-col justify-center py-8">
             <form @submit.prevent="submit">
                 <div class="flex flex-col justify-center gap-6 mx-auto px-8 max-w-2xl">
+
                     <!-- Team Selection -->
                     <div class="mx-auto w-full">
                         <InputLabel for="team" value="Team" class="text-2xl font-extrabold text-center" />
@@ -190,6 +191,15 @@
                             <TextInput id="lbr_ptg" ref="lbr_ptg" v-model="form.lbr_ptg" type="text"
                                 class="block bg-slate-200/80  drop-shadow shadow w-full px-4 py-2 mt-2 text-lg text-center font-bold"
                                 autocomplete="lbr_ptg" disabled />
+                        </div>
+
+                        <!-- No Plat -->
+                        <div class="flex-grow">
+                            <InputLabel for="noPlat" value="Kode Plat" class="text-2xl font-extrabold text-center" />
+
+                            <TextInput id="noPlat" ref="noPlat" v-model="form.noPlat" type="number"
+                                class="block w-full px-4 py-2 mt-2 text-lg text-center shadow bg-slate-200/80 drop-shadow font-bold"
+                                autocomplete="seri" disabled />
                         </div>
                     </div>
 
@@ -306,12 +316,13 @@ const form = useForm({
     po: props.product.no_po, // Nomor pesanan
     obc: props.product.no_obc, // Nomor OBC
     team: props.crntTeam, // Tim saat ini
-    seri: props.product.no_obc.substr(4, 1), // Seri yang diambil dari OBC
+    seri: props.product.no_obc.substr(4, 1) > 3 ? 1 : props.product.no_obc.substr(4, 1), // Seri yang diambil dari OBC
     jml_rim: 1, // Jumlah rim
     lbr_ptg: props.potongan, // Spesifikasi pemotongan
     no_rim: props.noRim, // Nomor rim
     rfid: "", // RFID untuk pemindaian
     date: props.date, // Tanggal untuk operasi
+    noPlat :"",
 });
 
 // Form reaktif untuk mencetak ulang atau mengedit data rim
@@ -456,4 +467,17 @@ const finish_order = () => {
     axios.put("/api/nonPers-finish-order/" + form.po) // Memperbarui status pesanan
     router.get("/non-perekat/non-personal/verif") // Mengalihkan ke halaman verifikasi
 }
+
+// Fetch noPlat from API
+const fetchNoPlat = async () => {
+    try {
+        const response = await axios.get('http://10.18.30.233:8300/api/nomor-plat-pcht/' + form.obc);
+        form.noPlat = response.data; // Assuming the API returns an object with a noPlat property
+    } catch (error) {
+        console.error('Error fetching noPlat:', error);
+    }
+};
+
+// Call fetchNoPlat to set the noPlat value
+fetchNoPlat();
 </script>

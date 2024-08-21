@@ -157,7 +157,7 @@
                         <div class="flex-grow">
                             <InputLabel for="seri" value="Seri" class="text-2xl font-extrabold text-center" />
 
-                            <TextInput id="seri" ref="seri" v-model="form.seri" type="number"
+                            <TextInput id="seri" ref="seri" v-model="form.seri > 3 ? form.seri : 1" type="number"
                                 class="block w-full px-4 py-2 mt-2 text-lg text-center shadow bg-slate-200/80 drop-shadow"
                                 autocomplete="seri" disabled />
                         </div>
@@ -305,7 +305,7 @@ const form = useForm({
     po: props.product.no_po, // Nomor pesanan
     obc: props.product.no_obc, // Nomor OBC
     team: props.crntTeam, // Tim saat ini
-    seri: props.product.no_obc.substr(4, 1), // Seri yang diambil dari OBC
+    seri: props.product.no_obc.substr(4, 1) !== "4" ? props.product.no_obc.substr(4, 1) : 1, // Seri yang diambil dari OBC
     jml_rim: 1, // Jumlah rim
     lbr_ptg: props.potongan, // Spesifikasi pemotongan
     no_rim: props.noRim, // Nomor rim
