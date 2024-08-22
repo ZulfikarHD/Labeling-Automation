@@ -7,6 +7,7 @@ use App\Http\Controllers\GenerateLabelsPersonalController;
 use App\Http\Controllers\EntryPoController;
 use App\Http\Controllers\GeneratedLabelsController;
 use App\Http\Controllers\PrintLabelController;
+use App\Http\Controllers\PrintLabelPersonalController;
 use App\Http\Controllers\PendapatanHarianController;
 use App\Http\Controllers\UpdateSpecController;
 
@@ -39,6 +40,9 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     Route::post('/non-perekat/non-personal/print-label/update',[PrintLabelController::class, 'update']);
 
     Route::get('/non-perekat/non-personal/verif/{team}',[GeneratedLabelsController::class, 'fetchWorkPo']);
+
+// Print Label Personal
+    Route::post('/non-perekat/personal/print-label',[PrintLabelPersonalController::class, 'store']);
 
 // Calculation
     Route::get('/pendapatan-harian', [PendapatanHarianController::class, 'gradeHarian']);

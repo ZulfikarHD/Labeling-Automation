@@ -14,7 +14,7 @@ use DB;
 class EntryPoController extends Controller
 {
     /**
-     * Menampilkan halaman utama Entry PO.
+     * Display the main Entry PO page.
      *
      * @return \Inertia\Response
      */
@@ -26,20 +26,20 @@ class EntryPoController extends Controller
     }
 
     /**
-     * Menyimpan atau membuat label berdasarkan PO dan jumlah rimnya.
+     * Store or create labels based on PO and the number of rims.
      *
      * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\RedirectResponse
      */
     public function store(Request $request)
     {
-        $sumRim = $request->jml_lembar > 0 ? floor($request->jml_lembar / 1000) : 0;
+        $sumRim = max(floor($request->jml_lembar / 1000), 1);
         $cnt_gen_po = GeneratedLabels::where('no_po_generated_products', $request->po)->count();
 
         DB::transaction(function () use ($request, $sumRim, $cnt_gen_po) {
             if ($cnt_gen_po === 0) {
-                $this->createGeneratedProducts($request, $sumRim);
-                $this->createGeneratedLabels($request, $sumRim);
+                $this->createOrUpdateGeneratedProducts($request, $sumRim);
+                $this->createOrUpdateGeneratedLabels($request, $sumRim);
             } else {
                 $this->updateGeneratedProductsAndLabels($request, $sumRim);
             }
@@ -53,13 +53,13 @@ class EntryPoController extends Controller
     }
 
     /**
-     * Membuat atau memperbarui data produk yang dihasilkan berdasarkan PO.
+     * Create or update generated products based on PO.
      *
      * @param \Illuminate\Http\Request $request
      * @param int $sumRim
      * @return void
      */
-    private function createGeneratedProducts($request, $sumRim)
+    private function createOrUpdateGeneratedProducts($request, $sumRim)
     {
         GeneratedProducts::updateOrCreate(
             ['no_po' => $request->po],
@@ -76,35 +76,29 @@ class EntryPoController extends Controller
     }
 
     /**
-     * Membuat atau memperbarui label yang dihasilkan berdasarkan PO.
+     * Create or update generated labels based on PO.
      *
      * @param \Illuminate\Http\Request $request
      * @param int $sumRim
      * @return void
      */
-    private function createGeneratedLabels($request, $sumRim)
+    private function createOrUpdateGeneratedLabels($request, $sumRim)
     {
         for ($i = 0; $i < $sumRim; $i++) {
-            GeneratedLabels::updateOrCreate(
-                [
-                    'no_po_generated_products' => $request->po,
-                    'no_rim' => $request->start_rim + $i,
-                    'potongan' => "Kiri"
-                ]
-            );
-
-            GeneratedLabels::updateOrCreate(
-                [
-                    'no_po_generated_products' => $request->po,
-                    'no_rim' => $request->start_rim + $i,
-                    'potongan' => "Kanan"
-                ]
-            );
+            foreach (['Kiri', 'Kanan'] as $potongan) {
+                GeneratedLabels::updateOrCreate(
+                    [
+                        'no_po_generated_products' => $request->po,
+                        'no_rim' => $request->start_rim + $i,
+                        'potongan' => $potongan
+                    ]
+                );
+            }
         }
     }
 
     /**
-     * Memperbarui data produk dan label yang dihasilkan berdasarkan PO.
+     * Update generated products and labels based on PO.
      *
      * @param \Illuminate\Http\Request $request
      * @param int $sumRim
@@ -115,39 +109,32 @@ class EntryPoController extends Controller
         $current_start_rim = GeneratedProducts::where('no_po', $request->po)->value('start_rim');
 
         if ($current_start_rim !== $request->start_rim) {
-            for ($i = 0; $i < ($sumRim * 2); $i++) {
-                $current_id = GeneratedLabels::where('no_po_generated_products', $request->po)->value('id');
-                GeneratedLabels::where('id', $current_id + $i)
-                    ->update(['no_rim' => $i === 0 ? $request->start_rim : $request->start_rim + floor($i / 2)]);
+            $labels = GeneratedLabels::where('no_po_generated_products', $request->po)->get();
+            foreach ($labels as $index => $label) {
+                $label->update(['no_rim' => $request->start_rim + floor($index / 2)]);
             }
 
-            $this->createGeneratedProducts($request, $sumRim);
+            $this->createOrUpdateGeneratedProducts($request, $sumRim);
         }
     }
 
     /**
-     * Membuat label inschiet berdasarkan PO.
+     * Create inschiet labels based on PO.
      *
      * @param \Illuminate\Http\Request $request
      * @return void
      */
     private function createInschietLabels($request)
     {
-        GeneratedLabels::updateOrCreate(
-            [
-                'no_po_generated_products' => $request->po,
-                'no_rim' => 999,
-                'potongan' => "Kiri"
-            ]
-        );
-
-        GeneratedLabels::updateOrCreate(
-            [
-                'no_po_generated_products' => $request->po,
-                'no_rim' => 999,
-                'potongan' => "Kanan"
-            ]
-        );
+        foreach (['Kiri', 'Kanan'] as $potongan) {
+            GeneratedLabels::updateOrCreate(
+                [
+                    'no_po_generated_products' => $request->po,
+                    'no_rim' => 999,
+                    'potongan' => $potongan
+                ]
+            );
+        }
 
         DataInschiet::updateOrCreate(
             ['no_po' => $request->po],
@@ -156,7 +143,7 @@ class EntryPoController extends Controller
     }
 
     /**
-     * Menampilkan resource yang ditentukan berdasarkan ID.
+     * Display the specified resource based on ID.
      *
      * @param string $id
      * @return \Illuminate\Database\Eloquent\Model
@@ -170,28 +157,28 @@ class EntryPoController extends Controller
 }
 
 /*
- * Penjelasan Fungsi:
+ * Function Descriptions:
  * --------------------------
  *
  * 1. **index()**:
- *    Menampilkan halaman utama Entry PO dengan data workstation yang diurutkan berdasarkan nama workstation.
+ *    Displays the main Entry PO page with workstation data sorted by workstation name.
  *
  * 2. **store(Request $request)**:
- *    Menyimpan atau membuat label berdasarkan PO dan jumlah rimnya. Menggunakan transaksi database untuk memastikan integritas data.
+ *    Stores or creates labels based on PO and the number of rims. Uses a database transaction to ensure data integrity.
  *
- * 3. **createGeneratedProducts($request, $sumRim)**:
- *       Membuat atau memperbarui data produk yang dihasilkan berdasarkan PO.
+ * 3. **createOrUpdateGeneratedProducts($request, $sumRim)**:
+ *    Creates or updates generated products based on PO.
  *
- * 4. **createGeneratedLabels($request, $sumRim)**:
- *      Membuat atau memperbarui label yang dihasilkan berdasarkan PO.
+ * 4. **createOrUpdateGeneratedLabels($request, $sumRim)**:
+ *    Creates or updates generated labels based on PO.
  *
  * 5. **updateGeneratedProductsAndLabels($request, $sumRim)**:
- *      Memperbarui data produk dan label yang dihasilkan berdasarkan PO jika ada perubahan pada start_rim.
+ *    Updates generated products and labels based on PO if there is a change in start_rim.
  *
  * 6. **createInschietLabels($request)**:
- *      Membuat label inschiet berdasarkan PO.
+ *    Creates inschiet labels based on PO.
  *
  * 7. **show(string $id)**:
- *      Menampilkan resource yang ditentukan berdasarkan ID PO.
+ *    Displays the specified resource based on PO ID.
  *
  **/
