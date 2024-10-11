@@ -13,11 +13,6 @@ import { Link } from '@inertiajs/vue3';
 
             <!-- Navigation -->
             <div class="flex justify-start items-center gap-6">
-                <NavLink :href="'/'" :active="$page.url === '/'
-                        ? true
-                        : false
-                    ">Pilih Produk</NavLink>
-
                 <!-- Order Besar -->
                 <NavLink :href="route('orderBesar.registerNomorPo')">Register Nomor PO</NavLink>
                 <NavLink :href="route('orderBesar.poSiapVerif')">Order Siap Periksa</NavLink>

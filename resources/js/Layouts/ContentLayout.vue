@@ -3,8 +3,10 @@ import { ref } from "vue";
 import NavLink from "@/Components/NavLink.vue";
 import ResponsiveNavLink from "@/Components/ResponsiveNavLink.vue";
 import { Link } from "@inertiajs/vue3";
+import GroupLink from "@/Components/GroupLink.vue";
 
 const showingNavigationDropdown = ref(false);
+const showOrderBesarGroup = ref(false);
 </script>
 
 <template>
@@ -15,35 +17,51 @@ const showingNavigationDropdown = ref(false);
 
             <!-- Navigation -->
             <div class="flex justify-start items-center gap-6">
-                <NavLink :href="'/'" :active="$page.url === '/'
-                        ? true
-                        : false
-                    ">Pilih Produk</NavLink>
-                <NavLink :href="'/non-perekat/non-personal/entry-po'" :active="$page.url === '/non-perekat/non-personal/entry-po'
-                        ? true
-                        : false
-                    ">Entry PO</NavLink>
-                <NavLink :href="'/non-perekat/non-personal/pic/listPo/0'" :active="$page.url === '/non-perekat/non-personal/pic/listPo/0'
-                        ? true
-                        : false
-                    ">List PO Terdaftar</NavLink>
-                <NavLink :href="'/non-perekat/non-personal/pic/monitorVerifikasi'" :active="$page.url ===
-                        '/non-perekat/non-personal/pic/monitorVerifikasi'
-                        ? true
-                        : false
-                    ">Monitoring Verifikasi</NavLink>
-                <NavLink :href="'/non-perekat/non-personal/verif'" :active="$page.url === '/non-perekat/non-personal/verif'
-                        ? true
-                        : false
-                    ">Pilih Barang Verifikasi</NavLink>
-                <NavLink :href="'/non-perekat/personal'" :active="$page.url === '/non-perekat/personal'
-                        ? true
-                        : false
-                    ">Cetak Label Personal</NavLink>
-                <NavLink :href="'/produksi-pegawai'" :active="$page.url === '/produksi-pegawai'
-                        ? true
-                        : false
-                    ">Produksi Pegawai</NavLink>
+                <GroupLink @click="showOrderBesarGroup = !showOrderBesarGroup"
+                    :active="$page.url == route('orderBesar.poSiapVerif') || route('dashboard')">
+                    Order Besar
+                </GroupLink>
+                <!-- Order Besar -->
+                <Transition
+                    name="accordOrderBesar"
+                    enter-active-class="animate__animated animate__tada"
+                    leave-active-class="animate__animated animate__bounceOutRight">
+                    <div v-if="showOrderBesarGroup">
+                        <NavLink
+                            :href="route('orderBesar.poSiapVerif') || route('dashboard')"
+                            :active="$page.url == route('orderBesar.poSiapVerif') || route('dashboard')">
+                            Order Siap Periksa
+                        </NavLink>
+
+                        <NavLink
+                            :href="route('orderBesar.registerNomorPo')"
+                            :active="$page.url == route('orderBesar.registerNomorPo')">
+                            Register Nomor PO
+                        </NavLink>
+                    </div>
+                </Transition>
+
+                <!-- Order Kecil -->
+                <NavLink
+                    :href="route('orderBesar.cetakLabel')"
+                    :active="$page.url == route('orderBesar.cetakLabel')">
+                    Cetak Label
+                </NavLink>
+
+                <!-- Monitoring Verifikasi -->
+                <NavLink
+                    :href="'/non-perekat/non-personal/pic/monitorVerifikasi'">
+                    Monitoring Verifikasi
+                </NavLink>
+
+                <!-- Data Production Order -->
+                <NavLink
+                    :href="'/non-perekat/non-personal/pic/monitorVerifikasi'">
+                    Data PO
+                </NavLink>
+
+                <!-- Hasil Produksi Pegawai -->
+                <NavLink :href="'/non-perekat/non-personal/pic/monitorVerifikasi'">Produksi Pegawai</NavLink>
             </div>
 
             <!-- Option -->
