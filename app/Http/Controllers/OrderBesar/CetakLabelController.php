@@ -1,16 +1,19 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\OrderBesar;
 
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+
 use App\Models\Workstations;
 use App\Models\GeneratedProducts;
 use App\Models\GeneratedLabels;
+
 use App\Traits\UpdateStatusProgress;
 use App\Models\DataInschiet;
 
-class PrintLabelController extends Controller
+class CetakLabelController extends Controller
 {
     use UpdateStatusProgress;
 
@@ -18,7 +21,7 @@ class PrintLabelController extends Controller
     {
         $product = GeneratedProducts::find($id);
 
-        return Inertia::render('NonPerekat/NonPersonal/Verifikator/GenerateLabel', [
+        return Inertia::render('OrderBesar/CetakLabel', [
             'product'   => $product,
             'listTeam'  => Workstations::select('id', 'workstation')->get(),
             'crntTeam'  => $workstation,

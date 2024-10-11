@@ -36,7 +36,7 @@ const fetchData = () => {
     isLoading.value = true;
     errorPo.value = "";
 
-    axios.get(`/api/gen-labels/non-personal/${form.po}`).then((response) => {
+    axios.get(`/api/order-besar/register-no-po/${form.po}`).then((response) => {
         const data = response.data;
         form.obc = data.no_obc;
         form.jml_lembar = data.rencet;
@@ -126,7 +126,7 @@ function submit() {
         confirmButtonText: 'Buat Label',
     }).then((result) => {
         if (result.isConfirmed) {
-            router.post("/api/gen-labels/non-personal", form, {
+            router.post("/api/order-besar/register-no-po", form, {
                 onSuccess: () => {
                     swal.fire({
                         icon: 'success',

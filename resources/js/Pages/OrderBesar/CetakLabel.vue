@@ -362,7 +362,7 @@ produksiPegawai()
 
 // Fungsi untuk mengambil data untuk mencetak ulang rim
 const getDataRim = () => {
-    axios.post('/api/non-perekat/non-personal/print-label/edit', formPrintUlang).then((res) => {
+    axios.post('/api/order-besar/cetak-label/edit', formPrintUlang).then((res) => {
         dataPrintUlang.value = res.data; // Menyimpan data yang diambil
     });
 };
@@ -443,9 +443,9 @@ const printUlangLabel = () => {
     let printLabel = generatePrintLabel(formPrintUlang.obc, formPrintUlang.npPetugas, formPrintUlang.noRim !== 999 ? formPrintUlang.noRim : "INS", formPrintUlang.dataRim == "Kiri" ? "(*)" : "(**)");
     printWithoutDialog(printLabel);
 
-    router.post("/api/non-perekat/non-personal/print-label/update", formPrintUlang, {
+    router.post("/api/order-besar/cetak-label/update", formPrintUlang, {
         onFinish: () => {
-            router.get("/non-perekat/non-personal/print-label/" + form.team + "/" + form.id); // Mengalihkan setelah pembaruan
+            router.get("/order-besar/cetak-label/" + form.team + "/" + form.id); // Mengalihkan setelah pembaruan
         },
     });
 };
@@ -454,9 +454,9 @@ const printUlangLabel = () => {
 const submit = () => {
     let printLabel = generatePrintLabel(form.obc, form.rfid, form.no_rim !== 999 ? form.no_rim : "INS", form.lbr_ptg == "Kiri" ? "(*)" : "(**)");
     printWithoutDialog(printLabel);
-    router.post("/api/non-perekat/non-personal/print-label", form, {
+    router.post("/api/order-besar/cetak-label", form, {
         onFinish: () => {
-            router.get(props.noRim !== 0 ? "/non-perekat/non-personal/print-label/" + form.team + "/" + form.id : "/non-perekat/non-personal/verif"); // Mengalihkan setelah pengiriman
+            router.get(props.noRim !== 0 ? "/order-besar/cetak-label/" + form.team + "/" + form.id : "/non-perekat/non-personal/verif"); // Mengalihkan setelah pengiriman
         },
     });
     form.rfid = null; // Menghapus RFID setelah pengiriman

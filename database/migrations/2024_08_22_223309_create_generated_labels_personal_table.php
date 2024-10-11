@@ -13,6 +13,14 @@ return new class extends Migration
     {
         Schema::create('generated_labels_personal', function (Blueprint $table) {
             $table->id();
+            $table->bigInteger('no_po');
+            $table->integer('no_rim');
+            $table->integer('jml_lembar');
+            $table->string('np_users')->nullable();
+            $table->string('potongan');
+            $table->dateTime('start')->nullable();
+            $table->dateTime('finish')->nullable();
+            $table->integer('workstation')->nullable();
             $table->timestamps();
         });
     }

@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\OrderBesar;
 
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Models\Workstations;
@@ -11,7 +12,7 @@ use App\Models\Specification;
 use App\Models\DataInschiet;
 use DB;
 
-class EntryPoController extends Controller
+class RegisterNomorPoController extends Controller
 {
     /**
      * Display the main Entry PO page.
@@ -20,7 +21,7 @@ class EntryPoController extends Controller
      */
     public function index()
     {
-        return Inertia::render('NonPerekat/NonPersonal/Pic/EntryPo', [
+        return Inertia::render('OrderBesar/RegisterNomorPo', [
             'workstation' => Workstations::orderBy('workstation')->select('id', 'workstation')->get(),
         ]);
     }
@@ -34,6 +35,7 @@ class EntryPoController extends Controller
     public function store(Request $request)
     {
         $sumRim = max(floor($request->jml_lembar / 1000), 1);
+
         $cnt_gen_po = GeneratedLabels::where('no_po_generated_products', $request->po)->count();
 
         DB::transaction(function () use ($request, $sumRim, $cnt_gen_po) {
@@ -155,30 +157,3 @@ class EntryPoController extends Controller
             ->firstOrFail();
     }
 }
-
-/*
- * Function Descriptions:
- * --------------------------
- *
- * 1. **index()**:
- *    Displays the main Entry PO page with workstation data sorted by workstation name.
- *
- * 2. **store(Request $request)**:
- *    Stores or creates labels based on PO and the number of rims. Uses a database transaction to ensure data integrity.
- *
- * 3. **createOrUpdateGeneratedProducts($request, $sumRim)**:
- *    Creates or updates generated products based on PO.
- *
- * 4. **createOrUpdateGeneratedLabels($request, $sumRim)**:
- *    Creates or updates generated labels based on PO.
- *
- * 5. **updateGeneratedProductsAndLabels($request, $sumRim)**:
- *    Updates generated products and labels based on PO if there is a change in start_rim.
- *
- * 6. **createInschietLabels($request)**:
- *    Creates inschiet labels based on PO.
- *
- * 7. **show(string $id)**:
- *    Displays the specified resource based on PO ID.
- *
- **/

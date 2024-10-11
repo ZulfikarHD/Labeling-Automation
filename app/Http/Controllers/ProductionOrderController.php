@@ -4,15 +4,13 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Inertia\Inertia;
-use Inertia\Response;
 
 use App\Models\GeneratedProducts;
 use App\Models\GeneratedLabels;
-use App\Models\Specification;
 use App\Models\Workstations;
 use App\Traits\UpdateStatusProgress;
 
-class GeneratedProductsController extends Controller
+class ProductionOrderController extends Controller
 {
     use UpdateStatusProgress;
 
@@ -21,7 +19,7 @@ class GeneratedProductsController extends Controller
      */
     public function index(String $team)
     {
-        return Inertia::render('NonPerekat/NonPersonal/Pic/ListPo',[
+        return Inertia::render('ProductionOrderList',[
             'products' => $this->data_products($team,request()->merge(['search'=>''])),
             'listTeam' => Workstations::select('id','workstation')->get(),
             'crntTeam' => $team,

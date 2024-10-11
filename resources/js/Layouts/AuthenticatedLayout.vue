@@ -17,12 +17,28 @@ import { Link } from '@inertiajs/vue3';
                         ? true
                         : false
                     ">Pilih Produk</NavLink>
-                <NavLink :href="'/non-perekat/non-personal/entry-po'">Entry PO</NavLink>
-                <NavLink :href="'/non-perekat/non-personal/pic/listPo/0'">List PO Terdaftar</NavLink>
+
+                <!-- Order Besar -->
+                <NavLink :href="route('orderBesar.registerNomorPo')">Register Nomor PO</NavLink>
+                <NavLink :href="route('orderBesar.poSiapVerif')">Order Siap Periksa</NavLink>
+
+                <!-- Order Kecil -->
+                <NavLink :href="route('orderBesar.cetakLabel')">Cetak Label</NavLink>
+
+                <!-- Monitoring Verifikasi -->
+                <NavLink :href="'/non-perekat/non-personal/pic/monitorVerifikasi'">Monitoring Verifikasi</NavLink>
+
+                <!-- Data Production Order -->
+                <NavLink :href="'/non-perekat/non-personal/pic/monitorVerifikasi'">Data PO</NavLink>
+
+                <!-- Hasil Produksi Pegawai -->
+                <NavLink :href="'/non-perekat/non-personal/pic/monitorVerifikasi'">Produksi Pegawai</NavLink>
+
+                <!-- <NavLink :href="'/non-perekat/non-personal/pic/listPo/0'">List PO Terdaftar</NavLink>
                 <NavLink :href="'/non-perekat/non-personal/pic/monitorVerifikasi'">Monitoring Verifikasi</NavLink>
                 <NavLink :href="'/non-perekat/non-personal/verif'">Pilih Barang Verifikasi</NavLink>
                 <NavLink :href="'/non-perekat/personal'">Cetak Label Personal</NavLink>
-                <NavLink :href="'/produksi-pegawai'">Produksi Pegawai</NavLink>
+                <NavLink :href="'/produksi-pegawai'">Produksi Pegawai</NavLink> -->
             </div>
 
             <!-- Option -->

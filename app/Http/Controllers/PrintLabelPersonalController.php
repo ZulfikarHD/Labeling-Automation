@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\GeneratedLabels;
+use App\Models\GeneratedLabelsPersonal;
 use App\Models\GeneratedProducts;
 use App\Models\Specification;
 use App\Traits\UpdateStatusProgress;
@@ -73,9 +74,9 @@ class PrintLabelPersonalController extends Controller
     {
         for ($i = 1; $i <= $registeredProduct->sum_rim; $i++) {
             foreach (['Kiri', 'Kanan'] as $potongan) {
-                GeneratedLabels::updateOrCreate(
+                GeneratedLabelsPersonal::updateOrCreate(
                     [
-                        'no_po_generated_products'  => $registeredProduct->no_po,
+                        'no_po'  => $registeredProduct->no_po,
                         'no_rim'    => $i,
                         'potongan'  => $potongan,
                     ],
@@ -84,6 +85,7 @@ class PrintLabelPersonalController extends Controller
                         'start'     => now(),
                         'finish'    => null,
                         'workstation' => 3,
+                        'jml_lembar' => $i == $registeredProduct->sum_rim ? $registeredProduct->sum_rim % 500 : 500,
                     ]
                 );
             }
@@ -99,6 +101,13 @@ class PrintLabelPersonalController extends Controller
     public function finishPreviousSession(string $npPegawai): void
     {
         GeneratedLabels::where('np_users', $npPegawai)
+            ->whereNull('finish')
+            ->update([
+                'np_users' => $npPegawai,
+                'finish'   => now()
+            ]);
+
+        GeneratedLabelsPersonal::where('np_users', $npPegawai)
             ->whereNull('finish')
             ->update([
                 'np_users' => $npPegawai,
