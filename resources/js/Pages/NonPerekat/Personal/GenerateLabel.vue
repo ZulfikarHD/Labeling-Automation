@@ -280,8 +280,5 @@ const submit = () => {
                 </div>
             </form>
         </div>
-        <div class="flex justify-center w-full">
-            <NavigateBackButton :link="route('nonPer.index')" />
-        </div>
     </ContentLayout>
 </template>

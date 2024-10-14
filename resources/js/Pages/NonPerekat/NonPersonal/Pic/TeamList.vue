@@ -22,16 +22,13 @@ const props = defineProps({
 
             <!-- Main Body -->
             <div class="grid h-full grid-cols-3 gap-6 mt-36 mx-36">
-                <Link :href="route('nonPer.nonPersonal.monitor.show', workstation.id)" v-for="workstation in workstations"
+                <Link :href="route('monitoringProduksi.statusVerif.show', workstation.id)" v-for="workstation in workstations"
                     class="w-full px-8 py-4 text-lg font-bold tracking-wide shadow rounded-xl text-blue-50 bg-blue-700 brightness-110 drop-shadow-md">
                 {{ workstation.workstation }}
                 </Link>
             </div>
 
             <div class="flex gap-6 mt-10 mx-auto">
-                <!-- Back Button -->
-                <NavigateBackButton :link="route('nonPer.nonPersonal.pic.index')" />
-
                 <!-- Home Button -->
                 <Link :href="route('dashboard')"
                     class="text-xl font-extrabold text-blue-50 w-fit py-3    px-6 bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl text-start drop-shadow-md shadow-md flex items-center gap-1.5">

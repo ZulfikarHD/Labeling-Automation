@@ -1,18 +1,33 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\OrderKecil;
 
-use App\Models\GeneratedLabels;
+use App\Http\Controllers\Controller;
 use App\Models\GeneratedLabelsPersonal;
-use App\Models\GeneratedProducts;
-use App\Models\Specification;
 use App\Traits\UpdateStatusProgress;
+use App\Models\GeneratedProducts;
+use App\Models\GeneratedLabels;
+use App\Models\Specification;
+
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
+use Inertia\Inertia;
 
-class PrintLabelPersonalController extends Controller
+class CetakLabelController extends Controller
 {
     use UpdateStatusProgress;
+
+    public function index()
+    {
+        return Inertia::render('NonPerekat/Personal/GenerateLabel');
+    }
+
+    public function show($noPo)
+    {
+        return Specification::where('no_po',$noPo)
+                    ->select('no_po','no_obc','seri','type','rencet')
+                    ->firstOrFail();
+    }
 
     /**
      * Menyimpan data label yang dihasilkan berdasarkan permintaan.
@@ -124,7 +139,7 @@ class PrintLabelPersonalController extends Controller
     private function countNullNp(string $noPo): int
     {
         return GeneratedLabels::where('no_po_generated_products', $noPo)
-                              ->whereNull('np_users')
-                              ->count();
+            ->whereNull('np_users')
+            ->count();
     }
 }

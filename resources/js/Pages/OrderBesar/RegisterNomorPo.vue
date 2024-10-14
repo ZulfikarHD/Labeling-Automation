@@ -220,7 +220,7 @@ function submit() {
                     <button type="submit" class="flex justify-center px-8 py-4 mx-auto w-fit bg-gradient-to-r from-green-400 to-green-500 rounded-xl text-start mt-11">
                         <span class="text-xl font-bold text-yellow-50">Buat Label</span>
                     </button>
-                    <Link :href="route('nonPer.nonPersonal.entryPo.index')" class="text-xl font-bold text-violet-50 flex justify-center px-8 py-4 mx-auto w-fit bg-gradient-to-r from-violet-400 to-violet-500 rounded-xl text-start mt-11">
+                    <Link :href="route('orderBesar.registerNomorPo')" class="text-xl font-bold text-violet-50 flex justify-center px-8 py-4 mx-auto w-fit bg-gradient-to-r from-violet-400 to-violet-500 rounded-xl text-start mt-11">
                         Clear
                     </Link>
                 </div>
