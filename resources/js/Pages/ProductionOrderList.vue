@@ -1,13 +1,11 @@
 <script setup>
-import { inject } from "vue";
-import ContentLayout from "@/Layouts/ContentLayout.vue";
-import InputLabel from "@/Components/InputLabel.vue";
-import TextInput from "@/Components/TextInput.vue";
+import { inject, ref } from "vue";
 import { Link, router, useForm } from "@inertiajs/vue3";
+import axios from "axios";
+import ContentLayout from "@/Layouts/ContentLayout.vue";
+import TextInput from "@/Components/TextInput.vue";
 import Modal from "@/Components/Modal.vue";
-import NavigateBackButton from "@/Components/NavigateBackButton.vue";
 import PaginateLink from "@/Components/PaginateLink.vue";
-import { ref } from "vue";
 
 const swal = inject("$swal");
 
@@ -33,51 +31,31 @@ const form = useForm({
 
 const deleteModal = ref(false);
 
-// Function Filter By Team
 const filterTeam = () => {
-    axios
-        .post("/data-po/" + form.team, form)
-        .then((res) => {
-            listProduct.value = res.data;
-        });
+    axios.post("/data-po/" + form.team, form).then((res) => {
+        listProduct.value = res.data;
+    });
 };
 
-// Function Search Box
 const search = () => {
-    axios
-        .post("/data-po/" + form.team, form)
-        .then((res) => {
-            listProduct.value = res.data;
-        });
+    axios.post("/data-po/" + form.team, form).then((res) => {
+        listProduct.value = res.data;
+    });
 };
 
 const deleteOrder = () => {
     router.delete(route('dataPo.destroy', form.po), {
         onSuccess: () => {
-            filterTeam()
-
-            // @ts-ignore
+            filterTeam();
             swal.fire({
                 icon: "success",
                 title: "Success",
                 text: "Order " + form.po + " Berhasil Di Hapus",
             });
-
             form.reset();
-            deleteModal.value = !deleteModal.value
+            deleteModal.value = !deleteModal.value;
         },
     });
-    // form.post(route('create-user.store'), {
-    //     onSuccess: () => {
-    //         form.reset();
-    //         // @ts-ignore
-    //         swal.fire({
-    //             icon: 'success',
-    //             title: 'Success',
-    //             text : 'User Berhasil Di Buat',
-    //         });
-    //     }
-    // });
 };
 </script>
 
@@ -103,9 +81,7 @@ const deleteOrder = () => {
                     </svg>
                 </div>
                 <div class="flex flex-col gap-2">
-                    <h3
-                        class="text-lg font-semibold leading-normal text-slate-900"
-                    >
+                    <h3 class="text-lg font-semibold leading-normal text-slate-900">
                         <i>Delete</i> Order {{ form.po }} ?
                     </h3>
                     <p class="text-base leading-normal text-slate-500">
@@ -116,63 +92,7 @@ const deleteOrder = () => {
                     </p>
                 </div>
             </div>
-            <div
-                class="flex justify-end gap-2 px-8 py-3 -mx-8 -mb-6 bg-slate-100"
-            >
-                <button
-                    class="px-4 py-1.5 font-medium text-slate-500 hover:text-slate-600 transition ease-in-out duration-200"
-                    @click.prevent="deleteModal = !deleteModal"
-                >
-                    Batal
-                </button>
-                <button
-                    type="button"
-                    @click.prevent="deleteOrder"
-                    class="px-4 py-1.5 font-medium bg-red-600 text-red-50 rounded-md drop-shadow hover:bg-red-700 transition duration-200 ease-in-out"
-                >
-                    Hapus
-                </button>
-            </div>
-        </div>
-    </Modal>
-
-    <!-- Delete Modal -->
-    <Modal :show="deleteModal" @close="deleteModal = !deleteModal">
-        <div class="flex flex-col gap-4 px-8 py-6">
-            <div class="flex gap-5">
-                <div class="p-2 bg-red-100 rounded-full h-fit">
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke-width="1.5"
-                        stroke="currentColor"
-                        class="w-6 h-6 text-red-600"
-                    >
-                        <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"
-                        />
-                    </svg>
-                </div>
-                <div class="flex flex-col gap-2">
-                    <h3
-                        class="text-lg font-semibold leading-normal text-slate-900"
-                    >
-                        <i>Delete</i> Order {{ form.po }} ?
-                    </h3>
-                    <p class="text-base leading-normal text-slate-500">
-                        Peringatan, order yang di <i>delete</i> akan menghapus
-                        seluruh data label yang ada, baik yang sudah di kerjakan
-                        ataupun belum, data yang di <i>delete</i> tidak akan
-                        bisa dikembalikan.
-                    </p>
-                </div>
-            </div>
-            <div
-                class="flex justify-end gap-2 px-8 py-3 -mx-8 -mb-6 bg-slate-100"
-            >
+            <div class="flex justify-end gap-2 px-8 py-3 -mx-8 -mb-6 bg-slate-100">
                 <button
                     class="px-4 py-1.5 font-medium text-slate-500 hover:text-slate-600 transition ease-in-out duration-200"
                     @click.prevent="deleteModal = !deleteModal"
@@ -193,9 +113,7 @@ const deleteOrder = () => {
     <ContentLayout>
         <div class="py-12">
             <!-- Header -->
-            <h3
-                class="my-10 text-3xl font-extrabold text-center uppercase text-slate-700"
-            >
+            <h3 class="my-10 text-3xl font-extrabold text-center uppercase text-slate-700">
                 List Generated Labels
             </h3>
 
@@ -237,175 +155,97 @@ const deleteOrder = () => {
                     </div>
                 </div>
                 <!-- Table -->
-                <div
-                    class="h-full w-full px-4 py-4 mx-auto bg-white md:py-6 drop-shadow-sm rounded-xl dark:bg-slate-800 dark:bg-opacity-60 dark:backdrop-blur-sm dark:backdrop-filter"
-                >
+                <div class="h-full w-full px-4 py-4 mx-auto bg-white md:py-6 drop-shadow-sm rounded-xl dark:bg-slate-800 dark:bg-opacity-60 dark:backdrop-blur-sm dark:backdrop-filter">
                     <div>
                         <div class="-mx-4 -mt-6 overflow-hidden rounded-t-xl">
                             <table class="min-w-full table-auto">
-                                <thead
-                                    class="pb-4 font-bold border-b-2 border-slate-300 text-slate-700 dark:border-slate-500 dark:text-slate-400 bg-slate-200"
-                                >
+                                <thead class="pb-4 font-bold border-b-2 border-slate-300 text-slate-700 dark:border-slate-500 dark:text-slate-400 bg-slate-200">
                                     <tr>
-                                        <th
-                                            scope="col"
-                                            class="pt-6 pb-1.5 px-4 leading-tight text-center border-slate-300 dark:border-slate-500"
-                                        >
+                                        <th scope="col" class="pt-6 pb-1.5 px-4 leading-tight text-center border-slate-300 dark:border-slate-500">
                                             No
                                         </th>
-                                        <th
-                                            scope="col"
-                                            class="pt-6 pb-1.5 px-6 leading-tight text-left border-slate-300 dark:border-slate-500"
-                                        >
+                                        <th scope="col" class="pt-6 pb-1.5 px-6 leading-tight text-left border-slate-300 dark:border-slate-500">
                                             Nomor PO
                                         </th>
-                                        <th
-                                            scope="col"
-                                            class="pt-6 pb-1.5 px-6 leading-tight text-left border-slate-300 dark:border-slate-500"
-                                        >
+                                        <th scope="col" class="pt-6 pb-1.5 px-6 leading-tight text-left border-slate-300 dark:border-slate-500">
                                             OBC
                                         </th>
-                                        <th
-                                            scope="col"
-                                            class="pt-6 pb-1.5 px-6 leading-tight text-center border-slate-300 dark:border-slate-500"
-                                        >
+                                        <th scope="col" class="pt-6 pb-1.5 px-6 leading-tight text-center border-slate-300 dark:border-slate-500">
                                             Team
                                         </th>
-                                        <th
-                                            scope="col"
-                                            class="pt-6 pb-1.5 px-6 leading-tight border-slate-300 dark:border-slate-500 text-center"
-                                        >
+                                        <th scope="col" class="pt-6 pb-1.5 px-6 leading-tight border-slate-300 dark:border-slate-500 text-center">
                                             Generated At
                                         </th>
-                                        <th
-                                            scope="col"
-                                            class="pt-6 pb-1.5 px-6 leading-tight border-slate-300 dark:border-slate-500 text-center"
-                                        >
+                                        <th scope="col" class="pt-6 pb-1.5 px-6 leading-tight border-slate-300 dark:border-slate-500 text-center">
                                             Status
                                         </th>
-                                        <th
-                                            scope="col"
-                                            class="pt-6 pb-1.5 px-6 leading-tight border-slate-300 dark:border-slate-500 text-center"
-                                        >
+                                        <th scope="col" class="pt-6 pb-1.5 px-6 leading-tight border-slate-300 dark:border-slate-500 text-center">
                                             Finish
                                         </th>
-                                        <th
-                                            scope="col"
-                                            class="pt-6 pb-1.5 px-6 leading-tight border-slate-300 dark:border-slate-500 text-center"
-                                        >
+                                        <th scope="col" class="pt-6 pb-1.5 px-6 leading-tight border-slate-300 dark:border-slate-500 text-center">
                                             Action
                                         </th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <tr
-                                        v-for="(
-                                            product, index
-                                        ) in listProduct.data"
+                                        v-for="(product, index) in listProduct.data"
                                         :key="index"
                                         class="font-mono transition duration-300 ease-in-out border-b border-slate-300 text-slate-800 hover:bg-slate-400 hover:bg-opacity-10 dark:text-slate-100"
                                     >
-                                        <td
-                                            class="text-center leading-5 whitespace-nowrap text-sm px-4 py-1.5 font-medium text-slate-950 border-r"
-                                        >
-                                            <p
-                                                v-if="
-                                                    listProduct.current_page ==
-                                                    1
-                                                "
-                                            >
+                                        <td class="text-center leading-5 whitespace-nowrap text-sm px-4 py-1.5 font-medium text-slate-950 border-r">
+                                            <p v-if="listProduct.current_page == 1">
                                                 {{ index + 1 }}
                                             </p>
                                             <p v-else>
-                                                {{
-                                                    index +
-                                                    1 +
-                                                    listProduct.current_page *
-                                                        10
-                                                }}
+                                                {{ index + 1 + listProduct.current_page * 10 }}
                                             </p>
                                         </td>
-                                        <td
-                                            class="text-center leading-5 whitespace-nowrap text-sm px-4 py-1.5 text-slate-700 border-r"
-                                        >
+                                        <td class="text-center leading-5 whitespace-nowrap text-sm px-4 py-1.5 text-slate-700 border-r">
                                             {{ product.no_po }}
                                         </td>
-                                        <td
-                                            class="text-center leading-5 whitespace-nowrap text-sm px-4 py-1.5 text-slate-700 border-r"
-                                        >
-                                            <span
-                                                v-if="
-                                                    product.no_obc.substr(
-                                                        4,
-                                                        1
-                                                    ) == 3
-                                                "
-                                                class="text-red-800"
-                                            >
+                                        <td class="text-center leading-5 whitespace-nowrap text-sm px-4 py-1.5 text-slate-700 border-r">
+                                            <span v-if="product.no_obc.substr(4, 1) == 3" class="text-red-800">
                                                 {{ product.no_obc }}
                                             </span>
                                             <span v-else class="text-blue-800">
                                                 {{ product.no_obc }}
                                             </span>
                                         </td>
-                                        <td
-                                            class="text-center leading-5 text-sm px-4 py-1.5 text-slate-700 border-r"
-                                        >
+                                        <td class="text-center leading-5 text-sm px-4 py-1.5 text-slate-700 border-r">
                                             {{ product.workstation }}
                                         </td>
-                                        <td
-                                            class="text-center leading-5 text-sm px-4 py-1.5 text-slate-700 border-r"
-                                        >
+                                        <td class="text-center leading-5 text-sm px-4 py-1.5 text-slate-700 border-r">
                                             {{ product.created_at }}
                                         </td>
-                                        <td
-                                            class="text-center leading-5 whitespace-nowrap text-sm px-4 py-1.5 text-slate-700 border-r"
-                                        >
+                                        <td class="text-center leading-5 whitespace-nowrap text-sm px-4 py-1.5 text-slate-700 border-r">
                                             <div v-if="product.status == 1">
-                                                <span
-                                                    class="px-2 text-xs font-semibold text-yellow-900 bg-yellow-300 rounded-lg shadow drop-shadow-md"
-                                                    >Sedang Di Periksa</span
-                                                >
+                                                <span class="px-2 text-xs font-semibold text-yellow-900 bg-yellow-300 rounded-lg shadow drop-shadow-md">
+                                                    Sedang Di Periksa
+                                                </span>
                                             </div>
-                                            <div
-                                                v-else-if="product.status == 0"
-                                            >
-                                                <span
-                                                    class="px-2 text-xs rounded-lg shadow bg-slate-600 drop-shadow-md text-slate-50"
-                                                    >Siap Di Periksa</span
-                                                >
+                                            <div v-else-if="product.status == 0">
+                                                <span class="px-2 text-xs rounded-lg shadow bg-slate-600 drop-shadow-md text-slate-50">
+                                                    Siap Di Periksa
+                                                </span>
                                             </div>
-                                            <div
-                                                v-else-if="product.status == 2"
-                                            >
-                                                <span
-                                                    class="px-2 text-xs rounded-lg shadow bg-green-600 drop-shadow-md text-green-50"
-                                                    >Selesai Periksa</span
-                                                >
+                                            <div v-else-if="product.status == 2">
+                                                <span class="px-2 text-xs rounded-lg shadow bg-green-600 drop-shadow-md text-green-50">
+                                                    Selesai Periksa
+                                                </span>
                                             </div>
                                         </td>
-                                        <td
-                                            class="text-center leading-5 text-sm px-4 py-1.5 text-slate-700 border-r"
-                                        >
+                                        <td class="text-center leading-5 text-sm px-4 py-1.5 text-slate-700 border-r">
                                             <span v-if="product.status == 2">
                                                 {{ product.updated_at }}
                                             </span>
                                             <span v-else> - </span>
                                         </td>
-                                        <td
-                                            class="text-center leading-5 whitespace-nowrap text-sm px-4 py-1.5 text-slate-700 brightness-110"
-                                        >
-                                            <div
-                                                class="flex justify-center gap-2"
-                                            >
+                                        <td class="text-center leading-5 whitespace-nowrap text-sm px-4 py-1.5 text-slate-700 brightness-110">
+                                            <div class="flex justify-center gap-2">
                                                 <!-- Monitor -->
                                                 <Link
-                                                    :href="
-                                                        route('dataPo.show', {
-                                                            team: form.team,
-                                                            no_po: product.no_po,
-                                                        })
-                                                    "
+                                                    :href="route('dataPo.show', { team: form.team, no_po: product.no_po })"
                                                     class="font-bold text-blue-600 transition duration-150 ease-in-out hover:text-blue-700"
                                                 >
                                                     <svg
@@ -423,16 +263,7 @@ const deleteOrder = () => {
                                                 </Link>
                                                 <!-- Print Ulang -->
                                                 <Link
-                                                    :href="
-                                                        route(
-                                                            'orderBesar.cetakLabel',
-                                                            {
-                                                                team:
-                                                                    product.assigned_team,
-                                                                id: product.id,
-                                                            }
-                                                        )
-                                                    "
+                                                    :href="route('orderBesar.cetakLabel', { team: product.assigned_team, id: product.id })"
                                                     class="font-bold text-indigo-700 transition duration-150 ease-in-out hover:text-blue-500"
                                                 >
                                                     <svg
@@ -448,14 +279,7 @@ const deleteOrder = () => {
                                                         />
                                                     </svg>
                                                 </Link>
-                                                <!--  Edit -->
-                                                <!-- <Link :href="route('nonPer.nonPersonal.entryPo.index')"
-                                                    class="font-bold text-green-600 transition duration-150 ease-in-out hover:text-green-700">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5">
-                                                        <path d="m5.433 13.917 1.262-3.155A4 4 0 0 1 7.58 9.42l6.92-6.918a2.121 2.121 0 0 1 3 3l-6.92 6.918c-.383.383-.84.685-1.343.886l-3.154 1.262a.5.5 0 0 1-.65-.65Z" />
-                                                        <path d="M3.5 5.75c0-.69.56-1.25 1.25-1.25H10A.75.75 0 0 0 10 3H4.75A2.75 2.75 0 0 0 2 5.75v9.5A2.75 2.75 0 0 0 4.75 18h9.5A2.75 2.75 0 0 0 17 15.25V10a.75.75 0 0 0-1.5 0v5.25c0 .69-.56 1.25-1.25 1.25h-9.5c-.69 0-1.25-.56-1.25-1.25v-9.5Z" />
-                                                    </svg>
-                                                </Link> -->
+                                                <!-- Delete -->
                                                 <button
                                                     type="button"
                                                     @click.prevent="
@@ -484,9 +308,7 @@ const deleteOrder = () => {
                                 </tbody>
                             </table>
                             <div class="flex justify-center mt-4">
-                                <PaginateLink
-                                    :links="listProduct.links"
-                                ></PaginateLink>
+                                <PaginateLink :links="listProduct.links"></PaginateLink>
                             </div>
                         </div>
                     </div>

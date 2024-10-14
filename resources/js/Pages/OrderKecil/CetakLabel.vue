@@ -10,7 +10,7 @@ import axios from "axios";
 import NavigateBackButton from "@/Components/NavigateBackButton.vue";
 
 // Define a reactive form object to store form data
-const form = reactive({
+const form = useForm({
     po: "", // Production Order number
     obc: "", // Order Bea Cukai number
     jml_lembar: "", // Number of sheets/rims
@@ -21,7 +21,7 @@ const form = reactive({
 
 // Function to fetch data based on the Production Order number
 const fetchData = () => {
-    axios.get("/api/gen-perso-label/" + form.po).then((res) => {
+    axios.get("/api/order-kecil/fetch-spec/" + form.po).then((res) => {
         let total_label = Math.ceil(res.data.rencet / 500);
 
         form.obc = res.data.no_obc;
@@ -30,26 +30,12 @@ const fetchData = () => {
     });
 };
 
+
 // Fungsi untuk menghasilkan HTML label cetak
 const generatePrintLabel = (obc, np) => {
     let date = new Date(); // Tanggal saat ini
-    const months = [
-        "Jan",
-        "Feb",
-        "Mar",
-        "Apr",
-        "Mei",
-        "Jun",
-        "Jul",
-        "Agu",
-        "Sep",
-        "Okt",
-        "Nov",
-        "Des",
-    ];
-    let tgl = `${date.getDate()}-${
-        months[date.getMonth()]
-    }-${date.getFullYear()}`; // Tanggal yang diformat
+    const months = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
+    let tgl = `${date.getDate()}-${months[date.getMonth()]}-${date.getFullYear()}`; // Tanggal yang diformat
     let time = `${date.getHours()} : ${date.getMinutes()}`; // Waktu saat ini
     let obc_color = form.seri == 3 ? "#b91c1c" : "#1d4ed8"; // Warna berdasarkan seri
 
@@ -58,16 +44,28 @@ const generatePrintLabel = (obc, np) => {
         <html>
             <head></head>
             <body>
-                <div style='page-break-after:avoid; width:100%; height:fit-content;'>
+                <div style='page-break-after:always; width:100%; height:fit-content;'>
                     <div style="margin-top:19.5vh; margin-left:18.5vh">
                         <span style="font-weight:600; text-align:center;">${tgl}</span>
                         <h1 style="font-size: 24px; line-height: 32px; margin-left:25px; font-weight:600; text-align:center; display:inline-block; padding-top:6px; color:${obc_color}">${obc}</h1>
                     </div>
                     <div style="margin-top:0.75rem; margin-left:16vh">
-                        <h1 style="font-size: 20px; line-height: 32px; margin-left:155px; margin-right:auto; font-weight:600;text-align:center;display:inline-block;text-transform: uppercase;">${np}</h1>
+                        <h1 style="font-size: 20px; line-height: 32px; margin-left:155px; margin-right:auto; font-weight:600;text-align:center;display:inline-block;text-transform: uppercase;">INSP / ${np}</h1>
                     </div>
                     <div style="margin-top:47.5px; margin-left:13vh">
-                        <h1 style="display: inline-block; margin-left: 160px; margin-right: auto; text-align: center; font-size: 20px; line-height: 28px; font-weight:500; color:${obc_color}"><span style="font-size:12px; margin-left:8px">${time}</span></h1>
+                        <h1 style="display: inline-block; margin-left: 160px; margin-right: auto; text-align: center; font-size: 20px; line-height: 28px; font-weight:500; color:${obc_color}"> <span style="font-size:12px; margin-left:8px">${time}</span></h1>
+                    </div>
+                </div>
+                <div style='page-break-after:always; width:100%; height:fit-content;'>
+                    <div style="margin-top:19.5vh; margin-left:18.5vh">
+                        <span style="font-weight:600; text-align:center;">${tgl}</span>
+                        <h1 style="font-size: 24px; line-height: 32px; margin-left:25px; font-weight:600; text-align:center; display:inline-block; padding-top:6px; color:${obc_color}">${obc}</h1>
+                    </div>
+                    <div style="margin-top:0.75rem; margin-left:16vh">
+                        <h1 style="font-size: 20px; line-height: 32px; margin-left:155px; margin-right:auto; font-weight:600;text-align:center;display:inline-block;text-transform: uppercase;">INSP / ${np}</h1>
+                    </div>
+                    <div style="margin-top:47.5px; margin-left:13vh">
+                        <h1 style="display: inline-block; margin-left: 160px; margin-right: auto; text-align: center; font-size: 20px; line-height: 28px; font-weight:500; color:${obc_color}"> <span style="font-size:12px; margin-left:8px">${time}</span></h1>
                     </div>
                 </div>
             </body>
@@ -112,18 +110,13 @@ const printWithoutDialog = (content) => {
 
 // Fungsi untuk mengirim formulir utama
 const submit = () => {
-    generatePrintLabel(
-        form.obc,
-        form.rfid,
-    );
-    // let printLabel = generatePrintLabel(
-    //     form.obc,
-    //     form.rfid,
-    // );
-    // printWithoutDialog(printLabel);
-    router.post("/api/non-perekat/personal/print-label", form, {
-        onFinish: () => {"/non-perekat/personal"},
-    });
+    let printLabel = generatePrintLabel(form.obc, form.rfid, );
+    printWithoutDialog(printLabel);
+    // router.post("/api/order-besar/cetak-label", form, {
+    //     onFinish: () => {
+    //         router.get(props.noRim !== 0 ? "/order-besar/cetak-label/" + form.team + "/" + form.id : "/order-besar/po-siap-verif"); // Mengalihkan setelah pengiriman
+    //     },
+    // });
     form.rfid = null; // Menghapus RFID setelah pengiriman
 };
 </script>

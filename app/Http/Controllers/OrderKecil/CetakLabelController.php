@@ -8,7 +8,7 @@ use App\Traits\UpdateStatusProgress;
 use App\Models\GeneratedProducts;
 use App\Models\GeneratedLabels;
 use App\Models\Specification;
-
+use App\Services\SpecificationService;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
@@ -22,11 +22,9 @@ class CetakLabelController extends Controller
         return Inertia::render('OrderKecil/CetakLabel');
     }
 
-    public function show($noPo)
+    public function show(Int $no_po, SpecificationService $specificationService)
     {
-        return Specification::where('no_po',$noPo)
-                    ->select('no_po','no_obc','seri','type','rencet')
-                    ->firstOrFail();
+        return $specificationService->getSpecByNomorPo($no_po);
     }
 
     /**

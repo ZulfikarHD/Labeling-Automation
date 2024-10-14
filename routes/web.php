@@ -24,44 +24,9 @@ Route::get('/login', function () {
     return Inertia::render('Login');
 })->name('login');
 
-// Route::middleware(['auth'])->group(function () {
-    Route::get('/', [App\Http\Controllers\OrderBesar\PoSiapVerifController::class, 'index'])->name('dashboard');
-
-    // Group Non Perekat //
-    //-------------------//
-
-    //Pilih Personal atau Non Pesonal
-    // Route::get('/non-perekat', function () {
-    //     return Inertia::render('NonPerekat/IndexNonPerekat');
-    // })->name('nonPer.index');
-
-    // Section Non Perekat, Personal //
-    //-------------------------------//
-    // Section Non Perekat, Non Personal //
-    //-----------------------------------//
-    // Pilih User
-    // Kepala Meja
-    // Route::get('/non-perekat/non-personal', function () {
-    //     return Inertia::render('NonPerekat/NonPersonal/Index');
-    // })->name('nonPer.nonPersonal.index');
-
-    // Section Kepala Meja Non Perekat //
-    //---------------------------------//
-    // Menu Kepala Meja
-    // Route::get('/non-perekat/non-personal/pic', function () {
-    //     return Inertia::render('NonPerekat/NonPersonal/Pic/Menu');
-    // })->name('nonPer.nonPersonal.pic.index');
+Route::get('/', [App\Http\Controllers\OrderBesar\PoSiapVerifController::class, 'index'])->name('dashboard');
 
 
-    // Section Verifikator Non Perekat //
-    //---------------------------------//
-    // Table Hasil Laporan Produksi
-    // Route::get('/produksi-pegawai', function () {
-    //     return Inertia::render('ProduksiPegawai', [
-    //         'teams' => \App\Models\Workstations::all(),
-    //     ]);
-    // });
-// });
 
 /**
  * ---------------------------------------

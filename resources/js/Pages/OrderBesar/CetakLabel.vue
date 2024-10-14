@@ -297,15 +297,10 @@ const props = defineProps({
     noRim: Number, // Nomor rim
     potongan: String, // Spesifikasi pemotongan
     date: String, // Tanggal untuk operasi
-    showModal: {
-        type: Boolean,
-        default: false, // Visibilitas modal
-    },
-    printUlangModal: {
-        type: Boolean,
-        default: false, // Visibilitas modal cetak ulang
-    },
 });
+
+const showModal = ref(false);
+const printUlangModal = ref(false);
 
 // Referensi reaktif untuk data cetak ulang
 const dataPrintUlang = ref();
@@ -456,7 +451,7 @@ const submit = () => {
     printWithoutDialog(printLabel);
     router.post("/api/order-besar/cetak-label", form, {
         onFinish: () => {
-            router.get(props.noRim !== 0 ? "/order-besar/cetak-label/" + form.team + "/" + form.id : "/non-perekat/non-personal/verif"); // Mengalihkan setelah pengiriman
+            router.get(props.noRim !== 0 ? "/order-besar/cetak-label/" + form.team + "/" + form.id : "/order-besar/po-siap-verif"); // Mengalihkan setelah pengiriman
         },
     });
     form.rfid = null; // Menghapus RFID setelah pengiriman
@@ -464,8 +459,8 @@ const submit = () => {
 
 // Fungsi untuk menyelesaikan pesanan
 const finish_order = () => {
-    axios.put("/api/nonPers-finish-order/" + form.po) // Memperbarui status pesanan
-    router.get("/non-perekat/non-personal/verif") // Mengalihkan ke halaman verifikasi
+    axios.put("/api/production-order-finish/" + form.po) // Memperbarui status pesanan
+    router.get("/order-besar/po-siap-verif") // Mengalihkan ke halaman verifikasi
 }
 
 // Fetch noPlat from API

@@ -5,11 +5,9 @@ namespace App\Http\Controllers\OrderBesar;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
-
 use App\Models\Workstations;
 use App\Models\GeneratedProducts;
 use App\Models\GeneratedLabels;
-
 use App\Traits\UpdateStatusProgress;
 use App\Models\DataInschiet;
 
@@ -20,13 +18,14 @@ class CetakLabelController extends Controller
     public function index(String $team, String $id)
     {
         $product = GeneratedProducts::find($id);
+        $noRimData = $this->fetchNoRim($product->no_po);
 
         return Inertia::render('OrderBesar/CetakLabel', [
             'product'   => $product,
             'listTeam'  => Workstations::select('id', 'workstation')->get(),
             'crntTeam'  => $team,
-            'noRim'     => $this->fetchNoRim($product->no_po)['noRim'],
-            'potongan'  => $this->fetchNoRim($product->no_po)['potongan'],
+            'noRim'     => $noRimData['noRim'],
+            'potongan'  => $noRimData['potongan'],
             'date'      => now(),
         ]);
     }

@@ -29,7 +29,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     Route::put('/production-order-finish/{noPo}', [ProductionOrderController::class, 'updateStatusFinish']);
 
 // Generate Label Category Non-Personal API
-    // Route::get('/order-besar/{noPo}',[App\Http\Controllers\OrderBesar\RegisterNomorPoController::class, 'show']);
+    Route::get('/order-besar/register-no-po/{noPo}',[App\Http\Controllers\OrderBesar\RegisterNomorPoController::class, 'show']);
     Route::post('/order-besar/register-no-po',   [App\Http\Controllers\OrderBesar\RegisterNomorPoController::class, 'store']);
 
 // Print Label Order Besar
@@ -39,8 +39,8 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
     Route::get('/order-besar/verif/{team}',[PoSiapVerifController::class, 'fetchWorkPo']);
 
-// Print Label Personal
-    Route::post('/non-perekat/personal/print-label',[PrintLabelPersonalController::class, 'store']);
+// Print Label OrderKecil
+    Route::get('/order-kecil/fetch-spec/{no_po}',[App\Http\Controllers\OrderKecil\CetakLabelController::class, 'show']);
 
 // Calculation
     Route::get('/pendapatan-harian', [PendapatanHarianController::class, 'gradeHarian']);

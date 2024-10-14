@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers\OrderBesar;
 
+use App\Services\SpecificationService;
+
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Models\Workstations;
 use App\Models\GeneratedLabels;
 use App\Models\GeneratedProducts;
-use App\Models\Specification;
 use App\Models\DataInschiet;
 use DB;
 
@@ -150,10 +151,8 @@ class RegisterNomorPoController extends Controller
      * @param string $id
      * @return \Illuminate\Database\Eloquent\Model
      */
-    public function show(string $id)
+    public function show(Int $no_po, SpecificationService $specificationService)
     {
-        return Specification::where('no_po', $id)
-            ->select('no_po', 'no_obc', 'seri', 'type', 'rencet')
-            ->firstOrFail();
+        return $specificationService->getSpecByNomorPo($no_po);
     }
 }
