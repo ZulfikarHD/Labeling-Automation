@@ -118,7 +118,7 @@ const changeTeam = () => {
                                         {{ product.created_at }}
                                     </td>
                                     <td class="text-center leading-5 whitespace-nowrap text-sm px-4 py-1.5 text-slate-700">
-                                        <Link :href="route('orderBesar.cetakLabel', {workstation : form.team, id : product.id})" class="flex justify-center px-6 py-2 mx-auto font-semibold drop-shadow-md shadow tracking-wide w-fit bg-blue-600 rounded-xl text-start text-cyan-50">Go</Link>
+                                        <Link :href="route('orderBesar.cetakLabel', {team : form.team, id : product.id})" class="flex justify-center px-6 py-2 mx-auto font-semibold drop-shadow-md shadow tracking-wide w-fit bg-blue-600 rounded-xl text-start text-cyan-50">Go</Link>
                                         <!-- <input type="checkbox" value="{{ product.id }}"> -->
                                     </td>
                                 </tr>

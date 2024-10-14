@@ -17,7 +17,7 @@ class StatusVerifikasiTeamController extends Controller
 
     public function index()
     {
-        return Inertia::render('NonPerekat/NonPersonal/Pic/TeamList', [
+        return Inertia::render('MonitoringProduksi/PilihStatusVerifikasiTeam', [
             'workstations' => $this->teamService->getAllWorkstations()
         ]);
     }
@@ -35,7 +35,7 @@ class StatusVerifikasiTeamController extends Controller
 
     private function renderMonitorView($data)
     {
-        return Inertia::render('NonPerekat/NonPersonal/Pic/Monitor', [
+        return Inertia::render('MonitoringProduksi/StatusVerifikasiTeam', [
             'spec' => $data['product'],
             'dataRim' => $data['labels'],
             'team' => $data['team'],
@@ -44,7 +44,7 @@ class StatusVerifikasiTeamController extends Controller
 
     private function renderTeamListView()
     {
-        return Inertia::render('NonPerekat/NonPersonal/Pic/TeamList', [
+        return Inertia::render('MonitoringProduksi/PilihStatusVerifikasiTeam', [
             'workstations' => $this->teamService->getAllWorkstations()
         ]);
     }

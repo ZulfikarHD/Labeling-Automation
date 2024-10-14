@@ -62,7 +62,7 @@ class ProductionOrderController extends Controller
     public function show(String $team,string $po)
     {
         $assigned_team = GeneratedProducts::where('no_po',$po)->firstOrFail()->assigned_team;
-        return Inertia::render('NonPerekat/NonPersonal/Pic/Monitor',[
+        return Inertia::render('MonitoringProduksi/StatusVerifikasiTeam',[
             'dataRim'   => GeneratedLabels::where('no_po_generated_products',$po)->get(),
             'spec'  => GeneratedProducts::where('no_po',$po)->firstOrFail(),
             'team'  => Workstations::where('id',$assigned_team)->firstOrFail(),

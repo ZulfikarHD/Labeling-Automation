@@ -15,10 +15,6 @@ const props = defineProps({
     products: Object,
     listTeam: Object,
     crntTeam: String,
-    deleteModal: {
-        type: Boolean,
-        default: false,
-    },
     editModal: {
         type: Boolean,
         default: false,
@@ -35,10 +31,12 @@ const form = useForm({
     search: "",
 });
 
+const deleteModal = ref(false);
+
 // Function Filter By Team
 const filterTeam = () => {
     axios
-        .post("/non-perekat/non-personal/pic/listPo/" + form.team, form)
+        .post("/data-po/" + form.team, form)
         .then((res) => {
             listProduct.value = res.data;
         });
@@ -47,22 +45,26 @@ const filterTeam = () => {
 // Function Search Box
 const search = () => {
     axios
-        .post("/non-perekat/non-personal/pic/listPo/" + form.team, form)
+        .post("/data-po/" + form.team, form)
         .then((res) => {
             listProduct.value = res.data;
         });
 };
 
 const deleteOrder = () => {
-    router.delete(route("nonPer.nonPersonal.listPo.destroy", form.po), {
+    router.delete(route('dataPo.destroy', form.po), {
         onSuccess: () => {
+            filterTeam()
+
             // @ts-ignore
             swal.fire({
                 icon: "success",
                 title: "Success",
                 text: "Order " + form.po + " Berhasil Di Hapus",
             });
+
             form.reset();
+            deleteModal.value = !deleteModal.value
         },
     });
     // form.post(route('create-user.store'), {
@@ -457,8 +459,7 @@ const deleteOrder = () => {
                                                 <button
                                                     type="button"
                                                     @click.prevent="
-                                                        deleteModal =
-                                                            !deleteModal;
+                                                        deleteModal = !deleteModal;
                                                         form.id = product.id;
                                                         form.po = product.no_po;
                                                     "

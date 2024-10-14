@@ -17,14 +17,14 @@ class CetakLabelController extends Controller
 {
     use UpdateStatusProgress;
 
-    public function index(String $workstation, String $id)
+    public function index(String $team, String $id)
     {
         $product = GeneratedProducts::find($id);
 
         return Inertia::render('OrderBesar/CetakLabel', [
             'product'   => $product,
             'listTeam'  => Workstations::select('id', 'workstation')->get(),
-            'crntTeam'  => $workstation,
+            'crntTeam'  => $team,
             'noRim'     => $this->fetchNoRim($product->no_po)['noRim'],
             'potongan'  => $this->fetchNoRim($product->no_po)['potongan'],
             'date'      => now(),

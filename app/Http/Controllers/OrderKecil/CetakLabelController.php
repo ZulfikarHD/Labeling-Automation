@@ -19,7 +19,7 @@ class CetakLabelController extends Controller
 
     public function index()
     {
-        return Inertia::render('NonPerekat/Personal/GenerateLabel');
+        return Inertia::render('OrderKecil/CetakLabel');
     }
 
     public function show($noPo)

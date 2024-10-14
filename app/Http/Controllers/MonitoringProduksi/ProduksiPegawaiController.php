@@ -11,7 +11,7 @@ class ProduksiPegawaiController extends Controller
 {
     public function index()
     {
-        return Inertia::render('ProduksiPegawai', [
+        return Inertia::render('MonitoringProduksi/ProduksiPegawai', [
             'teams' => Workstations::all(),
         ]);
     }
