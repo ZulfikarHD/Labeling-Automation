@@ -16,22 +16,26 @@ const props = defineProps({
 // Define a reactive form object to store form data
 const form = useForm({
     team : "",
-    po: "", // Production Order number
+    no_po: "", // Production Order number
     obc: "", // Order Bea Cukai number
     jml_lembar: "", // Number of sheets/rims
     jml_label: "", // Number of labels
     seri: "", // Series number
-    rfid: "", // NP Inspector
+    periksa1: "", // NP Inspector
     periksa2: "",
+    jml_rim:"",
 });
+
+const dataRim = ref("0/0 Rim")
 
 // Function to fetch data based on the Production Order number
 const fetchData = () => {
-    axios.get("/api/order-kecil/fetch-spec/" + form.po).then((res) => {
+    axios.get("/api/order-kecil/fetch-spec/" + form.no_po).then((res) => {
         let total_label = Math.ceil(res.data.rencet / 500);
 
         form.obc = res.data.no_obc;
-        form.jml_lembar = res.data.rencet + " / " + total_label + " Rim";
+        form.jml_rim = res.data.rencet + " / " + total_label + " Rim";
+        form.jml_lembar = res.data.rencet;
         form.jml_label = total_label;
     });
 };
@@ -125,15 +129,22 @@ const printWithoutDialog = (content) => {
 
 // Fungsi untuk mengirim formulir utama
 const submit = () => {
-    let printLabel = generatePrintLabel(form.obc, form.rfid, form.periksa2);
-    printWithoutDialog(printLabel);
+    router.post("/api/register-production-order" , form, {
+        onSuccess: () => {
+            let printLabel = generatePrintLabel(form.obc, form.periksa1, form.periksa2);
+            printWithoutDialog(printLabel);
+        }
+    });
+
+    router.post();
+
     // router.post("/api/order-besar/cetak-label", form, {
     //     onFinish: () => {
     //         router.get(props.noRim !== 0 ? "/order-besar/cetak-label/" + form.team + "/" + form.id : "/order-besar/po-siap-verif"); // Mengalihkan setelah pengiriman
     //     },
     // });
-    form.rfid = ""; // Menghapus RFID setelah pengiriman
-    form.periksa2 = ""; // Menghapus RFID setelah pengiriman
+    // form.periksa1 = ""; // Menghapus periksa1 setelah pengiriman
+    // form.periksa2 = ""; // Menghapus periksa1 setelah pengiriman
 };
 </script>
 
@@ -180,22 +191,22 @@ const submit = () => {
                             </option>
                         </select>
                     </div>
-                    <!-- Nomor PO -->
+                    <!-- Nomor no_po -->
                     <div>
                         <InputLabel
-                            for="po"
-                            value="Nomor PO"
+                            for="no_po"
+                            value="Nomor no_po"
                             class="text-4xl font-extrabold text-center"
                         />
 
                         <TextInput
-                            id="po"
-                            ref="po"
-                            v-model="form.po"
+                            id="no_po"
+                            ref="no_po"
+                            v-model="form.no_po"
                             @input="fetchData"
                             type="number"
                             class="block w-full px-8 py-2 mt-2 text-2xl text-center"
-                            autocomplete="po"
+                            autocomplete="no_po"
                             placeholder="Production Order"
                             required
                             autofocus
@@ -225,18 +236,18 @@ const submit = () => {
                         <!-- Jumlah Lembar/Rim -->
                         <div>
                             <InputLabel
-                                for="jml_lembar"
+                                for="jml_rim"
                                 value="Lembar / Rim"
                                 class="text-4xl font-extrabold text-center"
                             />
 
                             <TextInput
-                                id="jml_lembar"
-                                ref="jml_lembar"
-                                v-model="form.jml_lembar"
+                                id="jml_rim"
+                                ref="jml_rim"
+                                v-model="form.jml_rim"
                                 type="text"
                                 class="block w-full px-8 py-2 mt-2 text-2xl text-center bg-slate-200/70"
-                                autocomplete="jml_lembar"
+                                autocomplete="jml_rim"
                                 placeholder="Lembar/Rim"
                                 min="1"
                                 disabled
@@ -274,18 +285,18 @@ const submit = () => {
                         <!-- periksa 1 -->
                         <div class="flex-auto">
                             <InputLabel
-                                for="rfid"
+                                for="periksa1"
                                 value="Periksa 1"
                                 class="text-4xl font-extrabold text-center"
                             />
 
                             <TextInput
-                                id="rfid"
-                                ref="rfid"
-                                v-model="form.rfid"
+                                id="periksa1"
+                                ref="periksa1"
+                                v-model="form.periksa1"
                                 type="text"
                                 class="block w-full px-8 py-2 mt-2 text-2xl text-center"
-                                autocomplete="rfid"
+                                autocomplete="periksa1"
                                 placeholder="NP"
                                 required
                             />

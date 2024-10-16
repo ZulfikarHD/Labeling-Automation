@@ -8,6 +8,7 @@ use Inertia\Inertia;
 use App\Models\GeneratedProducts;
 use App\Models\GeneratedLabels;
 use App\Models\Workstations;
+use App\Services\ProductionOrderService;
 use App\Traits\UpdateStatusProgress;
 
 class ProductionOrderController extends Controller
@@ -69,20 +70,15 @@ class ProductionOrderController extends Controller
         ]);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
+    public function store(Request $request, ProductionOrderService $productionOrderService)
     {
-        //
-    }
+        try{
+            $productionOrderService->registerProductionOrder($request);
+        } catch (\Exception $exeption) {
+            return response()->json(['error' =>  $exeption->getMessage()] , 422);
+        }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
+        return redirect()->back();
     }
 
     /**

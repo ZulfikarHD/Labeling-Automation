@@ -41,55 +41,16 @@ class CetakLabelController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
-        $npPegawai = strtoupper($request->rfid);
+        $npPegawai = strtoupper($request->periksa1);
         $npPeriksa2 = strtoupper($request->periksa2);
 
-        $registeredProduct = $this->registerNoPo($request->po);
-        $this->generateLabels($npPegawai, $registeredProduct);
+        // $registeredProduct = $this->registerNoPo($request->po);
+        // $this->generateLabels($npPegawai, $registeredProduct);
         $this->finishPreviousSession($npPegawai);
         $this->updateProgress($request->po, $this->countNullNp($request->po) > 0 ? 1 : 2);
 
         return redirect()->back();
     }
-
-    /**
-     * Mendaftarkan nomor PO dan mengembalikan produk yang terdaftar.
-     *
-     * @param string $noPo
-     * @return \App\Models\GeneratedProducts
-     */
-    public function registerNoPo(string $noPo, ProductionOrderService $productionOrder)
-    {
-        $detailProduct = Specification::where('no_po', $noPo)->first();
-
-        $sumRim = max(floor($detailProduct->rencet / 1000), 1);
-        $endRim = 0 + $sumRim;
-
-        if($productionOrder->cekPoTerdaftar($noPo) === false)
-        {
-            $registeredProduct = GeneratedProducts::updateOrCreate(
-                [
-                    'no_po' => $noPo,
-                ],
-                [
-                    'no_obc'  => $detailProduct->no_obc,
-                    'type'    => "PCHT",
-                    'status'  => 1,
-                    'sum_rim' => $sumRim,
-                    'start_rim' => 1,
-                    'end_rim'   => $endRim,
-                    'assigned_team' => 3,
-                ]
-            );
-
-            return $registeredProduct;
-        } else {
-            return redirect()->back()->with('po_exist','PO Sudah Terdaftar');
-        }
-
-    }
-
-
 
     /**
      * Menghasilkan label berdasarkan produk yang terdaftar.
