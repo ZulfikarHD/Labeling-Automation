@@ -34,13 +34,12 @@ class CetakLabelController extends Controller
         return $specificationService->getSpecByNomorPo($no_po);
     }
 
-
     public function store(Request $request, PrintLabelService $printLabelService)
     {
         try {
             $registerProductionOrder = url("/api/register-production-order",$request);
             $printLabelService->finishPreviousUserSession($request->periksa1);
-            $this->updateProgress($request->po, $this->countNullNp($request->po) > 0 ? 1 : 2);
+            $this->updateProgress($request->no_po, $this->countNullNp($request->no_po) > 0 ? 1 : 2);
         } catch (\Exception $exception) {
             return response()->json(['error' =>  $exception->getMessage()] , 422);
         }
