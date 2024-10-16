@@ -1,5 +1,5 @@
 <script setup>
-import { reactive,ref } from "vue";
+import { reactive, ref } from "vue";
 import Modal from "@/Components/Modal.vue";
 import ContentLayout from "@/Layouts/ContentLayout.vue";
 import InputLabel from "@/Components/InputLabel.vue";
@@ -9,14 +9,20 @@ import { Link, useForm, router } from "@inertiajs/vue3";
 import axios from "axios";
 import NavigateBackButton from "@/Components/NavigateBackButton.vue";
 
+const props = defineProps({
+    listTeam: Object,
+});
+
 // Define a reactive form object to store form data
 const form = useForm({
+    team : "",
     po: "", // Production Order number
     obc: "", // Order Bea Cukai number
     jml_lembar: "", // Number of sheets/rims
     jml_label: "", // Number of labels
     seri: "", // Series number
     rfid: "", // NP Inspector
+    periksa2: "",
 });
 
 // Function to fetch data based on the Production Order number
@@ -30,46 +36,51 @@ const fetchData = () => {
     });
 };
 
-
 // Fungsi untuk menghasilkan HTML label cetak
-const generatePrintLabel = (obc, np) => {
+const generatePrintLabel = (obc, np, p2) => {
     let date = new Date(); // Tanggal saat ini
-    const months = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
-    let tgl = `${date.getDate()}-${months[date.getMonth()]}-${date.getFullYear()}`; // Tanggal yang diformat
+    const months = [
+        "Jan",
+        "Feb",
+        "Mar",
+        "Apr",
+        "Mei",
+        "Jun",
+        "Jul",
+        "Agu",
+        "Sep",
+        "Okt",
+        "Nov",
+        "Des",
+    ];
+    let tgl = `${date.getDate()}-${
+        months[date.getMonth()]
+    }-${date.getFullYear()}`; // Tanggal yang diformat
     let time = `${date.getHours()} : ${date.getMinutes()}`; // Waktu saat ini
     let obc_color = form.seri == 3 ? "#b91c1c" : "#1d4ed8"; // Warna berdasarkan seri
+    let periksa2 = " / " + p2;
 
-    // Mengembalikan struktur HTML untuk pencetakan
-    return `<!DOCTYPE html>
-        <html>
-            <head></head>
-            <body>
-                <div style='page-break-after:always; width:100%; height:fit-content;'>
-                    <div style="margin-top:19.5vh; margin-left:18.5vh">
-                        <span style="font-weight:600; text-align:center;">${tgl}</span>
-                        <h1 style="font-size: 24px; line-height: 32px; margin-left:25px; font-weight:600; text-align:center; display:inline-block; padding-top:6px; color:${obc_color}">${obc}</h1>
-                    </div>
-                    <div style="margin-top:0.75rem; margin-left:16vh">
-                        <h1 style="font-size: 20px; line-height: 32px; margin-left:155px; margin-right:auto; font-weight:600;text-align:center;display:inline-block;text-transform: uppercase;">INSP / ${np}</h1>
-                    </div>
-                    <div style="margin-top:47.5px; margin-left:13vh">
-                        <h1 style="display: inline-block; margin-left: 160px; margin-right: auto; text-align: center; font-size: 20px; line-height: 28px; font-weight:500; color:${obc_color}"> <span style="font-size:12px; margin-left:8px">${time}</span></h1>
-                    </div>
-                </div>
-                <div style='page-break-after:always; width:100%; height:fit-content;'>
-                    <div style="margin-top:19.5vh; margin-left:18.5vh">
-                        <span style="font-weight:600; text-align:center;">${tgl}</span>
-                        <h1 style="font-size: 24px; line-height: 32px; margin-left:25px; font-weight:600; text-align:center; display:inline-block; padding-top:6px; color:${obc_color}">${obc}</h1>
-                    </div>
-                    <div style="margin-top:0.75rem; margin-left:16vh">
-                        <h1 style="font-size: 20px; line-height: 32px; margin-left:155px; margin-right:auto; font-weight:600;text-align:center;display:inline-block;text-transform: uppercase;">INSP / ${np}</h1>
-                    </div>
-                    <div style="margin-top:47.5px; margin-left:13vh">
-                        <h1 style="display: inline-block; margin-left: 160px; margin-right: auto; text-align: center; font-size: 20px; line-height: 28px; font-weight:500; color:${obc_color}"> <span style="font-size:12px; margin-left:8px">${time}</span></h1>
-                    </div>
-                </div>
-            </body>
-        </html>`;
+    let contentPrint = `<div style='width:100%;'>
+                            <div style="margin-top:178px; margin-left:180px">
+                                <span style="font-weight:600; text-align:center;">${tgl}</span>
+                                <h1 style="font-size: 24px; line-height: 32px; margin-left:25px; font-weight:600; text-align:center; display:inline-block; padding-top:6px; color:${obc_color}">${obc}</h1>
+                            </div>
+                            <div style="margin-top:0.75rem; margin-left:16vh">
+                                <h1 style="font-size: 20px; line-height: 32px; margin-left:140px; margin-right:auto; font-weight:600;text-align:center;display:inline-block;text-transform: uppercase;">${np}${periksa2}</h1>
+                            </div>
+                            <div style="margin-top:47.5px; margin-left:13vh">
+                                <h1 style="display: inline-block; margin-left: 160px; margin-right: auto; text-align: center; font-size: 20px; line-height: 28px; font-weight:500; color:${obc_color}"> <span style="font-size:12px; margin-left:8px">${time}</span></h1>
+                            </div>
+                        </div>
+                        <div style="page-break-after:always;"></div>`;
+
+    let printPage = "";
+
+    for (let print = 0; print < form.jml_label; print++) {
+        printPage += `<body><span style="color:white">${print}</span>${contentPrint}</body>`;
+    }
+
+    return printPage;
 };
 
 const printFrame = ref(null);
@@ -80,44 +91,49 @@ const printWithoutDialog = (content) => {
     doc.open();
     // Add styles to hide header and footer and limit to the first page
     doc.write(`
-        <style>
-            @media print {
-                @page {
-                    margin: 3rem; /* Remove default margins */
-                }
-                body {
-                    margin: 0; /* Remove body margin */
-                }
-                header, footer {
-                    display: none !important; /* Hide header and footer */
-                }
-                * {
-                    -webkit-print-color-adjust: exact; /* Ensure colors are printed correctly */
-                    print-color-adjust: exact; /* Ensure colors are printed correctly */
-                }
-            }
-        </style>
-        ${content}
-    `);
+                        <html>
+                            <head>
+                                <style>
+                                    @media print {
+                                        @page {
+                                            margin: 3rem; /* Remove default margins */
+                                        }
+                                        body {
+                                            margin: 0; /* Remove body margin */
+                                        }
+                                        header, footer {
+                                            display: none !important; /* Hide header and footer */
+                                        }
+                                        * {
+                                            -webkit-print-color-adjust: exact; /* Ensure colors are printed correctly */
+                                            print-color-adjust: exact; /* Ensure colors are printed correctly */
+                                        }
+                                    }
+                                </style>
+                            </head>
+                            ${content}
+                        </html>
+                `);
     doc.close();
     iframe.contentWindow.focus();
 
     // Use a timeout to allow the content to load before printing
     setTimeout(() => {
         iframe.contentWindow.print();
-    }, 100); // Adjust the timeout as necessary
+    }, 1000); // Adjust the timeout as necessary
 };
 
 // Fungsi untuk mengirim formulir utama
 const submit = () => {
-    let printLabel = generatePrintLabel(form.obc, form.rfid, );
+    let printLabel = generatePrintLabel(form.obc, form.rfid, form.periksa2);
     printWithoutDialog(printLabel);
     // router.post("/api/order-besar/cetak-label", form, {
     //     onFinish: () => {
     //         router.get(props.noRim !== 0 ? "/order-besar/cetak-label/" + form.team + "/" + form.id : "/order-besar/po-siap-verif"); // Mengalihkan setelah pengiriman
     //     },
     // });
-    form.rfid = null; // Menghapus RFID setelah pengiriman
+    form.rfid = ""; // Menghapus RFID setelah pengiriman
+    form.periksa2 = ""; // Menghapus RFID setelah pengiriman
 };
 </script>
 
@@ -140,8 +156,30 @@ const submit = () => {
         <div class="py-12">
             <form @submit.prevent="submit">
                 <div
-                    class="flex flex-col justify-center gap-6 mx-auto mt-20 w-fit"
+                    class="flex flex-col justify-center gap-6 mx-auto mt-14 w-fit"
                 >
+                    <div class="mx-auto w-full">
+                        <InputLabel
+                            for="team"
+                            value="Team"
+                            class="text-2xl font-extrabold text-center"
+                        />
+
+                        <select
+                            id="team"
+                            ref="team"
+                            v-model="form.team"
+                            class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block px-10 py-2 mt-2 text-lg w-full drop-shadow flex-grow"
+                        >
+                            <option
+                                v-for="team in props.listTeam"
+                                :key="team.id"
+                                :value="team.id"
+                            >
+                                {{ team.workstation }}
+                            </option>
+                        </select>
+                    </div>
                     <!-- Nomor PO -->
                     <div>
                         <InputLabel
@@ -232,24 +270,45 @@ const submit = () => {
                         Nomor RIM
                     </h4> -->
 
-                    <!-- NP Pemeriksa -->
-                    <div>
-                        <InputLabel
-                            for="rfid"
-                            value="NP Pemeriksa"
-                            class="text-4xl font-extrabold text-center"
-                        />
+                    <div class="flex gap-4">
+                        <!-- periksa 1 -->
+                        <div class="flex-auto">
+                            <InputLabel
+                                for="rfid"
+                                value="Periksa 1"
+                                class="text-4xl font-extrabold text-center"
+                            />
 
-                        <TextInput
-                            id="rfid"
-                            ref="rfid"
-                            v-model="form.rfid"
-                            type="text"
-                            class="block w-full px-8 py-2 mt-2 text-2xl text-center"
-                            autocomplete="rfid"
-                            placeholder="NP"
-                            required
-                        />
+                            <TextInput
+                                id="rfid"
+                                ref="rfid"
+                                v-model="form.rfid"
+                                type="text"
+                                class="block w-full px-8 py-2 mt-2 text-2xl text-center"
+                                autocomplete="rfid"
+                                placeholder="NP"
+                                required
+                            />
+                        </div>
+
+                        <!-- Periksa 2-->
+                        <div class="flex-auto">
+                            <InputLabel
+                                for="periksa2"
+                                value="Periksa 2"
+                                class="text-4xl font-extrabold text-center"
+                            />
+
+                            <TextInput
+                                id="periksa2"
+                                ref="periksa2"
+                                v-model="form.periksa2"
+                                type="text"
+                                class="block w-full px-8 py-2 mt-2 text-2xl text-center"
+                                autocomplete="periksa2"
+                                placeholder="NP"
+                            />
+                        </div>
                     </div>
                 </div>
                 <div class="flex justify-center gap-6 mx-auto w-fit">
@@ -274,4 +333,5 @@ const submit = () => {
             </form>
         </div>
     </ContentLayout>
+    <iframe ref="printFrame" style="display: none"></iframe>
 </template>

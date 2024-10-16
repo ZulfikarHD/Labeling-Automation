@@ -8,6 +8,8 @@ use App\Traits\UpdateStatusProgress;
 use App\Models\GeneratedProducts;
 use App\Models\GeneratedLabels;
 use App\Models\Specification;
+use App\Models\Workstations;
+use App\Services\ProductionOrderService;
 use App\Services\SpecificationService;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
@@ -19,7 +21,11 @@ class CetakLabelController extends Controller
 
     public function index()
     {
-        return Inertia::render('OrderKecil/CetakLabel');
+        $listTeam = Workstations::select('id','workstation')->get();
+
+        return Inertia::render('OrderKecil/CetakLabel',[
+            'listTeam'  => $listTeam,
+        ]);
     }
 
     public function show(Int $no_po, SpecificationService $specificationService)
@@ -36,6 +42,7 @@ class CetakLabelController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $npPegawai = strtoupper($request->rfid);
+        $npPeriksa2 = strtoupper($request->periksa2);
 
         $registeredProduct = $this->registerNoPo($request->po);
         $this->generateLabels($npPegawai, $registeredProduct);
@@ -51,30 +58,38 @@ class CetakLabelController extends Controller
      * @param string $noPo
      * @return \App\Models\GeneratedProducts
      */
-    public function registerNoPo(string $noPo): GeneratedProducts
+    public function registerNoPo(string $noPo, ProductionOrderService $productionOrder)
     {
         $detailProduct = Specification::where('no_po', $noPo)->first();
 
         $sumRim = max(floor($detailProduct->rencet / 1000), 1);
         $endRim = 0 + $sumRim;
 
-        $registeredProduct = GeneratedProducts::updateOrCreate(
-            [
-                'no_po' => $noPo,
-            ],
-            [
-                'no_obc'  => $detailProduct->no_obc,
-                'type'    => "PCHT",
-                'status'  => 1,
-                'sum_rim' => $sumRim,
-                'start_rim' => 1,
-                'end_rim'   => $endRim,
-                'assigned_team' => 3,
-            ]
-        );
+        if($productionOrder->cekPoTerdaftar($noPo) === false)
+        {
+            $registeredProduct = GeneratedProducts::updateOrCreate(
+                [
+                    'no_po' => $noPo,
+                ],
+                [
+                    'no_obc'  => $detailProduct->no_obc,
+                    'type'    => "PCHT",
+                    'status'  => 1,
+                    'sum_rim' => $sumRim,
+                    'start_rim' => 1,
+                    'end_rim'   => $endRim,
+                    'assigned_team' => 3,
+                ]
+            );
 
-        return $registeredProduct;
+            return $registeredProduct;
+        } else {
+            return redirect()->back()->with('po_exist','PO Sudah Terdaftar');
+        }
+
     }
+
+
 
     /**
      * Menghasilkan label berdasarkan produk yang terdaftar.
