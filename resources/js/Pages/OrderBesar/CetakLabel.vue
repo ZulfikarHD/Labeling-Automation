@@ -11,7 +11,7 @@
                 <!-- Rim Data Description -->
                 <TextInput id="dataRim" name="dataRim" type="text"
                     class="py-1 mx-4 text-lg font-semibold text-center uppercase border text-slate-500 border-slate-500/70 rounded-mdr"
-                    v-model="formPrintUlang.dataRim" required disabled autocomplete="rfid" />
+                    v-model="formPrintUlang.dataRim" required disabled autocomplete="periksa1" />
 
                 <!-- Select Rim Side -->
                 <div class="flex justify-center gap-6">
@@ -205,10 +205,10 @@
 
                     <!-- NP Inspector -->
                     <div>
-                        <InputLabel for="rfid" value="Silahkan Scan NP mu" class="text-2xl font-semibold text-center" />
+                        <InputLabel for="periksa1" value="Silahkan Scan NP mu" class="text-2xl font-semibold text-center" />
 
-                        <TextInput id="rfid" type="text" class="block w-full mt-4 text-center uppercase" v-model="form.rfid"
-                            required autofocus autocomplete="rfid" />
+                        <TextInput id="periksa1" type="text" class="block w-full mt-4 text-center uppercase" v-model="form.periksa1"
+                            required autofocus autocomplete="periksa1" />
 
                         <InputError class="mt-2" />
                     </div>
@@ -217,7 +217,7 @@
                 <!-- Buttons -->
                 <div class="flex justify-center gap-6 mx-auto w-fit">
                     <!-- Reset Form -->
-                    <button type="button" @click="form.rfid = null"
+                    <button type="button" @click="form.periksa1 = null"
                         class="flex justify-center px-4 py-4 mx-auto mt-8 text-lg font-bold shadow w-fit bg-gradient-to-r from-violet-400 to-violet-500 rounded-xl text-start hover:brightness-90 drop-shadow shadow-violet-500/20 text-violet-50">
                         Clear
                     </button>
@@ -297,15 +297,10 @@ const props = defineProps({
     noRim: Number, // Nomor rim
     potongan: String, // Spesifikasi pemotongan
     date: String, // Tanggal untuk operasi
-    showModal: {
-        type: Boolean,
-        default: false, // Visibilitas modal
-    },
-    printUlangModal: {
-        type: Boolean,
-        default: false, // Visibilitas modal cetak ulang
-    },
 });
+
+const showModal = ref(false);
+const printUlangModal = ref(false);
 
 // Referensi reaktif untuk data cetak ulang
 const dataPrintUlang = ref();
@@ -320,7 +315,7 @@ const form = useForm({
     jml_rim: 1, // Jumlah rim
     lbr_ptg: props.potongan, // Spesifikasi pemotongan
     no_rim: props.noRim, // Nomor rim
-    rfid: "", // RFID untuk pemindaian
+    periksa1: "", // periksa1 untuk pemindaian
     date: props.date, // Tanggal untuk operasi
     noPlat :"",
 });
@@ -362,7 +357,7 @@ produksiPegawai()
 
 // Fungsi untuk mengambil data untuk mencetak ulang rim
 const getDataRim = () => {
-    axios.post('/api/non-perekat/non-personal/print-label/edit', formPrintUlang).then((res) => {
+    axios.post('/api/order-besar/cetak-label/edit', formPrintUlang).then((res) => {
         dataPrintUlang.value = res.data; // Menyimpan data yang diambil
     });
 };
@@ -443,29 +438,29 @@ const printUlangLabel = () => {
     let printLabel = generatePrintLabel(formPrintUlang.obc, formPrintUlang.npPetugas, formPrintUlang.noRim !== 999 ? formPrintUlang.noRim : "INS", formPrintUlang.dataRim == "Kiri" ? "(*)" : "(**)");
     printWithoutDialog(printLabel);
 
-    router.post("/api/non-perekat/non-personal/print-label/update", formPrintUlang, {
+    router.post("/api/order-besar/cetak-label/update", formPrintUlang, {
         onFinish: () => {
-            router.get("/non-perekat/non-personal/print-label/" + form.team + "/" + form.id); // Mengalihkan setelah pembaruan
+            router.get("/order-besar/cetak-label/" + form.team + "/" + form.id); // Mengalihkan setelah pembaruan
         },
     });
 };
 
 // Fungsi untuk mengirim formulir utama
 const submit = () => {
-    let printLabel = generatePrintLabel(form.obc, form.rfid, form.no_rim !== 999 ? form.no_rim : "INS", form.lbr_ptg == "Kiri" ? "(*)" : "(**)");
+    let printLabel = generatePrintLabel(form.obc, form.periksa1, form.no_rim !== 999 ? form.no_rim : "INS", form.lbr_ptg == "Kiri" ? "(*)" : "(**)");
     printWithoutDialog(printLabel);
-    router.post("/api/non-perekat/non-personal/print-label", form, {
+    router.post("/api/order-besar/cetak-label", form, {
         onFinish: () => {
-            router.get(props.noRim !== 0 ? "/non-perekat/non-personal/print-label/" + form.team + "/" + form.id : "/non-perekat/non-personal/verif"); // Mengalihkan setelah pengiriman
+            router.get(props.noRim !== 0 ? "/order-besar/cetak-label/" + form.team + "/" + form.id : "/order-besar/po-siap-verif"); // Mengalihkan setelah pengiriman
         },
     });
-    form.rfid = null; // Menghapus RFID setelah pengiriman
+    form.periksa1 = null; // Menghapus periksa1 setelah pengiriman
 };
 
 // Fungsi untuk menyelesaikan pesanan
 const finish_order = () => {
-    axios.put("/api/nonPers-finish-order/" + form.po) // Memperbarui status pesanan
-    router.get("/non-perekat/non-personal/verif") // Mengalihkan ke halaman verifikasi
+    axios.put("/api/production-order-finish/" + form.po) // Memperbarui status pesanan
+    router.get("/order-besar/po-siap-verif") // Mengalihkan ke halaman verifikasi
 }
 
 // Fetch noPlat from API

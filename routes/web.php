@@ -6,11 +6,7 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 use App\Http\Controllers\ProductMonitoringController;
-use App\Http\Controllers\GeneratedProductsController;
 use App\Http\Controllers\GenerateLabelsPersonalController;
-use App\Http\Controllers\GeneratedLabelsController;
-use App\Http\Controllers\EntryPoController;
-use App\Http\Controllers\PrintLabelController;
 
 /*
 |--------------------------------------------------------------------------
@@ -28,77 +24,45 @@ Route::get('/login', function () {
     return Inertia::render('Login');
 })->name('login');
 
-// Route::middleware(['auth'])->group(function () {
-    Route::get('/', function () {
-        return Inertia::render('Dashboard');
-    })->name('dashboard');
-
-    // Group Non Perekat //
-    //-------------------//
-
-    //Pilih Personal atau Non Pesonal
-    Route::get('/non-perekat', function () {
-        return Inertia::render('NonPerekat/IndexNonPerekat');
-    })->name('nonPer.index');
-
-    // Section Non Perekat, Personal //
-    //-------------------------------//
-    Route::get('/non-perekat/personal', [GenerateLabelsPersonalController::class, 'index'])
-        ->name('nonPer.personal');
-    // Section Non Perekat, Non Personal //
-    //-----------------------------------//
-    // Pilih User
-    // Kepala Meja
-    Route::get('/non-perekat/non-personal', function () {
-        return Inertia::render('NonPerekat/NonPersonal/Index');
-    })->name('nonPer.nonPersonal.index');
-
-    // Verifikator
-    Route::get('/non-perekat/non-personal/verif', [GeneratedLabelsController::class, 'index'])->name('nonPer.nonPersonal.verif.index');
-
-    // Section Kepala Meja Non Perekat //
-    //---------------------------------//
-    // Menu Kepala Meja
-    Route::get('/non-perekat/non-personal/pic', function () {
-        return Inertia::render('NonPerekat/NonPersonal/Pic/Menu');
-    })->name('nonPer.nonPersonal.pic.index');
-
-    // Monitoring Barang
-    Route::get('/non-perekat/non-personal/pic/monitorVerifikasi',       [ProductMonitoringController::class, 'index'])->name('nonPer.nonPersonal.monitor.index');
-    Route::get('/non-perekat/non-personal/pic/monitorVerifikasi/{id}',  [ProductMonitoringController::class, 'show'])->name('nonPer.nonPersonal.monitor.show');
-
-    // List Generated Product
-    Route::get('/non-perekat/non-personal/pic/listPo/{team}',       [GeneratedProductsController::class, 'index'])->name('nonPer.nonPersonal.listPo.index');
-    Route::get('/non-perekat/non-personal/pic/listPo/{team}/{po}',  [GeneratedProductsController::class, 'show'])->name('nonPer.nonPersonal.listPo.show');
-    Route::post('/non-perekat/non-personal/pic/listPo/{team}',      [GeneratedProductsController::class, 'data_products']);
-    Route::resource('/non-perekat/non-personal/pic/listPo',         GeneratedProductsController::class, ['names' => 'nonPer.nonPersonal.listPo'])->except(['index', 'show']);
-
-    // Generate Product
-    Route::get('/non-perekat/non-personal/entry-po',          [EntryPoController::class, 'index'])->name('nonPer.nonPersonal.entryPo.index');
-    // Route::post('/non-perekat/non-personal/generateLabels',[EntryPoController::class, 'store'])->name('nonPer.nonPersonal.generateLabels.store');
-
-    // Section Verifikator Non Perekat //
-    //---------------------------------//
-    // List Generated Labels (Barang Yang Siap Periksa)
-    Route::get('/non-perekat/non-personal/print-label/{workstation}/{id}', [PrintLabelController::class, 'index'])
-        ->name('nonPer.nonPersonal.printLabel.index');
-
-    // Group Perekat //
-    //---------------//
-
-    // Generate Label
-    Route::get('/p/generateLabels', [GeneratedLabelsController::class, 'indexMmea'])->name('p.generateLabels');
-    Route::post('/p/generateLabels/callSpec', [GeneratedLabelsController::class, 'callSpec'])->name('p.generateLabels.callSpec');
-    Route::post('/p/generateLabels/storeMmea', [GeneratedLabelsController::class, 'storeMmea'])->name('p.generateLabels.storeMmea');
-
-    // Table Hasil Laporan Produksi
-    Route::get('/produksi-pegawai', function () {
-        return Inertia::render('ProduksiPegawai', [
-            'teams' => \App\Models\Workstations::all(),
-        ]);
-    });
-// });
+Route::get('/', [App\Http\Controllers\OrderBesar\PoSiapVerifController::class, 'index'])->name('dashboard');
 
 
+
+/**
+ * ---------------------------------------
+ * Route Group Order Besar
+ * ---------------------------------------
+ */
+Route::get('/order-besar/register-nomor-po', [App\Http\Controllers\OrderBesar\RegisterNomorPoController::class, 'index'])->name('orderBesar.registerNomorPo');
+Route::get('/order-besar/po-siap-verif', [App\Http\Controllers\OrderBesar\PoSiapVerifController::class, 'index'])->name('orderBesar.poSiapVerif');
+Route::get('/order-besar/cetak-label/{team}/{id}',   [App\Http\Controllers\OrderBesar\CetakLabelController::class, 'index'])->name('orderBesar.cetakLabel');
+
+
+/**
+ * ---------------------------------------
+ * Route Group Order Kecil
+ * ---------------------------------------
+ */
+Route::get('/order-kecil/cetak-label',[App\Http\Controllers\OrderKecil\CetakLabelController::class, 'index'])->name('orderKecil.cetakLabel');
+
+/**
+ * ---------------------------------------
+ * Route Group Data PO
+ * ---------------------------------------
+ */
+Route::get('/data-po/{team}',[App\Http\Controllers\ProductionOrderController::class, 'index'])->name('dataPo.index');
+Route::post('/data-po/{team}',[App\Http\Controllers\ProductionOrderController::class, 'data_products'])->name('dataPo.filterTeam');
+Route::delete('/data-po/{no_po}',[App\Http\Controllers\ProductionOrderController::class, 'destroy'])->name('dataPo.destroy');
+Route::get('/data-po/{team}/{no_po}',[App\Http\Controllers\ProductionOrderController::class, 'show'])->name('dataPo.show');
+
+
+/**
+ * ---------------------------------------
+ * Route Group Monitoring Produksi
+ * ---------------------------------------
+ */
+Route::get('/monitoring-produksi/status-verif',[App\Http\Controllers\MonitoringProduksi\StatusVerifikasiTeamController::class, 'index'])->name('monitoringProduksi.statusVerif.index');
+Route::get('/monitoring-produksi/status-verif/{id}',[App\Http\Controllers\MonitoringProduksi\StatusVerifikasiTeamController::class, 'show']) ->name('monitoringProduksi.statusVerif.show');
+Route::get('/monitoring-produksi/produksi-pegawai', [App\Http\Controllers\MonitoringProduksi\ProduksiPegawaiController::class, 'index'])->name('monitoringProduksi.produksiPegawai');
 
 require __DIR__ . '/auth.php';

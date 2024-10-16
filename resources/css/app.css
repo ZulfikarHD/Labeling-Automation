@@ -4,7 +4,7 @@
 
 @media print and (width: 10cm) and (height: 13cm) {
     @page {
-       margin: 3cm;
+        margin: 3cm;
     }
 }
 @page {
@@ -12,4 +12,15 @@
     margin-top: 10%;
     margin-bottom: 10%;
     margin-left: 20%;
+}
+
+.slide-in-right-enter-active,
+.slide-in-right-leave-active {
+    transition: all 0.5s;
+    transform: translateX(0);
+}
+.slide-in-right-enter,
+.slide-in-right-leave-to {
+    opacity: 0;
+    transform: translateX(20px);
 }

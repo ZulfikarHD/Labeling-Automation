@@ -4,15 +4,15 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Inertia\Inertia;
-use Inertia\Response;
 
 use App\Models\GeneratedProducts;
 use App\Models\GeneratedLabels;
-use App\Models\Specification;
 use App\Models\Workstations;
+use App\Services\PrintLabelService;
+use App\Services\ProductionOrderService;
 use App\Traits\UpdateStatusProgress;
 
-class GeneratedProductsController extends Controller
+class ProductionOrderController extends Controller
 {
     use UpdateStatusProgress;
 
@@ -21,7 +21,7 @@ class GeneratedProductsController extends Controller
      */
     public function index(String $team)
     {
-        return Inertia::render('NonPerekat/NonPersonal/Pic/ListPo',[
+        return Inertia::render('ProductionOrderList',[
             'products' => $this->data_products($team,request()->merge(['search'=>''])),
             'listTeam' => Workstations::select('id','workstation')->get(),
             'crntTeam' => $team,
@@ -64,27 +64,23 @@ class GeneratedProductsController extends Controller
     public function show(String $team,string $po)
     {
         $assigned_team = GeneratedProducts::where('no_po',$po)->firstOrFail()->assigned_team;
-        return Inertia::render('NonPerekat/NonPersonal/Pic/Monitor',[
+        return Inertia::render('MonitoringProduksi/StatusVerifikasiTeam',[
             'dataRim'   => GeneratedLabels::where('no_po_generated_products',$po)->get(),
             'spec'  => GeneratedProducts::where('no_po',$po)->firstOrFail(),
             'team'  => Workstations::where('id',$assigned_team)->firstOrFail(),
         ]);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
+    public function store(Request $request, ProductionOrderService $productionOrderService, PrintLabelService $printLabelService)
     {
-        //
-    }
+        try{
+            $productionOrderService->registerProductionOrder($request);
+            $printLabelService->populateLabelForRegisteredPo($request);
+        } catch (\Exception $exeption) {
+            return response()->json(['error' =>  $exeption->getMessage()] , 422);
+        }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
+        return redirect()->back();
     }
 
     /**

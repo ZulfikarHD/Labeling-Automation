@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\OrderBesar;
 
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Models\Workstations;
@@ -10,20 +11,21 @@ use App\Models\GeneratedLabels;
 use App\Traits\UpdateStatusProgress;
 use App\Models\DataInschiet;
 
-class PrintLabelController extends Controller
+class CetakLabelController extends Controller
 {
     use UpdateStatusProgress;
 
-    public function index(String $workstation, String $id)
+    public function index(String $team, String $id)
     {
         $product = GeneratedProducts::find($id);
+        $noRimData = $this->fetchNoRim($product->no_po);
 
-        return Inertia::render('NonPerekat/NonPersonal/Verifikator/GenerateLabel', [
+        return Inertia::render('OrderBesar/CetakLabel', [
             'product'   => $product,
             'listTeam'  => Workstations::select('id', 'workstation')->get(),
-            'crntTeam'  => $workstation,
-            'noRim'     => $this->fetchNoRim($product->no_po)['noRim'],
-            'potongan'  => $this->fetchNoRim($product->no_po)['potongan'],
+            'crntTeam'  => $team,
+            'noRim'     => $noRimData['noRim'],
+            'potongan'  => $noRimData['potongan'],
             'date'      => now(),
         ]);
     }
@@ -37,16 +39,16 @@ class PrintLabelController extends Controller
 
     public function store(Request $request)
     {
-        $rfid = strtoupper($request->rfid);
-        $cnt_prog = GeneratedLabels::where('np_users', $rfid)
+        $periksa1 = strtoupper($request->periksa1);
+        $cnt_prog = GeneratedLabels::where('np_users', $periksa1)
                                    ->whereNull('finish')
                                    ->count();
 
         if ($cnt_prog > 0) {
-            GeneratedLabels::where('np_users', $rfid)
+            GeneratedLabels::where('np_users', $periksa1)
                            ->whereNull('finish')
                            ->update([
-                               'np_users' => $rfid,
+                               'np_users' => $periksa1,
                                'finish'   => now()
                            ]);
         }
@@ -55,7 +57,7 @@ class PrintLabelController extends Controller
                        ->where('potongan', $request->lbr_ptg)
                        ->where('no_rim', $request->no_rim)
                        ->update([
-                           'np_users'    => $rfid,
+                           'np_users'    => $periksa1,
                            'start'       => now(),
                            'finish'      => null,
                            'workstation' => $request->team
@@ -69,7 +71,7 @@ class PrintLabelController extends Controller
         if ($request->no_rim === 999) {
             $field = $request->lbr_ptg === "Kiri" ? 'np_kiri' : 'np_kanan';
             DataInschiet::where('no_po', $request->po)
-                        ->update([$field => $rfid]);
+                        ->update([$field => $periksa1]);
         }
 
         return redirect()->back();

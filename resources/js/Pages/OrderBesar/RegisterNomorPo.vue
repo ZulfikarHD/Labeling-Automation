@@ -36,7 +36,7 @@ const fetchData = () => {
     isLoading.value = true;
     errorPo.value = "";
 
-    axios.get(`/api/gen-labels/non-personal/${form.po}`).then((response) => {
+    axios.get(`/api/order-besar/register-no-po/${form.po}`).then((response) => {
         const data = response.data;
         form.obc = data.no_obc;
         form.jml_lembar = data.rencet;
@@ -126,7 +126,7 @@ function submit() {
         confirmButtonText: 'Buat Label',
     }).then((result) => {
         if (result.isConfirmed) {
-            router.post("/api/gen-labels/non-personal", form, {
+            router.post("/api/order-besar/register-no-po", form, {
                 onSuccess: () => {
                     swal.fire({
                         icon: 'success',
@@ -220,7 +220,7 @@ function submit() {
                     <button type="submit" class="flex justify-center px-8 py-4 mx-auto w-fit bg-gradient-to-r from-green-400 to-green-500 rounded-xl text-start mt-11">
                         <span class="text-xl font-bold text-yellow-50">Buat Label</span>
                     </button>
-                    <Link :href="route('nonPer.nonPersonal.entryPo.index')" class="text-xl font-bold text-violet-50 flex justify-center px-8 py-4 mx-auto w-fit bg-gradient-to-r from-violet-400 to-violet-500 rounded-xl text-start mt-11">
+                    <Link :href="route('orderBesar.registerNomorPo')" class="text-xl font-bold text-violet-50 flex justify-center px-8 py-4 mx-auto w-fit bg-gradient-to-r from-violet-400 to-violet-500 rounded-xl text-start mt-11">
                         Clear
                     </Link>
                 </div>
@@ -228,8 +228,6 @@ function submit() {
         </div>
         <div class="flex justify-center w-full">
             <div class="flex gap-6">
-                <!-- Back Button -->
-                <NavigateBackButton :link="route('nonPer.nonPersonal.pic.index')" />
                 <!-- Home Button -->
                 <Link :href="route('dashboard')" class="text-xl font-extrabold text-blue-50 w-fit py-3 px-6 bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl text-start drop-shadow-md shadow-md flex items-center gap-1.5">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6">
