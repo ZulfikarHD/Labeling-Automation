@@ -8,6 +8,7 @@ use Inertia\Inertia;
 use App\Models\GeneratedProducts;
 use App\Models\GeneratedLabels;
 use App\Models\Workstations;
+use App\Services\PrintLabelService;
 use App\Services\ProductionOrderService;
 use App\Traits\UpdateStatusProgress;
 
@@ -70,10 +71,11 @@ class ProductionOrderController extends Controller
         ]);
     }
 
-    public function store(Request $request, ProductionOrderService $productionOrderService)
+    public function store(Request $request, ProductionOrderService $productionOrderService, PrintLabelService $printLabelService)
     {
         try{
             $productionOrderService->registerProductionOrder($request);
+            $printLabelService->populateLabelForRegisteredPo($request);
         } catch (\Exception $exeption) {
             return response()->json(['error' =>  $exeption->getMessage()] , 422);
         }

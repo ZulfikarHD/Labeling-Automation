@@ -17,9 +17,9 @@ class ProductionOrderService
         return DB::transaction(function () use ($productionOrder) {
             $sumRim = max(floor($productionOrder->jml_lembar / 1000), 1);
 
-            $dataProductionOrder = $productionOrder->create([
+            GeneratedProducts::create([
                 'no_po'   => $productionOrder->no_po,
-                'no_obc'  => $productionOrder->no_obc,
+                'no_obc'  => $productionOrder->obc,
                 'type'    => "PCHT",
                 'status'  => 1,
                 'sum_rim' => $sumRim,
@@ -27,8 +27,6 @@ class ProductionOrderService
                 'end_rim'   => $sumRim,
                 'assigned_team' => $productionOrder->team,
             ]);
-
-            return $dataProductionOrder;
         });
     }
 

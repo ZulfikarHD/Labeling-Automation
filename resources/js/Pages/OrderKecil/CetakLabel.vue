@@ -26,8 +26,6 @@ const form = useForm({
     jml_rim:"",
 });
 
-const dataRim = ref("0/0 Rim")
-
 // Function to fetch data based on the Production Order number
 const fetchData = () => {
     axios.get("/api/order-kecil/fetch-spec/" + form.no_po).then((res) => {
@@ -39,6 +37,8 @@ const fetchData = () => {
         form.jml_label = total_label;
     });
 };
+
+const showModal = ref(false);
 
 // Fungsi untuk menghasilkan HTML label cetak
 const generatePrintLabel = (obc, np, p2) => {
@@ -133,25 +133,19 @@ const submit = () => {
         onSuccess: () => {
             let printLabel = generatePrintLabel(form.obc, form.periksa1, form.periksa2);
             printWithoutDialog(printLabel);
+
+            form.reset();
+
+            showModal.value = !showModal.value;
         }
     });
-
-    router.post();
-
-    // router.post("/api/order-besar/cetak-label", form, {
-    //     onFinish: () => {
-    //         router.get(props.noRim !== 0 ? "/order-besar/cetak-label/" + form.team + "/" + form.id : "/order-besar/po-siap-verif"); // Mengalihkan setelah pengiriman
-    //     },
-    // });
-    // form.periksa1 = ""; // Menghapus periksa1 setelah pengiriman
-    // form.periksa2 = ""; // Menghapus periksa1 setelah pengiriman
 };
 </script>
 
 <template>
     <ContentLayout>
         <!-- Modal -->
-        <!-- <Modal :show="showModal" @close="showModal = !showModal">
+        <Modal :show="showModal" @close="showModal = !showModal">
             <div
                 class="px-8 py-4 bg-white rounded-lg shadow drop-shadow shadow-slate-300/25"
             >
@@ -161,7 +155,7 @@ const submit = () => {
                     Label Berhasil Di Buat
                 </h1>
             </div>
-        </Modal> -->
+        </Modal>
 
         <!-- Form -->
         <div class="py-12">
