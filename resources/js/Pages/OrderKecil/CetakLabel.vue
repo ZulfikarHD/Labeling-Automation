@@ -11,11 +11,12 @@ import NavigateBackButton from "@/Components/NavigateBackButton.vue";
 
 const props = defineProps({
     listTeam: Object,
+    currentTeam : Number,
 });
 
 // Define a reactive form object to store form data
 const form = useForm({
-    team : "",
+    team : props.currentTeam,
     no_po: "", // Production Order number
     obc: "", // Order Bea Cukai number
     jml_lembar: "", // Number of sheets/rims
@@ -189,7 +190,7 @@ const submit = () => {
                     <div>
                         <InputLabel
                             for="no_po"
-                            value="Nomor no_po"
+                            value="Nomor Production Order"
                             class="text-4xl font-extrabold text-center"
                         />
 

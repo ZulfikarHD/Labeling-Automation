@@ -14,4 +14,9 @@ class Workstations extends Model
         'created_at',
         'updated_at',
     ];
+
+    public function listWorkstation()
+    {
+        return $this->select('id','workstation')->orderBy('workstation')->get();
+    }
 }

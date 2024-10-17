@@ -15,6 +15,7 @@ const confirmationMessage = ref("tests");
 
 const props = defineProps({
     workstation: Object,
+    currentTeam: Number,
 });
 
 const seri = ref("");
@@ -29,7 +30,7 @@ const form = useForm({
     produk: "PCHT",
     end_rim: 40,
     inschiet: 0,
-    team: 1,
+    team: props.currentTeam,
 });
 
 const fetchData = () => {

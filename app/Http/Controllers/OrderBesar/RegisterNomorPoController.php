@@ -12,6 +12,7 @@ use App\Models\GeneratedLabels;
 use App\Models\GeneratedProducts;
 use App\Models\DataInschiet;
 use DB;
+use Illuminate\Support\Facades\Auth;
 
 class RegisterNomorPoController extends Controller
 {
@@ -20,10 +21,11 @@ class RegisterNomorPoController extends Controller
      *
      * @return \Inertia\Response
      */
-    public function index()
+    public function index(Workstations $workstations)
     {
         return Inertia::render('OrderBesar/RegisterNomorPo', [
-            'workstation' => Workstations::orderBy('workstation')->select('id', 'workstation')->get(),
+            'workstation' => $workstations->listWorkstation(),
+            'currentTeam' => Auth::user()->workstation_id,
         ]);
     }
 

@@ -14,18 +14,20 @@ use App\Services\ProductionOrderService;
 use App\Services\SpecificationService;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class CetakLabelController extends Controller
 {
     use UpdateStatusProgress;
 
-    public function index()
+    public function index(Workstations $workstations)
     {
-        $listTeam = Workstations::select('id','workstation')->get();
+        $listTeam = $workstations->listWorkstation();
 
         return Inertia::render('OrderKecil/CetakLabel',[
-            'listTeam'  => $listTeam,
+            'listTeam'    => $listTeam,
+            'currentTeam' => Auth::user()->workstation_id,
         ]);
     }
 

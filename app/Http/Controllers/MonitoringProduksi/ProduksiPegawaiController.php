@@ -9,10 +9,10 @@ use Inertia\Inertia;
 
 class ProduksiPegawaiController extends Controller
 {
-    public function index()
+    public function index(Workstations $workstations)
     {
         return Inertia::render('MonitoringProduksi/ProduksiPegawai', [
-            'teams' => Workstations::all(),
+            'teams' => $workstations->listWorkstation(),
         ]);
     }
 }
