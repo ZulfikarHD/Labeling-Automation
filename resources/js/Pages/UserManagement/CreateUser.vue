@@ -1,12 +1,17 @@
 <script setup>
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
-import { router, useForm } from "@inertiajs/vue3";
-import { ref } from "vue";
+import { router, useForm} from "@inertiajs/vue3";
+import { ref, defineProps  } from "vue";
+
+const props = defineProps({
+    listTeam : Object,
+})
 
 const userForm = useForm({
     npUser: "",
     password: "Peruri",
     roleUser: 0,
+    team: 1,
 });
 
 const submit = () => {
@@ -41,9 +46,11 @@ const changeStateDefaultPassword = () => {
         <div
             class="w-full max-w-xl bg-white rounded-lg shadow-md p-6 mx-auto mt-24"
         >
+        <!-- Title -->
             <h2 class="text-2xl font-bold text-gray-800 mb-4">Create User</h2>
 
             <form @submit.prevent="submit" class="flex flex-col">
+                <!-- Input NP -->
                 <input
                     v-model="userForm.npUser"
                     v-on:keyup="useDefaultPassword"
@@ -52,6 +59,8 @@ const changeStateDefaultPassword = () => {
                     class="bg-gray-100 text-gray-800 border-0 rounded-md p-2 mb-4 focus:bg-gray-200 focus:outline-none focus:ring-1 focus:ring-blue-500 transition ease-in-out duration-150"
                     placeholder="NP User"
                 />
+
+                <!-- Select Role User -->
                 <select
                     v-model="userForm.roleUser"
                     class="bg-gray-100 text-gray-800 border-0 rounded-md p-2 mb-4 focus:bg-gray-200 focus:outline-none focus:ring-1 focus:ring-blue-500 transition ease-in-out duration-150"
@@ -59,13 +68,25 @@ const changeStateDefaultPassword = () => {
                     <option value="0">User</option>
                     <option value="1">Admin</option>
                 </select>
+
+                <!-- Select Team / Workstation User -->
+                <select
+                    v-model="userForm.team"
+                    class="bg-gray-100 text-gray-800 border-0 rounded-md p-2 mb-4 focus:bg-gray-200 focus:outline-none focus:ring-1 focus:ring-blue-500 transition ease-in-out duration-150"
+                >
+                    <option v-for="team in props.listTeam" :value="team.id">{{ team.workstation }}</option>
+                </select>
+
                 <div class="w-full relative">
+
+                    <!-- Form Password -->
                     <input
                         v-model="userForm.password"
                         :type="showPassword ? 'text' : 'password'"
                         class="bg-gray-100 w-full text-gray-800 border-0 rounded-md p-2 mb-4 focus:bg-gray-200 focus:outline-none focus:ring-1 focus:ring-blue-500 transition ease-in-out duration-150"
                         placeholder="Password"
                     />
+
                     <!-- Show Button -->
                     <button
                         type="button"
@@ -90,7 +111,7 @@ const changeStateDefaultPassword = () => {
                         </svg>
                     </button>
 
-                    <!-- Hide Icon -->
+                    <!-- Hide Button -->
                     <button
                         type="button"
                         class="absolute right-0 pt-2.5 pr-4"
@@ -114,6 +135,8 @@ const changeStateDefaultPassword = () => {
                         </svg>
                     </button>
                 </div>
+
+                <!-- Checkbox Default Password -->
                 <div class="flex gap-3 items-center px-1">
                     <input
                         id="isDefPassword"
@@ -124,6 +147,8 @@ const changeStateDefaultPassword = () => {
                     />
                     <strong>Default Password</strong>
                 </div>
+
+                <!-- Submit Button -->
                 <button
                     type="submit"
                     class="bg-gradient-to-r from-indigo-500 to-blue-500 text-white font-bold py-2 px-4 rounded-md mt-4 hover:bg-indigo-600 hover:to-blue-600 transition ease-in-out duration-150"
