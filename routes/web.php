@@ -24,45 +24,49 @@ Route::get('/login', function () {
     return Inertia::render('Login');
 })->name('login');
 
-Route::get('/', [App\Http\Controllers\OrderBesar\PoSiapVerifController::class, 'index'])->name('dashboard');
+
+Route::middleware('auth')->group(function () {
+    Route::get('/', [App\Http\Controllers\OrderBesar\PoSiapVerifController::class, 'index'])->name('dashboard');
 
 
-
-/**
- * ---------------------------------------
- * Route Group Order Besar
- * ---------------------------------------
- */
-Route::get('/order-besar/register-nomor-po', [App\Http\Controllers\OrderBesar\RegisterNomorPoController::class, 'index'])->name('orderBesar.registerNomorPo');
-Route::get('/order-besar/po-siap-verif', [App\Http\Controllers\OrderBesar\PoSiapVerifController::class, 'index'])->name('orderBesar.poSiapVerif');
-Route::get('/order-besar/cetak-label/{team}/{id}',   [App\Http\Controllers\OrderBesar\CetakLabelController::class, 'index'])->name('orderBesar.cetakLabel');
-
-
-/**
- * ---------------------------------------
- * Route Group Order Kecil
- * ---------------------------------------
- */
-Route::get('/order-kecil/cetak-label',[App\Http\Controllers\OrderKecil\CetakLabelController::class, 'index'])->name('orderKecil.cetakLabel');
-
-/**
- * ---------------------------------------
- * Route Group Data PO
- * ---------------------------------------
- */
-Route::get('/data-po/{team}',[App\Http\Controllers\ProductionOrderController::class, 'index'])->name('dataPo.index');
-Route::post('/data-po/{team}',[App\Http\Controllers\ProductionOrderController::class, 'data_products'])->name('dataPo.filterTeam');
-Route::delete('/data-po/{no_po}',[App\Http\Controllers\ProductionOrderController::class, 'destroy'])->name('dataPo.destroy');
-Route::get('/data-po/{team}/{no_po}',[App\Http\Controllers\ProductionOrderController::class, 'show'])->name('dataPo.show');
+    Route::get('/create-user', [\App\Http\Controllers\UserManagement\CreateUserController::class, 'index'])->name('createUser.index');
+    Route::post('/create-user', [\App\Http\Controllers\UserManagement\CreateUserController::class, 'store'])->name('createUser.store');
+    /**
+     * ---------------------------------------
+     * Route Group Order Besar
+     * ---------------------------------------
+     */
+        Route::get('/order-besar/po-siap-verif',    [App\Http\Controllers\OrderBesar\PoSiapVerifController::class, 'index'])->name('orderBesar.poSiapVerif');
+        Route::get('/order-besar/register-nomor-po',    [App\Http\Controllers\OrderBesar\RegisterNomorPoController::class, 'index'])->name('orderBesar.registerNomorPo');
+        Route::get('/order-besar/cetak-label/{team}/{id}',  [App\Http\Controllers\OrderBesar\CetakLabelController::class, 'index'])->name('orderBesar.cetakLabel');
 
 
-/**
- * ---------------------------------------
- * Route Group Monitoring Produksi
- * ---------------------------------------
- */
-Route::get('/monitoring-produksi/status-verif',[App\Http\Controllers\MonitoringProduksi\StatusVerifikasiTeamController::class, 'index'])->name('monitoringProduksi.statusVerif.index');
-Route::get('/monitoring-produksi/status-verif/{id}',[App\Http\Controllers\MonitoringProduksi\StatusVerifikasiTeamController::class, 'show']) ->name('monitoringProduksi.statusVerif.show');
-Route::get('/monitoring-produksi/produksi-pegawai', [App\Http\Controllers\MonitoringProduksi\ProduksiPegawaiController::class, 'index'])->name('monitoringProduksi.produksiPegawai');
+    /**
+     * ---------------------------------------
+     * Route Group Order Kecil
+     * ---------------------------------------
+     */
+    Route::get('/order-kecil/cetak-label', [App\Http\Controllers\OrderKecil\CetakLabelController::class, 'index'])->name('orderKecil.cetakLabel');
+
+    /**
+     * ---------------------------------------
+     * Route Group Data PO
+     * ---------------------------------------
+     */
+    Route::get('/data-po/{team}', [App\Http\Controllers\ProductionOrderController::class, 'index'])->name('dataPo.index');
+    Route::post('/data-po/{team}', [App\Http\Controllers\ProductionOrderController::class, 'data_products'])->name('dataPo.filterTeam');
+    Route::delete('/data-po/{no_po}', [App\Http\Controllers\ProductionOrderController::class, 'destroy'])->name('dataPo.destroy');
+    Route::get('/data-po/{team}/{no_po}', [App\Http\Controllers\ProductionOrderController::class, 'show'])->name('dataPo.show');
+
+
+    /**
+     * ---------------------------------------
+     * Route Group Monitoring Produksi
+     * ---------------------------------------
+     */
+    Route::get('/monitoring-produksi/status-verif', [App\Http\Controllers\MonitoringProduksi\StatusVerifikasiTeamController::class, 'index'])->name('monitoringProduksi.statusVerif.index');
+    Route::get('/monitoring-produksi/status-verif/{id}', [App\Http\Controllers\MonitoringProduksi\StatusVerifikasiTeamController::class, 'show'])->name('monitoringProduksi.statusVerif.show');
+    Route::get('/monitoring-produksi/produksi-pegawai', [App\Http\Controllers\MonitoringProduksi\ProduksiPegawaiController::class, 'index'])->name('monitoringProduksi.produksiPegawai');
+});
 
 require __DIR__ . '/auth.php';
