@@ -1,10 +1,10 @@
 export function labelPage(
     obc,
-    noRim = null,
+    noRim = "",
     color,
-    sisiran = null,
+    sisiran = "",
     periksa1,
-    periksa2 = null
+    periksa2 = ""
 ) {
     let date = new Date(); // Tanggal saat ini
 
@@ -59,11 +59,11 @@ export function labelPage(
 
 export function batchLabelPage(
     obc,
-    noRim = null,
+    noRim = "",
     color,
-    sisiran = null,
+    sisiran = "",
     periksa1,
-    periksa2 = null,
+    periksa2 = "",
     jml_label,
 ) {
     let date = new Date(); // Tanggal saat ini
