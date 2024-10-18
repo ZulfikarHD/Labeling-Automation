@@ -7,16 +7,17 @@ import InputError from "@/Components/InputError.vue";
 import TextInput from "@/Components/TextInput.vue";
 import { Link, useForm, router } from "@inertiajs/vue3";
 import axios from "axios";
+import { batchLabelPage } from "@/Components/PrintPages/PrintLabel";
 import NavigateBackButton from "@/Components/NavigateBackButton.vue";
 
 const props = defineProps({
     listTeam: Object,
-    currentTeam : Number,
+    currentTeam: Number,
 });
 
 // Define a reactive form object to store form data
 const form = useForm({
-    team : props.currentTeam,
+    team: props.currentTeam,
     no_po: "", // Production Order number
     obc: "", // Order Bea Cukai number
     jml_lembar: "", // Number of sheets/rims
@@ -24,8 +25,10 @@ const form = useForm({
     seri: "", // Series number
     periksa1: "", // NP Inspector
     periksa2: "",
-    jml_rim:"",
+    jml_rim: "",
 });
+
+const obc_color = form.seri == 3 ? "#b91c1c" : "#1d4ed8"; // Warna berdasarkan seri
 
 // Function to fetch data based on the Production Order number
 const fetchData = () => {
@@ -40,53 +43,6 @@ const fetchData = () => {
 };
 
 const showModal = ref(false);
-
-// Fungsi untuk menghasilkan HTML label cetak
-const generatePrintLabel = (obc, np, p2) => {
-    let date = new Date(); // Tanggal saat ini
-    const months = [
-        "Jan",
-        "Feb",
-        "Mar",
-        "Apr",
-        "Mei",
-        "Jun",
-        "Jul",
-        "Agu",
-        "Sep",
-        "Okt",
-        "Nov",
-        "Des",
-    ];
-    let tgl = `${date.getDate()}-${
-        months[date.getMonth()]
-    }-${date.getFullYear()}`; // Tanggal yang diformat
-    let time = `${date.getHours()} : ${date.getMinutes()}`; // Waktu saat ini
-    let obc_color = form.seri == 3 ? "#b91c1c" : "#1d4ed8"; // Warna berdasarkan seri
-    let periksa2 = " / " + p2;
-
-    let contentPrint = `<div style='width:100%;'>
-                            <div style="margin-top:178px; margin-left:180px">
-                                <span style="font-weight:600; text-align:center;">${tgl}</span>
-                                <h1 style="font-size: 24px; line-height: 32px; margin-left:25px; font-weight:600; text-align:center; display:inline-block; padding-top:6px; color:${obc_color}">${obc}</h1>
-                            </div>
-                            <div style="margin-top:0.75rem; margin-left:16vh">
-                                <h1 style="font-size: 20px; line-height: 32px; margin-left:140px; margin-right:auto; font-weight:600;text-align:center;display:inline-block;text-transform: uppercase;">${np}${periksa2}</h1>
-                            </div>
-                            <div style="margin-top:47.5px; margin-left:13vh">
-                                <h1 style="display: inline-block; margin-left: 160px; margin-right: auto; text-align: center; font-size: 20px; line-height: 28px; font-weight:500; color:${obc_color}"> <span style="font-size:12px; margin-left:8px">${time}</span></h1>
-                            </div>
-                        </div>
-                        <div style="page-break-after:always;"></div>`;
-
-    let printPage = "";
-
-    for (let print = 0; print < form.jml_label; print++) {
-        printPage += `<body><span style="color:white">${print}</span>${contentPrint}</body>`;
-    }
-
-    return printPage;
-};
 
 const printFrame = ref(null);
 
@@ -130,15 +86,23 @@ const printWithoutDialog = (content) => {
 
 // Fungsi untuk mengirim formulir utama
 const submit = () => {
-    router.post("/api/register-production-order" , form, {
+    router.post("/api/register-production-order", form, {
         onSuccess: () => {
-            let printLabel = generatePrintLabel(form.obc, form.periksa1, form.periksa2);
+            let printLabel = batchLabelPage(
+                form.obc,
+                undefined,
+                obc_color,
+                undefined,
+                form.periksa1,
+                form.periksa2,
+                form.jml_label
+            );
             printWithoutDialog(printLabel);
 
             form.reset();
 
             showModal.value = !showModal.value;
-        }
+        },
     });
 };
 </script>
