@@ -7,7 +7,7 @@ import InputError from "@/Components/InputError.vue";
 import TextInput from "@/Components/TextInput.vue";
 import { Link, useForm, router } from "@inertiajs/vue3";
 import axios from "axios";
-import { batchLabelPage } from "@/Components/PrintPages/PrintLabel";
+import { batchFullPageLabel } from "@/Components/PrintPages/PrintLabel";
 import NavigateBackButton from "@/Components/NavigateBackButton.vue";
 
 const props = defineProps({
@@ -51,30 +51,24 @@ const printWithoutDialog = (content) => {
     const doc = iframe.contentWindow.document;
     doc.open();
     // Add styles to hide header and footer and limit to the first page
-    doc.write(`
-                        <html>
-                            <head>
-                                <style>
-                                    @media print {
-                                        @page {
-                                            margin: 3rem; /* Remove default margins */
-                                        }
-                                        body {
-                                            margin: 0; /* Remove body margin */
-                                        }
-                                        header, footer {
-                                            display: none !important; /* Hide header and footer */
-                                        }
-                                        * {
-                                            -webkit-print-color-adjust: exact; /* Ensure colors are printed correctly */
-                                            print-color-adjust: exact; /* Ensure colors are printed correctly */
-                                        }
-                                    }
-                                </style>
-                            </head>
-                            ${content}
-                        </html>
-                `);
+    doc.write(`<style>
+                    @media print {
+                        @page {
+                            margin: 3rem; /* Remove default margins */
+                        }
+                        body {
+                            margin: 0; /* Remove body margin */
+                        }
+                        header, footer {
+                            display: none !important; /* Hide header and footer */
+                        }
+                        * {
+                            -webkit-print-color-adjust: exact; /* Ensure colors are printed correctly */
+                            print-color-adjust: exact; /* Ensure colors are printed correctly */
+                        }
+                    }
+                </style>
+                ${content}`);
     doc.close();
     iframe.contentWindow.focus();
 
@@ -86,9 +80,7 @@ const printWithoutDialog = (content) => {
 
 // Fungsi untuk mengirim formulir utama
 const submit = () => {
-    router.post("/api/register-production-order", form, {
-        onSuccess: () => {
-            let printLabel = batchLabelPage(
+            let printLabel = batchFullPageLabel(
                 form.obc,
                 undefined,
                 obc_color,
@@ -98,12 +90,24 @@ const submit = () => {
                 form.jml_label
             );
             printWithoutDialog(printLabel);
+    // router.post("/api/register-production-order", form, {
+    //     onSuccess: () => {
+    //         let printLabel = batchFullPageLabel(
+    //             form.obc,
+    //             undefined,
+    //             obc_color,
+    //             undefined,
+    //             form.periksa1,
+    //             form.periksa2,
+    //             form.jml_label
+    //         );
+    //         printWithoutDialog(printLabel);
 
-            form.reset();
+    //         form.reset();
 
-            showModal.value = !showModal.value;
-        },
-    });
+    //         showModal.value = !showModal.value;
+    //     },
+    // });
 };
 </script>
 
