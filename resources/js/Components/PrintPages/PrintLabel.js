@@ -651,7 +651,7 @@ export function batchLabelPage(
     sisiran = "",
     periksa1,
     periksa2 = "",
-    jml_label
+    jml_label,
 ) {
     let date = new Date(); // Tanggal saat ini
 
