@@ -110,17 +110,12 @@ const submit = () => {
     // });
 };
 </script>
-
 <template>
     <ContentLayout>
         <!-- Modal -->
         <Modal :show="showModal" @close="showModal = !showModal">
-            <div
-                class="px-8 py-4 bg-white rounded-lg shadow drop-shadow shadow-slate-300/25"
-            >
-                <h1
-                    class="text-2xl font-bold text-center text-green-600 brightness-110"
-                >
+            <div class="px-8 py-4 bg-white rounded-lg shadow drop-shadow shadow-slate-300/25">
+                <h1 class="text-2xl font-bold text-center text-green-600 brightness-110">
                     Label Berhasil Di Buat
                 </h1>
             </div>
@@ -129,9 +124,7 @@ const submit = () => {
         <!-- Form -->
         <div class="py-12">
             <form @submit.prevent="submit">
-                <div
-                    class="flex flex-col justify-center gap-6 mx-auto mt-14 w-fit"
-                >
+                <div class="flex flex-col justify-center gap-6 mx-auto mt-14 w-fit">
                     <div class="mx-auto w-full">
                         <InputLabel
                             for="team"
@@ -168,7 +161,7 @@ const submit = () => {
                             v-model="form.no_po"
                             @input="fetchData"
                             type="number"
-                            class="block w-full px-8 py-2 mt-2 text-2xl text-center"
+                            class="block w-full px-8 py-2 mt-2 text-2xl text-center bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-400"
                             autocomplete="no_po"
                             placeholder="Production Order"
                             required
@@ -189,7 +182,7 @@ const submit = () => {
                                 ref="obc"
                                 v-model="form.obc"
                                 type="text"
-                                class="block w-full px-8 py-2 mt-2 text-2xl text-center"
+                                class="block w-full px-8 py-2 mt-2 text-2xl text-center bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-400"
                                 autocomplete="obc"
                                 placeholder="Order Bea Cukai"
                                 required
@@ -209,11 +202,10 @@ const submit = () => {
                                 ref="jml_rim"
                                 v-model="form.jml_rim"
                                 type="text"
-                                class="block w-full px-8 py-2 mt-2 text-2xl text-center bg-slate-200/70"
+                                class="block w-full px-8 py-2 mt-2 text-2xl text-center bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-400"
                                 autocomplete="jml_rim"
                                 placeholder="Lembar/Rim"
                                 min="1"
-                                disabled
                             />
                         </div>
 
@@ -230,7 +222,7 @@ const submit = () => {
                                 ref="jml_label"
                                 v-model="form.jml_label"
                                 type="number"
-                                class="block w-full px-8 py-2 mt-2 text-2xl text-center"
+                                class="block w-full px-8 py-2 mt-2 text-2xl text-center bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-400"
                                 autocomplete="jml_label"
                                 placeholder="Label"
                                 min="1"
@@ -238,11 +230,6 @@ const submit = () => {
                             />
                         </div>
                     </div>
-
-                    <!-- Nomor Rim -->
-                    <!-- <h4 class="text-4xl font-semibold text-center">
-                        Nomor RIM
-                    </h4> -->
 
                     <div class="flex gap-4">
                         <!-- periksa 1 -->
@@ -258,7 +245,7 @@ const submit = () => {
                                 ref="periksa1"
                                 v-model="form.periksa1"
                                 type="text"
-                                class="block w-full px-8 py-2 mt-2 text-2xl text-center"
+                                class="block w-full px-8 py-2 mt-2 text-2xl text-center bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-400"
                                 autocomplete="periksa1"
                                 placeholder="NP"
                                 required
@@ -278,7 +265,7 @@ const submit = () => {
                                 ref="periksa2"
                                 v-model="form.periksa2"
                                 type="text"
-                                class="block w-full px-8 py-2 mt-2 text-2xl text-center"
+                                class="block w-full px-8 py-2 mt-2 text-2xl text-center bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-400"
                                 autocomplete="periksa2"
                                 placeholder="NP"
                             />
@@ -299,9 +286,7 @@ const submit = () => {
                         type="submit"
                         class="flex justify-center px-8 py-4 mx-auto w-fit bg-gradient-to-r from-green-400 to-green-500 rounded-xl text-start mt-11"
                     >
-                        <span class="text-2xl font-bold text-yellow-50"
-                            >Generate</span
-                        >
+                        <span class="text-2xl font-bold text-yellow-50">Generate</span>
                     </button>
                 </div>
             </form>

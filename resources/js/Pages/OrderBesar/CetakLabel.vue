@@ -4,10 +4,10 @@
         :show="printUlangModal"
         @close="() => (printUlangModal = !printUlangModal)"
     >
-        <form @submit.prevent="printUlangLabel">
-            <div class="flex flex-col gap-4 px-4 py-4">
+        <form @submit.prevent="printUlangLabel" class="bg-white rounded-lg shadow-lg p-6">
+            <div class="flex flex-col gap-4">
                 <h1
-                    class="py-1 text-lg font-semibold text-center border-b-2 text-slate-500 border-slate-500/70"
+                    class="py-2 text-xl font-bold text-center border-b-2 text-slate-600 border-slate-400"
                 >
                     Print Ulang / Ganti Data Rim
                 </h1>
@@ -16,7 +16,7 @@
                     id="dataRim"
                     name="dataRim"
                     type="text"
-                    class="py-1 mx-4 text-lg font-semibold text-center uppercase border text-slate-500 border-slate-500/70 rounded-mdr"
+                    class="py-2 mx-4 text-lg font-semibold text-center uppercase border border-slate-400 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-400"
                     v-model="formPrintUlang.dataRim"
                     required
                     disabled
@@ -27,7 +27,7 @@
                     <button
                         type="button"
                         @click="dataRimKiri()"
-                        class="flex items-center gap-1 px-6 py-2 font-semibold transition duration-300 ease-in-out rounded-lg shadow bg-sky-400 text-sky-50 hover:brightness-90 drop-shadow shadow-sky-300/25"
+                        class="flex items-center gap-1 px-6 py-2 font-semibold transition duration-300 ease-in-out rounded-lg shadow bg-sky-500 text-white hover:bg-sky-400"
                     >
                         <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -48,7 +48,7 @@
                     <button
                         type="button"
                         @click="dataRimKanan()"
-                        class="flex items-center gap-1 px-6 py-2 font-semibold transition duration-300 ease-in-out rounded-lg shadow bg-sky-400 text-sky-50 hover:brightness-90 drop-shadow shadow-sky-300/25"
+                        class="flex items-center gap-1 px-6 py-2 font-semibold transition duration-300 ease-in-out rounded-lg shadow bg-sky-500 text-white hover:bg-sky-400"
                     >
                         KANAN
                         <svg
@@ -74,13 +74,13 @@
                             v-if="n.np_users && n.start && !n.finish"
                             type="button"
                             @click="pilihRim(n.no_rim, n.np_users)"
-                            class="min-w-[8ch] px-4 py-2 text-xs bg-yellow-300 text-yellow-900 hover:brightness-95 duration-300 transition ease-in-out rounded drop-shadow shadow"
+                            class="min-w-[8ch] px-4 py-2 text-xs bg-yellow-400 text-yellow-900 hover:bg-yellow-300 duration-300 transition ease-in-out rounded drop-shadow"
                         >
                             <div class="flex flex-col">
-                                <span class="font-semibold text-yellow-950">{{
+                                <span class="font-semibold text-yellow-800">{{
                                     n.np_users
                                 }}</span>
-                                <span class="font-bold text-green-700">{{
+                                <span class="font-bold text-green-800">{{
                                     n.no_rim
                                 }}</span>
                             </div>
@@ -89,13 +89,13 @@
                             v-else-if="n.np_users && n.start && n.finish"
                             type="button"
                             @click="pilihRim(n.no_rim, n.np_users)"
-                            class="min-w-[8ch] px-4 py-2 text-xs bg-green-400 text-green-900 hover:brightness-95 duration-300 transition ease-in-out rounded drop-shadow shadow"
+                            class="min-w-[8ch] px-4 py-2 text-xs bg-green-500 text-green-900 hover:bg-green-400 duration-300 transition ease-in-out rounded drop-shadow"
                         >
                             <div class="flex flex-col">
-                                <span class="font-semibold text-green-950">{{
+                                <span class="font-semibold text-green-800">{{
                                     n.np_users
                                 }}</span>
-                                <span class="font-bold text-indigo-700">{{
+                                <span class="font-bold text-indigo-800">{{
                                     n.no_rim
                                 }}</span>
                             </div>
@@ -104,21 +104,19 @@
                             v-else-if="n.no_rim === 999"
                             type="button"
                             @click="pilihRim(n.no_rim, n.np_users)"
-                            class="min-w-[8ch] px-4 py-2 text-xs bg-violet-500 text-violet-50 active:bg-violet-700 hover:bg-violet-600 transition ease-in-out duration-200 rounded drop-shadow shadow"
+                            class="min-w-[8ch] px-4 py-2 text-xs bg-violet-600 text-white active:bg-violet-700 hover:bg-violet-500 transition ease-in-out duration-200 rounded drop-shadow"
                         >
                             <div class="flex flex-col">
                                 <span class="font-semibold">{{
                                     n.np_users
                                 }}</span>
-                                <span class="font-bold text-violet-50"
-                                    >Inschiet</span
-                                >
+                                <span class="font-bold text-white">Inschiet</span>
                             </div>
                         </button>
                         <button
                             v-else
                             type="button"
-                            class="min-w-[8ch] px-4 py-2 text-xs bg-slate-500 text-slate-50 rounded drop-shadow shadow"
+                            class="min-w-[8ch] px-4 py-2 text-xs bg-gray-500 text-gray-200 rounded drop-shadow"
                             disabled
                         >
                             <div class="flex flex-col">
@@ -194,13 +192,13 @@
                 <div class="flex justify-center gap-4 pt-4 px-7">
                     <button
                         type="button"
-                        class="flex items-center gap-1 px-6 py-2 mr-auto font-semibold text-red-500 underline transition duration-300 ease-in-out border border-red-500 rounded-lg shadow bg-red-50 hover:brightness-90 drop-shadow shadow-red-300/25"
+                        class="flex items-center gap-1 px-6 py-2 mr-auto font-semibold text-red-600 underline transition duration-300 ease-in-out border border-red-600 rounded-lg shadow bg-red-100 hover:bg-red-200"
                     >
                         Hapus
                     </button>
                     <button
                         type="submit"
-                        class="flex items-center gap-1 px-6 py-2 font-semibold transition duration-300 ease-in-out rounded-lg shadow bg-sky-400 text-sky-50 hover:brightness-90 drop-shadow shadow-sky-300/25"
+                        class="flex items-center gap-1 px-6 py-2 font-semibold transition duration-300 ease-in-out rounded-lg shadow bg-sky-500 text-white hover:bg-sky-400"
                     >
                         Print
                     </button>
@@ -212,9 +210,7 @@
     <ContentLayout>
         <div class="flex flex-col justify-center py-8">
             <form @submit.prevent="submit">
-                <div
-                    class="flex flex-col justify-center gap-6 mx-auto px-8 max-w-2xl"
-                >
+                <div class="flex flex-col justify-center gap-6 mx-auto px-8 max-w-2xl">
                     <div class="mx-auto w-full">
                         <InputLabel
                             for="team"
@@ -389,7 +385,7 @@
                     <button
                         type="button"
                         @click="form.periksa1 = null"
-                        class="flex justify-center px-4 py-4 mx-auto mt-8 text-lg font-bold shadow w-fit bg-gradient-to-r from-violet-400 to-violet-500 rounded-xl text-start hover:brightness-90 drop-shadow shadow-violet-500/20 text-violet-50"
+                        class="flex justify-center px-4 py-4 mx-auto mt-8 text-lg font-bold shadow w-fit bg-gradient-to-r from-violet-400 to-violet-500 rounded-xl text-start hover:brightness-90 drop-shadow shadow-violet-500/20 text-white"
                     >
                         Clear
                     </button>
@@ -397,7 +393,7 @@
                         type="submit"
                         class="flex justify-center px-4 py-4 mx-auto mt-8 shadow w-fit bg-gradient-to-r from-green-400 to-green-500 rounded-xl text-start hover:brightness-90 drop-shadow shadow-green-500/20"
                     >
-                        <div class="text-lg font-bold text-yellow-50">
+                        <div class="text-lg font-bold text-white">
                             Generate
                         </div>
                     </button>
@@ -408,7 +404,7 @@
                         "
                         class="flex justify-center px-4 py-4 mx-auto mt-8 shadow w-fit bg-gradient-to-r from-green-400 to-green-500 rounded-xl text-start hover:brightness-90 drop-shadow shadow-green-500/20"
                     >
-                        <div class="text-lg font-bold text-yellow-50">
+                        <div class="text-lg font-bold text-white">
                             Print Ulang
                         </div>
                     </button>
@@ -418,7 +414,7 @@
                     @click="finish_order"
                     class="flex justify-center px-4 py-4 mx-auto mt-8 shadow max-w-sm w-full bg-gradient-to-r from-cyan-400 to-cyan-500 rounded-xl text-start hover:brightness-90 drop-shadow shadow-green-500/20"
                 >
-                    <div class="text-lg font-bold text-yellow-50">
+                    <div class="text-lg font-bold text-white">
                         Selesaikan Order
                     </div>
                 </button>
@@ -427,7 +423,7 @@
                 <a
                     href="#"
                     onclick="history.back()"
-                    class="text-xl font-extrabold text-blue-50 w-fit py-3 px-6 bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl text-start drop-shadow shadow flex items-center gap-1.5"
+                    class="text-xl font-extrabold text-white w-fit py-3 px-6 bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl text-start drop-shadow shadow flex items-center gap-1.5"
                 >
                     <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -447,7 +443,7 @@
                 </a>
                 <Link
                     :href="route('dashboard')"
-                    class="text-xl font-extrabold text-blue-50 w-fit py-3 px-6 bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl text-start drop-shadow shadow flex items-center gap-1.5"
+                    class="text-xl font-extrabold text-white w-fit py-3 px-6 bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl text-start drop-shadow shadow flex items-center gap-1.5"
                 >
                     <svg
                         xmlns="http://www.w3.org/2000/svg"

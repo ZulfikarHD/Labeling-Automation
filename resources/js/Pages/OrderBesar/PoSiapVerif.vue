@@ -25,13 +25,12 @@ const changeTeam = () => {
 }
 
 </script>
-
 <template>
     <ContentLayout>
         <div class="py-12">
             <!-- Change Team -->
             <div class="mx-auto w-fit">
-                <InputLabel for="team" value="Team" class="text-4xl font-extrabold text-center" />
+                <InputLabel for="team" value="Tim" class="text-4xl font-extrabold text-center" />
 
                 <select id="team" ref="team" v-model="form.team" type="text" @change="changeTeam"
                     class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm text-3xl mt-2 w-full" autocomplete="team">
@@ -39,7 +38,7 @@ const changeTeam = () => {
                 </select>
             </div>
             <!-- Header -->
-            <h3 class="my-10 text-3xl font-extrabold text-center uppercase text-slate-700">List Produk Siap Periksa</h3>
+            <h3 class="my-10 text-3xl font-extrabold text-center uppercase text-slate-700">Daftar Produk Siap Periksa</h3>
 
             <!-- Table -->
             <div
@@ -76,7 +75,7 @@ const changeTeam = () => {
                                     </th>
                                     <th scope="col"
                                         class="pt-6 pb-1.5  px-6 leading-tight border-slate-300 dark:border-slate-500 text-center">
-                                        Chose
+                                        Pilih
                                     </th>
                                 </tr>
                             </thead>
@@ -119,7 +118,6 @@ const changeTeam = () => {
                                     </td>
                                     <td class="text-center leading-5 whitespace-nowrap text-sm px-4 py-1.5 text-slate-700">
                                         <Link :href="route('orderBesar.cetakLabel', {team : form.team, id : product.id})" class="flex justify-center px-6 py-2 mx-auto font-semibold drop-shadow-md shadow tracking-wide w-fit bg-blue-600 rounded-xl text-start text-cyan-50">Go</Link>
-                                        <!-- <input type="checkbox" value="{{ product.id }}"> -->
                                     </td>
                                 </tr>
                             </tbody>
@@ -129,17 +127,13 @@ const changeTeam = () => {
             </div>
             <div class="flex justify-center gap-6 mx-auto w-fit">
                 <div class="flex gap-6 mt-10">
-                <!-- Home BUtton -->
+                <!-- Home Button -->
                 <Link :href="route('dashboard')"
-                    class="text-xl font-extrabold text-blue-50 w-fit py-3    px-6 bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl text-start drop-shadow-md shadow-md flex items-center gap-1.5">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6">
-                    <path
-                        d="M11.47 3.84a.75.75 0 011.06 0l8.69 8.69a.75.75 0 101.06-1.06l-8.689-8.69a2.25 2.25 0 00-3.182 0l-8.69 8.69a.75.75 0 001.061 1.06l8.69-8.69z" />
-                    <path
-                        d="M12 5.432l8.159 8.159c.03.03.06.058.091.086v6.198c0 1.035-.84 1.875-1.875 1.875H15a.75.75 0 01-.75-.75v-4.5a.75.75 0 00-.75-.75h-3a.75.75 0 00-.75.75V21a.75.75 0 01-.75.75H5.625a1.875 1.875 0 01-1.875-1.875v-6.198a2.29 2.29 0 00.091-.086L12 5.43z" />
-                </svg>
+                    class="text-xl font-extrabold text-blue-50 w-fit py-3 px-6 bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl text-start drop-shadow-md shadow-md flex items-center gap-1.5">
+                    <LucideIcon name="Home" class="w-6 h-6" />
                 </Link>
             </div>
         </div>
     </div>
-</ContentLayout></template>
+</ContentLayout>
+</template>

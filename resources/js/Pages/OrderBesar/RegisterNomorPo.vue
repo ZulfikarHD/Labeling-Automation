@@ -141,7 +141,6 @@ function submit() {
     });
 }
 </script>
-
 <template>
     <!-- Loading Indicator -->
     <div class="bg-black bg-opacity-40 w-screen h-screen absolute z-50 flex justify-center items-center" v-if="isLoading">
@@ -150,7 +149,7 @@ function submit() {
                 <circle class="opacity-25 drop-shadow-md shadow-md text-blue-50" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                 <path class="opacity-75 shadow-md text-blue-500" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
             </svg>
-            <span class="text-white font-semibold animate-pulse">Processing...</span>
+            <span class="text-white font-semibold animate-pulse">Sedang Memproses...</span>
         </div>
     </div>
 
@@ -162,13 +161,13 @@ function submit() {
                     <!-- Nomor PO -->
                     <div>
                         <InputLabel for="po" value="Nomor PO" class="text-3xl font-extrabold text-center" />
-                        <TextInput id="po" ref="po" v-model="form.po" type="number" class="block w-full px-8 py-2 mt-2 text-xl text-center" autocomplete="po" placeholder="Production Order" @input="debouncedFetchData" required />
+                        <TextInput id="po" ref="po" v-model="form.po" type="number" class="block w-full px-8 py-2 mt-2 text-xl text-center border border-gray-300 rounded-md focus:border-indigo-500 focus:ring-indigo-500" autocomplete="po" placeholder="Nomor Produksi" @input="debouncedFetchData" required />
                         <p v-if="errorPo" class="text-red-500 text-lg text-center mt-4 font-medium">{{ errorPo }}</p>
                     </div>
 
                     <!-- Assigned Team -->
                     <div>
-                        <InputLabel for="team" value="Team Periksa" class="text-3xl font-extrabold text-center" />
+                        <InputLabel for="team" value="Tim Periksa" class="text-3xl font-extrabold text-center" />
                         <select id="team" ref="team" v-model="form.team" class="block w-full px-8 py-2 mt-2 text-xl border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" required>
                             <option v-for="team in workstation" :key="team.id" :value="team.id">
                                 {{ team.workstation }}
@@ -180,26 +179,26 @@ function submit() {
                         <!-- Nomor OBC -->
                         <div>
                             <InputLabel for="obc" value="Nomor OBC" class="text-3xl font-extrabold text-center" />
-                            <TextInput id="obc" ref="obc" v-model="form.obc" type="text" @input="cekSpec" class="block w-full px-8 py-2 mt-2 text-xl text-center" autocomplete="obc" placeholder="Order Bea Cukai" required />
+                            <TextInput id="obc" ref="obc" v-model="form.obc" type="text" @input="cekSpec" class="block w-full px-8 py-2 mt-2 text-xl text-center border border-gray-300 rounded-md focus:border-indigo-500 focus:ring-indigo-500" autocomplete="obc" placeholder="Order Bea Cukai" required />
                             <p v-if="errorObc" class="text-red-500 text-sm text-center mt-4 font-medium">{{ errorObc }}</p>
                         </div>
 
                         <!-- Jumlah Cetak -->
                         <div>
                             <InputLabel for="jml_lembar" value="Jumlah Cetak" class="text-3xl font-extrabold text-center" />
-                            <TextInput id="jml_lembar" ref="jml_lembar" v-model="form.jml_lembar" type="number" class="block w-full px-8 py-2 mt-2 text-xl text-center" autocomplete="jml_lembar" placeholder="Lembar" min="1" @input="calcEndRim" required />
+                            <TextInput id="jml_lembar" ref="jml_lembar" v-model="form.jml_lembar" type="number" class="block w-full px-8 py-2 mt-2 text-xl text-center border border-gray-300 rounded-md focus:border-indigo-500 focus:ring-indigo-500" autocomplete="jml_lembar" placeholder="Lembar" min="1" @input="calcEndRim" required />
                         </div>
 
                         <!-- Inschiet -->
                         <div>
                             <InputLabel for="inschiet" value="Inschiet" class="text-3xl font-extrabold text-center" />
-                            <TextInput id="inschiet" ref="inschiet" v-model="form.inschiet" type="number" class="block w-full px-8 py-2 mt-2 text-xl text-center" autocomplete="inschiet" placeholder="Lembar" @input="calcEndRim" />
+                            <TextInput id="inschiet" ref="inschiet" v-model="form.inschiet" type="number" class="block w-full px-8 py-2 mt-2 text-xl text-center border border-gray-300 rounded-md focus:border-indigo-500 focus:ring-indigo-500" autocomplete="inschiet" placeholder="Lembar" @input="calcEndRim" />
                         </div>
 
                         <!-- Jumlah Rim -->
                         <div>
                             <InputLabel for="jml_rim" value="Jumlah Rim" class="text-3xl font-extrabold text-center" />
-                            <TextInput id="jml_rim" ref="jml_rim" v-model="form.jml_rim" type="number" class="block w-full px-8 py-2 mt-2 text-xl text-center bg-slate-200" autocomplete="jml_rim" placeholder="RIM" min="1" required />
+                            <TextInput id="jml_rim" ref="jml_rim" v-model="form.jml_rim" type="number" class="block w-full px-8 py-2 mt-2 text-xl text-center bg-slate-200 border border-gray-300 rounded-md" autocomplete="jml_rim" placeholder="RIM" min="1" required />
                         </div>
                     </div>
                     <h4 class="text-3xl font-semibold text-center">Nomor RIM</h4>
@@ -207,21 +206,21 @@ function submit() {
                         <!-- Start RIM -->
                         <div>
                             <InputLabel for="start_rim" value="Dari" class="text-3xl font-extrabold text-center" />
-                            <TextInput id="start_rim" ref="start_rim" v-model="form.start_rim" type="number" class="block w-full px-8 py-2 mt-2 text-xl text-center" autocomplete="start_rim" @input="calcEndRim" min="1" />
+                            <TextInput id="start_rim" ref="start_rim" v-model="form.start_rim" type="number" class="block w-full px-8 py-2 mt-2 text-xl text-center border border-gray-300 rounded-md focus:border-indigo-500 focus:ring-indigo-500" autocomplete="start_rim" @input="calcEndRim" min="1" />
                         </div>
 
                         <!-- End Rim -->
                         <div>
                             <InputLabel for="end_rim" value="Sampai" class="text-3xl font-extrabold text-center" />
-                            <TextInput id="end_rim" ref="end_rim" v-model="form.end_rim" type="number" class="block w-full px-8 py-2 mt-2 text-xl text-center bg-slate-200" autocomplete="end_rim" disabled min="1" />
+                            <TextInput id="end_rim" ref="end_rim" v-model="form.end_rim" type="number" class="block w-full px-8 py-2 mt-2 text-xl text-center bg-slate-200 border border-gray-300 rounded-md" autocomplete="end_rim" disabled min="1" />
                         </div>
                     </div>
                 </div>
                 <div class="flex justify-center gap-6 mx-auto w-fit">
-                    <button type="submit" class="flex justify-center px-8 py-4 mx-auto w-fit bg-gradient-to-r from-green-400 to-green-500 rounded-xl text-start mt-11">
+                    <button type="submit" class="flex justify-center px-8 py-4 mx-auto w-fit bg-gradient-to-r from-green-400 to-green-500 rounded-xl text-start mt-11 hover:shadow-lg transition-shadow duration-300">
                         <span class="text-xl font-bold text-yellow-50">Buat Label</span>
                     </button>
-                    <Link :href="route('orderBesar.registerNomorPo')" class="text-xl font-bold text-violet-50 flex justify-center px-8 py-4 mx-auto w-fit bg-gradient-to-r from-violet-400 to-violet-500 rounded-xl text-start mt-11">
+                    <Link :href="route('orderBesar.registerNomorPo')" class="text-xl font-bold text-violet-50 flex justify-center px-8 py-4 mx-auto w-fit bg-gradient-to-r from-violet-400 to-violet-500 rounded-xl text-start mt-11 hover:shadow-lg transition-shadow duration-300">
                         Clear
                     </Link>
                 </div>
