@@ -80,6 +80,8 @@ const printWithoutDialog = (content) => {
 
 // Fungsi untuk mengirim formulir utama
 const submit = () => {
+    router.post("/api/order-kecil/cetak-label", form, {
+        onSuccess: () => {
             let printLabel = batchFullPageLabel(
                 form.obc,
                 undefined,
@@ -90,24 +92,12 @@ const submit = () => {
                 form.jml_label
             );
             printWithoutDialog(printLabel);
-    // router.post("/api/register-production-order", form, {
-    //     onSuccess: () => {
-    //         let printLabel = batchFullPageLabel(
-    //             form.obc,
-    //             undefined,
-    //             obc_color,
-    //             undefined,
-    //             form.periksa1,
-    //             form.periksa2,
-    //             form.jml_label
-    //         );
-    //         printWithoutDialog(printLabel);
 
-    //         form.reset();
+            form.reset();
 
-    //         showModal.value = !showModal.value;
-    //     },
-    // });
+            showModal.value = !showModal.value;
+        },
+    });
 };
 </script>
 <template>

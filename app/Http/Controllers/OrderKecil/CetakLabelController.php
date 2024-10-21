@@ -3,18 +3,18 @@
 namespace App\Http\Controllers\OrderKecil;
 
 use App\Http\Controllers\Controller;
-use App\Models\GeneratedLabelsPersonal;
-use App\Traits\UpdateStatusProgress;
-use App\Models\GeneratedProducts;
-use App\Models\GeneratedLabels;
-use App\Models\Specification;
-use App\Models\Workstations;
-use App\Services\PrintLabelService;
-use App\Services\ProductionOrderService;
-use App\Services\SpecificationService;
+use App\Http\Controllers\ProductionOrderController;
 use Illuminate\Http\Request;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Http;
+
+use App\Models\GeneratedLabels;
+use App\Models\Workstations;
+
+use App\Traits\UpdateStatusProgress;
+
+use App\Services\PrintLabelService;
+use App\Services\SpecificationService;
 use Inertia\Inertia;
 
 class CetakLabelController extends Controller
@@ -39,9 +39,12 @@ class CetakLabelController extends Controller
     public function store(Request $request, PrintLabelService $printLabelService)
     {
         try {
-            $registerProductionOrder = url("/api/register-production-order",$request);
+            $registerProductionOrder = app(ProductionOrderController::class)->store($request);
             $printLabelService->finishPreviousUserSession($request->periksa1);
-            $this->updateProgress($request->no_po, $this->countNullNp($request->no_po) > 0 ? 1 : 2);
+            $this->updateProgress($request->no_po, 2);
+
+            return redirect()->back();
+
         } catch (\Exception $exception) {
             return response()->json(['error' =>  $exception->getMessage()] , 422);
         }

@@ -16,6 +16,15 @@ class ProductionOrderController extends Controller
 {
     use UpdateStatusProgress;
 
+    protected $productionOrderService;
+    protected $printLabelService;
+
+    public function __construct(ProductionOrderService $productionOrderService, PrintLabelService $printLabelService)
+    {
+        $this->productionOrderService = $productionOrderService;
+        $this->printLabelService = $printLabelService;
+    }
+
     /**
      * Display a listing of the resource.
      */
@@ -71,11 +80,11 @@ class ProductionOrderController extends Controller
         ]);
     }
 
-    public function store(Request $request, ProductionOrderService $productionOrderService, PrintLabelService $printLabelService)
+    public function store(Request $request)
     {
         try{
-            $productionOrderService->registerProductionOrder($request);
-            $printLabelService->populateLabelForRegisteredPo($request);
+            $this->productionOrderService->registerProductionOrder($request);
+            $this->printLabelService->populateLabelForRegisteredPo($request);
         } catch (\Exception $exeption) {
             return response()->json(['error' =>  $exeption->getMessage()] , 422);
         }
