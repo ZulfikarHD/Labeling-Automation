@@ -570,12 +570,11 @@ const printWithoutDialog = (content) => {
         </style>
         ${content}
     `);
-    // doc.close();
-    iframe.contentWindow.focus();
 
     setTimeout(() => {
+        iframe.contentWindow.focus();
         iframe.contentWindow.print();
-    }, 100);
+    }, 200);
 };
 
 const printUlangLabel = () => {

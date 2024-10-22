@@ -28,7 +28,7 @@ const form = useForm({
     jml_rim: "",
 });
 
-const obc_color = form.seri == 3 ? "#b91c1c" : "#1d4ed8"; // Warna berdasarkan seri
+const obc_color = ref(); // Warna berdasarkan seri
 
 // Function to fetch data based on the Production Order number
 const fetchData = () => {
@@ -39,6 +39,8 @@ const fetchData = () => {
         form.jml_rim = res.data.rencet + " / " + total_label + " Rim";
         form.jml_lembar = res.data.rencet;
         form.jml_label = total_label;
+        form.seri = res.data.no_obc.substr(4, 1) > 3 ? 1 : res.data.no_obc.substr(4, 1);
+        obc_color.value = form.seri  == 3 ? "#b91c1c" : "#1d4ed8";
     });
 };
 
@@ -85,7 +87,7 @@ const submit = () => {
             let printLabel = batchFullPageLabel(
                 form.obc,
                 undefined,
-                obc_color,
+                obc_color.value,
                 undefined,
                 form.periksa1,
                 form.periksa2,
