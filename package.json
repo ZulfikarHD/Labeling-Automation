@@ -12,6 +12,7 @@
   "dependencies": {
     "animate.css": "^4.1.1",
     "electron-vue-printer": "^1.3.3",
+    "lucide-vue-next": "^0.453.0",
     "v-animate-css": "^1.0.1",
     "vue-sweetalert2": "^5.0.5",
     "vue3-dropdown-navbar": "^0.1.4",
