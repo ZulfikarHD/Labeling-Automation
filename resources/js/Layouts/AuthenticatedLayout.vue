@@ -1,10 +1,10 @@
 <script setup>
 import { ref } from "vue";
 import NavLink from "@/Components/NavLink.vue";
-import { Link } from "@inertiajs/vue3";
-import GroupLink from "@/Components/GroupLink.vue";
+import { usePage } from "@inertiajs/vue3";
 
-const showingNavigationDropdown = ref(false);
+const { props } = usePage();
+const role = props.auth.user.role;
 const showOrderBesarGroup = ref(false);
 const showOrderKecilGroup = ref(false);
 
@@ -97,7 +97,7 @@ const toggleDropdown = (dropDownId) => {
                 </NavLink>
 
                 <!-- Create User -->
-                <NavLink
+                <NavLink v-if="role === 1"
                     :href="route('createUser.index')"
                     :active="route().current('createUser.index')"
                     class="text-gray-800  px-2 py-1 transition duration-200 ease-in-out">
