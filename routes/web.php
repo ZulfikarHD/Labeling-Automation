@@ -7,6 +7,7 @@ use Inertia\Inertia;
 
 use App\Http\Controllers\ProductMonitoringController;
 use App\Http\Controllers\GenerateLabelsPersonalController;
+use App\Http\Middleware\Role1Access;
 
 /*
 |--------------------------------------------------------------------------
@@ -28,17 +29,18 @@ Route::get('/login', function () {
 Route::middleware('auth')->group(function () {
     Route::get('/', [App\Http\Controllers\OrderBesar\PoSiapVerifController::class, 'index'])->name('dashboard');
 
-
-    Route::get('/create-user', [\App\Http\Controllers\UserManagement\CreateUserController::class, 'index'])->name('createUser.index');
-    Route::post('/create-user', [\App\Http\Controllers\UserManagement\CreateUserController::class, 'store'])->name('createUser.store');
+    Route::middleware(Role1Access::class)->group(function () {
+        Route::get('/create-user', [\App\Http\Controllers\UserManagement\CreateUserController::class, 'index'])->name('createUser.index');
+        Route::post('/create-user', [\App\Http\Controllers\UserManagement\CreateUserController::class, 'store'])->name('createUser.store');
+    });
     /**
      * ---------------------------------------
      * Route Group Order Besar
      * ---------------------------------------
      */
-        Route::get('/order-besar/po-siap-verif',    [App\Http\Controllers\OrderBesar\PoSiapVerifController::class, 'index'])->name('orderBesar.poSiapVerif');
-        Route::get('/order-besar/register-nomor-po',    [App\Http\Controllers\OrderBesar\RegisterNomorPoController::class, 'index'])->name('orderBesar.registerNomorPo');
-        Route::get('/order-besar/cetak-label/{team}/{id}',  [App\Http\Controllers\OrderBesar\CetakLabelController::class, 'index'])->name('orderBesar.cetakLabel');
+    Route::get('/order-besar/po-siap-verif',    [App\Http\Controllers\OrderBesar\PoSiapVerifController::class, 'index'])->name('orderBesar.poSiapVerif');
+    Route::get('/order-besar/register-nomor-po',    [App\Http\Controllers\OrderBesar\RegisterNomorPoController::class, 'index'])->name('orderBesar.registerNomorPo');
+    Route::get('/order-besar/cetak-label/{team}/{id}',  [App\Http\Controllers\OrderBesar\CetakLabelController::class, 'index'])->name('orderBesar.cetakLabel');
 
 
     /**

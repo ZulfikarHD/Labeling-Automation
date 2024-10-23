@@ -18,6 +18,9 @@ const toogleDropdown = (dropDownId) => {
         showOrderBesarGroup.value = false;
     }
 }
+$http.get('api/user').then(response => {
+   console.log(response.body);
+})
 </script>
 <template>
     <div class="h-full min-h-screen bg-gradient-to-b from-slate-50 to-slate-100">
@@ -98,6 +101,13 @@ const toogleDropdown = (dropDownId) => {
                     :href="route('monitoringProduksi.produksiPegawai')"
                     class="text-gray-800 hover:bg-gray-100 rounded-md px-2 py-1">
                     Produksi Pegawai
+                </NavLink>
+
+                <!-- Create User -->
+                <NavLink
+                    :href="route('monitoringProduksi.produksiPegawai')"
+                    class="text-gray-800 hover:bg-gray-100 rounded-md px-2 py-1">
+                    Create User
                 </NavLink>
             </div>
 
