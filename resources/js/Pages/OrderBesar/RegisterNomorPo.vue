@@ -1,6 +1,6 @@
 <script setup>
 import { inject, ref } from "vue";
-import ContentLayout from "@/Layouts/ContentLayout.vue";
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import InputLabel from "@/Components/InputLabel.vue";
 import TextInput from "@/Components/TextInput.vue";
 import { Link, router, useForm } from "@inertiajs/vue3";
@@ -154,7 +154,7 @@ function submit() {
     </div>
 
     <!-- Content -->
-    <ContentLayout>
+    <AuthenticatedLayout>
         <div class="py-12 px-4">
             <form @submit.prevent="submit" method="post">
                 <div class="flex flex-col justify-center gap-6 mx-auto mt-12 w-fit">
@@ -237,5 +237,5 @@ function submit() {
                 </Link>
             </div>
         </div>
-    </ContentLayout>
+    </AuthenticatedLayout>
 </template>

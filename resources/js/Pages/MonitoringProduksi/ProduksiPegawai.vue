@@ -2,7 +2,7 @@
 import InputLabel from '@/Components/InputLabel.vue';
 import TableVerifikasiPegawai from '@/Components/TableVerifikasiPegawai.vue';
 import TextInput from '@/Components/TextInput.vue';
-import ContentLayout from '@/Layouts/ContentLayout.vue';
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { useForm } from '@inertiajs/vue3';
 import {ref} from 'vue';
 
@@ -19,7 +19,7 @@ const today = ref(form.date)
 
 </script>
 <template>
-    <ContentLayout>
+    <AuthenticatedLayout>
         <div class="px-4 py-6 mx-auto">
             <div class="px-10 mx-4 mb-4 ml-28">
                 <InputLabel for="dateFilter" class="pb-2 pl-1 text-lg font-medium text-gray-700">Tanggal Produksi</InputLabel>
@@ -41,5 +41,5 @@ const today = ref(form.date)
                 <TableVerifikasiPegawai :team="0" :date="form.date" />
             </div>
         </div>
-    </ContentLayout>
+    </AuthenticatedLayout>
 </template>

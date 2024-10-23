@@ -1,7 +1,7 @@
 <script setup>
 import { reactive, ref } from "vue";
 import Modal from "@/Components/Modal.vue";
-import ContentLayout from "@/Layouts/ContentLayout.vue";
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import InputLabel from "@/Components/InputLabel.vue";
 import InputError from "@/Components/InputError.vue";
 import TextInput from "@/Components/TextInput.vue";
@@ -103,7 +103,7 @@ const submit = () => {
 };
 </script>
 <template>
-    <ContentLayout>
+    <AuthenticatedLayout>
         <!-- Modal -->
         <Modal :show="showModal" @close="showModal = !showModal">
             <div class="px-8 py-4 bg-white rounded-lg shadow drop-shadow shadow-slate-300/25">
@@ -283,6 +283,6 @@ const submit = () => {
                 </div>
             </form>
         </div>
-    </ContentLayout>
+    </AuthenticatedLayout>
     <iframe ref="printFrame" style="display: none"></iframe>
 </template>

@@ -18,9 +18,6 @@ const toogleDropdown = (dropDownId) => {
         showOrderBesarGroup.value = false;
     }
 }
-$http.get('api/user').then(response => {
-   console.log(response.body);
-})
 </script>
 <template>
     <div class="h-full min-h-screen bg-gradient-to-b from-slate-50 to-slate-100">
@@ -105,7 +102,7 @@ $http.get('api/user').then(response => {
 
                 <!-- Create User -->
                 <NavLink
-                    :href="route('monitoringProduksi.produksiPegawai')"
+                    :href="route('createUser.index')"
                     class="text-gray-800 hover:bg-gray-100 rounded-md px-2 py-1">
                     Create User
                 </NavLink>

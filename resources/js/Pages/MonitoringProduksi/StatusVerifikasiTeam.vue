@@ -1,5 +1,5 @@
 <script setup>
-import ContentLayout from '@/Layouts/ContentLayout.vue';
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import TextInput from '@/Components/TextInput.vue';
 import NavigateBackButton from '@/Components/NavigateBackButton.vue'
@@ -20,7 +20,7 @@ const form = useForm({
 
 </script>
 <template>
-    <ContentLayout>
+    <AuthenticatedLayout>
         <div class="py-8">
             <!-- Detail Produk -->
             <!-- Team -->
@@ -191,5 +191,5 @@ const form = useForm({
                 </Link>
             </div>
         </div>
-    </ContentLayout>
+    </AuthenticatedLayout>
 </template>

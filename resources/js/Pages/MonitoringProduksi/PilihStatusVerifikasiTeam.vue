@@ -1,5 +1,5 @@
 <script setup>
-import ContentLayout from '@/Layouts/ContentLayout.vue';
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import TextInput from '@/Components/TextInput.vue';
 import { Link, useForm } from '@inertiajs/vue3';
@@ -12,7 +12,7 @@ const props = defineProps({
 </script>
 
 <template>
-    <ContentLayout>
+    <AuthenticatedLayout>
         <!-- Container -->
         <div class="py-8 flex justify-center flex-col">
             <!-- Header -->
@@ -36,5 +36,5 @@ const props = defineProps({
                 </Link>
             </div>
         </div>
-    </ContentLayout>
+    </AuthenticatedLayout>
 </template>

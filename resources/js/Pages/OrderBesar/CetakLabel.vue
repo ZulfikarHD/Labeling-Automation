@@ -207,7 +207,7 @@
         </form>
     </Modal>
 
-    <ContentLayout>
+    <AuthenticatedLayout>
         <div class="flex flex-col justify-center py-8">
             <form @submit.prevent="submit">
                 <div class="flex flex-col justify-center gap-6 mx-auto px-8 max-w-2xl">
@@ -462,14 +462,14 @@
             </div>
         </div>
         <TableVerifikasiPegawai :team="form.team" :date="form.date" />
-    </ContentLayout>
+    </AuthenticatedLayout>
     <iframe ref="printFrame" style="display: none"></iframe>
 </template>
 
 <script setup>
 import { reactive, ref } from "vue";
 import Modal from "@/Components/Modal.vue";
-import ContentLayout from "@/Layouts/ContentLayout.vue";
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import InputLabel from "@/Components/InputLabel.vue";
 import InputError from "@/Components/InputError.vue";
 import TextInput from "@/Components/TextInput.vue";

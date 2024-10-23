@@ -2,7 +2,7 @@
 import { inject, ref } from "vue";
 import { Link, router, useForm } from "@inertiajs/vue3";
 import axios from "axios";
-import ContentLayout from "@/Layouts/ContentLayout.vue";
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import TextInput from "@/Components/TextInput.vue";
 import Modal from "@/Components/Modal.vue";
 import PaginateLink from "@/Components/PaginateLink.vue";
@@ -110,7 +110,7 @@ const deleteOrder = () => {
         </div>
     </Modal>
 
-    <ContentLayout>
+    <AuthenticatedLayout>
         <div class="py-12">
             <!-- Header -->
             <h3 class="my-10 text-3xl font-extrabold text-center uppercase text-slate-700">
@@ -338,5 +338,5 @@ const deleteOrder = () => {
                 </Link>
             </div>
         </div>
-    </ContentLayout>
+    </AuthenticatedLayout>
 </template>

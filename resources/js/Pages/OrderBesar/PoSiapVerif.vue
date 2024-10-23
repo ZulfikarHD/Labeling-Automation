@@ -1,5 +1,5 @@
 <script setup>
-import ContentLayout from '@/Layouts/ContentLayout.vue';
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import TextInput from '@/Components/TextInput.vue';
 import { Link, useForm } from '@inertiajs/vue3';
@@ -26,7 +26,7 @@ const changeTeam = () => {
 
 </script>
 <template>
-    <ContentLayout>
+    <AuthenticatedLayout>
         <div class="py-12">
             <!-- Change Team -->
             <div class="mx-auto w-fit">
@@ -135,5 +135,5 @@ const changeTeam = () => {
             </div>
         </div>
     </div>
-</ContentLayout>
+</AuthenticatedLayout>
 </template>
