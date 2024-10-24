@@ -1,4 +1,5 @@
 <template>
+    <Head title="Cetak Label" />
     <!-- Modal for Reprinting -->
     <Modal
         :show="printUlangModal"
@@ -475,7 +476,7 @@ import InputError from "@/Components/InputError.vue";
 import TextInput from "@/Components/TextInput.vue";
 import TableVerifikasiPegawai from "@/Components/TableVerifikasiPegawai.vue";
 import { fullPageLabel } from "@/Components/PrintPages/PrintLabel";
-import { Link, useForm, router } from "@inertiajs/vue3";
+import { Link, useForm, router, Head } from "@inertiajs/vue3";
 import axios from "axios";
 
 const props = defineProps({

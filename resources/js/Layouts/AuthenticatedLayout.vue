@@ -29,7 +29,7 @@ const toggleDropdown = (dropDownId) => {
 const logout = () => {router.post(route('logout'))};
 </script>
 <template>
-    <div class="h-full min-h-screen bg-gradient-to-b from-slate-50 to-slate-100">
+    <div class="h-full min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
         <div class="w-full bg-white shadow-lg px-6 py-4 flex justify-between items-center sticky top-0 z-50 rounded-lg">
             <!-- Logo Peruri -->
             <img :src="'/img/peruri.png'" class="w-24" />
@@ -118,12 +118,21 @@ const logout = () => {router.post(route('logout'))};
                 </div>
                 <Transition name="fade">
                     <div v-show="showOption" class="absolute -left-20 mt-2 w-48 bg-white shadow-lg rounded-lg z-10">
-                        <button
-                            type="button"
-                            @click="logout()"
-                            class="block text-gray-700 px-4 py-2 transition duration-200 ease-in-out hover:bg-gray-100 w-full text-start">
-                            Logout
-                        </button>
+                        <div class="flex flex-col">
+                            <button
+                                type="button"
+                                @click="logout()"
+                                class="inline-flex text-nowrap items-center pt-1 border-b-2 border-transparent text-sm font-medium leading-5 hover:border-violet-300 focus:outline-none focus:text-gray-700 focus:border-gray-300 text-gray-800 px-2 py-1 transition duration-200 ease-in-out hover:text-blue-600">
+                                Logout
+                            </button>
+
+                            <!-- <NavLink
+                                :href="route('createUser.index')"
+                                :active="route().current('createUser.index')"
+                                class="text-gray-800 px-2 py-1 transition duration-200 ease-in-out hover:text-blue-600">
+                                Ganti Password
+                            </NavLink> -->
+                        </div>
                     </div>
                 </Transition>
             </div>

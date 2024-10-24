@@ -5,7 +5,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import InputLabel from "@/Components/InputLabel.vue";
 import InputError from "@/Components/InputError.vue";
 import TextInput from "@/Components/TextInput.vue";
-import { Link, useForm, router } from "@inertiajs/vue3";
+import { Link, useForm, router, Head } from "@inertiajs/vue3";
 import axios from "axios";
 import { batchFullPageLabel } from "@/Components/PrintPages/PrintLabel";
 import NavigateBackButton from "@/Components/NavigateBackButton.vue";
@@ -103,6 +103,7 @@ const submit = () => {
 };
 </script>
 <template>
+    <Head title="Cetak Label" />
     <AuthenticatedLayout>
         <!-- Modal -->
         <Modal :show="showModal" @close="showModal = !showModal">

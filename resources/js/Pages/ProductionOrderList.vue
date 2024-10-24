@@ -1,6 +1,6 @@
 <script setup>
 import { inject, ref } from "vue";
-import { Link, router, useForm } from "@inertiajs/vue3";
+import { Head, Link, router, useForm } from "@inertiajs/vue3";
 import axios from "axios";
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import TextInput from "@/Components/TextInput.vue";
@@ -60,6 +60,7 @@ const deleteOrder = () => {
 </script>
 
 <template>
+    <Head title="List Po Terdaftar" />
     <!-- Delete Modal -->
     <Modal :show="deleteModal" @close="deleteModal = !deleteModal">
         <div class="flex flex-col gap-4 px-8 py-6">

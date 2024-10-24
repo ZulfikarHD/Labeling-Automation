@@ -2,7 +2,7 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import TextInput from '@/Components/TextInput.vue';
-import { Link, useForm } from '@inertiajs/vue3';
+import { Head, Link, useForm } from '@inertiajs/vue3';
 import NavigateBackButton from '@/Components/NavigateBackButton.vue';
 import { ref } from 'vue';
 
@@ -26,6 +26,7 @@ const changeTeam = () => {
 
 </script>
 <template>
+    <Head title="Siap Periksa" />
     <AuthenticatedLayout>
         <div class="py-12">
             <!-- Change Team -->

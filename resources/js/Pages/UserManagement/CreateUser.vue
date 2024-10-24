@@ -1,6 +1,6 @@
 <script setup>
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
-import { router, useForm} from "@inertiajs/vue3";
+import { Head, router, useForm} from "@inertiajs/vue3";
 import { ref, defineProps  } from "vue";
 
 const props = defineProps({
@@ -42,6 +42,7 @@ const changeStateDefaultPassword = () => {
 </script>
 
 <template>
+    <Head title="Create User"/>
     <AuthenticatedLayout>
         <div
             class="w-full max-w-xl bg-white rounded-lg shadow-md p-6 mx-auto mt-24"

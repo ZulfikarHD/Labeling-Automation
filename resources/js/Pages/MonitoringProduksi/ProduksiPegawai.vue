@@ -3,7 +3,7 @@ import InputLabel from '@/Components/InputLabel.vue';
 import TableVerifikasiPegawai from '@/Components/TableVerifikasiPegawai.vue';
 import TextInput from '@/Components/TextInput.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { useForm } from '@inertiajs/vue3';
+import { Head, useForm } from '@inertiajs/vue3';
 import {ref} from 'vue';
 
 const props = defineProps({
@@ -19,6 +19,7 @@ const today = ref(form.date)
 
 </script>
 <template>
+    <Head title="Produksi Pegawai"/>
     <AuthenticatedLayout>
         <div class="px-4 py-6 mx-auto">
             <div class="px-10 mx-4 mb-4 ml-28">

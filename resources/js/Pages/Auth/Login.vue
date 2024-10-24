@@ -30,15 +30,18 @@ const submit = () => {
 </script>
 
 <template>
+    <Head title="Login" />
     <div class="h-screen overflow-hidden">
-        <div class="h-full w-screen flex items-center bg-gradient-to-br from-slate-300 to-slate-500">
+        <div
+            class="h-full w-screen flex items-center bg-gradient-to-br from-slate-100 to-slate-200"
+        >
             <div
                 class="flex flex-col w-full mx-auto p-8 md:p-10 2xl:p-12 3xl:p-14 bg-[#ffffff] rounded-2xl shadow-xl max-w-xl"
             >
-                <div class="flex flex-row gap-3 pb-4">
-                    <!-- <div>
-                        <img src="/favicon.svg" width="50" alt="Logo" />
-                    </div> -->
+                <div class="flex flex-row gap-3 pb-4 items-center">
+                    <div>
+                        <img src="/img/logo.png" width="50" alt="Logo" />
+                    </div>
                     <h1
                         class="text-3xl font-bold text-[#4B5563] text-[#4B5563]"
                     >
@@ -60,27 +63,19 @@ const submit = () => {
                                 class="absolute inset-y-0 left-0 flex items-center p-1 pl-3"
                                 ><svg
                                     xmlns="http://www.w3.org/2000/svg"
-                                    width="24"
-                                    height="24"
-                                    viewBox="0 0 24 24"
                                     fill="none"
+                                    viewBox="0 0 24 24"
+                                    stroke-width="1.5"
                                     stroke="currentColor"
-                                    stroke-width="2"
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    class="lucide lucide-mail"
+                                    class="size-6"
                                 >
-                                    <rect
-                                        width="20"
-                                        height="16"
-                                        x="2"
-                                        y="4"
-                                        rx="2"
-                                    ></rect>
                                     <path
-                                        d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"
-                                    ></path></svg
-                            ></span>
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
+                                    />
+                                </svg>
+                            </span>
                             <input
                                 type="text"
                                 name="npUser"

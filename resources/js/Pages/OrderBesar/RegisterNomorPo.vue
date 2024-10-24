@@ -3,7 +3,7 @@ import { inject, ref } from "vue";
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import InputLabel from "@/Components/InputLabel.vue";
 import TextInput from "@/Components/TextInput.vue";
-import { Link, router, useForm } from "@inertiajs/vue3";
+import { Head, Link, router, useForm } from "@inertiajs/vue3";
 import axios from "axios";
 import NavigateBackButton from "@/Components/NavigateBackButton.vue";
 
@@ -142,6 +142,7 @@ function submit() {
 }
 </script>
 <template>
+    <Head title="Register No Po" />
     <!-- Loading Indicator -->
     <div class="bg-black bg-opacity-40 w-screen h-screen absolute z-50 flex justify-center items-center" v-if="isLoading">
         <div class="rounded-lg p-4 flex flex-col gap-2 justify-center items-center">

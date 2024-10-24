@@ -2,7 +2,7 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import TextInput from '@/Components/TextInput.vue';
-import { Link, useForm } from '@inertiajs/vue3';
+import { Head, Link, useForm } from '@inertiajs/vue3';
 import NavigateBackButton from '@/Components/NavigateBackButton.vue';
 
 const props = defineProps({
@@ -12,6 +12,7 @@ const props = defineProps({
 </script>
 
 <template>
+    <Head title="Monitor Produksi" />
     <AuthenticatedLayout>
         <!-- Container -->
         <div class="py-8 flex justify-center flex-col">
