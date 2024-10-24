@@ -19,6 +19,7 @@ const props = defineProps({
 });
 
 const seri = ref("");
+const seriColor = ref("");
 
 const form = useForm({
     po: null,
@@ -94,7 +95,6 @@ const updateConfirmationMessage = () => {
         daerahOrder = "<span class='text-red-500 font-semibold'>Daerah</span>";
     }
 
-    let seriColor;
     const seriValue = form.obc.substring(5, 4);
     if (seriValue == 3) {
         seri.value = `<span class='text-blue-500 font-semibold'>${seriValue}</span>`;
@@ -113,6 +113,7 @@ const resetForm = () => {
     form.jml_rim = 0;
     form.end_rim = 1;
     form.inschiet = 0;
+    form.team = props.currentTeam;
 };
 
 function submit() {
@@ -156,87 +157,141 @@ function submit() {
 
     <!-- Content -->
     <AuthenticatedLayout>
-        <div class="py-12 px-4">
-            <form @submit.prevent="submit" method="post">
-                <div class="flex flex-col justify-center gap-6 mx-auto mt-12 w-fit">
-                    <!-- Nomor PO -->
-                    <div>
-                        <InputLabel for="po" value="Nomor PO" class="text-3xl font-extrabold text-center" />
-                        <TextInput id="po" ref="po" v-model="form.po" type="number" class="block w-full px-8 py-2 mt-2 text-xl text-center border border-gray-300 rounded-md focus:border-indigo-500 focus:ring-indigo-500" autocomplete="po" placeholder="Nomor Produksi" @input="debouncedFetchData" required />
-                        <p v-if="errorPo" class="text-red-500 text-lg text-center mt-4 font-medium">{{ errorPo }}</p>
+        <div
+            class="w-full max-w-5xl bg-white rounded-lg shadow-md py-12 px-6 mx-auto mt-24 flex flex-col gap-3"
+        >
+        <!-- Title -->
+            <h1 class="text-3xl font-bold text-[#4B5563] my-auto text-center mb-4 pb-4 border-b border-sky-600">Register Nomor Production Order</h1>
+
+            <form @submit.prevent="submit" class="flex flex-col text-lg">
+                <div class="flex flex-col">
+                    <InputLabel for="teamVerif" value="Team Periksa" />
+                    <select
+                        id="teamVerif"
+                        v-model="form.team"
+                        class="mb-2 text-center bg-gray-50 text-gray-600 border focus:border-transparent border-gray-300 sm:text-sm rounded-lg ring ring-transparent focus:ring-1 focus:outline-none focus:ring-sky-400 block w-full p-2.5 rounded-l-lg py-3 px-4">
+                        <option v-for="workstation in props.workstation"
+                            :value="workstation.id"
+                            :key="workstation.id">{{ workstation.workstation }}</option>
+                    </select>
+                </div>
+
+                <!-- Input Nomor Po -->
+                <div class="flex flex-col">
+                    <InputLabel for="nomorPo" value="Nomor Po" />
+                    <TextInput
+                        @keyup="debouncedFetchData"
+                        id="nomorPo"
+                        v-model="form.po"
+                        type="number"
+                        placeholder="Masukan Nomor PO"
+                        class="placeholder:text-center text-center text-base"
+                    />
+                </div>
+
+                <!-- Keterangan Barang -->
+                <div class="flex gap-3 mt-4">
+                    <!-- Nomor Obc -->
+                    <div class="flex flex-col flex-grow">
+                        <InputLabel for="nomorObc" value="Nomor OBC" />
+                        <TextInput
+                            id="nomorObc"
+                            @input="cekSpec()"
+                            v-model="form.obc"
+                            type="text"
+                            placeholder="Masukan Nomor OBC"
+                        />
                     </div>
 
-                    <!-- Assigned Team -->
-                    <div>
-                        <InputLabel for="team" value="Tim Periksa" class="text-3xl font-extrabold text-center" />
-                        <select id="team" ref="team" v-model="form.team" class="block w-full px-8 py-2 mt-2 text-xl border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" required>
-                            <option v-for="team in workstation" :key="team.id" :value="team.id">
-                                {{ team.workstation }}
-                            </option>
-                        </select>
+                    <!-- Jml Cetak -->
+                    <div class="flex flex-col flex-grow">
+                        <InputLabel for="jmlLembar" value="Jumlah Cetak" />
+                        <TextInput
+                            @input="calcEndRim()"
+                            id="jmlLembar"
+                            v-model="form.jml_lembar"
+                            type="text"
+                            placeholder="Masukan Nomor PO"
+                            class="placeholder:text-center text-center text-base font-medium"
+                        />
                     </div>
 
-                    <div class="flex justify-between gap-6 w-fit">
-                        <!-- Nomor OBC -->
-                        <div>
-                            <InputLabel for="obc" value="Nomor OBC" class="text-3xl font-extrabold text-center" />
-                            <TextInput id="obc" ref="obc" v-model="form.obc" type="text" @input="cekSpec" class="block w-full px-8 py-2 mt-2 text-xl text-center border border-gray-300 rounded-md focus:border-indigo-500 focus:ring-indigo-500" autocomplete="obc" placeholder="Order Bea Cukai" required />
-                            <p v-if="errorObc" class="text-red-500 text-sm text-center mt-4 font-medium">{{ errorObc }}</p>
-                        </div>
-
-                        <!-- Jumlah Cetak -->
-                        <div>
-                            <InputLabel for="jml_lembar" value="Jumlah Cetak" class="text-3xl font-extrabold text-center" />
-                            <TextInput id="jml_lembar" ref="jml_lembar" v-model="form.jml_lembar" type="number" class="block w-full px-8 py-2 mt-2 text-xl text-center border border-gray-300 rounded-md focus:border-indigo-500 focus:ring-indigo-500" autocomplete="jml_lembar" placeholder="Lembar" min="1" @input="calcEndRim" required />
-                        </div>
-
-                        <!-- Inschiet -->
-                        <div>
-                            <InputLabel for="inschiet" value="Inschiet" class="text-3xl font-extrabold text-center" />
-                            <TextInput id="inschiet" ref="inschiet" v-model="form.inschiet" type="number" class="block w-full px-8 py-2 mt-2 text-xl text-center border border-gray-300 rounded-md focus:border-indigo-500 focus:ring-indigo-500" autocomplete="inschiet" placeholder="Lembar" @input="calcEndRim" />
-                        </div>
-
-                        <!-- Jumlah Rim -->
-                        <div>
-                            <InputLabel for="jml_rim" value="Jumlah Rim" class="text-3xl font-extrabold text-center" />
-                            <TextInput id="jml_rim" ref="jml_rim" v-model="form.jml_rim" type="number" class="block w-full px-8 py-2 mt-2 text-xl text-center bg-slate-200 border border-gray-300 rounded-md" autocomplete="jml_rim" placeholder="RIM" min="1" required />
-                        </div>
+                    <!-- Inschiet -->
+                    <div class="flex flex-col flex-grow">
+                        <InputLabel for="inschiet" value="Inschiet" />
+                        <TextInput
+                            @input="calcEndRim()"
+                            id="inschiet"
+                            v-model="form.inschiet"
+                            type="number"
+                            min="0"
+                            placeholder="Masukan Nomor PO"
+                        class="placeholder:text-center text-center text-base font-medium"
+                        />
                     </div>
-                    <h4 class="text-3xl font-semibold text-center">Nomor RIM</h4>
-                    <div class="flex justify-center gap-6 w-full">
-                        <!-- Start RIM -->
-                        <div>
-                            <InputLabel for="start_rim" value="Dari" class="text-3xl font-extrabold text-center" />
-                            <TextInput id="start_rim" ref="start_rim" v-model="form.start_rim" type="number" class="block w-full px-8 py-2 mt-2 text-xl text-center border border-gray-300 rounded-md focus:border-indigo-500 focus:ring-indigo-500" autocomplete="start_rim" @input="calcEndRim" min="1" />
-                        </div>
 
-                        <!-- End Rim -->
-                        <div>
-                            <InputLabel for="end_rim" value="Sampai" class="text-3xl font-extrabold text-center" />
-                            <TextInput id="end_rim" ref="end_rim" v-model="form.end_rim" type="number" class="block w-full px-8 py-2 mt-2 text-xl text-center bg-slate-200 border border-gray-300 rounded-md" autocomplete="end_rim" disabled min="1" />
-                        </div>
+                    <!-- Jml Rim -->
+                    <div class="flex flex-col flex-grow">
+                        <InputLabel for="jmlRim" value="Jumlah RIM" />
+                        <TextInput
+                            id="jmlRim"
+                            v-model="form.jml_rim"
+                            type="number"
+                            min="0"
+                            placeholder="Masukan Nomor PO"
+                            class="bg-gray-200 text-center"
+                            disabled
+                        />
                     </div>
                 </div>
-                <div class="flex justify-center gap-6 mx-auto w-fit">
-                    <button type="submit" class="flex justify-center px-8 py-4 mx-auto w-fit bg-gradient-to-r from-green-400 to-green-500 rounded-xl text-start mt-11 hover:shadow-lg transition-shadow duration-300">
-                        <span class="text-xl font-bold text-yellow-50">Buat Label</span>
-                    </button>
-                    <Link :href="route('orderBesar.registerNomorPo')" class="text-xl font-bold text-violet-50 flex justify-center px-8 py-4 mx-auto w-fit bg-gradient-to-r from-violet-400 to-violet-500 rounded-xl text-start mt-11 hover:shadow-lg transition-shadow duration-300">
-                        Clear
-                    </Link>
+
+                <!-- Nomor RIm -->
+                <div class="flex gap-3 mt-4">
+                    <!-- Start Rim -->
+                    <div class="flex flex-col flex-grow">
+                        <InputLabel for="rimStart" value="Nomor Rim Awal" />
+                        <TextInput
+                            @input="calcEndRim()"
+                            id="rimStart"
+                            v-model="form.start_rim"
+                            type="number"
+                            min="0"
+                            placeholder="Masukan Nomor RIM Pertama"
+                            class="placeholder:text-center text-center text-base"
+                        />
+                    </div>
+
+                    <!-- End Rim -->
+                    <div class="flex flex-col flex-grow">
+                        <InputLabel for="rimEnd" value="Nomor Rim Terakhir" />
+                        <TextInput
+                            id="rimEnd"
+                            v-model="form.end_rim"
+                            type="number"
+                            min="0"
+                            placeholder="Masukan Nomor Rim Terakhir"
+                            class="placeholder:text-center text-center text-base"
+                        />
+                    </div>
                 </div>
+
+                <!-- Submit Button -->
+                 <div class="flex gap-4 mt-8">
+                     <button
+                         type="submit"
+                         class="bg-green-500 text-white font-bold py-2 px-4 rounded-md mt-4 hover:bg-green-600  transition ease-in-out duration-150 flex-auto"
+                     >
+                         Buat Label
+                     </button>
+                     <button
+                        @click="resetForm()"
+                         type="button"
+                         class="bg-violet-500 text-white font-bold py-2 px-4 rounded-md mt-4 hover:bg-violet-600  transition ease-in-out duration-150 flex-auto"
+                     >
+                         Clear
+                     </button>
+                 </div>
             </form>
-        </div>
-        <div class="flex justify-center w-full">
-            <div class="flex gap-6">
-                <!-- Home Button -->
-                <Link :href="route('dashboard')" class="text-xl font-extrabold text-blue-50 w-fit py-3 px-6 bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl text-start drop-shadow-md shadow-md flex items-center gap-1.5">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6">
-                        <path d="M11.47 3.84a.75.75 0 011.06 0l8.69 8.69a.75.75 0 101.06-1.06l-8.689-8.69a2.25 2.25 0 00-3.182 0l-8.69 8.69a.75.75 0 001.061 1.06l8.69-8.69z" />
-                        <path d="M12 5.432l8.159 8.159c.03.03.06.058.091.086v6.198c0 1.035-.84 1.875-1.875 1.875H15a.75.75 0 01-.75-.75v-4.5a.75.75 0 00-.75-.75h-3a.75.75 0 00-.75.75V21a.75.75 0 01-.75.75H5.625a1.875 1.875 0 01-1.875-1.875v-6.198a2.29 2.29 0 00.091-.086L12 5.43z" />
-                    </svg>
-                </Link>
-            </div>
         </div>
     </AuthenticatedLayout>
 </template>
