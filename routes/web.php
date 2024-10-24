@@ -32,6 +32,8 @@ Route::middleware('auth')->group(function () {
     Route::middleware(Role1Access::class)->group(function () {
         Route::get('/create-user', [\App\Http\Controllers\UserManagement\CreateUserController::class, 'index'])->name('createUser.index');
         Route::post('/create-user', [\App\Http\Controllers\UserManagement\CreateUserController::class, 'store'])->name('createUser.store');
+        Route::get('/change-password',[\App\Http\Controllers\UserManagement\PasswordController::class, 'changePassword'])->name('changePassword.index');
+        Route::post('/change-password',[\App\Http\Controllers\UserManagement\PasswordController::class, 'update'])->name('changePassword.update');
     });
     /**
      * ---------------------------------------

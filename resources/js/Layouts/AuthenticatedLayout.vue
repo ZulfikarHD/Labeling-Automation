@@ -119,6 +119,13 @@ const logout = () => {router.post(route('logout'))};
                 <Transition name="fade">
                     <div v-show="showOption" class="absolute -left-20 mt-2 w-48 bg-white shadow-lg rounded-lg z-10">
                         <div class="flex flex-col">
+                            <NavLink
+                                :href="route('changePassword.index')"
+                                :active="route().current('changePassword.index')"
+                                class="text-gray-800 px-2 py-1 transition duration-200 ease-in-out hover:text-blue-600">
+                                Ganti Password
+                            </NavLink>
+
                             <button
                                 type="button"
                                 @click="logout()"
@@ -126,12 +133,6 @@ const logout = () => {router.post(route('logout'))};
                                 Logout
                             </button>
 
-                            <!-- <NavLink
-                                :href="route('createUser.index')"
-                                :active="route().current('createUser.index')"
-                                class="text-gray-800 px-2 py-1 transition duration-200 ease-in-out hover:text-blue-600">
-                                Ganti Password
-                            </NavLink> -->
                         </div>
                     </div>
                 </Transition>

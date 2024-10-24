@@ -15,7 +15,6 @@ const userForm = useForm({
 });
 
 const submit = () => {
-    console.log(userForm);
     router.post("/create-user",userForm, {
         onSuccess: () => {
             userForm.reset()
