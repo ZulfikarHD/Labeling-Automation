@@ -5,7 +5,10 @@
         :show="printUlangModal"
         @close="() => (printUlangModal = !printUlangModal)"
     >
-        <form @submit.prevent="printUlangLabel" class="bg-white rounded-lg shadow-lg p-6">
+        <form
+            @submit.prevent="printUlangLabel"
+            class="bg-white rounded-lg shadow-lg p-6"
+        >
             <div class="flex flex-col gap-4">
                 <h1
                     class="py-2 text-xl font-bold text-center border-b-2 text-slate-600 border-slate-400"
@@ -111,7 +114,9 @@
                                 <span class="font-semibold">{{
                                     n.np_users
                                 }}</span>
-                                <span class="font-bold text-white">Inschiet</span>
+                                <span class="font-bold text-white"
+                                    >Inschiet</span
+                                >
                             </div>
                         </button>
                         <button
@@ -211,7 +216,9 @@
     <AuthenticatedLayout>
         <div class="flex flex-col justify-center py-8">
             <form @submit.prevent="submit">
-                <div class="flex flex-col justify-center gap-6 mx-auto px-8 max-w-2xl">
+                <div
+                    class="flex flex-col justify-center gap-6 mx-auto px-8 max-w-2xl"
+                >
                     <div class="mx-auto w-full">
                         <InputLabel
                             for="team"
@@ -394,9 +401,7 @@
                         type="submit"
                         class="flex justify-center px-4 py-4 mx-auto mt-8 shadow w-fit bg-gradient-to-r from-green-400 to-green-500 rounded-xl text-start hover:brightness-90 drop-shadow shadow-green-500/20"
                     >
-                        <div class="text-lg font-bold text-white">
-                            Generate
-                        </div>
+                        <div class="text-lg font-bold text-white">Generate</div>
                     </button>
                     <button
                         type="button"
@@ -470,7 +475,7 @@
 <script setup>
 import { reactive, ref } from "vue";
 import Modal from "@/Components/Modal.vue";
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import InputLabel from "@/Components/InputLabel.vue";
 import InputError from "@/Components/InputError.vue";
 import TextInput from "@/Components/TextInput.vue";
@@ -572,8 +577,9 @@ const printWithoutDialog = (content) => {
         ${content}
     `);
 
+    // doc.close();
+    iframe.contentWindow.focus();
     setTimeout(() => {
-        iframe.contentWindow.focus();
         iframe.contentWindow.print();
     }, 200);
 };
@@ -587,13 +593,15 @@ const printUlangLabel = () => {
         formPrintUlang.npPetugas,
         undefined
     );
-
     printWithoutDialog(printLabel);
-    router.post("/api/order-besar/cetak-label/update", formPrintUlang, {
-        onFinish: () => {
-            router.get(`/order-besar/cetak-label/${form.team}/${form.id}`);
-        },
-    });
+
+    setTimeout(() => {
+        router.post("/api/order-besar/cetak-label/update", formPrintUlang, {
+            onFinish: () => {
+                router.get(`/order-besar/cetak-label/${form.team}/${form.id}`);
+            },
+        });
+    }, 500);
 };
 
 const submit = () => {
@@ -607,15 +615,18 @@ const submit = () => {
     );
 
     printWithoutDialog(printLabel);
-    router.post("/api/order-besar/cetak-label", form, {
-        onFinish: () => {
-            router.get(
-                props.noRim !== 0
-                    ? `/order-besar/cetak-label/${form.team}/${form.id}`
-                    : "/order-besar/po-siap-verif"
-            );
-        },
-    });
+
+    setTimeout(() => {
+        router.post("/api/order-besar/cetak-label", form, {
+            onFinish: () => {
+                router.get(
+                    props.noRim !== 0
+                        ? `/order-besar/cetak-label/${form.team}/${form.id}`
+                        : "/order-besar/po-siap-verif"
+                );
+            },
+        });
+    }, 500);
     form.periksa1 = null;
 };
 

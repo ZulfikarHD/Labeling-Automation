@@ -58,7 +58,7 @@ const printWithoutDialog = (content) => {
                         @page {
                             margin-left: 3rem; /* Remove default margins */
                             margin-right: 3rem; /* Remove default margins */
-                            margin-top: -1rem; /* Remove default margins */
+                            margin-top: 0rem; /* Remove default margins */
                         }
                         body {
                             margin: 0; /* Remove body margin */

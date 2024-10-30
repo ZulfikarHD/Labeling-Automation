@@ -306,7 +306,7 @@ export function batchFullPageLabel(
 ) {
     let date = new Date(); // Tanggal saat ini
 
-    const topMargin = detectBrowser() !== "Firefox" ? "-354px" : "-236px";
+    const topMargin = detectBrowser() !== "Firefox" ? "-320px" : "-236px";
 
     const months = [
         "Jan",
@@ -577,7 +577,7 @@ export function batchFullPageLabel(
     let printPage = "";
 
     for (let print = 0; print < jml_label; print++) {
-        printPage += `<span style="color:white">${print}</span>${contentPage}`;
+        printPage += `${contentPage}`;
     }
 
     return printPage;
