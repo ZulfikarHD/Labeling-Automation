@@ -56,7 +56,9 @@ const printWithoutDialog = (content) => {
     doc.write(`<style>
                     @media print {
                         @page {
-                            margin: 3rem; /* Remove default margins */
+                            margin-left: 3rem; /* Remove default margins */
+                            margin-right: 3rem; /* Remove default margins */
+                            margin-top: -1rem; /* Remove default margins */
                         }
                         body {
                             margin: 0; /* Remove body margin */

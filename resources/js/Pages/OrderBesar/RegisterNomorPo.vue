@@ -169,7 +169,7 @@ function submit() {
                     <select
                         id="teamVerif"
                         v-model="form.team"
-                        class="mb-2 text-center bg-gray-50 text-gray-600 border focus:border-transparent border-gray-300 sm:text-sm rounded-lg ring ring-transparent focus:ring-1 focus:outline-none focus:ring-sky-400 block w-full p-2.5 rounded-l-lg py-3 px-4">
+                        class="mb-2 text-center bg-gray-50 text-indigo-600 border focus:border-transparent border-gray-300 sm:text-sm rounded-lg ring ring-transparent focus:ring-1 focus:outline-none focus:ring-sky-400 block w-full p-2.5 rounded-l-lg py-3 px-4 font-semibold">
                         <option v-for="workstation in props.workstation"
                             :value="workstation.id"
                             :key="workstation.id">{{ workstation.workstation }}</option>
@@ -181,11 +181,12 @@ function submit() {
                     <InputLabel for="nomorPo" value="Nomor Po" />
                     <TextInput
                         @keyup="debouncedFetchData"
+                        autofocus
                         id="nomorPo"
                         v-model="form.po"
                         type="number"
                         placeholder="Masukan Nomor PO"
-                        class="placeholder:text-center text-center text-base"
+                        class="placeholder:text-center text-center text-xl font-bold"
                     />
                 </div>
 
