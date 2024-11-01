@@ -624,10 +624,10 @@ const submit = () => {
                         ? `/order-besar/cetak-label/${form.team}/${form.id}`
                         : "/order-besar/po-siap-verif"
                 );
+                form.periksa1 = null;
             },
         });
     }, 500);
-    form.periksa1 = null;
 };
 
 const finish_order = () => {
