@@ -567,7 +567,6 @@ export function batchFullPageLabel(
             </div>
         </div>
     </div>
-    <div class="break-before section" style="margin-top:-500px;"></div>
 </body>
 
 </html>
@@ -577,11 +576,18 @@ export function batchFullPageLabel(
     let printPage = "";
 
     for (let print = 0; print < jml_label; print++) {
-        printPage += `${contentPage}`;
+        printPage += contentPage;
+
+        if (print < jml_label - 1) {
+            printPage += `<div class="break-before section" style="margin-top:-500px;"></div>`;
+        } else {
+            printPage += `<div style="padding-top: 40rem"></div></div>`;
+        }
     }
 
     return printPage;
 }
+
 
 // Single Label Page
 export function labelPage(

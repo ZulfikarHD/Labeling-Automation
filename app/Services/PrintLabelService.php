@@ -6,91 +6,206 @@ use App\Models\DataInschiet;
 use App\Models\GeneratedLabels;
 use Illuminate\Support\Facades\DB;
 
+/**
+ * Service class untuk menangani operasi pencetakan label
+ *
+ * Service ini mengelola pembuatan dan penanganan label untuk order produksi,
+ * termasuk perhitungan inschiet dan populasi label untuk PO yang terdaftar.
+ */
 class PrintLabelService
 {
-    public function populateLabelForRegisteredPo($dataPo) : void
+    private const POTONGAN_TYPES = ['Kiri', 'Kanan'];
+    private const INSCHIET_RIM_NUMBER = 999;
+    private const SHEETS_PER_RIM = 1000;
+
+    /**
+     * Mengisi label untuk order produksi yang terdaftar
+     *
+     * @param object $dataPo Objek data order produksi
+     * @return void
+     */
+    public function populateLabelForRegisteredPo($dataPo): void
     {
-        $this->insertInschiet($dataPo->no_po,$dataPo->jml_lembar,$dataPo->periksa1,$dataPo->periksa2,$dataPo->team);
-        $sumRim = max(floor($dataPo->jml_lembar / 1000), 1);
+        $sumRim = max(floor($dataPo->jml_lembar / self::SHEETS_PER_RIM), 1);
 
-        if(divnum($dataPo->jml_lembar,1000) > 1)
-        {
-            try {
-                DB::transaction(function () use ($dataPo, $sumRim) {
-                    $periksa1 = strtoupper($dataPo->periksa1) ?? null;
-                    $periksa2 = strtoupper($dataPo->periksa2) ?? null;
-
-                        for ($i = 1; $i <= $sumRim; $i++) {
-                            foreach (['Kiri', 'Kanan'] as $potongan) {
-                                GeneratedLabels::create(
-                                    [
-                                        'no_po_generated_products'  => $dataPo->no_po,
-                                        'no_rim'    => $i,
-                                        'potongan'  => $potongan,
-                                        'np_users'  => $periksa1,
-                                        'periksa2'  => $periksa2,
-                                        'start'     => now(),
-                                        'finish'    => $periksa2 == null ? null : now(),
-                                        'workstation' => $dataPo->team,
-                                    ]
-                                );
-                            }
-                        }
-                });
-            } catch (\Exception $e) {
-                DB::rollback();
-                throw $e;
-            }
+        if ($this->shouldGenerateLabels($dataPo->jml_lembar)) {
+            $this->generateLabels($dataPo, $sumRim);
         }
+
+        $this->insertInschiet(
+            $dataPo->no_po,
+            $dataPo->jml_lembar,
+            $dataPo->periksa1,
+            $dataPo->periksa2,
+            $dataPo->team
+        );
     }
 
-    public function insertInschiet(Int $noPo, Int $lembar, String $periksa1 = null, String $periksa2 = null, Int $workstation = null): void
+    /**
+     * Menentukan apakah label harus dibuat berdasarkan total lembar
+     *
+     * @param int $totalSheets Total jumlah lembar
+     * @return bool
+     */
+    private function shouldGenerateLabels(int $totalSheets): bool
     {
-        $calcInschiet = $lembar % 1000;
-        $periksa1 = strtoupper($periksa1) ?? null;
-        $periksa2 = strtoupper($periksa2) ?? null;
+        return divnum($totalSheets, self::SHEETS_PER_RIM) > 1;
+    }
 
-        if($calcInschiet > 0)
-        {
-            try {
-                DB::transaction(function () use ($periksa1, $periksa2, $workstation, $noPo, $calcInschiet) {
-                    DataInschiet::updateOrCreate(
-                        ['no_po' => $noPo],
-                        [
-                            'inschiet' => $calcInschiet,
-                            'np_kiri'  => $periksa1,
-                            'np_kanan' => $periksa1,
-                        ]
-                    );
+    /**
+     * Membuat label untuk order produksi
+     *
+     * @param object $dataPo Data order produksi
+     * @param int $sumRim Total jumlah rim
+     * @return void
+     * @throws \Exception
+     */
+    private function generateLabels($dataPo, int $sumRim): void
+    {
+        try {
+            DB::transaction(function () use ($dataPo, $sumRim) {
+                $periksa1 = $this->formatPeriksaName($dataPo->periksa1);
+                $periksa2 = $this->formatPeriksaName($dataPo->periksa2);
 
-                    foreach (['Kiri', 'Kanan'] as $potongan) {
-                        GeneratedLabels::updateOrCreate(
-                            [
-                                'no_po_generated_products' => $noPo,
-                                'no_rim' => 999,
-                                'potongan' => $potongan,
-                            ],
-                            [
-                                'np_users' => $periksa1,
-                                'periksa2' => $periksa2,
-                                'start'    => $periksa1 == null ? null : now(),
-                                'workstation' => $workstation == null ? null : $workstation,
-                            ]
-                        );
+                for ($i = 1; $i <= $sumRim; $i++) {
+                    foreach (self::POTONGAN_TYPES as $potongan) {
+                        $this->createLabel($dataPo->no_po, $i, $potongan, $periksa1, $periksa2, $dataPo->team);
                     }
-                });
-            } catch (\Exception $e) {
-                DB::rollback();
-                throw $e;
-            }
+                }
+            });
+        } catch (\Exception $e) {
+            DB::rollback();
+            throw $e;
         }
-
     }
 
-    public function  finishPreviousUserSession(string $npPegawai): void
+    /**
+     * Membuat satu record label
+     *
+     * @param int $noPo Nomor order produksi
+     * @param int $rimNumber Nomor rim
+     * @param string $potongan Tipe potongan (Kiri/Kanan)
+     * @param string|null $periksa1 Pemeriksa pertama
+     * @param string|null $periksa2 Pemeriksa kedua
+     * @param int $team ID Tim
+     * @return void
+     */
+    private function createLabel(int $noPo, int $rimNumber, string $potongan, ?string $periksa1, ?string $periksa2, int $team): void
+    {
+        GeneratedLabels::create([
+            'no_po_generated_products' => $noPo,
+            'no_rim' => $rimNumber,
+            'potongan' => $potongan,
+            'np_users' => $periksa1,
+            'periksa2' => $periksa2,
+            'start' => now(),
+            'finish' => $periksa2 ? now() : null,
+            'workstation' => $team,
+        ]);
+    }
+
+    /**
+     * Memasukkan data inschiet untuk order produksi
+     *
+     * @param int $noPo Nomor order produksi
+     * @param int $lembar Jumlah lembar
+     * @param string|null $periksa1 Pemeriksa pertama
+     * @param string|null $periksa2 Pemeriksa kedua
+     * @param int|null $workstation ID Workstation
+     * @return void
+     * @throws \Exception
+     */
+    public function insertInschiet(int $noPo, int $lembar, ?string $periksa1 = null, ?string $periksa2 = null, ?int $workstation = null): void
+    {
+        $calcInschiet = $lembar % self::SHEETS_PER_RIM;
+
+        if ($calcInschiet <= 0) {
+            return;
+        }
+
+        try {
+            DB::transaction(function () use ($noPo, $calcInschiet, $periksa1, $periksa2, $workstation) {
+                $formattedPeriksa1 = $this->formatPeriksaName($periksa1);
+                $formattedPeriksa2 = $this->formatPeriksaName($periksa2);
+
+                $this->updateInschietData($noPo, $calcInschiet, $formattedPeriksa1);
+                $this->createInschietLabels($noPo, $formattedPeriksa1, $formattedPeriksa2, $workstation);
+            });
+        } catch (\Exception $e) {
+            DB::rollback();
+            throw $e;
+        }
+    }
+
+    /**
+     * Memperbarui data inschiet untuk order produksi
+     *
+     * @param int $noPo Nomor order produksi
+     * @param int $calcInschiet Nilai inschiet yang dihitung
+     * @param string|null $periksa1 Pemeriksa pertama
+     * @return void
+     */
+    private function updateInschietData(int $noPo, int $calcInschiet, ?string $periksa1): void
+    {
+        DataInschiet::updateOrCreate(
+            ['no_po' => $noPo],
+            [
+                'inschiet' => $calcInschiet,
+                'np_kiri' => $periksa1,
+                'np_kanan' => $periksa1,
+            ]
+        );
+    }
+
+    /**
+     * Membuat label inschiet untuk kedua sisi
+     *
+     * @param int $noPo Nomor order produksi
+     * @param string|null $periksa1 Pemeriksa pertama
+     * @param string|null $periksa2 Pemeriksa kedua
+     * @param int|null $workstation ID Workstation
+     * @return void
+     */
+    private function createInschietLabels(int $noPo, ?string $periksa1, ?string $periksa2, ?int $workstation): void
+    {
+        foreach (self::POTONGAN_TYPES as $potongan) {
+            GeneratedLabels::updateOrCreate(
+                [
+                    'no_po_generated_products' => $noPo,
+                    'no_rim' => self::INSCHIET_RIM_NUMBER,
+                    'potongan' => $potongan,
+                ],
+                [
+                    'np_users' => $periksa1,
+                    'periksa2' => $periksa2,
+                    'start' => $periksa1 ? now() : null,
+                    'workstation' => $workstation,
+                ]
+            );
+        }
+    }
+
+    /**
+     * Format nama pemeriksa menjadi huruf besar
+     *
+     * @param string|null $name Nama pemeriksa
+     * @return string|null
+     */
+    private function formatPeriksaName(?string $name): ?string
+    {
+        return $name ? strtoupper($name) : null;
+    }
+
+    /**
+     * Menyelesaikan sesi pengguna sebelumnya dengan memperbarui timestamp finish
+     *
+     * @param string $npPegawai Nomor pegawai
+     * @return void
+     */
+    public function finishPreviousUserSession(string $npPegawai): void
     {
         GeneratedLabels::where('np_users', $npPegawai)
             ->whereNull('finish')
-            ->update(['finish'   => now()]);
+            ->update(['finish' => now()]);
     }
 }
