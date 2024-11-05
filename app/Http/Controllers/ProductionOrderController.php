@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\DataInschiet;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -99,6 +100,7 @@ class ProductionOrderController extends Controller
     {
         GeneratedLabels::where('no_po_generated_products',$po)->delete();
         GeneratedProducts::where('no_po',$po)->delete();
+        DataInschiet::where('no_po',$po)->delete();
     }
 
     public function updateStatusFinish(String $po)

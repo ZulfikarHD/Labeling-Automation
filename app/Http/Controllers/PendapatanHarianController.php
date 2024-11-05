@@ -68,7 +68,7 @@ class PendapatanHarianController extends Controller
                             $calculate_verif = count($q->whereNotIn('no_rim', 999)) * 500;
 
                             // Menghitung total inschiet dengan membagi dan membulatkan hasilnya.
-                            $sum_inschiet = round($sum_ins_kiri, 2) + round(divnum($sum_ins_kanan, 2));
+                            $sum_inschiet = round(divnum($sum_ins_kiri, 2)) + round(divnum($sum_ins_kanan, 2));
 
                             // Mengembalikan data pegawai dan total verifikasi.
                             return [

@@ -201,6 +201,7 @@ function submit() {
                             v-model="form.obc"
                             type="text"
                             placeholder="Masukan Nomor OBC"
+                            required
                         />
                     </div>
 
