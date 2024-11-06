@@ -108,94 +108,74 @@ class CetakLabelController extends Controller
 
     private function fetchNoRim(String $po)
     {
-        $nullKiri = GeneratedLabels::where('no_po_generated_products', $po)
+        // Get next available rim for both sides
+        $nextKiri = GeneratedLabels::where('no_po_generated_products', $po)
             ->where('potongan', 'Kiri')
-            ->whereNull('np_users')
-            ->orWhere('np_users','')
-            ->get();
-
-        $nullKanan = GeneratedLabels::where('no_po_generated_products', $po)
-            ->where('potongan', 'Kanan')
-            ->whereNull('np_users')
-            ->orWhere('np_users','')
-            ->get();
-
-        $lastKiri = GeneratedLabels::where('no_po_generated_products', $po)
-            ->where('potongan', 'Kiri')
-            ->whereNull('np_users')
-            ->orWhere('np_users','')
+            ->where(function($query) {
+                $query->whereNull('np_users')
+                      ->orWhere('np_users', '');
+            })
+            ->orderBy('no_rim')
             ->first();
 
-        $lastKanan = GeneratedLabels::where('no_po_generated_products', $po)
+        $nextKanan = GeneratedLabels::where('no_po_generated_products', $po)
             ->where('potongan', 'Kanan')
-            ->whereNull('np_users')
-            ->orWhere('np_users','')
+            ->where(function($query) {
+                $query->whereNull('np_users')
+                      ->orWhere('np_users', '');
+            })
+            ->orderBy('no_rim')
             ->first();
 
-        $lastRimKiri = $lastKiri ? $lastKiri->no_rim : GeneratedLabels::where('no_po_generated_products', $po)
-            ->where('potongan', 'Kiri')
-            ->latest('no_rim')
-            ->first()
-            ->no_rim;
-
-        $lastRimKanan = $lastKanan ? $lastKanan->no_rim : GeneratedLabels::where('no_po_generated_products', $po)
-            ->where('potongan', 'Kanan')
-            ->latest('no_rim')
-            ->first()
-            ->no_rim;
-
-        $rim999Kiri = GeneratedLabels::where('no_po_generated_products', $po)
-            ->where('potongan', 'Kiri')
-            ->where('no_rim', 999)
-            ->whereNull('np_users')
-            ->orWhere('np_users','')
-            ->first();
-
-        $rim999Kanan = GeneratedLabels::where('no_po_generated_products', $po)
-            ->where('potongan', 'Kanan')
-            ->where('no_rim', 999)
-            ->whereNull('np_users')
-            ->orWhere('np_users','')
-            ->first();
-
-        if ($rim999Kiri) {
+        // Check for inschiet labels (rim 999) first
+        if ($nextKiri && $nextKiri->no_rim === 999) {
             return [
-                'noRim'    => 999,
+                'noRim' => 999,
                 'potongan' => 'Kiri'
             ];
         }
 
-        if ($rim999Kanan) {
+        if ($nextKanan && $nextKanan->no_rim === 999) {
             return [
-                'noRim'    => 999,
+                'noRim' => 999,
                 'potongan' => 'Kanan'
             ];
         }
 
-        if ($nullKiri->isEmpty() && $nullKanan->isEmpty()) {
+        // If no available rims on either side, work is finished
+        if (!$nextKiri && !$nextKanan) {
             return [
-                'noRim'    => 0,
+                'noRim' => 0,
                 'potongan' => 'Finished'
             ];
         }
 
-        if ($nullKiri->isNotEmpty()) {
-            if ($lastRimKiri == $lastRimKanan) {
-                return [
-                    'noRim'    => $lastKiri->no_rim,
-                    'potongan' => 'Kiri'
-                ];
-            }
-
+        // If one side is done, work on the other side
+        if (!$nextKiri) {
             return [
-                'noRim'    => $lastRimKiri > $lastRimKanan ? $lastKanan->no_rim : $lastKiri->no_rim,
-                'potongan' => $lastRimKiri > $lastRimKanan ? 'Kanan' : 'Kiri'
+                'noRim' => $nextKanan->no_rim,
+                'potongan' => 'Kanan'
             ];
         }
 
-        return [
-            'noRim'    => $lastRimKanan == $lastRimKiri ? $lastKanan->no_rim : ($lastRimKanan > $lastRimKiri ? $lastKiri->no_rim : $lastKanan->no_rim),
-            'potongan' => $lastRimKanan == $lastRimKiri ? 'Kanan' : ($lastRimKanan > $lastRimKiri ? 'Kiri' : 'Kanan')
-        ];
+        if (!$nextKanan) {
+            return [
+                'noRim' => $nextKiri->no_rim,
+                'potongan' => 'Kiri'
+            ];
+        }
+
+        // Both sides have work - pick the lower rim number
+        if ($nextKiri->no_rim <= $nextKanan->no_rim) {
+            return [
+                'noRim' => $nextKiri->no_rim,
+                'potongan' => 'Kiri'
+            ];
+        } else {
+            return [
+                'noRim' => $nextKanan->no_rim,
+                'potongan' => 'Kanan'
+            ];
+        }
     }
 }
