@@ -12,13 +12,18 @@ use App\Traits\UpdateStatusProgress;
 use App\Models\DataInschiet;
 use App\Services\PrintLabelService;
 use App\Services\ProductionOrderService;
+use Illuminate\Support\Facades\DB;
 
 class CetakLabelController extends Controller
 {
     use UpdateStatusProgress;
 
-    protected $productionOrderService;
-    protected $printLabelService;
+    private const INSCHIET_RIM = 999;
+    private const POTONGAN_KIRI = 'Kiri';
+    private const POTONGAN_KANAN = 'Kanan';
+
+    protected ProductionOrderService $productionOrderService;
+    protected PrintLabelService $printLabelService;
 
     public function __construct(ProductionOrderService $productionOrderService, PrintLabelService $printLabelService)
     {
@@ -26,14 +31,14 @@ class CetakLabelController extends Controller
         $this->printLabelService = $printLabelService;
     }
 
-    public function index(String $team, String $id)
+    public function index(string $team, string $id)
     {
-        $product = GeneratedProducts::find($id);
+        $product = GeneratedProducts::findOrFail($id);
         $noRimData = $this->fetchNoRim($product->no_po);
 
         return Inertia::render('OrderBesar/CetakLabel', [
             'product'   => $product,
-            'listTeam'  => Workstations::select('id', 'workstation')->get(),
+            'listTeam'  => Workstations::select(['id', 'workstation'])->get(),
             'crntTeam'  => $team,
             'noRim'     => $noRimData['noRim'],
             'potongan'  => $noRimData['potongan'],
@@ -41,141 +46,127 @@ class CetakLabelController extends Controller
         ]);
     }
 
-    private function countNullNp(String $po)
-    {
-        return GeneratedLabels::where('no_po_generated_products', $po)
-            ->whereNull('np_users')
-            ->count();
-    }
-
     public function store(Request $request)
     {
-        $printLabelService = $this->printLabelService;
+        try {
+            DB::beginTransaction();
 
+            $this->printLabelService->finishPreviousUserSession($request->periksa1);
 
-        $printLabelService->finishPreviousUserSession($request->periksa1);
+            $this->printLabelService->createLabel(
+                $request->po,
+                $request->no_rim,
+                $request->lbr_ptg,
+                $request->periksa1,
+                null,
+                $request->team
+            );
 
-        $printLabelService->createLabel(
-            $request->po,
-            $request->no_rim,
-            $request->lbr_ptg,
-            $request->periksa1,
-            null,
-            $request->team
-        );
+            $poStatus = $this->productionOrderService->isPoFinished($request->po) ? 2 : 1;
+            $this->updateProgress($request->po, $poStatus);
 
-        $poStatus = $this->productionOrderService->isPoFinished($request->po) == true ? 2 : 1;
+            DB::commit();
+            return redirect()->back();
 
-        $this->updateProgress($request->po, $poStatus);
-
-        return redirect()->back();
+        } catch (\Exception $e) {
+            DB::rollback();
+            return redirect()->back()->withErrors(['error' => 'Terjadi kesalahan saat memproses label']);
+        }
     }
 
     public function edit(Request $request)
     {
         return GeneratedLabels::where('no_po_generated_products', $request->po)
             ->where('potongan', $request->dataRim)
-            ->select('no_rim', 'np_users', 'potongan', 'start', 'finish')
+            ->select(['no_rim', 'np_users', 'potongan', 'start', 'finish'])
             ->get();
     }
 
     public function update(Request $request)
     {
-        $npPetugas = strtoupper($request->npPetugas);
+        try {
+            DB::beginTransaction();
 
-        GeneratedLabels::where('no_po_generated_products', $request->po)
-            ->where('potongan', $request->dataRim)
-            ->where('no_rim', $request->noRim)
-            ->update([
-                'np_users'    => $npPetugas,
-                'workstation' => $request->team,
-                'start'       => now()
-            ]);
+            $npPetugas = strtoupper($request->npPetugas);
 
-        if ($request->noRim === 999) {
-            $field = $request->dataRim === "Kiri" ? 'np_kiri' : 'np_kanan';
-            DataInschiet::where('no_po', $request->po)
-                ->update([$field => $npPetugas]);
+            GeneratedLabels::where('no_po_generated_products', $request->po)
+                ->where('potongan', $request->dataRim)
+                ->where('no_rim', $request->noRim)
+                ->update([
+                    'np_users'    => $npPetugas,
+                    'workstation' => $request->team,
+                    'start'       => now()
+                ]);
+
+            if ($request->noRim === self::INSCHIET_RIM) {
+                $field = $request->dataRim === self::POTONGAN_KIRI ? 'np_kiri' : 'np_kanan';
+                DataInschiet::where('no_po', $request->po)
+                    ->update([$field => $npPetugas]);
+            }
+
+            DB::commit();
+            return redirect()->back();
+
+        } catch (\Exception $e) {
+            DB::rollback();
+            return redirect()->back()->withErrors(['error' => 'Terjadi kesalahan saat memperbarui label']);
         }
-
-        return redirect()->back();
     }
 
-    public function delete(String $id)
+    public function delete(string $id)
     {
-        // Implement label deletion
+        try {
+            $label = GeneratedLabels::findOrFail($id);
+            $label->delete();
+            return redirect()->back()->with('success', 'Label berhasil dihapus');
+        } catch (\Exception $e) {
+            return redirect()->back()->withErrors(['error' => 'Terjadi kesalahan saat menghapus label']);
+        }
     }
 
-    private function fetchNoRim(String $po)
+    private function fetchNoRim(string $po): array
     {
-        // Get next available rim for both sides
-        $nextKiri = GeneratedLabels::where('no_po_generated_products', $po)
-            ->where('potongan', 'Kiri')
+        $baseQuery = GeneratedLabels::where('no_po_generated_products', $po)
             ->where(function($query) {
                 $query->whereNull('np_users')
                       ->orWhere('np_users', '');
             })
-            ->orderBy('no_rim')
+            ->orderBy('no_rim');
+
+        $nextKiri = (clone $baseQuery)
+            ->where('potongan', self::POTONGAN_KIRI)
             ->first();
 
-        $nextKanan = GeneratedLabels::where('no_po_generated_products', $po)
-            ->where('potongan', 'Kanan')
-            ->where(function($query) {
-                $query->whereNull('np_users')
-                      ->orWhere('np_users', '');
-            })
-            ->orderBy('no_rim')
+        $nextKanan = (clone $baseQuery)
+            ->where('potongan', self::POTONGAN_KANAN)
             ->first();
 
-        // Check for inschiet labels (rim 999) first
-        if ($nextKiri && $nextKiri->no_rim === 999) {
-            return [
-                'noRim' => 999,
-                'potongan' => 'Kiri'
-            ];
+        // Check inschiet labels first
+        if ($nextKiri && $nextKiri->no_rim === self::INSCHIET_RIM) {
+            return ['noRim' => self::INSCHIET_RIM, 'potongan' => self::POTONGAN_KIRI];
         }
 
-        if ($nextKanan && $nextKanan->no_rim === 999) {
-            return [
-                'noRim' => 999,
-                'potongan' => 'Kanan'
-            ];
+        if ($nextKanan && $nextKanan->no_rim === self::INSCHIET_RIM) {
+            return ['noRim' => self::INSCHIET_RIM, 'potongan' => self::POTONGAN_KANAN];
         }
 
-        // If no available rims on either side, work is finished
+        // Handle no available rims
         if (!$nextKiri && !$nextKanan) {
-            return [
-                'noRim' => 0,
-                'potongan' => 'Finished'
-            ];
+            return ['noRim' => 0, 'potongan' => 'Finished'];
         }
 
-        // If one side is done, work on the other side
+        // Handle single side completion
         if (!$nextKiri) {
-            return [
-                'noRim' => $nextKanan->no_rim,
-                'potongan' => 'Kanan'
-            ];
+            return ['noRim' => $nextKanan->no_rim, 'potongan' => self::POTONGAN_KANAN];
         }
 
         if (!$nextKanan) {
-            return [
-                'noRim' => $nextKiri->no_rim,
-                'potongan' => 'Kiri'
-            ];
+            return ['noRim' => $nextKiri->no_rim, 'potongan' => self::POTONGAN_KIRI];
         }
 
-        // Both sides have work - pick the lower rim number
-        if ($nextKiri->no_rim <= $nextKanan->no_rim) {
-            return [
-                'noRim' => $nextKiri->no_rim,
-                'potongan' => 'Kiri'
-            ];
-        } else {
-            return [
-                'noRim' => $nextKanan->no_rim,
-                'potongan' => 'Kanan'
-            ];
-        }
+        // Return side with lower rim number
+        return $nextKiri->no_rim <= $nextKanan->no_rim
+            ? ['noRim' => $nextKiri->no_rim, 'potongan' => self::POTONGAN_KIRI]
+            : ['noRim' => $nextKanan->no_rim, 'potongan' => self::POTONGAN_KANAN];
     }
 }
