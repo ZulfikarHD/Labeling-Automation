@@ -47,4 +47,16 @@ class ProductionOrderService
             ->select('no_rim', 'potongan')
             ->get();
     }
+
+    public function isPoFinished(Int $no_po)
+    {
+        $countUnfinishedRim = GeneratedLabels::where('no_po_generated_products', $no_po)
+                                        ->whereNull('np_users')
+                                        ->orWhere('np_users','')
+                                        ->count();
+
+        $isPoFinished = $countUnfinishedRim > 0 ? false : true ;
+
+        return $isPoFinished;
+    }
 }

@@ -18,11 +18,6 @@ class PendapatanHarianController extends Controller
         return $verifPegawai;
     }
 
-    private function dateBetween($date) : Array
-    {
-        return [Carbon::parse($date)->startOfDay(),Carbon::parse($date)->endOfDay()];
-    }
-
     /**
      * Kalkulasi hasil verifikasi harian pegawai
      */

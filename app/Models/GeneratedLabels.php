@@ -13,4 +13,15 @@ class GeneratedLabels extends Model
         'created_at',
         'updated_at',
     ];
+
+    public static function isFinishedAll(String $npPegawai)
+    {
+        $countUnfinishedState = self::where('np_user',$npPegawai)
+                                    ->whereNull('finish')
+                                    ->count();
+
+        $isFinishedAll = $countUnfinishedState > 0 ? false : true;
+
+        return $isFinishedAll;
+    }
 }

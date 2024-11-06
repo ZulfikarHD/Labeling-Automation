@@ -90,18 +90,25 @@ class PrintLabelService
      * @param int $team ID Tim
      * @return void
      */
-    private function createLabel(int $noPo, int $rimNumber, string $potongan, ?string $periksa1, ?string $periksa2, int $team): void
+    public function createLabel(int $noPo, int $rimNumber, string $potongan, ?string $periksa1, ?string $periksa2, int $team): void
     {
-        GeneratedLabels::create([
-            'no_po_generated_products' => $noPo,
-            'no_rim' => $rimNumber,
-            'potongan' => $potongan,
-            'np_users' => $periksa1,
-            'periksa2' => $periksa2,
-            'start' => now(),
-            'finish' => $periksa2 ? now() : null,
-            'workstation' => $team,
+        GeneratedLabels::updateOrcreate(
+            [
+                'no_po_generated_products' => $noPo,
+                'no_rim' => $rimNumber,
+                'potongan' => $potongan,
+            ],
+            [
+                'np_users' => $this->formatPeriksaName($periksa1),
+                'periksa2' => $this->formatPeriksaName($periksa2),
+                'start' => now(),
+                'finish' => $periksa2 ? now() : null,
+                'workstation' => $team,
         ]);
+
+        if($rimNumber == 999) {
+            $this->updateInschietData($noPo,null,$periksa1,$potongan);
+        }
     }
 
     /**
@@ -128,7 +135,7 @@ class PrintLabelService
                 $formattedPeriksa1 = $this->formatPeriksaName($periksa1);
                 $formattedPeriksa2 = $this->formatPeriksaName($periksa2);
 
-                $this->updateInschietData($noPo, $calcInschiet, $formattedPeriksa1);
+                $this->updateInschietData($noPo, $calcInschiet, $formattedPeriksa1, null);
                 $this->createInschietLabels($noPo, $formattedPeriksa1, $formattedPeriksa2, $workstation);
             });
         } catch (\Exception $e) {
@@ -145,16 +152,26 @@ class PrintLabelService
      * @param string|null $periksa1 Pemeriksa pertama
      * @return void
      */
-    private function updateInschietData(int $noPo, int $calcInschiet, ?string $periksa1): void
+    private function updateInschietData(int $noPo, ?int $calcInschiet = null , ?string $periksa1, ?string $potongan = null): void
     {
-        DataInschiet::updateOrCreate(
-            ['no_po' => $noPo],
-            [
-                'inschiet' => $calcInschiet,
-                'np_kiri' => $periksa1,
-                'np_kanan' => $periksa1,
-            ]
-        );
+        $periksa1 = $this->formatPeriksaName($periksa1);
+
+        if($potongan == "Kiri") {
+            DataInschiet::where('no_po',$noPo)
+                    ->update(['np_kiri' => $periksa1]);
+        } elseif($potongan == "Kanan") {
+            DataInschiet::where('no_po',$noPo)
+                    ->update(['np_kanan' => $periksa1]);
+        } else {
+            DataInschiet::updateOrCreate(
+                ['no_po' => $noPo],
+                [
+                    'inschiet' => $calcInschiet,
+                    'np_kiri' => $periksa1,
+                    'np_kanan' => $periksa1,
+                ]
+            );
+        }
     }
 
     /**
@@ -168,6 +185,9 @@ class PrintLabelService
      */
     private function createInschietLabels(int $noPo, ?string $periksa1, ?string $periksa2, ?int $workstation): void
     {
+        $periksa1 = $this->formatPeriksaName($periksa1);
+        $periksa2 = $this->formatPeriksaName($periksa2);
+
         foreach (self::POTONGAN_TYPES as $potongan) {
             GeneratedLabels::updateOrCreate(
                 [

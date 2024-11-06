@@ -10,10 +10,21 @@ use App\Models\GeneratedProducts;
 use App\Models\GeneratedLabels;
 use App\Traits\UpdateStatusProgress;
 use App\Models\DataInschiet;
+use App\Services\PrintLabelService;
+use App\Services\ProductionOrderService;
 
 class CetakLabelController extends Controller
 {
     use UpdateStatusProgress;
+
+    protected $productionOrderService;
+    protected $printLabelService;
+
+    public function __construct(ProductionOrderService $productionOrderService, PrintLabelService $printLabelService)
+    {
+        $this->productionOrderService = $productionOrderService;
+        $this->printLabelService = $printLabelService;
+    }
 
     public function index(String $team, String $id)
     {
@@ -33,46 +44,29 @@ class CetakLabelController extends Controller
     private function countNullNp(String $po)
     {
         return GeneratedLabels::where('no_po_generated_products', $po)
-                              ->whereNull('np_users')
-                              ->count();
+            ->whereNull('np_users')
+            ->count();
     }
 
     public function store(Request $request)
     {
-        $periksa1 = strtoupper($request->periksa1);
-        $cnt_prog = GeneratedLabels::where('np_users', $periksa1)
-                                   ->whereNull('finish')
-                                   ->count();
+        $printLabelService = $this->printLabelService;
 
-        if ($cnt_prog > 0) {
-            GeneratedLabels::where('np_users', $periksa1)
-                           ->whereNull('finish')
-                           ->update([
-                               'np_users' => $periksa1,
-                               'finish'   => now()
-                           ]);
-        }
 
-        GeneratedLabels::where('no_po_generated_products', $request->po)
-                       ->where('potongan', $request->lbr_ptg)
-                       ->where('no_rim', $request->no_rim)
-                       ->update([
-                           'np_users'    => $periksa1,
-                           'start'       => now(),
-                           'finish'      => null,
-                           'workstation' => $request->team
-                       ]);
+        $printLabelService->finishPreviousUserSession($request->periksa1);
 
-        GeneratedProducts::where('no_po', $request->po)
-                         ->update(['assigned_team' => $request->team]);
+        $printLabelService->createLabel(
+            $request->po,
+            $request->no_rim,
+            $request->lbr_ptg,
+            $request->periksa1,
+            null,
+            $request->team
+        );
 
-        $this->updateProgress($request->po, $this->countNullNp($request->po) > 0 ? 1 : 2);
+        $poStatus = $this->productionOrderService->isPoFinished($request->po) == true ? 2 : 1;
 
-        if ($request->no_rim === 999) {
-            $field = $request->lbr_ptg === "Kiri" ? 'np_kiri' : 'np_kanan';
-            DataInschiet::where('no_po', $request->po)
-                        ->update([$field => $periksa1]);
-        }
+        $this->updateProgress($request->po, $poStatus);
 
         return redirect()->back();
     }
@@ -80,9 +74,9 @@ class CetakLabelController extends Controller
     public function edit(Request $request)
     {
         return GeneratedLabels::where('no_po_generated_products', $request->po)
-                              ->where('potongan', $request->dataRim)
-                              ->select('no_rim', 'np_users', 'potongan', 'start', 'finish')
-                              ->get();
+            ->where('potongan', $request->dataRim)
+            ->select('no_rim', 'np_users', 'potongan', 'start', 'finish')
+            ->get();
     }
 
     public function update(Request $request)
@@ -90,18 +84,18 @@ class CetakLabelController extends Controller
         $npPetugas = strtoupper($request->npPetugas);
 
         GeneratedLabels::where('no_po_generated_products', $request->po)
-                       ->where('potongan', $request->dataRim)
-                       ->where('no_rim', $request->noRim)
-                       ->update([
-                           'np_users'    => $npPetugas,
-                           'workstation' => $request->team,
-                           'start'       => now()
-                       ]);
+            ->where('potongan', $request->dataRim)
+            ->where('no_rim', $request->noRim)
+            ->update([
+                'np_users'    => $npPetugas,
+                'workstation' => $request->team,
+                'start'       => now()
+            ]);
 
         if ($request->noRim === 999) {
             $field = $request->dataRim === "Kiri" ? 'np_kiri' : 'np_kanan';
             DataInschiet::where('no_po', $request->po)
-                        ->update([$field => $npPetugas]);
+                ->update([$field => $npPetugas]);
         }
 
         return redirect()->back();
@@ -115,48 +109,54 @@ class CetakLabelController extends Controller
     private function fetchNoRim(String $po)
     {
         $nullKiri = GeneratedLabels::where('no_po_generated_products', $po)
-                                   ->where('potongan', 'Kiri')
-                                   ->whereNull('np_users')
-                                   ->get();
+            ->where('potongan', 'Kiri')
+            ->whereNull('np_users')
+            ->orWhere('np_users','')
+            ->get();
 
         $nullKanan = GeneratedLabels::where('no_po_generated_products', $po)
-                                    ->where('potongan', 'Kanan')
-                                    ->whereNull('np_users')
-                                    ->get();
+            ->where('potongan', 'Kanan')
+            ->whereNull('np_users')
+            ->orWhere('np_users','')
+            ->get();
 
         $lastKiri = GeneratedLabels::where('no_po_generated_products', $po)
-                                   ->where('potongan', 'Kiri')
-                                   ->whereNull('np_users')
-                                   ->first();
+            ->where('potongan', 'Kiri')
+            ->whereNull('np_users')
+            ->orWhere('np_users','')
+            ->first();
 
         $lastKanan = GeneratedLabels::where('no_po_generated_products', $po)
-                                    ->where('potongan', 'Kanan')
-                                    ->whereNull('np_users')
-                                    ->first();
+            ->where('potongan', 'Kanan')
+            ->whereNull('np_users')
+            ->orWhere('np_users','')
+            ->first();
 
         $lastRimKiri = $lastKiri ? $lastKiri->no_rim : GeneratedLabels::where('no_po_generated_products', $po)
-                                                                      ->where('potongan', 'Kiri')
-                                                                      ->latest('no_rim')
-                                                                      ->first()
-                                                                      ->no_rim;
+            ->where('potongan', 'Kiri')
+            ->latest('no_rim')
+            ->first()
+            ->no_rim;
 
         $lastRimKanan = $lastKanan ? $lastKanan->no_rim : GeneratedLabels::where('no_po_generated_products', $po)
-                                                                         ->where('potongan', 'Kanan')
-                                                                         ->latest('no_rim')
-                                                                         ->first()
-                                                                         ->no_rim;
+            ->where('potongan', 'Kanan')
+            ->latest('no_rim')
+            ->first()
+            ->no_rim;
 
         $rim999Kiri = GeneratedLabels::where('no_po_generated_products', $po)
-                                     ->where('potongan', 'Kiri')
-                                     ->where('no_rim', 999)
-                                     ->whereNull('np_users')
-                                     ->first();
+            ->where('potongan', 'Kiri')
+            ->where('no_rim', 999)
+            ->whereNull('np_users')
+            ->orWhere('np_users','')
+            ->first();
 
         $rim999Kanan = GeneratedLabels::where('no_po_generated_products', $po)
-                                      ->where('potongan', 'Kanan')
-                                      ->where('no_rim', 999)
-                                      ->whereNull('np_users')
-                                      ->first();
+            ->where('potongan', 'Kanan')
+            ->where('no_rim', 999)
+            ->whereNull('np_users')
+            ->orWhere('np_users','')
+            ->first();
 
         if ($rim999Kiri) {
             return [
