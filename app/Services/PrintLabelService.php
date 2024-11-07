@@ -92,6 +92,10 @@ class PrintLabelService
      */
     public function createLabel(int $noPo, int $rimNumber, string $potongan, ?string $periksa1, ?string $periksa2, int $team): void
     {
+        if($rimNumber == 999) {
+            $this->updateInschietData($noPo,null,$periksa1,$potongan);
+        }
+
         GeneratedLabels::updateOrcreate(
             [
                 'no_po_generated_products' => $noPo,
@@ -106,9 +110,6 @@ class PrintLabelService
                 'workstation' => $team,
         ]);
 
-        if($rimNumber == 999) {
-            $this->updateInschietData($noPo,null,$periksa1,$potongan);
-        }
     }
 
     /**
