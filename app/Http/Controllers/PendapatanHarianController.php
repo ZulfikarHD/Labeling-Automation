@@ -64,10 +64,13 @@ class PendapatanHarianController extends Controller
                             // Menghitung total inschiet dengan membagi dan membulatkan hasilnya.
                             $sum_inschiet = round(divnum($sum_ins_kiri, 2)) + round(divnum($sum_ins_kanan, 2));
 
+                            $count_po   = count($q->unique('no_po_generated_products'));
+
                             // Mengembalikan data pegawai dan total verifikasi.
                             return [
                                 'pegawai'    => $key,
                                 'verifikasi' => $calculate_verif + $sum_inschiet,
+                                'jumlah_po'  => $count_po,
                             ];
                         })->sortByDesc('verifikasi')->values(); // Mengurutkan hasil berdasarkan verifikasi secara menurun.
     }
