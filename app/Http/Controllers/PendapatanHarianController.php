@@ -11,7 +11,7 @@ class PendapatanHarianController extends Controller
 {
     public function gradeHarian(Request $request)
     {
-        $date = $request->date !== null ? $request->date : today();
+        $date = $request->date !== null ? carbon::parse($request->date)->startOfDay() : today();
 
         $verifPegawai = $this->verifHarian($date,$request->team);
 
@@ -36,8 +36,7 @@ class PendapatanHarianController extends Controller
 
         // Mengambil data dari tabel GeneratedLabels berdasarkan rentang tanggal dan filter tim,
         // kemudian mengelompokkan hasil berdasarkan np_users.
-        return GeneratedLabels::query()
-                        ->whereDate('start', $date)
+        return GeneratedLabels::whereDate('start', $date)
                         ->where('workstation', $teamFilter, $team)
                         ->where('np_users', 'not like', '%mesin%')
                         ->get()
