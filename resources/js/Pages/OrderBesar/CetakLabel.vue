@@ -467,7 +467,7 @@
                 </Link>
             </div>
         </div>
-        <TableVerifikasiPegawai :team="form.team" :date="form.date" />
+        <TableVerifikasiPegawai :team="form.team" :date="form.date"/>
     </AuthenticatedLayout>
     <iframe ref="printFrame" style="display: none"></iframe>
 </template>
@@ -534,18 +534,6 @@ const dataRimKiri = async () => {
     formPrintUlang.dataRim = "Kiri";
     getDataRim();
 };
-
-const verifPegawai = ref();
-
-const produksiPegawai = () => {
-    axios
-        .get(`/api/pendapatan-harian?date=${form.date}&team=${form.team}`)
-        .then((res) => {
-            verifPegawai.value = res.data;
-        });
-};
-
-produksiPegawai();
 
 const getDataRim = () => {
     axios

@@ -43,7 +43,7 @@ produksiPegawai()
                                 class="py-2 pb-1.5 px-6 leading-tight text-left border-slate-300 dark:border-slate-500 border-r">
                                 NP
                             </th>
-                            <th scope="col" colspan="2"
+                            <th scope="col" colspan="3"
                                 class="py-2 pb-1.5 px-6 leading-tight text-center border-slate-300 dark:border-slate-500 border-r border-b">
                                 Jml Verif
                             </th>
@@ -60,6 +60,10 @@ produksiPegawai()
                             <th scope="col"
                                 class="py-2 pb-1.5 px-6 leading-tight text-center border-slate-300 dark:border-slate-500 border-r">
                                 (RIM)
+                            </th>
+                            <th scope="col"
+                                class="py-2 pb-1.5 px-6 leading-tight text-center border-slate-300 dark:border-slate-500 border-r">
+                                (PO)
                             </th>
                         </tr>
                     </thead>
@@ -95,10 +99,10 @@ produksiPegawai()
                                 class="leading-5 whitespace-nowrap text-sm px-4 py-1.5 text-green-700 border-r text-end">
                                 <p class="font-semibold">
                                     {{
-                            Number(
-                                produksi.verifikasi
-                            ).toLocaleString()
-                        }}
+                                        Number(
+                                            produksi.verifikasi
+                                        ).toLocaleString()
+                                    }}
                                     <span class="text-slate-600">Lbr</span>
                                 </p>
                             </td>
@@ -106,6 +110,12 @@ produksiPegawai()
                                 class="leading-5 whitespace-nowrap text-sm px-4 py-1.5 text-emerald-700 border-r text-end">
                                 <p class="font-semibold">{{ Math.ceil(Number(produksi.verifikasi) / 500) }}
                                     <span class="text-slate-600">RIM</span>
+                                </p>
+                            </td>
+                            <td
+                                class="leading-5 whitespace-nowrap text-sm px-4 py-1.5 text-emerald-700 border-r text-end">
+                                <p class="font-semibold">{{ produksi.jumlah_po }}
+                                    <span class="text-slate-600">PO</span>
                                 </p>
                             </td>
                             <td
