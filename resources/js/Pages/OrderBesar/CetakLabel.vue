@@ -3,20 +3,11 @@
     <Head title="Cetak Label" />
 
     <!-- Modal for reprinting labels -->
-    <Modal
-        :show="printUlangModal"
-        @close="() => (printUlangModal = !printUlangModal)"
-    >
-        <!-- Form for reprinting labels -->
-        <form
-            @submit.prevent="printUlangLabel"
-            class="bg-white rounded-lg shadow-lg p-6"
-        >
-            <div class="flex flex-col gap-4">
+    <Modal :show="printUlangModal" @close="() => (printUlangModal = !printUlangModal)">
+        <form @submit.prevent="printUlangLabel" class="bg-white rounded-xl shadow-lg p-8">
+            <div class="flex flex-col gap-6">
                 <!-- Modal header -->
-                <h1
-                    class="py-2 text-xl font-bold text-center border-b-2 text-slate-600 border-slate-400"
-                >
+                <h1 class="text-2xl font-bold text-center text-gray-800">
                     Print Ulang / Ganti Data Rim
                 </h1>
 
@@ -25,199 +16,146 @@
                     id="dataRim"
                     name="dataRim"
                     type="text"
-                    class="py-2 mx-4 text-lg font-semibold text-center uppercase border border-slate-400 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-400"
+                    class="text-lg font-semibold text-center uppercase bg-gray-50 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                     v-model="formPrintUlang.dataRim"
                     required
                     disabled
-                    autocomplete="periksa1"
                 />
 
                 <!-- Left/Right rim selection buttons -->
-                <div class="flex justify-center gap-6">
+                <div class="flex justify-center gap-4">
                     <button
                         type="button"
                         @click="dataRimKiri()"
-                        class="flex items-center gap-1 px-6 py-2 font-semibold transition duration-300 ease-in-out rounded-lg shadow bg-sky-500 text-white hover:bg-sky-400"
+                        class="inline-flex items-center px-6 py-3 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-300"
                     >
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke-width="2.5"
-                            stroke="currentColor"
-                            class="w-6 h-6"
-                        >
-                            <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                d="M19.5 12h-15m0 0l6.75 6.75M4.5 12l6.75-6.75"
-                            />
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
                         </svg>
                         KIRI
                     </button>
                     <button
                         type="button"
                         @click="dataRimKanan()"
-                        class="flex items-center gap-1 px-6 py-2 font-semibold transition duration-300 ease-in-out rounded-lg shadow bg-sky-500 text-white hover:bg-sky-400"
+                        class="inline-flex items-center px-6 py-3 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-300"
                     >
                         KANAN
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke-width="2.5"
-                            stroke="currentColor"
-                            class="w-6 h-6"
-                        >
-                            <path
-                                stroke-linecap="round"
-                                stroke-linejoin="round"
-                                d="M4.5 12h15m0 0l-6.75-6.75M19.5 12l-6.75 6.75"
-                            />
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                         </svg>
                     </button>
                 </div>
 
                 <!-- Grid of rim selection buttons -->
-                <div class="flex flex-wrap justify-center gap-4 mt-4">
+                <div class="grid grid-cols-4 gap-3">
                     <template v-for="n in dataPrintUlang" :key="n.no_rim">
-                        <!-- Button for in-progress rims -->
+                        <!-- In Progress -->
                         <button
                             v-if="n.np_users && n.start && !n.finish"
                             type="button"
                             @click="pilihRim(n.no_rim, n.np_users)"
-                            class="min-w-[8ch] px-4 py-2 text-xs bg-yellow-400 text-yellow-900 hover:bg-yellow-300 duration-300 transition ease-in-out rounded drop-shadow"
+                            class="p-3 rounded-lg bg-amber-100 hover:bg-amber-200 transition-colors"
                         >
-                            <div class="flex flex-col">
-                                <span class="font-semibold text-yellow-800">{{
-                                    n.np_users
-                                }}</span>
-                                <span class="font-bold text-green-800">{{
-                                    n.no_rim
-                                }}</span>
+                            <div class="flex flex-col items-center">
+                                <span class="font-medium text-amber-800">{{ n.np_users }}</span>
+                                <span class="font-bold text-green-800">{{ n.no_rim }}</span>
                             </div>
                         </button>
-                        <!-- Button for completed rims -->
+
+                        <!-- Completed -->
                         <button
                             v-else-if="n.np_users && n.start && n.finish"
                             type="button"
                             @click="pilihRim(n.no_rim, n.np_users)"
-                            class="min-w-[8ch] px-4 py-2 text-xs bg-green-500 text-green-900 hover:bg-green-400 duration-300 transition ease-in-out rounded drop-shadow"
+                            class="p-3 rounded-lg bg-emerald-100 hover:bg-emerald-200 transition-colors"
                         >
-                            <div class="flex flex-col">
-                                <span class="font-semibold text-green-800">{{
-                                    n.np_users
-                                }}</span>
-                                <span class="font-bold text-indigo-800">{{
-                                    n.no_rim
-                                }}</span>
+                            <div class="flex flex-col items-center">
+                                <span class="font-medium text-emerald-800">{{ n.np_users }}</span>
+                                <span class="font-bold text-indigo-800">{{ n.no_rim }}</span>
                             </div>
                         </button>
-                        <!-- Button for inschiet (test print) -->
+
+                        <!-- Inschiet -->
                         <button
                             v-else-if="n.no_rim === 999"
                             type="button"
                             @click="pilihRim(n.no_rim, n.np_users)"
-                            class="min-w-[8ch] px-4 py-2 text-xs bg-violet-600 text-white active:bg-violet-700 hover:bg-violet-500 transition ease-in-out duration-200 rounded drop-shadow"
+                            class="p-3 rounded-lg bg-violet-100 hover:bg-violet-200 transition-colors"
                         >
-                            <div class="flex flex-col">
-                                <span class="font-semibold">{{
-                                    n.np_users
-                                }}</span>
-                                <span class="font-bold text-white"
-                                    >Inschiet</span
-                                >
+                            <div class="flex flex-col items-center">
+                                <span class="font-medium text-violet-800">{{ n.np_users }}</span>
+                                <span class="font-bold text-violet-900">Inschiet</span>
                             </div>
                         </button>
-                        <!-- Button for unavailable rims -->
+
+                        <!-- Unavailable -->
                         <button
                             v-else
                             type="button"
-                            class="min-w-[8ch] px-4 py-2 text-xs bg-gray-500 text-gray-200 rounded drop-shadow"
                             disabled
+                            class="p-3 rounded-lg bg-gray-100 cursor-not-allowed"
                         >
-                            <div class="flex flex-col">
-                                <span class="font-semibold">-</span>
-                                <span class="font-bold text-yellow-300">{{
-                                    n.no_rim
-                                }}</span>
+                            <div class="flex flex-col items-center">
+                                <span class="font-medium text-gray-400">-</span>
+                                <span class="font-bold text-gray-500">{{ n.no_rim }}</span>
                             </div>
                         </button>
                     </template>
                 </div>
 
-                <!-- Rim number and operator ID inputs -->
-                <div class="flex justify-center gap-4 mt-4 px-7">
+                <!-- Rim number and operator inputs -->
+                <div class="grid grid-cols-2 gap-6">
                     <div>
-                        <InputLabel
-                            for="noRimPU"
-                            value="Nomor Rim"
-                            class="text-sm font-semibold text-center"
-                        />
+                        <InputLabel for="noRimPU" value="Nomor Rim" class="mb-2" />
                         <template v-if="formPrintUlang.noRim === 999">
                             <TextInput
                                 id="noRimPU"
                                 type="hidden"
-                                name="dataRim"
-                                class="block text-sm text-center bg-slate-300"
-                                disabled
                                 v-model="formPrintUlang.noRim"
                                 required
-                                autocomplete="noRimPU"
                             />
                             <TextInput
-                                id="noRimPU"
                                 type="text"
-                                name="dataRim"
-                                class="block text-sm text-center bg-slate-300"
-                                disabled
                                 value="Inschiet"
-                                required
-                                autocomplete="noRimPU"
+                                class="w-full bg-gray-50"
+                                disabled
                             />
                         </template>
                         <template v-else>
                             <TextInput
                                 id="noRimPU"
                                 type="number"
-                                name="dataRim"
-                                class="block text-sm text-center bg-slate-300"
-                                disabled
                                 v-model="formPrintUlang.noRim"
+                                class="w-full bg-gray-50"
                                 required
-                                autocomplete="noRimPU"
+                                disabled
                             />
                         </template>
                     </div>
 
                     <div>
-                        <InputLabel
-                            for="npPetugasPU"
-                            value="NP Petugas"
-                            class="text-sm font-semibold text-center"
-                        />
+                        <InputLabel for="npPetugasPU" value="NP Petugas" class="mb-2" />
                         <TextInput
                             id="npPetugasPU"
                             type="text"
-                            class="block text-sm text-center uppercase"
                             v-model="formPrintUlang.npPetugas"
+                            class="w-full uppercase"
                             required
-                            autocomplete="npPetugasPU"
                         />
                     </div>
                 </div>
 
                 <!-- Action buttons -->
-                <div class="flex justify-center gap-4 pt-4 px-7">
+                <div class="flex justify-between mt-6">
                     <button
                         type="button"
-                        class="flex items-center gap-1 px-6 py-2 mr-auto font-semibold text-red-600 underline transition duration-300 ease-in-out border border-red-600 rounded-lg shadow bg-red-100 hover:bg-red-200"
+                        class="px-6 py-2.5 text-red-600 bg-red-50 hover:bg-red-100 rounded-lg transition-colors"
                     >
                         Hapus
                     </button>
                     <button
                         type="submit"
-                        class="flex items-center gap-1 px-6 py-2 font-semibold transition duration-300 ease-in-out rounded-lg shadow bg-sky-500 text-white hover:bg-sky-400"
+                        class="px-6 py-2.5 text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors"
                     >
                         Print
                     </button>
@@ -228,264 +166,184 @@
 
     <!-- Main layout -->
     <AuthenticatedLayout>
-        <div class="flex flex-col justify-center py-8">
-            <!-- Main form -->
-            <form @submit.prevent="submit">
-                <div
-                    class="flex flex-col justify-center gap-6 mx-auto px-8 max-w-2xl"
-                >
-                    <!-- Team selection -->
-                    <div class="mx-auto w-full">
-                        <InputLabel
-                            for="team"
-                            value="Team"
-                            class="text-2xl font-extrabold text-center"
-                        />
-                        <select
-                            id="team"
-                            ref="team"
-                            v-model="form.team"
-                            class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block px-10 py-2 mt-2 text-lg w-full drop-shadow flex-grow"
-                        >
-                            <option
-                                v-for="team in props.listTeam"
-                                :key="team.id"
-                                :value="team.id"
-                            >
-                                {{ team.workstation }}
-                            </option>
-                        </select>
-                    </div>
+        <div class="max-w-4xl mx-auto py-12 px-4">
+            <form @submit.prevent="submit" class="space-y-8">
+                <!-- Team selection -->
+                <div>
+                    <InputLabel for="team" value="Team" class="text-xl font-bold mb-3" />
+                    <select
+                        id="team"
+                        ref="team"
+                        v-model="form.team"
+                        class="w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                    >
+                        <option v-for="team in props.listTeam" :key="team.id" :value="team.id">
+                            {{ team.workstation }}
+                        </option>
+                    </select>
+                </div>
 
-                    <!-- PO, OBC and Series inputs -->
-                    <div class="flex justify-between gap-4 w-full">
-                        <div class="flex-grow">
-                            <InputLabel
-                                for="po"
-                                value="Nomor PO"
-                                class="text-2xl font-extrabold text-center"
-                            />
-                            <TextInput
-                                id="po"
-                                ref="po"
-                                v-model="form.po"
-                                type="number"
-                                class="block w-full px-4 py-2 mt-2 text-lg text-center shadow bg-slate-200/80 drop-shadow"
-                                autocomplete="po"
-                                disabled
-                            />
-                        </div>
-
-                        <div class="flex-grow">
-                            <InputLabel
-                                for="obc"
-                                value="Nomor OBC"
-                                class="text-2xl font-extrabold text-center"
-                            />
-                            <TextInput
-                                id="obc"
-                                ref="obc"
-                                v-model="form.obc"
-                                type="text"
-                                class="block w-full px-4 py-2 mt-2 text-lg text-center shadow bg-slate-200/80 drop-shadow"
-                                autocomplete="obc"
-                                disabled
-                            />
-                        </div>
-
-                        <div class="flex-grow">
-                            <InputLabel
-                                for="seri"
-                                value="Seri"
-                                class="text-2xl font-extrabold text-center"
-                            />
-                            <TextInput
-                                id="seri"
-                                ref="seri"
-                                v-model="form.seri"
-                                type="number"
-                                class="block w-full px-4 py-2 mt-2 text-lg text-center shadow bg-slate-200/80 drop-shadow"
-                                autocomplete="seri"
-                                disabled
-                            />
-                        </div>
-                    </div>
-
-                    <!-- Rim number, cut sheet and plate code inputs -->
-                    <div class="flex justify-between gap-6 mx-auto w-full">
-                        <div class="flex-grow">
-                            <InputLabel
-                                for="no_rim"
-                                value="Nomor Rim"
-                                class="text-2xl font-extrabold text-center"
-                            />
-                            <template v-if="form.no_rim !== 999">
-                                <TextInput
-                                    id="no_rim"
-                                    ref="no_rim"
-                                    v-model="form.no_rim"
-                                    type="number"
-                                    class="block bg-slate-200/80 drop-shadow shadow w-full px-4 py-2 mt-2 text-lg text-center font-bold"
-                                    autocomplete="no_rim"
-                                    min="1"
-                                    disabled
-                                />
-                            </template>
-                            <template v-else>
-                                <TextInput
-                                    id="no_rim"
-                                    ref="no_rim"
-                                    v-model="form.no_rim"
-                                    type="hidden"
-                                    class="block bg-slate-200/80 drop-shadow shadow w-full px-4 py-2 mt-2 text-lg text-center font-bold"
-                                    autocomplete="no_rim"
-                                    min="1"
-                                    disabled
-                                />
-                                <TextInput
-                                    type="text"
-                                    value="Inschiet"
-                                    class="block bg-slate-200/80 drop-shadow shadow w-full px-4 py-2 mt-2 text-lg text-center font-bold"
-                                    autocomplete="no_rim"
-                                    min="1"
-                                    disabled
-                                />
-                            </template>
-                        </div>
-
-                        <div class="flex-grow">
-                            <InputLabel
-                                for="lbr_ptg"
-                                value="Lembar Potong"
-                                class="text-2xl font-extrabold text-center"
-                            />
-                            <TextInput
-                                id="lbr_ptg"
-                                ref="lbr_ptg"
-                                v-model="form.lbr_ptg"
-                                type="text"
-                                class="block bg-slate-200/80 drop-shadow shadow w-full px-4 py-2 mt-2 text-lg text-center font-bold"
-                                autocomplete="lbr_ptg"
-                                disabled
-                            />
-                        </div>
-
-                        <div class="flex-grow">
-                            <InputLabel
-                                for="noPlat"
-                                value="Kode Plat"
-                                class="text-2xl font-extrabold text-center"
-                            />
-                            <TextInput
-                                id="noPlat"
-                                ref="noPlat"
-                                v-model="form.noPlat"
-                                type="number"
-                                class="block w-full px-4 py-2 mt-2 text-lg text-center shadow bg-slate-200/80 drop-shadow font-bold"
-                                autocomplete="seri"
-                                disabled
-                            />
-                        </div>
-                    </div>
-
-                    <!-- Operator ID input -->
+                <!-- Order details grid -->
+                <div class="grid grid-cols-3 gap-6">
+                    <!-- PO Number -->
                     <div>
-                        <InputLabel
-                            for="periksa1"
-                            value="Silahkan Scan NP mu"
-                            class="text-2xl font-semibold text-center"
-                        />
+                        <InputLabel for="po" value="Nomor PO" class="text-xl font-bold mb-3" />
                         <TextInput
-                            id="periksa1"
-                            type="text"
-                            class="block w-full mt-4 text-center uppercase"
-                            v-model="form.periksa1"
-                            required
-                            autofocus
-                            autocomplete="periksa1"
+                            id="po"
+                            ref="po"
+                            v-model="form.po"
+                            type="number"
+                            class="w-full bg-gray-50"
+                            disabled
                         />
-                        <InputError class="mt-2" />
+                    </div>
+
+                    <!-- OBC Number -->
+                    <div>
+                        <InputLabel for="obc" value="Nomor OBC" class="text-xl font-bold mb-3" />
+                        <TextInput
+                            id="obc"
+                            ref="obc"
+                            v-model="form.obc"
+                            type="text"
+                            class="w-full bg-gray-50"
+                            disabled
+                        />
+                    </div>
+
+                    <!-- Series -->
+                    <div>
+                        <InputLabel for="seri" value="Seri" class="text-xl font-bold mb-3" />
+                        <TextInput
+                            id="seri"
+                            ref="seri"
+                            v-model="form.seri"
+                            type="number"
+                            class="w-full bg-gray-50"
+                            disabled
+                        />
                     </div>
                 </div>
 
+                <!-- Additional details grid -->
+                <div class="grid grid-cols-3 gap-6">
+                    <!-- Rim Number -->
+                    <div>
+                        <InputLabel for="no_rim" value="Nomor Rim" class="text-xl font-bold mb-3" />
+                        <template v-if="form.no_rim !== 999">
+                            <TextInput
+                                id="no_rim"
+                                ref="no_rim"
+                                v-model="form.no_rim"
+                                type="number"
+                                class="w-full bg-gray-50 font-bold"
+                                disabled
+                            />
+                        </template>
+                        <template v-else>
+                            <TextInput
+                                type="text"
+                                value="Inschiet"
+                                class="w-full bg-gray-50 font-bold"
+                                disabled
+                            />
+                        </template>
+                    </div>
+
+                    <!-- Cut Sheet -->
+                    <div>
+                        <InputLabel for="lbr_ptg" value="Lembar Potong" class="text-xl font-bold mb-3" />
+                        <TextInput
+                            id="lbr_ptg"
+                            ref="lbr_ptg"
+                            v-model="form.lbr_ptg"
+                            type="text"
+                            class="w-full bg-gray-50 font-bold"
+                            disabled
+                        />
+                    </div>
+
+                    <!-- Plate Code -->
+                    <div>
+                        <InputLabel for="noPlat" value="Kode Plat" class="text-xl font-bold mb-3" />
+                        <TextInput
+                            id="noPlat"
+                            ref="noPlat"
+                            v-model="form.noPlat"
+                            type="number"
+                            class="w-full bg-gray-50 font-bold"
+                            disabled
+                        />
+                    </div>
+                </div>
+
+                <!-- Operator ID -->
+                <div>
+                    <InputLabel for="periksa1" value="Silahkan Scan NP mu" class="text-xl font-bold mb-3" />
+                    <TextInput
+                        id="periksa1"
+                        type="text"
+                        v-model="form.periksa1"
+                        class="w-full uppercase"
+                        required
+                        autofocus
+                    />
+                    <InputError class="mt-2" />
+                </div>
+
                 <!-- Action buttons -->
-                <div class="flex justify-center gap-6 mx-auto w-fit">
+                <div class="flex justify-center gap-4">
                     <button
                         type="button"
                         @click="form.periksa1 = null"
-                        class="flex justify-center px-4 py-4 mx-auto mt-8 text-lg font-bold shadow w-fit bg-gradient-to-r from-violet-400 to-violet-500 rounded-xl text-start hover:brightness-90 drop-shadow shadow-violet-500/20 text-white"
+                        class="px-6 py-3 text-white bg-violet-600 hover:bg-violet-700 rounded-lg transition-colors"
                     >
                         Clear
                     </button>
                     <button
                         type="submit"
-                        class="flex justify-center px-4 py-4 mx-auto mt-8 shadow w-fit bg-gradient-to-r from-green-400 to-green-500 rounded-xl text-start hover:brightness-90 drop-shadow shadow-green-500/20"
+                        class="px-6 py-3 text-white bg-green-600 hover:bg-green-700 rounded-lg transition-colors"
                     >
-                        <div class="text-lg font-bold text-white">Generate</div>
+                        Generate
                     </button>
                     <button
                         type="button"
-                        @click="
-                            [getDataRim(), (printUlangModal = !printUlangModal)]
-                        "
-                        class="flex justify-center px-4 py-4 mx-auto mt-8 shadow w-fit bg-gradient-to-r from-green-400 to-green-500 rounded-xl text-start hover:brightness-90 drop-shadow shadow-green-500/20"
+                        @click="[getDataRim(), (printUlangModal = !printUlangModal)]"
+                        class="px-6 py-3 text-white bg-green-600 hover:bg-green-700 rounded-lg transition-colors"
                     >
-                        <div class="text-lg font-bold text-white">
-                            Print Ulang
-                        </div>
+                        Print Ulang
                     </button>
                 </div>
+
                 <button
                     type="button"
                     @click="finish_order"
-                    class="flex justify-center px-4 py-4 mx-auto mt-8 shadow max-w-sm w-full bg-gradient-to-r from-cyan-400 to-cyan-500 rounded-xl text-start hover:brightness-90 drop-shadow shadow-green-500/20"
+                    class="w-full px-6 py-3 text-white bg-cyan-600 hover:bg-cyan-700 rounded-lg transition-colors"
                 >
-                    <div class="text-lg font-bold text-white">
-                        Selesaikan Order
-                    </div>
+                    Selesaikan Order
                 </button>
             </form>
 
-            <!-- Navigation buttons -->
-            <div class="flex gap-6 mx-auto mt-10">
+            <!-- Navigation -->
+            <div class="flex justify-center gap-4 mt-12">
                 <a
                     href="#"
                     onclick="history.back()"
-                    class="text-xl font-extrabold text-white w-fit py-3 px-6 bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl text-start drop-shadow shadow flex items-center gap-1.5"
+                    class="inline-flex items-center px-6 py-3 text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors"
                 >
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke-width="2.5"
-                        stroke="currentColor"
-                        class="w-6 h-6"
-                    >
-                        <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            d="M19.5 12h-15m0 0l6.75 6.75M4.5 12l6.75-6.75"
-                        />
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
                     </svg>
                     Back
                 </a>
                 <Link
                     :href="route('dashboard')"
-                    class="text-xl font-extrabold text-white w-fit py-3 px-6 bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl text-start drop-shadow shadow flex items-center gap-1.5"
+                    class="inline-flex items-center px-6 py-3 text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors"
                 >
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 24 24"
-                        fill="currentColor"
-                        class="w-6 h-6"
-                    >
-                        <path
-                            d="M11.47 3.84a.75.75 0 011.06 0l8.69 8.69a.75.75 0 101.06-1.06l-8.689-8.69a2.25 2.25 0 00-3.182 0l-8.69 8.69a.75.75 0 001.061 1.06l8.69-8.69z"
-                        />
-                        <path
-                            d="M12 5.432l8.159 8.159c.03.03.06.058.091.086v6.198c0 1.035-.84 1.875-1.875 1.875H15a.75.75 0 01-.75-.75v-4.5a.75.75 0 00-.75-.75h-3a.75.75 0 00-.75.75V21a.75.75 0 01-.75.75H5.625a1.875 1.875 0 01-1.875-1.875v-6.198a2.29 2.29 0 00.091-.086L12 5.43z"
-                        />
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
                     </svg>
+                    Home
                 </Link>
             </div>
         </div>
