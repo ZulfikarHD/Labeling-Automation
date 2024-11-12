@@ -1,21 +1,26 @@
 <template>
+    <!-- Page title -->
     <Head title="Cetak Label" />
-    <!-- Modal for Reprinting -->
+
+    <!-- Modal for reprinting labels -->
     <Modal
         :show="printUlangModal"
         @close="() => (printUlangModal = !printUlangModal)"
     >
+        <!-- Form for reprinting labels -->
         <form
             @submit.prevent="printUlangLabel"
             class="bg-white rounded-lg shadow-lg p-6"
         >
             <div class="flex flex-col gap-4">
+                <!-- Modal header -->
                 <h1
                     class="py-2 text-xl font-bold text-center border-b-2 text-slate-600 border-slate-400"
                 >
                     Print Ulang / Ganti Data Rim
                 </h1>
 
+                <!-- Input for rim data -->
                 <TextInput
                     id="dataRim"
                     name="dataRim"
@@ -27,6 +32,7 @@
                     autocomplete="periksa1"
                 />
 
+                <!-- Left/Right rim selection buttons -->
                 <div class="flex justify-center gap-6">
                     <button
                         type="button"
@@ -72,8 +78,10 @@
                     </button>
                 </div>
 
+                <!-- Grid of rim selection buttons -->
                 <div class="flex flex-wrap justify-center gap-4 mt-4">
                     <template v-for="n in dataPrintUlang" :key="n.no_rim">
+                        <!-- Button for in-progress rims -->
                         <button
                             v-if="n.np_users && n.start && !n.finish"
                             type="button"
@@ -89,6 +97,7 @@
                                 }}</span>
                             </div>
                         </button>
+                        <!-- Button for completed rims -->
                         <button
                             v-else-if="n.np_users && n.start && n.finish"
                             type="button"
@@ -104,6 +113,7 @@
                                 }}</span>
                             </div>
                         </button>
+                        <!-- Button for inschiet (test print) -->
                         <button
                             v-else-if="n.no_rim === 999"
                             type="button"
@@ -119,6 +129,7 @@
                                 >
                             </div>
                         </button>
+                        <!-- Button for unavailable rims -->
                         <button
                             v-else
                             type="button"
@@ -135,6 +146,7 @@
                     </template>
                 </div>
 
+                <!-- Rim number and operator ID inputs -->
                 <div class="flex justify-center gap-4 mt-4 px-7">
                     <div>
                         <InputLabel
@@ -195,6 +207,7 @@
                     </div>
                 </div>
 
+                <!-- Action buttons -->
                 <div class="flex justify-center gap-4 pt-4 px-7">
                     <button
                         type="button"
@@ -213,12 +226,15 @@
         </form>
     </Modal>
 
+    <!-- Main layout -->
     <AuthenticatedLayout>
         <div class="flex flex-col justify-center py-8">
+            <!-- Main form -->
             <form @submit.prevent="submit">
                 <div
                     class="flex flex-col justify-center gap-6 mx-auto px-8 max-w-2xl"
                 >
+                    <!-- Team selection -->
                     <div class="mx-auto w-full">
                         <InputLabel
                             for="team"
@@ -241,6 +257,7 @@
                         </select>
                     </div>
 
+                    <!-- PO, OBC and Series inputs -->
                     <div class="flex justify-between gap-4 w-full">
                         <div class="flex-grow">
                             <InputLabel
@@ -294,6 +311,7 @@
                         </div>
                     </div>
 
+                    <!-- Rim number, cut sheet and plate code inputs -->
                     <div class="flex justify-between gap-6 mx-auto w-full">
                         <div class="flex-grow">
                             <InputLabel
@@ -370,6 +388,7 @@
                         </div>
                     </div>
 
+                    <!-- Operator ID input -->
                     <div>
                         <InputLabel
                             for="periksa1"
@@ -389,6 +408,7 @@
                     </div>
                 </div>
 
+                <!-- Action buttons -->
                 <div class="flex justify-center gap-6 mx-auto w-fit">
                     <button
                         type="button"
@@ -425,6 +445,8 @@
                     </div>
                 </button>
             </form>
+
+            <!-- Navigation buttons -->
             <div class="flex gap-6 mx-auto mt-10">
                 <a
                     href="#"
@@ -484,28 +506,28 @@ import { fullPageLabel } from "@/Components/PrintPages/PrintLabel";
 import { Link, useForm, router, Head } from "@inertiajs/vue3";
 import axios from "axios";
 
+// Props definition
 const props = defineProps({
-    product: Object,
-    listTeam: Object,
-    crntTeam: Number,
-    noRim: Number,
-    potongan: String,
-    date: String,
+    product: Object,        // Product details
+    listTeam: Object,      // List of available teams
+    crntTeam: Number,      // Current team ID
+    noRim: Number,         // Rim number
+    potongan: String,      // Cut sheet info
+    date: String,          // Current date
 });
 
+// Reactive refs for modal states
 const showModal = ref(false);
 const printUlangModal = ref(false);
 const dataPrintUlang = ref();
 
+// Form for main data entry
 const form = useForm({
     id: props.product.id,
     po: props.product.no_po,
     obc: props.product.no_obc,
     team: props.crntTeam,
-    seri:
-        props.product.no_obc.substr(4, 1) > 3
-            ? 1
-            : props.product.no_obc.substr(4, 1),
+    seri: props.product.no_obc.substr(4, 1) > 3 ? 1 : props.product.no_obc.substr(4, 1),
     jml_rim: 1,
     lbr_ptg: props.potongan,
     no_rim: props.noRim,
@@ -514,6 +536,7 @@ const form = useForm({
     noPlat: "",
 });
 
+// Form for reprint functionality
 const formPrintUlang = reactive({
     dataRim: "Kiri",
     noRim: "",
@@ -523,8 +546,10 @@ const formPrintUlang = reactive({
     team: props.crntTeam,
 });
 
+// Color coding for OBC series
 const colorObc = form.seri == 3 ? "#b91c1c" : "#1d4ed8";
 
+// Functions for handling rim data
 const dataRimKanan = async () => {
     formPrintUlang.dataRim = "Kanan";
     getDataRim();
@@ -535,6 +560,7 @@ const dataRimKiri = async () => {
     getDataRim();
 };
 
+// Fetch rim data from API
 const getDataRim = () => {
     axios
         .post("/api/order-besar/cetak-label/edit", formPrintUlang)
@@ -543,13 +569,16 @@ const getDataRim = () => {
         });
 };
 
+// Handle rim selection
 const pilihRim = (noRim, np) => {
     formPrintUlang.noRim = noRim;
     formPrintUlang.npPetugas = np;
 };
 
+// Print frame reference
 const printFrame = ref(null);
 
+// Print functionality without dialog
 const printWithoutDialog = (content) => {
     const iframe = printFrame.value;
     const doc = iframe.contentWindow.document;
@@ -565,13 +594,13 @@ const printWithoutDialog = (content) => {
         ${content}
     `);
 
-    // doc.close();
     iframe.contentWindow.focus();
     setTimeout(() => {
         iframe.contentWindow.print();
     }, 200);
 };
 
+// Handle reprint label submission
 const printUlangLabel = () => {
     const printLabel = fullPageLabel(
         formPrintUlang.obc,
@@ -592,6 +621,7 @@ const printUlangLabel = () => {
     }, 500);
 };
 
+// Handle main form submission
 const submit = () => {
     const printLabel = fullPageLabel(
         form.obc,
@@ -618,11 +648,13 @@ const submit = () => {
     }, 500);
 };
 
+// Handle order completion
 const finish_order = () => {
     axios.put(`/api/production-order-finish/${form.po}`);
     router.get("/order-besar/po-siap-verif");
 };
 
+// Fetch plate number from external API
 const fetchNoPlat = async () => {
     try {
         const response = await axios.get(
@@ -634,5 +666,6 @@ const fetchNoPlat = async () => {
     }
 };
 
+// Initial plate number fetch
 fetchNoPlat();
 </script>

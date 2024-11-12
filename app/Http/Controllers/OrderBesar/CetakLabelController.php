@@ -133,6 +133,28 @@ class CetakLabelController extends Controller
             })
             ->orderBy('no_rim');
 
+        // Check for inschiet (no_rim = 999) with null start first
+        $inschietKiri = (clone $baseQuery)
+            ->where('potongan', self::POTONGAN_KIRI)
+            ->where('no_rim', self::INSCHIET_RIM)
+            ->whereNull('start')
+            ->first();
+
+        if ($inschietKiri) {
+            return ['noRim' => self::INSCHIET_RIM, 'potongan' => self::POTONGAN_KIRI];
+        }
+
+        $inschietKanan = (clone $baseQuery)
+            ->where('potongan', self::POTONGAN_KANAN)
+            ->where('no_rim', self::INSCHIET_RIM)
+            ->whereNull('start')
+            ->first();
+
+        if ($inschietKanan) {
+            return ['noRim' => self::INSCHIET_RIM, 'potongan' => self::POTONGAN_KANAN];
+        }
+
+        // Get next available rims
         $nextKiri = (clone $baseQuery)
             ->where('potongan', self::POTONGAN_KIRI)
             ->first();
@@ -140,15 +162,6 @@ class CetakLabelController extends Controller
         $nextKanan = (clone $baseQuery)
             ->where('potongan', self::POTONGAN_KANAN)
             ->first();
-
-        // Check inschiet labels first
-        if ($nextKiri && $nextKiri->no_rim === self::INSCHIET_RIM) {
-            return ['noRim' => self::INSCHIET_RIM, 'potongan' => self::POTONGAN_KIRI];
-        }
-
-        if ($nextKanan && $nextKanan->no_rim === self::INSCHIET_RIM) {
-            return ['noRim' => self::INSCHIET_RIM, 'potongan' => self::POTONGAN_KANAN];
-        }
 
         // Handle no available rims
         if (!$nextKiri && !$nextKanan) {
