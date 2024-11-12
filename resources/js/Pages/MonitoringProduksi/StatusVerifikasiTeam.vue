@@ -3,193 +3,214 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import TextInput from '@/Components/TextInput.vue';
 import NavigateBackButton from '@/Components/NavigateBackButton.vue'
-import { Head, Link,useForm } from '@inertiajs/vue3';
+import { Head, Link, useForm } from '@inertiajs/vue3';
+import { ArrowRight, CheckCircle2, Clock, AlertCircle, FileText, Layers, Hash } from 'lucide-vue-next';
 
 const props = defineProps({
     spec: Object,
-    dataRim : Object,
+    dataRim: Object,
     team: Object,
 });
 
 const form = useForm({
     team: props.team.workstation,
-    po  : props.spec.no_po,
-    obc : props.spec.no_obc,
+    po: props.spec.no_po,
+    obc: props.spec.no_obc,
     seri: props.spec.no_obc.substr(4,1),
 });
 
 </script>
+
 <template>
     <Head title="Monitor Produksi" />
     <AuthenticatedLayout>
-        <div class="py-8">
-            <!-- Detail Produk -->
-            <!-- Team -->
-            <div class="mx-auto mt-2 w-fit">
-                <InputLabel for="team" value="Tim" class="text-2xl font-extrabold text-center uppercase"/>
+        <div class="min-h-screen py-12 bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+            <div class="container mx-auto px-4 max-w-7xl">
+                <!-- Header Section -->
+                <div class="bg-white/90 backdrop-blur-xl rounded-2xl shadow-lg p-8 mb-8 border border-slate-100">
+                    <div class="mb-6">
+                        <h1 class="text-4xl font-bold text-slate-900 text-center tracking-tight">
+                            Tim {{ form.team }}
+                        </h1>
+                        <p class="mt-2 text-slate-600 text-center">
+                            Status Verifikasi Produksi
+                        </p>
+                    </div>
 
-                <TextInput
-                    id="team"
-                    ref="team"
-                    v-model="form.team"
-                    type="text"
-                    class="block w-full px-4 py-2 mt-2 text-2xl text-center bg-slate-300 rounded-md shadow-md"
-                    autocomplete="team"
-                    disabled
-                />
-            </div>
-            <div class="flex flex-col md:flex-row justify-between gap-8 mx-auto mt-10 w-fit">
-                <!-- PO -->
-                <div class="w-fit">
-                    <InputLabel for="po" value="PO" class="text-2xl font-extrabold text-center uppercase"/>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        <!-- PO -->
+                        <div class="bg-slate-50/50 rounded-xl p-6">
+                            <div class="flex items-center justify-center gap-3 mb-3">
+                                <FileText class="w-5 h-5 text-blue-600" />
+                                <InputLabel for="po" value="Nomor PO" class="text-lg font-semibold text-slate-700"/>
+                            </div>
+                            <TextInput
+                                id="po"
+                                ref="po"
+                                v-model="form.po"
+                                type="number"
+                                class="text-xl text-center bg-white border-slate-200 rounded-xl shadow-sm"
+                                autocomplete="po"
+                                disabled
+                            />
+                        </div>
 
-                    <TextInput
-                        id="po"
-                        ref="po"
-                        v-model="form.po"
-                        type="number"
-                        class="block w-full px-4 py-2 mt-2 text-2xl text-center bg-slate-300 rounded-md shadow-md"
-                        autocomplete="po"
-                        disabled
-                    />
+                        <!-- OBC -->
+                        <div class="bg-slate-50/50 rounded-xl p-6">
+                            <div class="flex items-center justify-center gap-3 mb-3">
+                                <Layers class="w-5 h-5 text-indigo-600" />
+                                <InputLabel for="obc" value="Nomor OBC" class="text-lg font-semibold text-slate-700"/>
+                            </div>
+                            <TextInput
+                                id="obc"
+                                ref="obc"
+                                v-model="form.obc"
+                                type="text"
+                                class="text-xl text-center bg-white border-slate-200 rounded-xl shadow-sm"
+                                autocomplete="obc"
+                                disabled
+                            />
+                        </div>
+
+                        <!-- Seri -->
+                        <div class="bg-slate-50/50 rounded-xl p-6">
+                            <div class="flex items-center justify-center gap-3 mb-3">
+                                <Hash class="w-5 h-5 text-emerald-600" />
+                                <InputLabel for="seri" value="Nomor Seri" class="text-lg font-semibold text-slate-700"/>
+                            </div>
+                            <TextInput
+                                id="seri"
+                                ref="seri"
+                                v-model="form.seri"
+                                type="number"
+                                class="text-xl text-center bg-white border-slate-200 rounded-xl shadow-sm"
+                                autocomplete="seri"
+                                disabled
+                            />
+                        </div>
+                    </div>
                 </div>
 
-                <!-- OBC -->
-                <div class="w-fit">
-                    <InputLabel for="obc" value="OBC" class="text-2xl font-extrabold text-center uppercase"/>
-
-                    <TextInput
-                        id="obc"
-                        ref="obc"
-                        v-model="form.obc"
-                        type="text"
-                        class="block w-full px-4 py-2 mt-2 text-2xl text-center bg-slate-300 rounded-md shadow-md"
-                        autocomplete="obc"
-                        disabled
-                    />
-                </div>
-
-                <!-- Seri -->
-                <div class="w-fit">
-                    <InputLabel for="seri" value="Seri" class="text-2xl font-extrabold text-center uppercase"/>
-
-                    <TextInput
-                        id="seri"
-                        ref="seri"
-                        v-model="form.seri"
-                        type="number"
-                        class="block w-full px-4 py-2 mt-2 text-2xl text-center bg-slate-300 rounded-md shadow-md"
-                        autocomplete="seri"
-                        disabled
-                    />
-                </div>
-            </div>
-
-            <!-- Loading State -->
-            <div class="mx-auto mt-6 w-fit">
-                <div class="flex items-start justify-between w-full gap-12">
-                    <!-- Row Lembar Kiri -->
-                    <div class="flex flex-col justify-center gap-4 w-fit">
-                        <!-- Header Lembar Kiri -->
-                        <h3 class="text-3xl font-medium text-center text-slate-700">
-                            Lembar Kiri
-                        </h3>
-
-                        <!-- State Kiri -->
-                        <div class="grid grid-cols-6 gap-2">
-                            <template v-for="status in dataRim">
-                                <template v-if="status.potongan == 'Kiri'">
-                                    <!-- V-if Sudah Di Periksa -->
-                                    <div v-if="status.finish != null" class="px-2 py-1 rounded-md shadow bg-gradient-to-br from-green-300 to-green-400 drop-shadow shadow-green-400/30">
-                                        <div class="flex flex-col justify-center w-[4ch]">
-                                            <span class="text-xs font-extrabold leading-5 text-center text-green-950">{{ status.np_users }}</span>
-                                            <span class="text-xs font-extrabold leading-5 text-center text-indigo-700">{{ status.no_rim }}</span>
+                <!-- Status Section -->
+                <div class="bg-white/90 backdrop-blur-xl rounded-2xl shadow-lg p-8 border border-slate-100">
+                    <div class="flex flex-col lg:flex-row justify-between gap-8">
+                        <!-- Lembar Kiri -->
+                        <div class="flex-1">
+                            <h3 class="text-2xl font-bold text-slate-800 text-center mb-6">
+                                Lembar Kiri
+                            </h3>
+                            <div class="grid grid-cols-4 sm:grid-cols-6 gap-4">
+                                <template v-for="status in dataRim">
+                                    <template v-if="status.potongan == 'Kiri'">
+                                        <!-- Selesai -->
+                                        <div v-if="status.finish != null"
+                                            class="bg-emerald-50 border border-emerald-200 rounded-xl p-3 transition-all hover:shadow-md hover:scale-105">
+                                            <div class="flex flex-col items-center gap-1">
+                                                <span class="text-sm font-bold text-emerald-700">{{ status.np_users }}</span>
+                                                <span class="text-sm font-medium text-indigo-600">{{ status.no_rim }}</span>
+                                            </div>
                                         </div>
-                                    </div>
 
-                                    <!-- V-if Sedang Di Periksa -->
-                                    <div v-else-if="status.start != null && status.finish == null" class="px-2 py-1 rounded-md shadow bg-gradient-to-br from-yellow-300 to-yellow-400 drop-shadow shadow-yellow-400/30">
-                                        <div class="flex flex-col justify-center w-[4ch]">
-                                            <span class="text-xs font-extrabold leading-5 text-center text-green-950">{{ status.np_users }}</span>
-                                            <span class="text-xs font-extrabold leading-5 text-center text-indigo-700">{{ status.no_rim }}</span>
+                                        <!-- Proses -->
+                                        <div v-else-if="status.start != null && status.finish == null"
+                                            class="bg-amber-50 border border-amber-200 rounded-xl p-3 transition-all hover:shadow-md hover:scale-105">
+                                            <div class="flex flex-col items-center gap-1">
+                                                <span class="text-sm font-bold text-amber-700">{{ status.np_users }}</span>
+                                                <span class="text-sm font-medium text-indigo-600">{{ status.no_rim }}</span>
+                                            </div>
                                         </div>
-                                    </div>
 
-                                    <!-- V-if Belum Periksa -->
-                                    <div v-else class="px-2 py-1 rounded-md shadow bg-gradient-to-br from-slate-300 to-slate-400 drop-shadow shadow-slate-400/30">
-                                        <div class="flex flex-col justify-center w-[4ch]">
-                                            <span class="text-xs font-extrabold leading-5 text-center text-green-950">-</span>
-                                            <span class="text-xs font-extrabold leading-5 text-center text-indigo-700">{{ status.no_rim }}</span>
+                                        <!-- Belum -->
+                                        <div v-else
+                                            class="bg-slate-50 border border-slate-200 rounded-xl p-3 transition-all hover:shadow-md hover:scale-105">
+                                            <div class="flex flex-col items-center gap-1">
+                                                <span class="text-sm font-bold text-slate-400">-</span>
+                                                <span class="text-sm font-medium text-indigo-600">{{ status.no_rim }}</span>
+                                            </div>
                                         </div>
-                                    </div>
+                                    </template>
                                 </template>
-                            </template>
+                            </div>
                         </div>
-                    </div>
 
-                    <!-- Keterangan -->
-                    <div class="flex flex-col justify-center gap-4 mt-16 w-fit">
-                        <div class="flex items-center gap-2">
-                            <span class="px-6 py-2 rounded-md shadow bg-gradient-to-br from-green-300 to-green-400 drop-shadow shadow-green-400/30"></span>
-                            <span class="font-medium text-slate-600">Selesai Verif</span>
+                        <!-- Legend -->
+                        <div class="flex flex-row lg:flex-col justify-center gap-6 bg-slate-50/50 p-6 rounded-xl">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center justify-center shadow-sm">
+                                    <CheckCircle2 class="w-6 h-6 text-emerald-600" />
+                                </div>
+                                <span class="text-sm font-medium text-slate-700">Selesai Verifikasi</span>
+                            </div>
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 rounded-xl bg-amber-50 border border-amber-200 flex items-center justify-center shadow-sm">
+                                    <Clock class="w-6 h-6 text-amber-600" />
+                                </div>
+                                <span class="text-sm font-medium text-slate-700">Proses Verifikasi</span>
+                            </div>
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-center shadow-sm">
+                                    <AlertCircle class="w-6 h-6 text-slate-400" />
+                                </div>
+                                <span class="text-sm font-medium text-slate-700">Belum Verifikasi</span>
+                            </div>
                         </div>
-                        <div class="flex items-center gap-2">
-                            <span class="px-6 py-2 rounded-md shadow bg-gradient-to-br from-yellow-300 to-yellow-400 drop-shadow shadow-yellow-400/30"></span>
-                            <span class="font-medium text-slate-600">Proses Verif</span>
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <span class="px-6 py-2 rounded-md shadow bg-gradient-to-br from-slate-300 to-slate-400 drop-shadow shadow-slate-400/30"></span>
-                            <span class="font-medium text-slate-600">Belum Verif</span>
-                        </div>
-                    </div>
 
-                    <!-- Row Lembar Kanan -->
-                    <div class="flex flex-col justify-center gap-4 w-fit">
-                        <!-- Header Lembar Kanan -->
-                        <h3 class="text-3xl font-medium text-center text-slate-700">
-                            Lembar Kanan
-                        </h3>
-
-                        <!-- State Kanan -->
-                        <div class="grid grid-cols-6 gap-2">
-                            <template v-for="status in dataRim">
-                                <template v-if="status.potongan == 'Kanan'">
-                                    <!-- V-if Sudah Di Periksa -->
-                                    <div v-if="status.finish != null" class="px-2 py-1 rounded-md shadow bg-gradient-to-br from-green-300 to-green-400 drop-shadow shadow-green-400/30">
-                                        <div class="flex flex-col justify-center w-[4ch]">
-                                            <span class="text-xs font-extrabold leading-5 text-center text-green-950">{{ status.np_users }}</span>
-                                            <span class="text-xs font-extrabold leading-5 text-center text-indigo-700">{{ status.no_rim }}</span>
+                        <!-- Lembar Kanan -->
+                        <div class="flex-1">
+                            <h3 class="text-2xl font-bold text-slate-800 text-center mb-6">
+                                Lembar Kanan
+                            </h3>
+                            <div class="grid grid-cols-4 sm:grid-cols-6 gap-4">
+                                <template v-for="status in dataRim">
+                                    <template v-if="status.potongan == 'Kanan'">
+                                        <!-- Selesai -->
+                                        <div v-if="status.finish != null"
+                                            class="bg-emerald-50 border border-emerald-200 rounded-xl p-3 transition-all hover:shadow-md hover:scale-105">
+                                            <div class="flex flex-col items-center gap-1">
+                                                <span class="text-sm font-bold text-emerald-700">{{ status.np_users }}</span>
+                                                <span class="text-sm font-medium text-indigo-600">{{ status.no_rim }}</span>
+                                            </div>
                                         </div>
-                                    </div>
 
-                                    <!-- V-if Sedang Di Periksa -->
-                                    <div v-else-if="status.start != null && status.finish == null" class="px-2 py-1 rounded-md shadow bg-gradient-to-br from-yellow-300 to-yellow-400 drop-shadow shadow-yellow-400/30">
-                                        <div class="flex flex-col justify-center w-[4ch]">
-                                            <span class="text-xs font-extrabold leading-5 text-center text-green-950">{{ status.np_users }}</span>
-                                            <span class="text-xs font-extrabold leading-5 text-center text-indigo-700">{{ status.no_rim }}</span>
+                                        <!-- Proses -->
+                                        <div v-else-if="status.start != null && status.finish == null"
+                                            class="bg-amber-50 border border-amber-200 rounded-xl p-3 transition-all hover:shadow-md hover:scale-105">
+                                            <div class="flex flex-col items-center gap-1">
+                                                <span class="text-sm font-bold text-amber-700">{{ status.np_users }}</span>
+                                                <span class="text-sm font-medium text-indigo-600">{{ status.no_rim }}</span>
+                                            </div>
                                         </div>
-                                    </div>
 
-                                    <!-- V-if Belum Periksa -->
-                                    <div v-else class="px-2 py-1 rounded-md shadow bg-gradient-to-br from-slate-300 to-slate-400 drop-shadow shadow-slate-400/30">
-                                        <div class="flex flex-col justify-center w-[4ch]">
-                                            <span class="text-xs font-extrabold leading-5 text-center text-green-950">-</span>
-                                            <span class="text-xs font-extrabold leading-5 text-center text-indigo-700">{{ status.no_rim }}</span>
+                                        <!-- Belum -->
+                                        <div v-else
+                                            class="bg-slate-50 border border-slate-200 rounded-xl p-3 transition-all hover:shadow-md hover:scale-105">
+                                            <div class="flex flex-col items-center gap-1">
+                                                <span class="text-sm font-bold text-slate-400">-</span>
+                                                <span class="text-sm font-medium text-indigo-600">{{ status.no_rim }}</span>
+                                            </div>
                                         </div>
-                                    </div>
+                                    </template>
                                 </template>
-                            </template>
+                            </div>
                         </div>
                     </div>
                 </div>
+
+                <!-- Navigation -->
+                <div class="flex justify-center mt-8">
+                    <Link :href="route('dashboard')"
+                        class="inline-flex items-center gap-3 px-8 py-4 text-lg font-semibold text-white bg-blue-600 rounded-xl hover:bg-blue-700 transition-all duration-200 shadow-lg hover:shadow-xl hover:-translate-y-0.5">
+                        <span>Kembali ke Dashboard</span>
+                        <ArrowRight class="w-5 h-5" />
+                    </Link>
+                </div>
             </div>
-        </div>
-        <div class="flex justify-center w-full">
-            <div class="flex gap-6 mt-10 ml-12">
-                <Link :href="route('dashboard')"
-                    class="text-xl font-extrabold text-blue-50 w-fit py-3 px-6 bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl text-start drop-shadow-md shadow-md flex items-center gap-1.5">
-                <LucideIcon name="arrow-right" class="w-6 h-6" />
-                </Link>
+
+            <!-- Decorative Background -->
+            <div class="absolute inset-0 -z-10 overflow-hidden">
+                <div class="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px]"></div>
+                <div class="absolute left-0 right-0 top-0 -z-10 m-auto h-[310px] w-[310px] rounded-full bg-blue-400 opacity-20 blur-[100px]"></div>
+                <div class="absolute right-0 top-0 -z-10 h-[310px] w-[310px] rounded-full bg-indigo-400 opacity-20 blur-[100px]"></div>
             </div>
         </div>
     </AuthenticatedLayout>

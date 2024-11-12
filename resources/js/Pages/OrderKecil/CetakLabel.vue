@@ -2,6 +2,7 @@
 import { inject, ref } from "vue";
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import InputLabel from "@/Components/InputLabel.vue";
+import TableVerifikasiPegawai from "@/Components/TableVerifikasiPegawai.vue";
 import InputError from "@/Components/InputError.vue";
 import TextInput from "@/Components/TextInput.vue";
 import { Link, useForm, router, Head } from "@inertiajs/vue3";
@@ -130,7 +131,7 @@ const submit = () => {
     </div>
 
     <AuthenticatedLayout>
-        <div class="w-full max-w-5xl bg-white rounded-lg shadow-md py-12 px-6 mx-auto mt-10 flex flex-col gap-3">
+        <div class="w-full max-w-5xl bg-white rounded-lg shadow-md py-12 px-6 mx-auto mt-10 flex flex-col gap-3 mb-10">
             <h1 class="text-3xl font-bold text-[#4B5563] my-auto text-center mb-4 pb-4 border-b border-sky-600">Cetak Label Order Kecil</h1>
 
             <form @submit.prevent="submit" class="flex flex-col text-lg">
@@ -241,6 +242,8 @@ const submit = () => {
                 </div>
             </form>
         </div>
+
+        <TableVerifikasiPegawai :team="form.team" />
     </AuthenticatedLayout>
     <iframe ref="printFrame" style="display: none"></iframe>
 </template>

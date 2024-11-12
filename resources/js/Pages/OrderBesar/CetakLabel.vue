@@ -166,10 +166,7 @@
 
     <!-- Main layout -->
     <AuthenticatedLayout>
-        <!-- <div
-            class="w-full max-w-5xl bg-white rounded-lg shadow-md py-12 px-6 mx-auto mt-24 flex flex-col gap-3"
-        ></div> -->
-        <div class="w-full max-w-5xl bg-white rounded-lg py-4 shadow-md px-6 mx-auto mt-8 flex flex-col gap-3 mb-4">
+        <div class="w-full max-w-5xl bg-white rounded-lg py-4 shadow-md px-6 mx-auto mt-8 flex flex-col gap-3 mb-8">
         <!-- Title -->
             <h1 class="text-3xl font-bold text-[#4B5563] my-auto text-center mb-4 pb-4 border-b border-sky-600">
                 <span class="text-red-600" v-if="form.seri == 3">
