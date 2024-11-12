@@ -1,143 +1,182 @@
 <script setup>
 import { ref } from "vue";
 import NavLink from "@/Components/NavLink.vue";
-import { Settings, ChevronDown } from "lucide-vue-next";
+import { Settings, ChevronDown, FileText, FileCheck, ClipboardList, Users, FileSpreadsheet, Activity, KeyRound, LogOut } from "lucide-vue-next";
 import { router, usePage } from "@inertiajs/vue3";
 
 const { props } = usePage();
 const role = props.auth.user.role;
-const showOrderBesarGroup = ref(false);
-const showOrderKecilGroup = ref(false);
-const showOption = ref(false);
 
-const toggleDropdown = (dropDownId) => {
-    if (dropDownId === 1) {
-        showOrderBesarGroup.value = !showOrderBesarGroup.value;
-        showOrderKecilGroup.value = false;
-        showOption.value = false;
-    } else if (dropDownId === 2) {
-        showOrderKecilGroup.value = !showOrderKecilGroup.value;
-        showOrderBesarGroup.value = false;
-        showOption.value = false;
-    } else if (dropDownId === 3) {
-        showOption.value = !showOption.value;
-        showOrderKecilGroup.value = false;
-        showOrderBesarGroup.value = false;
+// Use single dropdown state object
+const dropdowns = ref({
+    orderBesar: false,
+    orderKecil: false,
+    options: false
+});
+
+// Close all dropdowns when clicking outside
+const closeDropdowns = (e) => {
+    if (!e.target.closest('.dropdown-trigger')) {
+        Object.keys(dropdowns.value).forEach(key => {
+            dropdowns.value[key] = false;
+        });
     }
+};
+
+// Add event listener
+if (typeof window !== 'undefined') {
+    document.addEventListener('click', closeDropdowns);
 }
 
-const logout = () => {router.post(route('logout'))};
+const toggleDropdown = (dropdown) => {
+    // Close other dropdowns
+    Object.keys(dropdowns.value).forEach(key => {
+        if (key !== dropdown) dropdowns.value[key] = false;
+    });
+    // Toggle target dropdown
+    dropdowns.value[dropdown] = !dropdowns.value[dropdown];
+};
+
+const logout = () => {
+    router.post(route('logout'));
+};
 </script>
+
 <template>
-    <div class="h-full min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
-        <div class="w-full bg-white shadow-lg px-6 py-4 flex justify-between items-center sticky top-0 z-50 rounded-lg">
-            <!-- Logo Peruri -->
-            <img :src="'/img/peruri.png'" class="w-24" />
+    <div class="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
+        <nav class="w-full bg-white/80 backdrop-blur-sm shadow-lg px-8 py-4 sticky top-0 z-50">
+            <div class="max-w-7xl mx-auto flex justify-between items-center">
+                <!-- Logo -->
+                <img :src="'/img/peruri.png'" class="w-24 hover:opacity-80 transition-opacity" alt="Peruri Logo" />
 
-            <!-- Navigation -->
-            <div class="flex justify-start items-center gap-8">
-                <!-- Order Besar -->
-                <div class="relative">
-                    <div @click="toggleDropdown(1)" class="flex items-center cursor-pointer hover:text-blue-600 transition duration-200">
-                        <span class="text-sm font-semibold text-gray-800">Order Besar</span>
-                        <ChevronDown class="w-5 h-5 ml-1" />
+                <!-- Main Navigation -->
+                <div class="flex items-center gap-6">
+                    <!-- Order Besar Dropdown -->
+                    <div class="relative">
+                        <button @click.stop="toggleDropdown('orderBesar')"
+                                class="dropdown-trigger group flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-slate-100 transition-all">
+                            <FileText class="w-4 h-4 text-slate-600 group-hover:text-blue-600" />
+                            <span class="text-sm font-medium text-slate-700 group-hover:text-blue-600">Order Besar</span>
+                            <ChevronDown class="w-4 h-4 text-slate-400 group-hover:text-blue-600 transition-transform duration-200"
+                                       :class="{ 'rotate-180': dropdowns.orderBesar }" />
+                        </button>
+
+                        <transition
+                            enter-active-class="transition ease-out duration-200"
+                            enter-from-class="opacity-0 translate-y-1"
+                            enter-to-class="opacity-100 translate-y-0"
+                            leave-active-class="transition ease-in duration-150"
+                            leave-from-class="opacity-100 translate-y-0"
+                            leave-to-class="opacity-0 translate-y-1"
+                        >
+                            <div v-show="dropdowns.orderBesar"
+                                class="absolute mt-2 w-56 bg-white rounded-lg shadow-lg border border-slate-100 overflow-hidden">
+                                <NavLink :href="route('orderBesar.poSiapVerif')"
+                                        class="flex items-center gap-3 px-4 py-3 hover:bg-slate-50 transition-colors">
+                                    <FileCheck class="w-4 h-4 text-slate-500" />
+                                    <span class="text-sm text-slate-600">Order Siap Periksa</span>
+                                </NavLink>
+                                <NavLink :href="route('orderBesar.registerNomorPo')"
+                                        class="flex items-center gap-3 px-4 py-3 hover:bg-slate-50 transition-colors">
+                                    <ClipboardList class="w-4 h-4 text-slate-500" />
+                                    <span class="text-sm text-slate-600">Register Nomor PO</span>
+                                </NavLink>
+                            </div>
+                        </transition>
                     </div>
-                    <Transition name="fade">
-                        <div v-show="showOrderBesarGroup" class="absolute left-0 mt-2 w-48 bg-white shadow-lg z-10 rounded-lg">
-                            <NavLink
-                                :href="route('orderBesar.poSiapVerif')"
-                                :active="route().current('orderBesar.poSiapVerif')"
-                                class="block text-gray-700 px-4 py-2 transition duration-200 ease-in-out hover:bg-gray-100 w-full">
-                                Order Siap Periksa
-                            </NavLink>
-                            <NavLink
-                                :href="route('orderBesar.registerNomorPo')"
-                                :active="route().current('orderBesar.registerNomorPo')"
-                                class="block text-gray-700 px-4 py-2 transition duration-200 ease-in-out hover:bg-gray-100 w-full">
-                                Register Nomor PO
-                            </NavLink>
-                        </div>
-                    </Transition>
-                </div>
 
-                <!-- Order Kecil -->
-                <div class="relative">
-                    <div @click="toggleDropdown(2)" class="flex items-center cursor-pointer hover:text-blue-600 transition duration-200">
-                        <span class="text-sm font-semibold text-gray-800">Order Kecil</span>
-                        <ChevronDown class="w-5 h-5 ml-1" />
+                    <!-- Order Kecil Dropdown -->
+                    <div class="relative">
+                        <button @click.stop="toggleDropdown('orderKecil')"
+                                class="dropdown-trigger group flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-slate-100 transition-all">
+                            <FileText class="w-4 h-4 text-slate-600 group-hover:text-blue-600" />
+                            <span class="text-sm font-medium text-slate-700 group-hover:text-blue-600">Order Kecil</span>
+                            <ChevronDown class="w-4 h-4 text-slate-400 group-hover:text-blue-600 transition-transform duration-200"
+                                       :class="{ 'rotate-180': dropdowns.orderKecil }" />
+                        </button>
+
+                        <transition
+                            enter-active-class="transition ease-out duration-200"
+                            enter-from-class="opacity-0 translate-y-1"
+                            enter-to-class="opacity-100 translate-y-0"
+                            leave-active-class="transition ease-in duration-150"
+                            leave-from-class="opacity-100 translate-y-0"
+                            leave-to-class="opacity-0 translate-y-1"
+                        >
+                            <div v-show="dropdowns.orderKecil"
+                                class="absolute mt-2 w-48 bg-white rounded-lg shadow-lg border border-slate-100 overflow-hidden">
+                                <NavLink :href="route('orderKecil.cetakLabel')"
+                                        class="flex items-center gap-3 px-4 py-3 hover:bg-slate-50 transition-colors">
+                                    <FileText class="w-4 h-4 text-slate-500" />
+                                    <span class="text-sm text-slate-600">Cetak Label</span>
+                                </NavLink>
+                            </div>
+                        </transition>
                     </div>
-                    <Transition name="fade">
-                        <div v-show="showOrderKecilGroup" class="absolute left-0 mt-2 w-48 bg-white shadow-lg z-10 rounded-lg">
-                            <NavLink
-                                :href="route('orderKecil.cetakLabel')"
-                                :active="route().current('orderKecil.cetakLabel')"
-                                class="block text-gray-700 px-4 py-2 transition duration-200 ease-in-out hover:bg-gray-100 w-full">
-                                Cetak Label
-                            </NavLink>
-                        </div>
-                    </Transition>
+
+                    <!-- Regular Nav Links -->
+                    <NavLink :href="route('monitoringProduksi.statusVerif.index')"
+                            class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-slate-100 transition-all group">
+                        <Activity class="w-4 h-4 group-hover:text-blue-600" />
+                        <span class="text-sm font-medium group-hover:text-blue-600">Monitoring Produksi</span>
+                    </NavLink>
+
+                    <NavLink :href="route('dataPo.index',0)"
+                            class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-slate-100 transition-all group">
+                        <FileSpreadsheet class="w-4 h-4 group-hover:text-blue-600" />
+                        <span class="text-sm font-medium group-hover:text-blue-600">Data PO</span>
+                    </NavLink>
+
+                    <NavLink :href="route('monitoringProduksi.produksiPegawai')"
+                            class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-slate-100 transition-all group">
+                        <Users class="w-4 h-4 group-hover:text-blue-600" />
+                        <span class="text-sm font-medium group-hover:text-blue-600">Produksi Pegawai</span>
+                    </NavLink>
+
+                    <NavLink v-if="role === 1" :href="route('createUser.index')"
+                            class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-slate-100 transition-all group">
+                        <Users class="w-4 h-4 group-hover:text-blue-600" />
+                        <span class="text-sm font-medium group-hover:text-blue-600">Create User</span>
+                    </NavLink>
                 </div>
 
-                <!-- Monitoring Verifikasi -->
-                <NavLink
-                    :href="route('monitoringProduksi.statusVerif.index')"
-                    :active="route().current('monitoringProduksi.statusVerif.index')"
-                    class="text-gray-800 px-2 py-1 transition duration-200 ease-in-out hover:text-blue-600">
-                    Monitoring Produksi
-                </NavLink>
+                <!-- Options Dropdown -->
+                <div class="relative">
+                    <button @click.stop="toggleDropdown('options')"
+                            class="dropdown-trigger p-2 rounded-lg hover:bg-slate-100 transition-all">
+                        <Settings class="w-5 h-5 text-slate-600 hover:text-blue-600" />
+                    </button>
 
-                <!-- Data Production Order -->
-                <NavLink
-                    :href="route('dataPo.index',0)"
-                    :active="route().current('dataPo.index')"
-                    class="text-gray-800 px-2 py-1 transition duration-200 ease-in-out hover:text-blue-600">
-                    Data PO
-                </NavLink>
-
-                <!-- Hasil Produksi Pegawai -->
-                <NavLink
-                    :href="route('monitoringProduksi.produksiPegawai')"
-                    :active="route().current('monitoringProduksi.produksiPegawai')"
-                    class="text-gray-800 px-2 py-1 transition duration-200 ease-in-out hover:text-blue-600">
-                    Produksi Pegawai
-                </NavLink>
-
-                <!-- Create User -->
-                <NavLink v-if="role === 1"
-                    :href="route('createUser.index')"
-                    :active="route().current('createUser.index')"
-                    class="text-gray-800 px-2 py-1 transition duration-200 ease-in-out hover:text-blue-600">
-                    Create User
-                </NavLink>
-            </div>
-
-            <!-- Option -->
-            <div class="relative">
-                <div @click="toggleDropdown(3)" class="flex items-center cursor-pointer p-2 rounded-lg hover:bg-gray-100 transition duration-200 ease-in-out">
-                    <Settings class="w-6 h-6 text-gray-800" />
-                </div>
-                <Transition name="fade">
-                    <div v-show="showOption" class="absolute -left-20 mt-2 w-48 bg-white shadow-lg rounded-lg z-10">
-                        <div class="flex flex-col">
-                            <NavLink
-                                :href="route('changePassword.index')"
-                                :active="route().current('changePassword.index')"
-                                class="text-gray-800 px-2 py-1 transition duration-200 ease-in-out hover:text-blue-600">
-                                Ganti Password
+                    <transition
+                        enter-active-class="transition ease-out duration-200"
+                        enter-from-class="opacity-0 translate-y-1"
+                        enter-to-class="opacity-100 translate-y-0"
+                        leave-active-class="transition ease-in duration-150"
+                        leave-from-class="opacity-100 translate-y-0"
+                        leave-to-class="opacity-0 translate-y-1"
+                    >
+                        <div v-show="dropdowns.options"
+                            class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-slate-100 overflow-hidden">
+                            <NavLink :href="route('changePassword.index')"
+                                    class="flex items-center gap-3 px-4 py-3 hover:bg-slate-50 transition-colors">
+                                <KeyRound class="w-4 h-4 text-slate-500" />
+                                <span class="text-sm text-slate-600">Ganti Password</span>
                             </NavLink>
 
-                            <button
-                                type="button"
-                                @click="logout()"
-                                class="inline-flex text-nowrap items-center pt-1 border-b-2 border-transparent text-sm font-medium leading-5 hover:border-violet-300 focus:outline-none focus:text-gray-700 focus:border-gray-300 text-gray-800 px-2 py-1 transition duration-200 ease-in-out hover:text-blue-600">
-                                Logout
+                            <button @click="logout"
+                                    class="w-full flex items-center gap-3 px-4 py-3 hover:bg-slate-50 transition-colors">
+                                <LogOut class="w-4 h-4 text-slate-500" />
+                                <span class="text-sm text-slate-600">Logout</span>
                             </button>
-
                         </div>
-                    </div>
-                </Transition>
+                    </transition>
+                </div>
             </div>
-        </div>
-        <slot />
+        </nav>
+
+        <!-- Main Content -->
+        <main class="max-w-full mx-auto px-4 py-6">
+            <slot />
+        </main>
     </div>
 </template>
