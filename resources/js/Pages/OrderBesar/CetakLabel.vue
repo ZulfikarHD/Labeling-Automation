@@ -117,7 +117,7 @@
                             <TextInput
                                 type="text"
                                 value="Inschiet"
-                                class="w-full bg-gray-50"
+                                class="w-full bg-gray-50 text-center"
                                 disabled
                             />
                         </template>
@@ -126,7 +126,7 @@
                                 id="noRimPU"
                                 type="number"
                                 v-model="formPrintUlang.noRim"
-                                class="w-full bg-gray-50"
+                                class="w-full bg-gray-50 text-center"
                                 required
                                 disabled
                             />
@@ -166,7 +166,23 @@
 
     <!-- Main layout -->
     <AuthenticatedLayout>
-        <div class="max-w-4xl mx-auto py-12 px-4">
+        <!-- <div
+            class="w-full max-w-5xl bg-white rounded-lg shadow-md py-12 px-6 mx-auto mt-24 flex flex-col gap-3"
+        ></div> -->
+        <div class="w-full max-w-5xl bg-white rounded-lg py-4 shadow-md px-6 mx-auto mt-8 flex flex-col gap-3 mb-4">
+        <!-- Title -->
+            <h1 class="text-3xl font-bold text-[#4B5563] my-auto text-center mb-4 pb-4 border-b border-sky-600">
+                <span class="text-red-600" v-if="form.seri == 3">
+                    {{ form.obc }}
+                </span>
+                <span class="text-blue-600" v-else>
+                    {{ form.obc }}
+                </span>
+                -
+                <span class="text-blue-600">
+                    {{ form.noPlat }}
+                </span>
+            </h1>
             <form @submit.prevent="submit" class="space-y-8">
                 <!-- Team selection -->
                 <div>
@@ -193,7 +209,7 @@
                             ref="po"
                             v-model="form.po"
                             type="number"
-                            class="w-full bg-gray-50"
+                            class="w-full bg-gray-50 text-center"
                             disabled
                         />
                     </div>
@@ -206,7 +222,7 @@
                             ref="obc"
                             v-model="form.obc"
                             type="text"
-                            class="w-full bg-gray-50"
+                            class="w-full bg-gray-50 text-center"
                             disabled
                         />
                     </div>
@@ -219,7 +235,7 @@
                             ref="seri"
                             v-model="form.seri"
                             type="number"
-                            class="w-full bg-gray-50"
+                            class="w-full bg-gray-50 text-center"
                             disabled
                         />
                     </div>
@@ -236,7 +252,7 @@
                                 ref="no_rim"
                                 v-model="form.no_rim"
                                 type="number"
-                                class="w-full bg-gray-50 font-bold"
+                                class="w-full bg-gray-50 text-center font-bold"
                                 disabled
                             />
                         </template>
@@ -244,7 +260,7 @@
                             <TextInput
                                 type="text"
                                 value="Inschiet"
-                                class="w-full bg-gray-50 font-bold"
+                                class="w-full bg-gray-50 text-center font-bold"
                                 disabled
                             />
                         </template>
@@ -258,7 +274,7 @@
                             ref="lbr_ptg"
                             v-model="form.lbr_ptg"
                             type="text"
-                            class="w-full bg-gray-50 font-bold"
+                            class="w-full bg-gray-50 text-center font-bold"
                             disabled
                         />
                     </div>
@@ -271,7 +287,7 @@
                             ref="noPlat"
                             v-model="form.noPlat"
                             type="number"
-                            class="w-full bg-gray-50 font-bold"
+                            class="w-full bg-gray-50 text-center font-bold"
                             disabled
                         />
                     </div>
@@ -325,7 +341,7 @@
             </form>
 
             <!-- Navigation -->
-            <div class="flex justify-center gap-4 mt-12">
+            <div class="flex justify-center gap-4 mt-4">
                 <a
                     href="#"
                     onclick="history.back()"
