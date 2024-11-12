@@ -175,7 +175,7 @@ const logout = () => {
         </nav>
 
         <!-- Main Content -->
-        <main class="max-w-full mx-auto px-4 py-6">
+        <main class="max-w-full mx-auto px-4 py-4">
             <slot />
         </main>
     </div>

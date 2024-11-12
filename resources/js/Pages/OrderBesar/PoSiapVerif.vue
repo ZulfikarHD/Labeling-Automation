@@ -5,12 +5,13 @@ import TextInput from '@/Components/TextInput.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import NavigateBackButton from '@/Components/NavigateBackButton.vue';
 import { ref } from 'vue';
+import { Home, Check, Clock, ArrowRight } from 'lucide-vue-next';
 
 const props = defineProps({
-                    products: Object,
-                    teamList: Object,
-                    crntTeam: Object,
-                });
+    products: Object,
+    teamList: Object,
+    crntTeam: Object,
+});
 
 const listProduct = ref(props.products);
 
@@ -23,118 +24,79 @@ const changeTeam = () => {
         listProduct.value = res.data;
     });
 }
-
 </script>
+
 <template>
     <Head title="Siap Periksa" />
     <AuthenticatedLayout>
-        <div class="py-12">
-            <!-- Change Team -->
-            <div class="mx-auto w-fit">
-                <InputLabel for="team" value="Tim" class="text-4xl font-extrabold text-center" />
-
-                <select id="team" ref="team" v-model="form.team" type="text" @change="changeTeam"
-                    class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm text-3xl mt-2 w-full" autocomplete="team">
-                    <option class="px-10 py-4" v-for="teams in props.teamList" :value="teams.id">{{ teams.workstation }}</option>
+        <div class="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
+            <!-- Team Selection -->
+            <div class="max-w-md mx-auto mb-12">
+                <InputLabel for="team" value="Pilih Tim" class="text-2xl font-bold text-slate-800 mb-3" />
+                <select
+                    id="team"
+                    v-model="form.team"
+                    @change="changeTeam"
+                    class="w-full px-4 py-3 text-lg bg-white border rounded-xl border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-colors"
+                >
+                    <option v-for="teams in props.teamList" :value="teams.id">
+                        {{ teams.workstation }}
+                    </option>
                 </select>
             </div>
-            <!-- Header -->
-            <h3 class="my-10 text-3xl font-extrabold text-center uppercase text-slate-700">Daftar Produk Siap Periksa</h3>
 
-            <!-- Table -->
-            <div
-                class="h-full px-4 py-4 mx-auto bg-white w-fit md:py-6 drop-shadow-sm rounded-xl dark:bg-slate-800 dark:bg-opacity-60 dark:backdrop-blur-sm dark:backdrop-filter">
-                <div>
-                    <div class="-mx-4 -mt-6 overflow-hidden rounded-t-xl">
-                        <table class="min-w-full table-auto">
-                            <thead
-                                class="pb-4 font-bold border-b-2 border-slate-300 text-slate-700 dark:border-slate-500 dark:text-slate-400 bg-slate-200">
-                                <tr>
-                                    <th scope="col"
-                                        class="pt-6 pb-1.5 px-6 leading-tight text-left border-slate-300 dark:border-slate-500 ">
-                                        Nomor PO
-                                    </th>
-                                    <th scope="col"
-                                        class="pt-6 pb-1.5 px-6 leading-tight text-left border-slate-300 dark:border-slate-500">
-                                        OBC
-                                    </th>
-                                    <th scope="col"
-                                        class="pt-6 pb-1.5 px-6 leading-tight text-center border-slate-300 dark:border-slate-500">
-                                        Jenis
-                                    </th>
-                                    <th scope="col"
-                                        class="pt-6 pb-1.5  px-6 leading-tight border-slate-300 dark:border-slate-500 text-center">
-                                        Nomor Rim
-                                    </th>
-                                    <th scope="col"
-                                        class="pt-6 pb-1.5  px-6 leading-tight border-slate-300 dark:border-slate-500 text-center">
-                                        Status
-                                    </th>
-                                    <th scope="col"
-                                        class="pt-6 pb-1.5  px-6 leading-tight border-slate-300 dark:border-slate-500 text-center">
-                                        Waktu Dibuat
-                                    </th>
-                                    <th scope="col"
-                                        class="pt-6 pb-1.5  px-6 leading-tight border-slate-300 dark:border-slate-500 text-center">
+            <!-- Table Card -->
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                <!-- Table Header -->
+                <div class="p-6 border-b border-slate-200">
+                    <h1 class="text-2xl font-bold text-slate-800">Daftar Produk Siap Periksa</h1>
+                    <p class="mt-1 text-sm text-slate-500">Daftar produk yang siap untuk diperiksa oleh tim</p>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead>
+                            <tr class="bg-slate-50 border-b border-slate-200">
+                                <th class="px-6 py-4 text-sm font-semibold text-slate-600 text-left">No. PO</th>
+                                <th class="px-6 py-4 text-sm font-semibold text-slate-600 text-left">OBC</th>
+                                <th class="px-6 py-4 text-sm font-semibold text-slate-600 text-center">Jenis</th>
+                                <th class="px-6 py-4 text-sm font-semibold text-slate-600 text-center">No. Rim</th>
+                                <th class="px-6 py-4 text-sm font-semibold text-slate-600 text-center">Status</th>
+                                <th class="px-6 py-4 text-sm font-semibold text-slate-600 text-center">Waktu</th>
+                                <th class="px-6 py-4 text-sm font-semibold text-slate-600 text-center">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-200">
+                            <tr v-for="product in listProduct" class="hover:bg-slate-100 transition-colors">
+                                <td class="px-6 py-4 text-sm text-slate-600">{{ product.no_po }}</td>
+                                <td class="px-6 py-4 text-sm font-medium" :class="{'text-red-600': product.no_obc.substr(4,1) == 3, 'text-blue-600': product.no_obc.substr(4,1) != 3}">
+                                    {{ product.no_obc }}
+                                </td>
+                                <td class="px-6 py-4 text-sm text-slate-600 text-center">{{ product.type }}</td>
+                                <td class="px-6 py-4 text-sm text-slate-600 text-center">{{ product.start_rim }} - {{ product.end_rim }}</td>
+                                <td class="px-6 py-4 text-center">
+                                    <span v-if="product.status == 1" class="inline-flex items-center px-3 py-1 text-sm font-medium text-yellow-900 bg-yellow-300 rounded-lg">
+                                        Sedang Diperiksa
+                                    </span>
+                                    <span v-else class="inline-flex items-center px-3 py-1 text-sm font-medium text-slate-50 bg-slate-600 rounded-lg">
+                                        Siap Diperiksa
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 text-sm text-slate-600 text-center">{{ product.created_at }}</td>
+                                <td class="px-6 py-4 text-center">
+                                    <Link
+                                        :href="route('orderBesar.cetakLabel', {team : form.team, id : product.id})"
+                                        class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors"
+                                    >
+                                        <ArrowRight class="w-4 h-4" />
                                         Pilih
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr v-for="product in listProduct"
-                                    class="font-mono transition py-4 duration-300 ease-in-out border-b border-slate-300 text-slate-800 hover:bg-slate-400 hover:bg-opacity-10 dark:text-slate-100">
-                                    <td
-                                        class="text-center leading-5 whitespace-nowrap px-4 py-1.5 text-slate-700 border-r">
-                                        {{ product.no_po }}
-                                    </td>
-                                    <td
-                                        class="text-center font-semibold leading-5 whitespace-nowrap px-4 py-1.5 text-slate-900 border-r">
-                                        <span v-if="product.no_obc.substr(4,1) == 3" class="text-red-800">
-                                            {{ product.no_obc }}
-                                        </span>
-                                        <span v-else class="text-blue-800">
-                                            {{ product.no_obc }}
-                                        </span>
-                                    </td>
-                                    <td
-                                        class="text-center leading-5 whitespace-nowrap px-4 py-1.5 text-slate-700 border-r">
-                                        {{ product.type }}
-                                    </td>
-                                    <td
-                                        class="text-center leading-5 whitespace-nowrap px-4 py-1.5 text-slate-700 border-r">
-                                        {{ product.start_rim }} - {{ product.end_rim }}
-                                    </td>
-                                    <td
-                                        class="text-center leading-5 whitespace-nowrap text-sm px-4 py-2 text-slate-700 border-r">
-                                        <div v-if="product.status == 1">
-                                            <span class="px-4 py-1.5 font-semibold text-yellow-900 bg-yellow-300 rounded-lg shadow drop-shadow-md">Sedang Di Periksa</span>
-                                        </div>
-                                        <div v-else-if="product.status == 0">
-                                            <span class="px-4 py-1.5 rounded-lg shadow bg-slate-600 drop-shadow-md text-slate-50">Siap Di Periksa</span>
-                                        </div>
-                                    </td>
-                                    <td
-                                        class="text-center leading-5 whitespace-nowrap text-sm px-4 py-1.5 text-slate-700 border-r">
-                                        {{ product.created_at }}
-                                    </td>
-                                    <td class="text-center leading-5 whitespace-nowrap text-sm px-4 py-1.5 text-slate-700">
-                                        <Link :href="route('orderBesar.cetakLabel', {team : form.team, id : product.id})" class="flex justify-center px-6 py-2 mx-auto font-semibold drop-shadow-md shadow tracking-wide w-fit bg-blue-600 rounded-xl text-start text-cyan-50">Go</Link>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+                                    </Link>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
-            <div class="flex justify-center gap-6 mx-auto w-fit">
-                <div class="flex gap-6 mt-10">
-                <!-- Home Button -->
-                <Link :href="route('dashboard')"
-                    class="text-xl font-extrabold text-blue-50 w-fit py-3 px-6 bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl text-start drop-shadow-md shadow-md flex items-center gap-1.5">
-                    <LucideIcon name="Home" class="w-6 h-6" />
-                </Link>
-            </div>
         </div>
-    </div>
-</AuthenticatedLayout>
+    </AuthenticatedLayout>
 </template>

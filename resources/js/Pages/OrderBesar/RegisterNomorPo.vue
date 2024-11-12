@@ -158,7 +158,7 @@ function submit() {
     <!-- Content -->
     <AuthenticatedLayout>
         <div
-            class="w-full max-w-5xl bg-white rounded-lg shadow-md py-12 px-6 mx-auto mt-24 flex flex-col gap-3"
+            class="w-full max-w-5xl bg-white rounded-lg shadow-md py-12 px-6 mx-auto mt-10 flex flex-col gap-3"
         >
         <!-- Title -->
             <h1 class="text-3xl font-bold text-[#4B5563] my-auto text-center mb-4 pb-4 border-b border-sky-600">Register Nomor Production Order</h1>
