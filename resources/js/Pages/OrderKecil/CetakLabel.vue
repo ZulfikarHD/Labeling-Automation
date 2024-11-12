@@ -1,6 +1,5 @@
 <script setup>
-import { reactive, ref } from "vue";
-import Modal from "@/Components/Modal.vue";
+import { inject, ref } from "vue";
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import InputLabel from "@/Components/InputLabel.vue";
 import InputError from "@/Components/InputError.vue";
@@ -10,41 +9,44 @@ import axios from "axios";
 import { batchFullPageLabel } from "@/Components/PrintPages/PrintLabel";
 import NavigateBackButton from "@/Components/NavigateBackButton.vue";
 
+const swal = inject('$swal');
+const isLoading = ref(false);
+
 const props = defineProps({
     listTeam: Object,
     currentTeam: Number,
 });
 
-// Define a reactive form object to store form data
+const obc_color = ref();
+
 const form = useForm({
     team: props.currentTeam,
-    no_po: "", // Production Order number
-    obc: "", // Order Bea Cukai number
-    jml_lembar: "", // Number of sheets/rims
-    jml_label: "", // Number of labels
-    seri: "", // Series number
-    periksa1: "", // NP Inspector
+    no_po: "",
+    obc: "",
+    jml_lembar: "",
+    jml_label: "",
+    seri: "",
+    periksa1: "",
     periksa2: "",
     jml_rim: "",
 });
 
-const obc_color = ref(); // Warna berdasarkan seri
-
-// Function to fetch data based on the Production Order number
 const fetchData = () => {
-    axios.get("/api/order-kecil/fetch-spec/" + form.no_po).then((res) => {
+    isLoading.value = true;
+
+    axios.get(`/api/order-kecil/fetch-spec/${form.no_po}`).then((res) => {
         let total_label = Math.ceil(res.data.rencet / 500);
 
         form.obc = res.data.no_obc;
-        form.jml_rim = res.data.rencet + " / " + total_label + " Rim";
+        form.jml_rim = `${res.data.rencet} / ${total_label} Rim`;
         form.jml_lembar = res.data.rencet;
         form.jml_label = total_label;
         form.seri = res.data.no_obc.substr(4, 1) > 3 ? 1 : res.data.no_obc.substr(4, 1);
-        obc_color.value = form.seri  == 3 ? "#b91c1c" : "#1d4ed8";
+        obc_color.value = form.seri == 3 ? "#b91c1c" : "#1d4ed8";
+    }).finally(() => {
+        isLoading.value = false;
     });
 };
-
-const showModal = ref(false);
 
 const printFrame = ref(null);
 
@@ -52,236 +54,189 @@ const printWithoutDialog = (content) => {
     const iframe = printFrame.value;
     const doc = iframe.contentWindow.document;
     doc.open();
-    // Add styles to hide header and footer and limit to the first page
     doc.write(`<style>
-                    @media print {
-                        @page {
-                            margin-left: 3rem; /* Remove default margins */
-                            margin-right: 3rem; /* Remove default margins */
-                            margin-top: 0rem; /* Remove default margins */
-                        }
-                        body {
-                            margin: 0; /* Remove body margin */
-                        }
-                        header, footer {
-                            display: none !important; /* Hide header and footer */
-                        }
-                        * {
-                            -webkit-print-color-adjust: exact; /* Ensure colors are printed correctly */
-                            print-color-adjust: exact; /* Ensure colors are printed correctly */
-                        }
-                    }
-                </style>
-                ${content}`);
+        @media print {
+            @page {
+                margin-left: 3rem;
+                margin-right: 3rem;
+                margin-top: 0rem;
+            }
+            body { margin: 0; }
+            header, footer { display: none !important; }
+            * {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+        }
+    </style>
+    ${content}`);
     doc.close();
     iframe.contentWindow.focus();
 
-    // Use a timeout to allow the content to load before printing
     setTimeout(() => {
         iframe.contentWindow.print();
-    }, 1000); // Adjust the timeout as necessary
+    }, 1000);
 };
 
-// Fungsi untuk mengirim formulir utama
 const submit = () => {
-    router.post("/api/order-kecil/cetak-label", form, {
-        onSuccess: () => {
-            let printLabel = batchFullPageLabel(
-                form.obc,
-                undefined,
-                obc_color.value,
-                undefined,
-                form.periksa1,
-                form.periksa2,
-                form.jml_label
-            );
-            printWithoutDialog(printLabel);
+    swal.fire({
+        title: 'Periksa Kembali Spesifikasi',
+        text: "Pastikan data yang dimasukkan sudah benar",
+        icon: 'warning',
+        showCancelButton: true,
+        cancelButtonColor: '#d33',
+        confirmButtonColor: '#3085d6',
+        confirmButtonText: 'Buat Label',
+    }).then((result) => {
+        if (result.isConfirmed) {
+            router.post("/api/order-kecil/cetak-label", form, {
+                onSuccess: () => {
+                    let printLabel = batchFullPageLabel(
+                        form.obc,
+                        undefined,
+                        obc_color.value,
+                        undefined,
+                        form.periksa1,
+                        form.periksa2,
+                        form.jml_label
+                    );
+                    printWithoutDialog(printLabel);
 
-            form.reset();
-
-            showModal.value = !showModal.value;
-        },
+                    swal.fire({
+                        icon: 'success',
+                        title: 'Success',
+                        text: 'Label Berhasil Dibuat',
+                    });
+                    form.reset();
+                }
+            });
+        }
     });
 };
 </script>
+
 <template>
     <Head title="Cetak Label" />
+
+    <!-- Loading Indicator -->
+    <div class="bg-black bg-opacity-40 w-screen h-screen absolute z-50 flex justify-center items-center" v-if="isLoading">
+        <div class="rounded-lg p-4 flex flex-col gap-2 justify-center items-center">
+            <svg class="animate-spin h-10 w-10 brightness-110" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25 drop-shadow-md shadow-md text-blue-50" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75 shadow-md text-blue-500" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            <span class="text-white font-semibold animate-pulse">Sedang Memproses...</span>
+        </div>
+    </div>
+
     <AuthenticatedLayout>
-        <!-- Modal -->
-        <Modal :show="showModal" @close="showModal = !showModal">
-            <div class="px-8 py-4 bg-white rounded-lg shadow drop-shadow shadow-slate-300/25">
-                <h1 class="text-2xl font-bold text-center text-green-600 brightness-110">
-                    Label Berhasil Di Buat
-                </h1>
-            </div>
-        </Modal>
+        <div class="w-full max-w-5xl bg-white rounded-lg shadow-md py-12 px-6 mx-auto mt-10 flex flex-col gap-3">
+            <h1 class="text-3xl font-bold text-[#4B5563] my-auto text-center mb-4 pb-4 border-b border-sky-600">Cetak Label Order Kecil</h1>
 
-        <!-- Form -->
-        <div class="py-12">
-            <form @submit.prevent="submit">
-                <div class="flex flex-col justify-center gap-6 mx-auto mt-14 w-fit">
-                    <div class="mx-auto w-full">
-                        <InputLabel
-                            for="team"
-                            value="Team"
-                            class="text-2xl font-extrabold text-center"
-                        />
+            <form @submit.prevent="submit" class="flex flex-col text-lg">
+                <!-- Team Selection -->
+                <div class="flex flex-col">
+                    <InputLabel for="team" value="Team Periksa" />
+                    <select
+                        id="team"
+                        v-model="form.team"
+                        class="mb-2 text-center bg-gray-50 text-indigo-600 border focus:border-transparent border-gray-300 sm:text-sm rounded-lg ring ring-transparent focus:ring-1 focus:outline-none focus:ring-sky-400 block w-full p-2.5 rounded-l-lg py-3 px-4 font-semibold"
+                    >
+                        <option v-for="team in props.listTeam" :key="team.id" :value="team.id">
+                            {{ team.workstation }}
+                        </option>
+                    </select>
+                </div>
 
-                        <select
-                            id="team"
-                            ref="team"
-                            v-model="form.team"
-                            class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm block px-10 py-2 mt-2 text-lg w-full drop-shadow flex-grow"
-                        >
-                            <option
-                                v-for="team in props.listTeam"
-                                :key="team.id"
-                                :value="team.id"
-                            >
-                                {{ team.workstation }}
-                            </option>
-                        </select>
-                    </div>
-                    <!-- Nomor no_po -->
-                    <div>
-                        <InputLabel
-                            for="no_po"
-                            value="Nomor Production Order"
-                            class="text-4xl font-extrabold text-center"
-                        />
+                <!-- Production Order -->
+                <div class="flex flex-col mt-4">
+                    <InputLabel for="no_po" value="Nomor Production Order" />
+                    <TextInput
+                        id="no_po"
+                        v-model="form.no_po"
+                        @input="fetchData"
+                        type="number"
+                        placeholder="Masukkan Nomor PO"
+                        class="placeholder:text-center text-center text-xl font-bold"
+                        required
+                        autofocus
+                    />
+                </div>
 
+                <!-- Order Details -->
+                <div class="flex gap-3 mt-4">
+                    <div class="flex flex-col flex-grow">
+                        <InputLabel for="obc" value="Nomor OBC" />
                         <TextInput
-                            id="no_po"
-                            ref="no_po"
-                            v-model="form.no_po"
-                            @input="fetchData"
-                            type="number"
-                            class="block w-full px-8 py-2 mt-2 text-2xl text-center bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-400"
-                            autocomplete="no_po"
-                            placeholder="Production Order"
+                            id="obc"
+                            v-model="form.obc"
+                            type="text"
+                            placeholder="Order Bea Cukai"
                             required
-                            autofocus
                         />
                     </div>
-                    <div class="flex justify-between gap-6 mb-10 w-fit">
-                        <!-- Nomor OBC -->
-                        <div>
-                            <InputLabel
-                                for="obc"
-                                value="Nomor OBC"
-                                class="text-4xl font-extrabold text-center"
-                            />
 
-                            <TextInput
-                                id="obc"
-                                ref="obc"
-                                v-model="form.obc"
-                                type="text"
-                                class="block w-full px-8 py-2 mt-2 text-2xl text-center bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-400"
-                                autocomplete="obc"
-                                placeholder="Order Bea Cukai"
-                                required
-                            />
-                        </div>
-
-                        <!-- Jumlah Lembar/Rim -->
-                        <div>
-                            <InputLabel
-                                for="jml_rim"
-                                value="Lembar / Rim"
-                                class="text-4xl font-extrabold text-center"
-                            />
-
-                            <TextInput
-                                id="jml_rim"
-                                ref="jml_rim"
-                                v-model="form.jml_rim"
-                                type="text"
-                                class="block w-full px-8 py-2 mt-2 text-2xl text-center bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-400"
-                                autocomplete="jml_rim"
-                                placeholder="Lembar/Rim"
-                                min="1"
-                            />
-                        </div>
-
-                        <!-- Jumlah Label -->
-                        <div>
-                            <InputLabel
-                                for="jml_label"
-                                value="Jumlah Label"
-                                class="text-4xl font-extrabold text-center"
-                            />
-
-                            <TextInput
-                                id="jml_label"
-                                ref="jml_label"
-                                v-model="form.jml_label"
-                                type="number"
-                                class="block w-full px-8 py-2 mt-2 text-2xl text-center bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-400"
-                                autocomplete="jml_label"
-                                placeholder="Label"
-                                min="1"
-                                required
-                            />
-                        </div>
+                    <div class="flex flex-col flex-grow">
+                        <InputLabel for="jml_rim" value="Lembar / Rim" />
+                        <TextInput
+                            id="jml_rim"
+                            v-model="form.jml_rim"
+                            type="text"
+                            class="bg-gray-200"
+                            disabled
+                        />
                     </div>
 
-                    <div class="flex gap-4">
-                        <!-- periksa 1 -->
-                        <div class="flex-auto">
-                            <InputLabel
-                                for="periksa1"
-                                value="Periksa 1"
-                                class="text-4xl font-extrabold text-center"
-                            />
-
-                            <TextInput
-                                id="periksa1"
-                                ref="periksa1"
-                                v-model="form.periksa1"
-                                type="text"
-                                class="block w-full px-8 py-2 mt-2 text-2xl text-center bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-400"
-                                autocomplete="periksa1"
-                                placeholder="NP"
-                                required
-                            />
-                        </div>
-
-                        <!-- Periksa 2-->
-                        <div class="flex-auto">
-                            <InputLabel
-                                for="periksa2"
-                                value="Periksa 2"
-                                class="text-4xl font-extrabold text-center"
-                            />
-
-                            <TextInput
-                                id="periksa2"
-                                ref="periksa2"
-                                v-model="form.periksa2"
-                                type="text"
-                                class="block w-full px-8 py-2 mt-2 text-2xl text-center bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-sky-400"
-                                autocomplete="periksa2"
-                                placeholder="NP"
-                            />
-                        </div>
+                    <div class="flex flex-col flex-grow">
+                        <InputLabel for="jml_label" value="Jumlah Label" />
+                        <TextInput
+                            id="jml_label"
+                            v-model="form.jml_label"
+                            type="number"
+                            placeholder="Jumlah Label"
+                            required
+                        />
                     </div>
                 </div>
-                <div class="flex justify-center gap-6 mx-auto w-fit">
-                    <button
-                        class="flex justify-center px-8 py-4 mx-auto w-fit bg-gradient-to-r from-violet-400 to-violet-500 rounded-xl text-start mt-11"
-                    >
-                        <!-- <Link
-                            :href="route('p.products.create')"
-                            class="text-2xl font-bold text-violet-50"
-                            >Clear</Link
-                        > -->
-                    </button>
+
+                <!-- Inspector Details -->
+                <div class="flex gap-3 mt-4">
+                    <div class="flex flex-col flex-grow">
+                        <InputLabel for="periksa1" value="NP Periksa 1" />
+                        <TextInput
+                            id="periksa1"
+                            v-model="form.periksa1"
+                            type="text"
+                            placeholder="Nomor Pegawai"
+                            required
+                        />
+                    </div>
+
+                    <div class="flex flex-col flex-grow">
+                        <InputLabel for="periksa2" value="NP Periksa 2" />
+                        <TextInput
+                            id="periksa2"
+                            v-model="form.periksa2"
+                            type="text"
+                            placeholder="Nomor Pegawai"
+                        />
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex gap-4 mt-8">
                     <button
                         type="submit"
-                        class="flex justify-center px-8 py-4 mx-auto w-fit bg-gradient-to-r from-green-400 to-green-500 rounded-xl text-start mt-11"
+                        class="bg-green-500 text-white font-bold py-2 px-4 rounded-md mt-4 hover:bg-green-600 transition ease-in-out duration-150 flex-auto"
                     >
-                        <span class="text-2xl font-bold text-yellow-50">Generate</span>
+                        Buat Label
+                    </button>
+                    <button
+                        @click="form.reset()"
+                        type="button"
+                        class="bg-violet-500 text-white font-bold py-2 px-4 rounded-md mt-4 hover:bg-violet-600 transition ease-in-out duration-150 flex-auto"
+                    >
+                        Clear
                     </button>
                 </div>
             </form>

@@ -4,10 +4,10 @@
 
     <!-- Modal for reprinting labels -->
     <Modal :show="printUlangModal" @close="() => (printUlangModal = !printUlangModal)">
-        <form @submit.prevent="printUlangLabel" class="bg-white rounded-xl shadow-lg p-8">
-            <div class="flex flex-col gap-6">
+        <form @submit.prevent="printUlangLabel" class="bg-white rounded-xl shadow-lg p-6">
+            <div class="flex flex-col gap-4">
                 <!-- Modal header -->
-                <h1 class="text-2xl font-bold text-center text-gray-800">
+                <h1 class="text-xl font-bold text-center text-gray-800">
                     Print Ulang / Ganti Data Rim
                 </h1>
 
@@ -16,20 +16,20 @@
                     id="dataRim"
                     name="dataRim"
                     type="text"
-                    class="text-lg font-semibold text-center uppercase bg-gray-50 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                    class="text-base font-semibold text-center uppercase bg-gray-50 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                     v-model="formPrintUlang.dataRim"
                     required
                     disabled
                 />
 
                 <!-- Left/Right rim selection buttons -->
-                <div class="flex justify-center gap-4">
+                <div class="flex justify-center gap-3">
                     <button
                         type="button"
                         @click="dataRimKiri()"
-                        class="inline-flex items-center px-6 py-3 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-300"
+                        class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-300"
                     >
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
                         </svg>
                         KIRI
@@ -37,28 +37,28 @@
                     <button
                         type="button"
                         @click="dataRimKanan()"
-                        class="inline-flex items-center px-6 py-3 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-300"
+                        class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-300"
                     >
                         KANAN
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                         </svg>
                     </button>
                 </div>
 
                 <!-- Grid of rim selection buttons -->
-                <div class="grid grid-cols-4 gap-3">
+                <div class="grid grid-cols-5 gap-2">
                     <template v-for="n in dataPrintUlang" :key="n.no_rim">
                         <!-- In Progress -->
                         <button
                             v-if="n.np_users && n.start && !n.finish"
                             type="button"
                             @click="pilihRim(n.no_rim, n.np_users)"
-                            class="p-3 rounded-lg bg-amber-100 hover:bg-amber-200 transition-colors"
+                            class="p-2 rounded-lg bg-amber-100 hover:bg-amber-200 transition-colors"
                         >
                             <div class="flex flex-col items-center">
-                                <span class="font-medium text-amber-800">{{ n.np_users }}</span>
-                                <span class="font-bold text-green-800">{{ n.no_rim }}</span>
+                                <span class="text-sm font-medium text-amber-800">{{ n.np_users }}</span>
+                                <span class="text-sm font-bold text-green-800">{{ n.no_rim }}</span>
                             </div>
                         </button>
 
@@ -67,11 +67,11 @@
                             v-else-if="n.np_users && n.start && n.finish"
                             type="button"
                             @click="pilihRim(n.no_rim, n.np_users)"
-                            class="p-3 rounded-lg bg-emerald-100 hover:bg-emerald-200 transition-colors"
+                            class="p-2 rounded-lg bg-emerald-100 hover:bg-emerald-200 transition-colors"
                         >
                             <div class="flex flex-col items-center">
-                                <span class="font-medium text-emerald-800">{{ n.np_users }}</span>
-                                <span class="font-bold text-indigo-800">{{ n.no_rim }}</span>
+                                <span class="text-sm font-medium text-emerald-800">{{ n.np_users }}</span>
+                                <span class="text-sm font-bold text-indigo-800">{{ n.no_rim }}</span>
                             </div>
                         </button>
 
@@ -80,11 +80,11 @@
                             v-else-if="n.no_rim === 999"
                             type="button"
                             @click="pilihRim(n.no_rim, n.np_users)"
-                            class="p-3 rounded-lg bg-violet-100 hover:bg-violet-200 transition-colors"
+                            class="p-2 rounded-lg bg-violet-100 hover:bg-violet-200 transition-colors"
                         >
                             <div class="flex flex-col items-center">
-                                <span class="font-medium text-violet-800">{{ n.np_users }}</span>
-                                <span class="font-bold text-violet-900">Inschiet</span>
+                                <span class="text-sm font-medium text-violet-800">{{ n.np_users }}</span>
+                                <span class="text-sm font-bold text-violet-900">Inschiet</span>
                             </div>
                         </button>
 
@@ -93,20 +93,20 @@
                             v-else
                             type="button"
                             disabled
-                            class="p-3 rounded-lg bg-gray-100 cursor-not-allowed"
+                            class="p-2 rounded-lg bg-gray-100 cursor-not-allowed"
                         >
                             <div class="flex flex-col items-center">
-                                <span class="font-medium text-gray-400">-</span>
-                                <span class="font-bold text-gray-500">{{ n.no_rim }}</span>
+                                <span class="text-sm font-medium text-gray-400">-</span>
+                                <span class="text-sm font-bold text-gray-500">{{ n.no_rim }}</span>
                             </div>
                         </button>
                     </template>
                 </div>
 
                 <!-- Rim number and operator inputs -->
-                <div class="grid grid-cols-2 gap-6">
+                <div class="grid grid-cols-2 gap-4">
                     <div>
-                        <InputLabel for="noRimPU" value="Nomor Rim" class="mb-2" />
+                        <InputLabel for="noRimPU" value="Nomor Rim" class="mb-1 text-sm" />
                         <template v-if="formPrintUlang.noRim === 999">
                             <TextInput
                                 id="noRimPU"
@@ -117,7 +117,7 @@
                             <TextInput
                                 type="text"
                                 value="Inschiet"
-                                class="w-full bg-gray-50 text-center"
+                                class="w-full bg-gray-50 text-center text-sm"
                                 disabled
                             />
                         </template>
@@ -126,7 +126,7 @@
                                 id="noRimPU"
                                 type="number"
                                 v-model="formPrintUlang.noRim"
-                                class="w-full bg-gray-50 text-center"
+                                class="w-full bg-gray-50 text-center text-sm"
                                 required
                                 disabled
                             />
@@ -134,19 +134,19 @@
                     </div>
 
                     <div>
-                        <InputLabel for="npPetugasPU" value="NP Petugas" class="mb-2" />
+                        <InputLabel for="npPetugasPU" value="NP Petugas" class="mb-1 text-sm" />
                         <TextInput
                             id="npPetugasPU"
                             type="text"
                             v-model="formPrintUlang.npPetugas"
-                            class="w-full uppercase"
+                            class="w-full uppercase text-sm"
                             required
                         />
                     </div>
                 </div>
 
                 <!-- Action buttons -->
-                <div class="flex justify-between mt-6">
+                <div class="flex justify-between mt-4">
                     <button
                         type="button"
                         class="px-6 py-2.5 text-red-600 bg-red-50 hover:bg-red-100 rounded-lg transition-colors"

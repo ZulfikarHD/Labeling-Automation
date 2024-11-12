@@ -72,12 +72,12 @@ const logout = () => {
                             <div v-show="dropdowns.orderBesar"
                                 class="absolute mt-2 w-56 bg-white rounded-lg shadow-lg border border-slate-100 overflow-hidden">
                                 <NavLink :href="route('orderBesar.poSiapVerif')"
-                                        class="flex items-center gap-3 px-4 py-3 hover:bg-slate-50 transition-colors">
+                                        class="flex items-center gap-3 px-4 py-3 hover:bg-slate-50 transition-colors w-full">
                                     <FileCheck class="w-4 h-4 text-slate-500" />
                                     <span class="text-sm text-slate-600">Order Siap Periksa</span>
                                 </NavLink>
                                 <NavLink :href="route('orderBesar.registerNomorPo')"
-                                        class="flex items-center gap-3 px-4 py-3 hover:bg-slate-50 transition-colors">
+                                        class="flex items-center gap-3 px-4 py-3 hover:bg-slate-50 transition-colors w-full">
                                     <ClipboardList class="w-4 h-4 text-slate-500" />
                                     <span class="text-sm text-slate-600">Register Nomor PO</span>
                                 </NavLink>
@@ -106,7 +106,7 @@ const logout = () => {
                             <div v-show="dropdowns.orderKecil"
                                 class="absolute mt-2 w-48 bg-white rounded-lg shadow-lg border border-slate-100 overflow-hidden">
                                 <NavLink :href="route('orderKecil.cetakLabel')"
-                                        class="flex items-center gap-3 px-4 py-3 hover:bg-slate-50 transition-colors">
+                                        class="flex items-center gap-3 px-4 py-3 hover:bg-slate-50 transition-colors  w-full">
                                     <FileText class="w-4 h-4 text-slate-500" />
                                     <span class="text-sm text-slate-600">Cetak Label</span>
                                 </NavLink>
