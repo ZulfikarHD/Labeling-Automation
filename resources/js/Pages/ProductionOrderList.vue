@@ -6,7 +6,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import TextInput from "@/Components/TextInput.vue";
 import Modal from "@/Components/Modal.vue";
 import PaginateLink from "@/Components/PaginateLink.vue";
-import { Search, Printer, Home, Trash2, Eye, Filter } from 'lucide-vue-next';
+import { Search, Printer, Home, Trash2, Eye, Filter, Edit } from 'lucide-vue-next';
 
 const swal = inject("$swal");
 
@@ -213,7 +213,7 @@ const deleteOrder = () => {
                                         {{ product.status == 2 ? formatDate(product.updated_at) : '-' }}
                                     </td>
                                     <td class="px-4 py-4 text-sm text-center">
-                                        <div class="flex items-center justify-center gap-2">
+                                        <div class="flex items-center justify-center">
                                             <Link
                                                 :href="route('dataPo.show', { team: form.team, no_po: product.no_po })"
                                                 class="p-1.5 text-blue-600 transition-colors duration-200 rounded-lg hover:bg-blue-50"
@@ -228,6 +228,14 @@ const deleteOrder = () => {
                                                 title="Cetak Label"
                                             >
                                                 <Printer class="w-5 h-5" />
+                                            </Link>
+
+                                            <Link
+                                                :href="route('orderBesar.cetakLabel', { team: product.assigned_team, id: product.id })"
+                                                class="p-1.5 text-amber-600 transition-colors duration-200 rounded-lg hover:bg-amber-50"
+                                                title="Edit"
+                                            >
+                                                <Edit class="w-5 h-5" />
                                             </Link>
 
                                             <button
