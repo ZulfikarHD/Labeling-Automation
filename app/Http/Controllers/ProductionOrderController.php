@@ -57,8 +57,8 @@ class ProductionOrderController extends Controller
                                         'no_po' => $q->no_po,
                                         'no_obc'=> $q->no_obc,
                                         'workstation' => $q->workstation->workstation,
-                                        'created_at'  => $q->created_at->format('d-m-y h:m:i'),
-                                        'updated_at'  => $q->updated_at->format('d-m-y h:m:i'),
+                                        'created_at'  => $q->created_at,
+                                        'updated_at'  => $q->updated_at,
                                         'status'    => $q->status,
                                         'assigned_team' => $q->assigned_team,
                                     ];
