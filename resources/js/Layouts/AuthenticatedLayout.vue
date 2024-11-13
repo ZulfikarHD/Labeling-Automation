@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from "vue";
+import { ref, watch } from "vue";
 import NavLink from "@/Components/NavLink.vue";
 import { Settings, ChevronDown, FileText, FileCheck, ClipboardList, Users, FileSpreadsheet, Activity, KeyRound, LogOut, Sun, Moon } from "lucide-vue-next";
 import { router, usePage } from "@inertiajs/vue3";
@@ -8,20 +8,29 @@ const { props } = usePage();
 const role = props.auth.user.role;
 
 // Dark mode state
-const isDark = ref(localStorage.getItem('darkMode') === 'true');
+const isDark = ref(localStorage.getItem('darkMode') === 'true' ||
+                  (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches));
 
 // Toggle dark mode
 const toggleDarkMode = () => {
     isDark.value = !isDark.value;
     localStorage.setItem('darkMode', isDark.value);
-    document.documentElement.classList.toggle('dark');
+    document.documentElement.classList.toggle('dark', isDark.value);
 };
 
 // Initialize dark mode on mount
 if (typeof window !== 'undefined') {
-    if (isDark.value) {
-        document.documentElement.classList.add('dark');
-    }
+    document.documentElement.classList.toggle('dark', isDark.value);
+}
+
+// Watch for system preference changes
+if (typeof window !== 'undefined') {
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+        if (!localStorage.getItem('darkMode')) { // Only change if manual toggle is not set
+            isDark.value = e.matches;
+            document.documentElement.classList.toggle('dark', isDark.value);
+        }
+    });
 }
 
 // Use single dropdown state object
