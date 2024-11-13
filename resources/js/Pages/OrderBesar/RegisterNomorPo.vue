@@ -49,6 +49,7 @@ const fetchData = () => {
         updateConfirmationMessage();
     }).catch(() => {
         errorPo.value = "Nomor PO Tidak Ditemukan";
+
         resetForm();
     }).finally(() => {
         isLoading.value = false;
@@ -90,18 +91,18 @@ const updateConfirmationMessage = () => {
     const firstThreeLetters = form.obc.substring(0, 3);
     let daerahOrder;
     if (firstThreeLetters === "PST") {
-        daerahOrder = "<span class='text-blue-500 font-semibold'>Pusat</span>";
+        daerahOrder = "<span class='text-blue-500 dark:text-blue-400 font-semibold'>Pusat</span>";
     } else {
-        daerahOrder = "<span class='text-red-500 font-semibold'>Daerah</span>";
+        daerahOrder = "<span class='text-red-500 dark:text-red-400 font-semibold'>Daerah</span>";
     }
 
     const seriValue = form.obc.substring(5, 4);
     if (seriValue == 3) {
-        seri.value = `<span class='text-blue-500 font-semibold'>${seriValue}</span>`;
+        seri.value = `<span class='text-blue-500 dark:text-blue-400 font-semibold'>${seriValue}</span>`;
     } else if (seriValue == 2) {
-        seri.value = `<span class='text-green-500 font-semibold'>${seriValue}</span>`;
+        seri.value = `<span class='text-green-500 dark:text-green-400 font-semibold'>${seriValue}</span>`;
     } else {
-        seri.value = `<span class='text-red-500 font-semibold'>1</span>`;
+        seri.value = `<span class='text-red-500 dark:text-red-400 font-semibold'>1</span>`;
     }
 
     confirmationMessage.value = `Order ${daerahOrder} Seri ${seri.value} ?`;
@@ -158,18 +159,18 @@ function submit() {
     <!-- Content -->
     <AuthenticatedLayout>
         <div
-            class="w-full max-w-5xl bg-white rounded-lg shadow-md py-12 px-6 mx-auto mt-10 flex flex-col gap-3"
+            class="w-full max-w-5xl bg-white dark:bg-gray-800 rounded-lg shadow-md py-12 px-6 mx-auto mt-10 flex flex-col gap-3"
         >
         <!-- Title -->
-            <h1 class="text-3xl font-bold text-[#4B5563] my-auto text-center mb-4 pb-4 border-b border-sky-600">Register Nomor Production Order</h1>
+            <h1 class="text-3xl font-bold text-gray-700 dark:text-gray-200 my-auto text-center mb-4 pb-4 border-b border-sky-600 dark:border-sky-500">Register Nomor Production Order</h1>
 
             <form @submit.prevent="submit" class="flex flex-col text-lg">
                 <div class="flex flex-col">
-                    <InputLabel for="teamVerif" value="Team Periksa" />
+                    <InputLabel for="teamVerif" value="Team Periksa" class="dark:text-gray-300" />
                     <select
                         id="teamVerif"
                         v-model="form.team"
-                        class="mb-2 text-center bg-gray-50 text-indigo-600 border focus:border-transparent border-gray-300 sm:text-sm rounded-lg ring ring-transparent focus:ring-1 focus:outline-none focus:ring-sky-400 block w-full p-2.5 rounded-l-lg py-3 px-4 font-semibold">
+                        class="mb-2 text-center bg-gray-50 dark:bg-gray-700 text-indigo-600 dark:text-indigo-400 border dark:border-gray-600 focus:border-transparent border-gray-300 sm:text-sm rounded-lg ring ring-transparent focus:ring-1 focus:outline-none focus:ring-sky-400 block w-full p-2.5 rounded-l-lg py-3 px-4 font-semibold">
                         <option v-for="workstation in props.workstation"
                             :value="workstation.id"
                             :key="workstation.id">{{ workstation.workstation }}</option>
@@ -178,7 +179,7 @@ function submit() {
 
                 <!-- Input Nomor Po -->
                 <div class="flex flex-col">
-                    <InputLabel for="nomorPo" value="Nomor Po" />
+                    <InputLabel for="nomorPo" value="Nomor Po" class="dark:text-gray-300" />
                     <TextInput
                         @keyup="debouncedFetchData"
                         autofocus
@@ -186,7 +187,7 @@ function submit() {
                         v-model="form.po"
                         type="number"
                         placeholder="Masukan Nomor PO"
-                        class="placeholder:text-center text-center text-xl font-bold"
+                        class="placeholder:text-center text-center text-xl font-bold dark:bg-gray-700 dark:text-gray-300"
                     />
                 </div>
 
@@ -194,7 +195,7 @@ function submit() {
                 <div class="flex gap-3 mt-4">
                     <!-- Nomor Obc -->
                     <div class="flex flex-col flex-grow">
-                        <InputLabel for="nomorObc" value="Nomor OBC" />
+                        <InputLabel for="nomorObc" value="Nomor OBC" class="dark:text-gray-300" />
                         <TextInput
                             id="nomorObc"
                             @input="cekSpec()"
@@ -202,25 +203,26 @@ function submit() {
                             type="text"
                             placeholder="Masukan Nomor OBC"
                             required
+                            class="dark:bg-gray-700 dark:text-gray-300"
                         />
                     </div>
 
                     <!-- Jml Cetak -->
                     <div class="flex flex-col flex-grow">
-                        <InputLabel for="jmlLembar" value="Jumlah Cetak" />
+                        <InputLabel for="jmlLembar" value="Jumlah Cetak" class="dark:text-gray-300" />
                         <TextInput
                             @input="calcEndRim()"
                             id="jmlLembar"
                             v-model="form.jml_lembar"
                             type="text"
                             placeholder="Masukan Nomor PO"
-                            class="placeholder:text-center text-center text-base font-medium"
+                            class="placeholder:text-center text-center text-base font-medium dark:bg-gray-700 dark:text-gray-300"
                         />
                     </div>
 
                     <!-- Inschiet -->
                     <div class="flex flex-col flex-grow">
-                        <InputLabel for="inschiet" value="Inschiet" />
+                        <InputLabel for="inschiet" value="Inschiet" class="dark:text-gray-300" />
                         <TextInput
                             @input="calcEndRim()"
                             id="inschiet"
@@ -228,20 +230,20 @@ function submit() {
                             type="number"
                             min="0"
                             placeholder="Masukan Nomor PO"
-                        class="placeholder:text-center text-center text-base font-medium"
+                            class="placeholder:text-center text-center text-base font-medium dark:bg-gray-700 dark:text-gray-300"
                         />
                     </div>
 
                     <!-- Jml Rim -->
                     <div class="flex flex-col flex-grow">
-                        <InputLabel for="jmlRim" value="Jumlah RIM" />
+                        <InputLabel for="jmlRim" value="Jumlah RIM" class="dark:text-gray-300" />
                         <TextInput
                             id="jmlRim"
                             v-model="form.jml_rim"
                             type="number"
                             min="0"
                             placeholder="Masukan Nomor PO"
-                            class="bg-gray-200 text-center"
+                            class="bg-gray-200 dark:bg-gray-600 text-center dark:text-gray-300"
                             disabled
                         />
                     </div>
@@ -251,7 +253,7 @@ function submit() {
                 <div class="flex gap-3 mt-4">
                     <!-- Start Rim -->
                     <div class="flex flex-col flex-grow">
-                        <InputLabel for="rimStart" value="Nomor Rim Awal" />
+                        <InputLabel for="rimStart" value="Nomor Rim Awal" class="dark:text-gray-300" />
                         <TextInput
                             @input="calcEndRim()"
                             id="rimStart"
@@ -259,20 +261,20 @@ function submit() {
                             type="number"
                             min="0"
                             placeholder="Masukan Nomor RIM Pertama"
-                            class="placeholder:text-center text-center text-base"
+                            class="placeholder:text-center text-center text-base dark:bg-gray-700 dark:text-gray-300"
                         />
                     </div>
 
                     <!-- End Rim -->
                     <div class="flex flex-col flex-grow">
-                        <InputLabel for="rimEnd" value="Nomor Rim Terakhir" />
+                        <InputLabel for="rimEnd" value="Nomor Rim Terakhir" class="dark:text-gray-300" />
                         <TextInput
                             id="rimEnd"
                             v-model="form.end_rim"
                             type="number"
                             min="0"
                             placeholder="Masukan Nomor Rim Terakhir"
-                            class="placeholder:text-center text-center text-base"
+                            class="placeholder:text-center text-center text-base dark:bg-gray-700 dark:text-gray-300"
                         />
                     </div>
                 </div>
@@ -281,14 +283,14 @@ function submit() {
                  <div class="flex gap-4 mt-8">
                      <button
                          type="submit"
-                         class="bg-green-500 text-white font-bold py-2 px-4 rounded-md mt-4 hover:bg-green-600  transition ease-in-out duration-150 flex-auto"
+                         class="bg-green-500 dark:bg-green-600 text-white font-bold py-2 px-4 rounded-md mt-4 hover:bg-green-600 dark:hover:bg-green-700 transition ease-in-out duration-150 flex-auto"
                      >
                          Buat Label
                      </button>
                      <button
                         @click="resetForm()"
                          type="button"
-                         class="bg-violet-500 text-white font-bold py-2 px-4 rounded-md mt-4 hover:bg-violet-600  transition ease-in-out duration-150 flex-auto"
+                         class="bg-violet-500 dark:bg-violet-600 text-white font-bold py-2 px-4 rounded-md mt-4 hover:bg-violet-600 dark:hover:bg-violet-700 transition ease-in-out duration-150 flex-auto"
                      >
                          Clear
                      </button>

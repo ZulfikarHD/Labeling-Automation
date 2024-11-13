@@ -44,10 +44,10 @@ const changeStateDefaultPassword = () => {
     <Head title="Create User"/>
     <AuthenticatedLayout>
         <div
-            class="w-full max-w-xl bg-white rounded-lg shadow-md p-6 mx-auto mt-24"
+            class="w-full max-w-xl bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mx-auto mt-24"
         >
         <!-- Title -->
-            <h2 class="text-2xl font-bold text-gray-800 mb-4">Create User</h2>
+            <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-4">Create User</h2>
 
             <form @submit.prevent="submit" class="flex flex-col">
                 <!-- Input NP -->
@@ -56,14 +56,14 @@ const changeStateDefaultPassword = () => {
                     v-on:keyup="useDefaultPassword"
                     maxlength="4"
                     type="text"
-                    class="bg-gray-100 text-gray-800 border-0 rounded-md p-2 mb-4 focus:bg-gray-200 focus:outline-none focus:ring-1 focus:ring-blue-500 transition ease-in-out duration-150"
+                    class="bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 border-0 rounded-md p-2 mb-4 focus:bg-gray-200 dark:focus:bg-gray-600 focus:outline-none focus:ring-1 focus:ring-blue-500 transition ease-in-out duration-150"
                     placeholder="NP User"
                 />
 
                 <!-- Select Role User -->
                 <select
                     v-model="userForm.roleUser"
-                    class="bg-gray-100 text-gray-800 border-0 rounded-md p-2 mb-4 focus:bg-gray-200 focus:outline-none focus:ring-1 focus:ring-blue-500 transition ease-in-out duration-150"
+                    class="bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 border-0 rounded-md p-2 mb-4 focus:bg-gray-200 dark:focus:bg-gray-600 focus:outline-none focus:ring-1 focus:ring-blue-500 transition ease-in-out duration-150"
                 >
                     <option value="0">User</option>
                     <option value="1">Admin</option>
@@ -72,7 +72,7 @@ const changeStateDefaultPassword = () => {
                 <!-- Select Team / Workstation User -->
                 <select
                     v-model="userForm.team"
-                    class="bg-gray-100 text-gray-800 border-0 rounded-md p-2 mb-4 focus:bg-gray-200 focus:outline-none focus:ring-1 focus:ring-blue-500 transition ease-in-out duration-150"
+                    class="bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 border-0 rounded-md p-2 mb-4 focus:bg-gray-200 dark:focus:bg-gray-600 focus:outline-none focus:ring-1 focus:ring-blue-500 transition ease-in-out duration-150"
                 >
                     <option v-for="team in props.listTeam" :value="team.id">{{ team.workstation }}</option>
                 </select>
@@ -83,7 +83,7 @@ const changeStateDefaultPassword = () => {
                     <input
                         v-model="userForm.password"
                         :type="showPassword ? 'text' : 'password'"
-                        class="bg-gray-100 w-full text-gray-800 border-0 rounded-md p-2 mb-4 focus:bg-gray-200 focus:outline-none focus:ring-1 focus:ring-blue-500 transition ease-in-out duration-150"
+                        class="bg-gray-100 dark:bg-gray-700 w-full text-gray-800 dark:text-gray-200 border-0 rounded-md p-2 mb-4 focus:bg-gray-200 dark:focus:bg-gray-600 focus:outline-none focus:ring-1 focus:ring-blue-500 transition ease-in-out duration-150"
                         placeholder="Password"
                     />
 
@@ -98,7 +98,7 @@ const changeStateDefaultPassword = () => {
                             xmlns="http://www.w3.org/2000/svg"
                             viewBox="0 0 20 20"
                             fill="currentColor"
-                            class="size-5 text-slate-500"
+                            class="size-5 text-slate-500 dark:text-slate-400"
                         >
                             <path
                                 d="M10 12.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z"
@@ -122,7 +122,7 @@ const changeStateDefaultPassword = () => {
                             xmlns="http://www.w3.org/2000/svg"
                             viewBox="0 0 20 20"
                             fill="currentColor"
-                            class="size-5 text-slate-500"
+                            class="size-5 text-slate-500 dark:text-slate-400"
                         >
                             <path
                                 fill-rule="evenodd"
@@ -143,15 +143,15 @@ const changeStateDefaultPassword = () => {
                         type="checkbox"
                         checked
                         v-on:click="changeStateDefaultPassword"
-                        class="size-4 rounded border-gray-300"
+                        class="size-4 rounded border-gray-300 dark:border-gray-600 dark:bg-gray-700"
                     />
-                    <strong>Default Password</strong>
+                    <strong class="dark:text-gray-200">Default Password</strong>
                 </div>
 
                 <!-- Submit Button -->
                 <button
                     type="submit"
-                    class="bg-gradient-to-r from-indigo-500 to-blue-500 text-white font-bold py-2 px-4 rounded-md mt-4 hover:bg-indigo-600 hover:to-blue-600 transition ease-in-out duration-150"
+                    class="bg-gradient-to-r from-indigo-500 to-blue-500 text-white font-bold py-2 px-4 rounded-md mt-4 hover:bg-indigo-600 hover:to-blue-600 transition ease-in-out duration-150 dark:from-indigo-600 dark:to-blue-600 dark:hover:from-indigo-700 dark:hover:to-blue-700"
                 >
                     Submit
                 </button>

@@ -28,10 +28,10 @@ const submit = () => {
 
     <AuthenticatedLayout>
         <div
-            class="w-full max-w-xl bg-white rounded-lg shadow-md p-6 mx-auto mt-24"
+            class="w-full max-w-xl bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mx-auto mt-24"
         >
         <!-- Title -->
-            <h2 class="text-2xl font-bold text-gray-800 mb-4">Ganti Password</h2>
+            <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-4">Ganti Password</h2>
 
             <form @submit.prevent="submit" class="flex flex-col">
                 <!-- Old Password -->
@@ -39,7 +39,7 @@ const submit = () => {
                     <input
                         v-model="formPassword.oldPassword"
                         :type="showOldPassword ? 'text' : 'password'"
-                        class="bg-gray-100 w-full text-gray-800 border-0 rounded-md p-2 mb-4 focus:bg-gray-200 focus:outline-none focus:ring-1 focus:ring-blue-500 transition ease-in-out duration-150"
+                        class="bg-gray-100 dark:bg-gray-700 w-full text-gray-800 dark:text-gray-200 border-0 rounded-md p-2 mb-4 focus:bg-gray-200 dark:focus:bg-gray-600 focus:outline-none focus:ring-1 focus:ring-blue-500 transition ease-in-out duration-150"
                         placeholder="Password Lama"
                     />
 
@@ -54,7 +54,7 @@ const submit = () => {
                             xmlns="http://www.w3.org/2000/svg"
                             viewBox="0 0 20 20"
                             fill="currentColor"
-                            class="size-5 text-slate-500"
+                            class="size-5 text-slate-500 dark:text-slate-400"
                         >
                             <path
                                 d="M10 12.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z"
@@ -78,7 +78,7 @@ const submit = () => {
                             xmlns="http://www.w3.org/2000/svg"
                             viewBox="0 0 20 20"
                             fill="currentColor"
-                            class="size-5 text-slate-500"
+                            class="size-5 text-slate-500 dark:text-slate-400"
                         >
                             <path
                                 fill-rule="evenodd"
@@ -97,7 +97,7 @@ const submit = () => {
                     <input
                         v-model="formPassword.newPassword"
                         :type="showNewPassword ? 'text' : 'password'"
-                        class="bg-gray-100 w-full text-gray-800 border-0 rounded-md p-2 mb-4 focus:bg-gray-200 focus:outline-none focus:ring-1 focus:ring-blue-500 transition ease-in-out duration-150"
+                        class="bg-gray-100 dark:bg-gray-700 w-full text-gray-800 dark:text-gray-200 border-0 rounded-md p-2 mb-4 focus:bg-gray-200 dark:focus:bg-gray-600 focus:outline-none focus:ring-1 focus:ring-blue-500 transition ease-in-out duration-150"
                         placeholder="Password Baru"
                     />
 
@@ -112,7 +112,7 @@ const submit = () => {
                             xmlns="http://www.w3.org/2000/svg"
                             viewBox="0 0 20 20"
                             fill="currentColor"
-                            class="size-5 text-slate-500"
+                            class="size-5 text-slate-500 dark:text-slate-400"
                         >
                             <path
                                 d="M10 12.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z"
@@ -136,7 +136,7 @@ const submit = () => {
                             xmlns="http://www.w3.org/2000/svg"
                             viewBox="0 0 20 20"
                             fill="currentColor"
-                            class="size-5 text-slate-500"
+                            class="size-5 text-slate-500 dark:text-slate-400"
                         >
                             <path
                                 fill-rule="evenodd"
@@ -155,7 +155,7 @@ const submit = () => {
                     <input
                         v-model="formPassword.confirmPassword"
                         :type="showConfirmPassword ? 'text' : 'password'"
-                        class="bg-gray-100 w-full text-gray-800 border-0 rounded-md p-2 mb-4 focus:bg-gray-200 focus:outline-none focus:ring-1 focus:ring-blue-500 transition ease-in-out duration-150"
+                        class="bg-gray-100 dark:bg-gray-700 w-full text-gray-800 dark:text-gray-200 border-0 rounded-md p-2 mb-4 focus:bg-gray-200 dark:focus:bg-gray-600 focus:outline-none focus:ring-1 focus:ring-blue-500 transition ease-in-out duration-150"
                         placeholder="Konfirmasi Password Baru"
                     />
 
@@ -170,7 +170,7 @@ const submit = () => {
                             xmlns="http://www.w3.org/2000/svg"
                             viewBox="0 0 20 20"
                             fill="currentColor"
-                            class="size-5 text-slate-500"
+                            class="size-5 text-slate-500 dark:text-slate-400"
                         >
                             <path
                                 d="M10 12.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z"
@@ -194,7 +194,7 @@ const submit = () => {
                             xmlns="http://www.w3.org/2000/svg"
                             viewBox="0 0 20 20"
                             fill="currentColor"
-                            class="size-5 text-slate-500"
+                            class="size-5 text-slate-500 dark:text-slate-400"
                         >
                             <path
                                 fill-rule="evenodd"
@@ -211,7 +211,7 @@ const submit = () => {
                 <!-- Submit Button -->
                 <button
                     type="submit"
-                    class="bg-gradient-to-r from-indigo-500 to-blue-500 text-white font-bold py-2 px-4 rounded-md mt-4 hover:bg-indigo-600 hover:to-blue-600 transition ease-in-out duration-150"
+                    class="bg-gradient-to-r from-indigo-500 to-blue-500 text-white font-bold py-2 px-4 rounded-md mt-4 hover:bg-indigo-600 hover:to-blue-600 transition ease-in-out duration-150 dark:from-indigo-600 dark:to-blue-600 dark:hover:from-indigo-700 dark:hover:to-blue-700"
                 >
                     Submit
                 </button>

@@ -84,23 +84,23 @@ const deleteOrder = () => {
 
     <!-- Delete Modal -->
     <Modal :show="deleteModal" @close="deleteModal = !deleteModal">
-        <div class="flex flex-col gap-4 p-6">
+        <div class="flex flex-col gap-4 p-6 dark:bg-slate-800">
             <div class="flex items-start gap-4">
-                <div class="p-3 bg-red-100/50 rounded-xl">
-                    <Trash2 class="w-6 h-6 text-red-600" />
+                <div class="p-3 bg-red-100/50 dark:bg-red-900/50 rounded-xl">
+                    <Trash2 class="w-6 h-6 text-red-600 dark:text-red-400" />
                 </div>
                 <div class="flex flex-col gap-2">
-                    <h3 class="text-xl font-semibold text-slate-900">
+                    <h3 class="text-xl font-semibold text-slate-900 dark:text-white">
                         Hapus Order {{ form.po }}?
                     </h3>
-                    <p class="text-sm leading-relaxed text-slate-500">
+                    <p class="text-sm leading-relaxed text-slate-500 dark:text-slate-400">
                         Peringatan: Menghapus order ini akan menghapus seluruh data label terkait, baik yang sudah dikerjakan maupun belum. Data yang dihapus tidak dapat dikembalikan.
                     </p>
                 </div>
             </div>
-            <div class="flex justify-end gap-3 pt-4 mt-4 border-t border-slate-200">
+            <div class="flex justify-end gap-3 pt-4 mt-4 border-t border-slate-200 dark:border-slate-700">
                 <button
-                    class="px-4 py-2 text-sm font-medium text-slate-600 transition-colors duration-200 hover:text-slate-900"
+                    class="px-4 py-2 text-sm font-medium text-slate-600 dark:text-slate-400 transition-colors duration-200 hover:text-slate-900 dark:hover:text-white"
                     @click.prevent="deleteModal = !deleteModal"
                 >
                     Batal
@@ -108,7 +108,7 @@ const deleteOrder = () => {
                 <button
                     type="button"
                     @click.prevent="deleteOrder"
-                    class="px-4 py-2 text-sm font-medium text-white transition-all duration-200 bg-red-500 rounded-lg hover:bg-red-600 focus:ring-2 focus:ring-red-200"
+                    class="px-4 py-2 text-sm font-medium text-white transition-all duration-200 bg-red-500 rounded-lg hover:bg-red-600 focus:ring-2 focus:ring-red-200 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900"
                 >
                     Hapus Order
                 </button>
@@ -121,8 +121,8 @@ const deleteOrder = () => {
             <div class="space-y-8">
                 <!-- Page Header -->
                 <div class="flex flex-col gap-2">
-                    <h1 class="text-2xl font-bold text-slate-900">Daftar Order Produksi</h1>
-                    <p class="text-slate-500">Kelola dan pantau order produksi yang labelnya sudah dibuat</p>
+                    <h1 class="text-2xl font-bold text-slate-900 dark:text-white">Daftar Order Produksi</h1>
+                    <p class="text-slate-500 dark:text-slate-400">Kelola dan pantau order produksi yang labelnya sudah dibuat</p>
                 </div>
 
                 <!-- Filters & Search -->
@@ -135,7 +135,7 @@ const deleteOrder = () => {
                                 ref="team"
                                 v-model="form.team"
                                 @change="filterTeam"
-                                class="w-full pl-10 pr-4 py-2 text-sm bg-white border rounded-xl border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all duration-200"
+                                class="w-full pl-10 pr-4 py-2 text-sm bg-white dark:bg-slate-800 border rounded-xl border-slate-200 dark:border-slate-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900 transition-all duration-200 dark:text-white"
                             >
                                 <option value="0">Semua Tim</option>
                                 <option
@@ -156,71 +156,71 @@ const deleteOrder = () => {
                             v-model="form.search"
                             type="search"
                             placeholder="Cari order..."
-                            class="w-full pl-10 rounded-xl border-slate-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                            class="w-full pl-10 rounded-xl border-slate-200 dark:border-slate-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900 dark:bg-slate-800 dark:text-white"
                         />
                     </div>
                 </div>
 
                 <!-- Table Card -->
-                <div class="overflow-hidden bg-white rounded-2xl shadow-sm border border-slate-200">
+                <div class="overflow-hidden bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700">
                     <div class="overflow-x-auto">
-                        <table class="min-w-full divide-y divide-slate-200">
-                            <thead class="bg-slate-50">
+                        <table class="min-w-full divide-y divide-slate-200 dark:divide-slate-700">
+                            <thead class="bg-slate-50 dark:bg-slate-700/50">
                                 <tr>
-                                    <th scope="col" class="px-4 py-4 text-xs font-semibold text-slate-500 uppercase text-center">No</th>
-                                    <th scope="col" class="px-4 py-4 text-xs font-semibold text-slate-500 uppercase text-left">Nomor PO</th>
-                                    <th scope="col" class="px-4 py-4 text-xs font-semibold text-slate-500 uppercase text-left">OBC</th>
-                                    <th scope="col" class="px-4 py-4 text-xs font-semibold text-slate-500 uppercase text-center">Tim</th>
-                                    <th scope="col" class="px-4 py-4 text-xs font-semibold text-slate-500 uppercase text-center">Tanggal Dibuat</th>
-                                    <th scope="col" class="px-4 py-4 text-xs font-semibold text-slate-500 uppercase text-center">Status</th>
-                                    <th scope="col" class="px-4 py-4 text-xs font-semibold text-slate-500 uppercase text-center">Selesai</th>
-                                    <th scope="col" class="px-4 py-4 text-xs font-semibold text-slate-500 uppercase text-center">Aksi</th>
+                                    <th scope="col" class="px-4 py-4 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase text-center">No</th>
+                                    <th scope="col" class="px-4 py-4 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase text-left">Nomor PO</th>
+                                    <th scope="col" class="px-4 py-4 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase text-left">OBC</th>
+                                    <th scope="col" class="px-4 py-4 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase text-center">Tim</th>
+                                    <th scope="col" class="px-4 py-4 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase text-center">Tanggal Dibuat</th>
+                                    <th scope="col" class="px-4 py-4 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase text-center">Status</th>
+                                    <th scope="col" class="px-4 py-4 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase text-center">Selesai</th>
+                                    <th scope="col" class="px-4 py-4 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase text-center">Aksi</th>
                                 </tr>
                             </thead>
-                            <tbody class="divide-y divide-slate-200">
+                            <tbody class="divide-y divide-slate-200 dark:divide-slate-700">
                                 <tr
                                     v-for="(product, index) in listProduct.data"
                                     :key="index"
-                                    class="hover:bg-slate-100 transition-colors duration-150"
+                                    class="hover:bg-slate-100 dark:hover:bg-slate-700/50 transition-colors duration-150"
                                 >
-                                    <td class="px-4 py-4 text-sm text-center text-slate-500">
+                                    <td class="px-4 py-4 text-sm text-center text-slate-500 dark:text-slate-400">
                                         {{ listProduct.current_page == 1 ? index + 1 : index + 1 + listProduct.current_page * 10 }}
                                     </td>
-                                    <td class="px-4 py-4 text-sm font-medium text-slate-900">
+                                    <td class="px-4 py-4 text-sm font-medium text-slate-900 dark:text-white">
                                         {{ product.no_po }}
                                     </td>
                                     <td class="px-4 py-4">
-                                        <span :class="product.no_obc.substr(4, 1) == 3 ? ' text-red-700' : ' text-blue-700'"
+                                        <span :class="product.no_obc.substr(4, 1) == 3 ? ' text-red-700 dark:text-red-400' : ' text-blue-700 dark:text-blue-400'"
                                               class="px-2.5 py-1 text-xs font-medium">
                                             {{ product.no_obc }}
                                         </span>
                                     </td>
-                                    <td class="px-4 py-4 text-sm text-center text-slate-500">
+                                    <td class="px-4 py-4 text-sm text-center text-slate-500 dark:text-slate-400">
                                         {{ product.workstation }}
                                     </td>
-                                    <td class="px-4 py-4 text-sm text-center text-slate-500">
+                                    <td class="px-4 py-4 text-sm text-center text-slate-500 dark:text-slate-400">
                                         {{ formatDate(product.created_at) }}
                                     </td>
                                     <td class="px-4 py-4 text-sm text-center">
                                         <span
                                             :class="{
-                                                'bg-yellow-100 text-yellow-700': product.status == 1,
-                                                'bg-slate-100 text-slate-700': product.status == 0,
-                                                'bg-green-100 text-green-700': product.status == 2
+                                                'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/50 dark:text-yellow-400': product.status == 1,
+                                                'bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-300': product.status == 0,
+                                                'bg-green-100 text-green-700 dark:bg-green-900/50 dark:text-green-400': product.status == 2
                                             }"
                                             class="inline-flex px-2.5 py-1 text-xs font-medium rounded-full"
                                         >
                                             {{ product.status == 1 ? 'Sedang Diperiksa' : product.status == 0 ? 'Siap Diperiksa' : 'Selesai' }}
                                         </span>
                                     </td>
-                                    <td class="px-4 py-4 text-sm text-center text-slate-500">
+                                    <td class="px-4 py-4 text-sm text-center text-slate-500 dark:text-slate-400">
                                         {{ product.status == 2 ? formatDate(product.updated_at) : '-' }}
                                     </td>
                                     <td class="px-4 py-4 text-sm text-center">
                                         <div class="flex items-center justify-center">
                                             <Link
                                                 :href="route('dataPo.show', { team: form.team, no_po: product.no_po })"
-                                                class="p-1.5 text-blue-600 transition-colors duration-200 rounded-lg hover:bg-blue-50"
+                                                class="p-1.5 text-blue-600 dark:text-blue-400 transition-colors duration-200 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/50"
                                                 title="Lihat Detail"
                                             >
                                                 <Eye class="w-5 h-5" />
@@ -228,7 +228,7 @@ const deleteOrder = () => {
 
                                             <Link
                                                 :href="route('orderBesar.cetakLabel', { team: product.assigned_team, id: product.id })"
-                                                class="p-1.5 text-indigo-600 transition-colors duration-200 rounded-lg hover:bg-indigo-50"
+                                                class="p-1.5 text-indigo-600 dark:text-indigo-400 transition-colors duration-200 rounded-lg hover:bg-indigo-50 dark:hover:bg-indigo-900/50"
                                                 title="Cetak Label"
                                             >
                                                 <Printer class="w-5 h-5" />
@@ -236,7 +236,7 @@ const deleteOrder = () => {
 
                                             <Link
                                                 :href="route('orderBesar.cetakLabel', { team: product.assigned_team, id: product.id })"
-                                                class="p-1.5 text-amber-600 transition-colors duration-200 rounded-lg hover:bg-amber-50"
+                                                class="p-1.5 text-amber-600 dark:text-amber-400 transition-colors duration-200 rounded-lg hover:bg-amber-50 dark:hover:bg-amber-900/50"
                                                 title="Edit"
                                             >
                                                 <Edit class="w-5 h-5" />
@@ -248,7 +248,7 @@ const deleteOrder = () => {
                                                     form.id = product.id;
                                                     form.po = product.no_po;
                                                 "
-                                                class="p-1.5 text-red-600 transition-colors duration-200 rounded-lg hover:bg-red-50"
+                                                class="p-1.5 text-red-600 dark:text-red-400 transition-colors duration-200 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/50"
                                                 title="Hapus Order"
                                             >
                                                 <Trash2 class="w-5 h-5" />
@@ -260,7 +260,7 @@ const deleteOrder = () => {
                         </table>
                     </div>
 
-                    <div class="px-4 py-4 border-t border-slate-200">
+                    <div class="px-4 py-4 border-t border-slate-200 dark:border-slate-700">
                         <PaginateLink :links="listProduct.links" />
                     </div>
                 </div>
@@ -270,7 +270,7 @@ const deleteOrder = () => {
             <div class="flex justify-center mt-12">
                 <Link
                     :href="route('dashboard')"
-                    class="inline-flex items-center gap-2 px-6 py-3 text-sm font-medium text-white transition-all duration-200 bg-blue-500 rounded-xl hover:bg-blue-600 focus:ring-2 focus:ring-blue-200"
+                    class="inline-flex items-center gap-2 px-6 py-3 text-sm font-medium text-white transition-all duration-200 bg-blue-500 dark:bg-blue-600 rounded-xl hover:bg-blue-600 dark:hover:bg-blue-700 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-900"
                 >
                     <Home class="w-5 h-5" />
                     Kembali ke Dashboard

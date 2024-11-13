@@ -131,17 +131,17 @@ const submit = () => {
     </div>
 
     <AuthenticatedLayout>
-        <div class="w-full max-w-5xl bg-white rounded-lg shadow-md py-12 px-6 mx-auto mt-10 flex flex-col gap-3 mb-10">
-            <h1 class="text-3xl font-bold text-[#4B5563] my-auto text-center mb-4 pb-4 border-b border-sky-600">Cetak Label Order Kecil</h1>
+        <div class="w-full max-w-5xl bg-white dark:bg-gray-800 rounded-lg shadow-md py-12 px-6 mx-auto mt-10 flex flex-col gap-3 mb-10">
+            <h1 class="text-3xl font-bold text-[#4B5563] dark:text-gray-200 my-auto text-center mb-4 pb-4 border-b border-sky-600">Cetak Label Order Kecil</h1>
 
             <form @submit.prevent="submit" class="flex flex-col text-lg">
                 <!-- Team Selection -->
                 <div class="flex flex-col">
-                    <InputLabel for="team" value="Team Periksa" />
+                    <InputLabel for="team" value="Team Periksa" class="dark:text-gray-200" />
                     <select
                         id="team"
                         v-model="form.team"
-                        class="mb-2 text-center bg-gray-50 text-indigo-600 border focus:border-transparent border-gray-300 sm:text-sm rounded-lg ring ring-transparent focus:ring-1 focus:outline-none focus:ring-sky-400 block w-full p-2.5 rounded-l-lg py-3 px-4 font-semibold"
+                        class="mb-2 text-center bg-gray-50 dark:bg-gray-700 text-indigo-600 dark:text-indigo-400 border focus:border-transparent border-gray-300 dark:border-gray-600 sm:text-sm rounded-lg ring ring-transparent focus:ring-1 focus:outline-none focus:ring-sky-400 block w-full p-2.5 rounded-l-lg py-3 px-4 font-semibold"
                     >
                         <option v-for="team in props.listTeam" :key="team.id" :value="team.id">
                             {{ team.workstation }}
@@ -151,14 +151,14 @@ const submit = () => {
 
                 <!-- Production Order -->
                 <div class="flex flex-col mt-4">
-                    <InputLabel for="no_po" value="Nomor Production Order" />
+                    <InputLabel for="no_po" value="Nomor Production Order" class="dark:text-gray-200" />
                     <TextInput
                         id="no_po"
                         v-model="form.no_po"
                         @input="fetchData"
                         type="number"
                         placeholder="Masukkan Nomor PO"
-                        class="placeholder:text-center text-center text-xl font-bold"
+                        class="placeholder:text-center text-center text-xl font-bold dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600"
                         required
                         autofocus
                     />
@@ -167,34 +167,36 @@ const submit = () => {
                 <!-- Order Details -->
                 <div class="flex gap-3 mt-4">
                     <div class="flex flex-col flex-grow">
-                        <InputLabel for="obc" value="Nomor OBC" />
+                        <InputLabel for="obc" value="Nomor OBC" class="dark:text-gray-200" />
                         <TextInput
                             id="obc"
                             v-model="form.obc"
                             type="text"
                             placeholder="Order Bea Cukai"
+                            class="dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600"
                             required
                         />
                     </div>
 
                     <div class="flex flex-col flex-grow">
-                        <InputLabel for="jml_rim" value="Lembar / Rim" />
+                        <InputLabel for="jml_rim" value="Lembar / Rim" class="dark:text-gray-200" />
                         <TextInput
                             id="jml_rim"
                             v-model="form.jml_rim"
                             type="text"
-                            class="bg-gray-200"
+                            class="bg-gray-200 dark:bg-gray-600 dark:text-gray-200"
                             disabled
                         />
                     </div>
 
                     <div class="flex flex-col flex-grow">
-                        <InputLabel for="jml_label" value="Jumlah Label" />
+                        <InputLabel for="jml_label" value="Jumlah Label" class="dark:text-gray-200" />
                         <TextInput
                             id="jml_label"
                             v-model="form.jml_label"
                             type="number"
                             placeholder="Jumlah Label"
+                            class="dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600"
                             required
                         />
                     </div>
@@ -203,23 +205,25 @@ const submit = () => {
                 <!-- Inspector Details -->
                 <div class="flex gap-3 mt-4">
                     <div class="flex flex-col flex-grow">
-                        <InputLabel for="periksa1" value="NP Periksa 1" />
+                        <InputLabel for="periksa1" value="NP Periksa 1" class="dark:text-gray-200" />
                         <TextInput
                             id="periksa1"
                             v-model="form.periksa1"
                             type="text"
                             placeholder="Nomor Pegawai"
+                            class="dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600"
                             required
                         />
                     </div>
 
                     <div class="flex flex-col flex-grow">
-                        <InputLabel for="periksa2" value="NP Periksa 2" />
+                        <InputLabel for="periksa2" value="NP Periksa 2" class="dark:text-gray-200" />
                         <TextInput
                             id="periksa2"
                             v-model="form.periksa2"
                             type="text"
                             placeholder="Nomor Pegawai"
+                            class="dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600"
                         />
                     </div>
                 </div>
@@ -228,14 +232,14 @@ const submit = () => {
                 <div class="flex gap-4 mt-8">
                     <button
                         type="submit"
-                        class="bg-green-500 text-white font-bold py-2 px-4 rounded-md mt-4 hover:bg-green-600 transition ease-in-out duration-150 flex-auto"
+                        class="bg-green-500 dark:bg-green-600 text-white font-bold py-2 px-4 rounded-md mt-4 hover:bg-green-600 dark:hover:bg-green-700 transition ease-in-out duration-150 flex-auto"
                     >
                         Buat Label
                     </button>
                     <button
                         @click="form.reset()"
                         type="button"
-                        class="bg-violet-500 text-white font-bold py-2 px-4 rounded-md mt-4 hover:bg-violet-600 transition ease-in-out duration-150 flex-auto"
+                        class="bg-violet-500 dark:bg-violet-600 text-white font-bold py-2 px-4 rounded-md mt-4 hover:bg-violet-600 dark:hover:bg-violet-700 transition ease-in-out duration-150 flex-auto"
                     >
                         Clear
                     </button>

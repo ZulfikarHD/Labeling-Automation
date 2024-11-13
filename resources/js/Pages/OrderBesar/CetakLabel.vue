@@ -4,10 +4,10 @@
 
     <!-- Modal for reprinting labels -->
     <Modal :show="printUlangModal" @close="() => (printUlangModal = !printUlangModal)">
-        <form @submit.prevent="printUlangLabel" class="bg-white rounded-xl shadow-lg p-6">
+        <form @submit.prevent="printUlangLabel" class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
             <div class="flex flex-col gap-4">
                 <!-- Modal header -->
-                <h1 class="text-xl font-bold text-center text-gray-800">
+                <h1 class="text-xl font-bold text-center text-gray-800 dark:text-gray-200">
                     Print Ulang / Ganti Data Rim
                 </h1>
 
@@ -16,7 +16,7 @@
                     id="dataRim"
                     name="dataRim"
                     type="text"
-                    class="text-base font-semibold text-center uppercase bg-gray-50 border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                    class="text-base font-semibold text-center uppercase bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-500 dark:text-gray-200"
                     v-model="formPrintUlang.dataRim"
                     required
                     disabled
@@ -27,7 +27,7 @@
                     <button
                         type="button"
                         @click="dataRimKiri()"
-                        class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-300"
+                        class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-600 dark:bg-blue-700 rounded-lg hover:bg-blue-700 dark:hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 dark:focus:ring-blue-600"
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
@@ -37,7 +37,7 @@
                     <button
                         type="button"
                         @click="dataRimKanan()"
-                        class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:ring-4 focus:ring-blue-300"
+                        class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-blue-600 dark:bg-blue-700 rounded-lg hover:bg-blue-700 dark:hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 dark:focus:ring-blue-600"
                     >
                         KANAN
                         <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -54,11 +54,11 @@
                             v-if="n.np_users && n.start && !n.finish"
                             type="button"
                             @click="pilihRim(n.no_rim, n.np_users)"
-                            class="p-2 rounded-lg bg-amber-100 hover:bg-amber-200 transition-colors"
+                            class="p-2 rounded-lg bg-amber-100 dark:bg-amber-900 hover:bg-amber-200 dark:hover:bg-amber-800 transition-colors"
                         >
                             <div class="flex flex-col items-center">
-                                <span class="text-sm font-medium text-amber-800">{{ n.np_users }}</span>
-                                <span class="text-sm font-bold text-green-800">{{ n.no_rim }}</span>
+                                <span class="text-sm font-medium text-amber-800 dark:text-amber-200">{{ n.np_users }}</span>
+                                <span class="text-sm font-bold text-green-800 dark:text-green-200">{{ n.no_rim }}</span>
                             </div>
                         </button>
 
@@ -67,11 +67,11 @@
                             v-else-if="n.np_users && n.start && n.finish"
                             type="button"
                             @click="pilihRim(n.no_rim, n.np_users)"
-                            class="p-2 rounded-lg bg-emerald-100 hover:bg-emerald-200 transition-colors"
+                            class="p-2 rounded-lg bg-emerald-100 dark:bg-emerald-900 hover:bg-emerald-200 dark:hover:bg-emerald-800 transition-colors"
                         >
                             <div class="flex flex-col items-center">
-                                <span class="text-sm font-medium text-emerald-800">{{ n.np_users }}</span>
-                                <span class="text-sm font-bold text-indigo-800">{{ n.no_rim }}</span>
+                                <span class="text-sm font-medium text-emerald-800 dark:text-emerald-200">{{ n.np_users }}</span>
+                                <span class="text-sm font-bold text-indigo-800 dark:text-indigo-200">{{ n.no_rim }}</span>
                             </div>
                         </button>
 
@@ -80,11 +80,11 @@
                             v-else-if="n.no_rim === 999"
                             type="button"
                             @click="pilihRim(n.no_rim, n.np_users)"
-                            class="p-2 rounded-lg bg-violet-100 hover:bg-violet-200 transition-colors"
+                            class="p-2 rounded-lg bg-violet-100 dark:bg-violet-900 hover:bg-violet-200 dark:hover:bg-violet-800 transition-colors"
                         >
                             <div class="flex flex-col items-center">
-                                <span class="text-sm font-medium text-violet-800">{{ n.np_users }}</span>
-                                <span class="text-sm font-bold text-violet-900">Inschiet</span>
+                                <span class="text-sm font-medium text-violet-800 dark:text-violet-200">{{ n.np_users }}</span>
+                                <span class="text-sm font-bold text-violet-900 dark:text-violet-100">Inschiet</span>
                             </div>
                         </button>
 
@@ -93,11 +93,11 @@
                             v-else
                             type="button"
                             disabled
-                            class="p-2 rounded-lg bg-gray-100 cursor-not-allowed"
+                            class="p-2 rounded-lg bg-gray-100 dark:bg-gray-700 cursor-not-allowed"
                         >
                             <div class="flex flex-col items-center">
-                                <span class="text-sm font-medium text-gray-400">-</span>
-                                <span class="text-sm font-bold text-gray-500">{{ n.no_rim }}</span>
+                                <span class="text-sm font-medium text-gray-400 dark:text-gray-500">-</span>
+                                <span class="text-sm font-bold text-gray-500 dark:text-gray-400">{{ n.no_rim }}</span>
                             </div>
                         </button>
                     </template>
@@ -106,7 +106,7 @@
                 <!-- Rim number and operator inputs -->
                 <div class="grid grid-cols-2 gap-4">
                     <div>
-                        <InputLabel for="noRimPU" value="Nomor Rim" class="mb-1 text-sm" />
+                        <InputLabel for="noRimPU" value="Nomor Rim" class="mb-1 text-sm dark:text-gray-300" />
                         <template v-if="formPrintUlang.noRim === 999">
                             <TextInput
                                 id="noRimPU"
@@ -117,7 +117,7 @@
                             <TextInput
                                 type="text"
                                 value="Inschiet"
-                                class="w-full bg-gray-50 text-center text-sm"
+                                class="w-full bg-gray-50 dark:bg-gray-700 text-center text-sm dark:text-gray-300"
                                 disabled
                             />
                         </template>
@@ -126,7 +126,7 @@
                                 id="noRimPU"
                                 type="number"
                                 v-model="formPrintUlang.noRim"
-                                class="w-full bg-gray-50 text-center text-sm"
+                                class="w-full bg-gray-50 dark:bg-gray-700 text-center text-sm dark:text-gray-300"
                                 required
                                 disabled
                             />
@@ -134,12 +134,12 @@
                     </div>
 
                     <div>
-                        <InputLabel for="npPetugasPU" value="NP Petugas" class="mb-1 text-sm" />
+                        <InputLabel for="npPetugasPU" value="NP Petugas" class="mb-1 text-sm dark:text-gray-300" />
                         <TextInput
                             id="npPetugasPU"
                             type="text"
                             v-model="formPrintUlang.npPetugas"
-                            class="w-full uppercase text-sm"
+                            class="w-full uppercase text-sm dark:bg-gray-700 dark:text-gray-300"
                             required
                         />
                     </div>
@@ -149,13 +149,13 @@
                 <div class="flex justify-between mt-4">
                     <button
                         type="button"
-                        class="px-6 py-2.5 text-red-600 bg-red-50 hover:bg-red-100 rounded-lg transition-colors"
+                        class="px-6 py-2.5 text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900 hover:bg-red-100 dark:hover:bg-red-800 rounded-lg transition-colors"
                     >
                         Hapus
                     </button>
                     <button
                         type="submit"
-                        class="px-6 py-2.5 text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors"
+                        class="px-6 py-2.5 text-white bg-blue-600 dark:bg-blue-700 hover:bg-blue-700 dark:hover:bg-blue-800 rounded-lg transition-colors"
                     >
                         Print
                     </button>
@@ -166,29 +166,29 @@
 
     <!-- Main layout -->
     <AuthenticatedLayout>
-        <div class="w-full max-w-5xl bg-white rounded-lg py-4 shadow-md px-6 mx-auto mt-8 flex flex-col gap-3 mb-8">
+        <div class="w-full max-w-5xl bg-white dark:bg-gray-800 rounded-lg py-4 shadow-md px-6 mx-auto mt-8 flex flex-col gap-3 mb-8">
         <!-- Title -->
-            <h1 class="text-3xl font-bold text-[#4B5563] my-auto text-center mb-4 pb-4 border-b border-sky-600">
-                <span class="text-red-600" v-if="form.seri == 3">
+            <h1 class="text-3xl font-bold text-[#4B5563] dark:text-gray-200 my-auto text-center mb-4 pb-4 border-b border-sky-600">
+                <span class="text-red-600 dark:text-red-400" v-if="form.seri == 3">
                     {{ form.obc }}
                 </span>
-                <span class="text-blue-600" v-else>
+                <span class="text-blue-600 dark:text-blue-400" v-else>
                     {{ form.obc }}
                 </span>
                 -
-                <span class="text-blue-600">
+                <span class="text-blue-600 dark:text-blue-400">
                     {{ form.noPlat }}
                 </span>
             </h1>
             <form @submit.prevent="submit" class="space-y-8">
                 <!-- Team selection -->
                 <div>
-                    <InputLabel for="team" value="Team" class="text-xl font-bold mb-3" />
+                    <InputLabel for="team" value="Team" class="text-xl font-bold mb-3 dark:text-gray-300" />
                     <select
                         id="team"
                         ref="team"
                         v-model="form.team"
-                        class="w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                        class="w-full rounded-lg border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-300"
                     >
                         <option v-for="team in props.listTeam" :key="team.id" :value="team.id">
                             {{ team.workstation }}
@@ -200,39 +200,39 @@
                 <div class="grid grid-cols-3 gap-6">
                     <!-- PO Number -->
                     <div>
-                        <InputLabel for="po" value="Nomor PO" class="text-xl font-bold mb-3" />
+                        <InputLabel for="po" value="Nomor PO" class="text-xl font-bold mb-3 dark:text-gray-300" />
                         <TextInput
                             id="po"
                             ref="po"
                             v-model="form.po"
                             type="number"
-                            class="w-full bg-gray-50 text-center"
+                            class="w-full bg-gray-50 dark:bg-gray-700 text-center dark:text-gray-300"
                             disabled
                         />
                     </div>
 
                     <!-- OBC Number -->
                     <div>
-                        <InputLabel for="obc" value="Nomor OBC" class="text-xl font-bold mb-3" />
+                        <InputLabel for="obc" value="Nomor OBC" class="text-xl font-bold mb-3 dark:text-gray-300" />
                         <TextInput
                             id="obc"
                             ref="obc"
                             v-model="form.obc"
                             type="text"
-                            class="w-full bg-gray-50 text-center"
+                            class="w-full bg-gray-50 dark:bg-gray-700 text-center dark:text-gray-300"
                             disabled
                         />
                     </div>
 
                     <!-- Series -->
                     <div>
-                        <InputLabel for="seri" value="Seri" class="text-xl font-bold mb-3" />
+                        <InputLabel for="seri" value="Seri" class="text-xl font-bold mb-3 dark:text-gray-300" />
                         <TextInput
                             id="seri"
                             ref="seri"
                             v-model="form.seri"
                             type="number"
-                            class="w-full bg-gray-50 text-center"
+                            class="w-full bg-gray-50 dark:bg-gray-700 text-center dark:text-gray-300"
                             disabled
                         />
                     </div>
@@ -242,14 +242,14 @@
                 <div class="grid grid-cols-3 gap-6">
                     <!-- Rim Number -->
                     <div>
-                        <InputLabel for="no_rim" value="Nomor Rim" class="text-xl font-bold mb-3" />
+                        <InputLabel for="no_rim" value="Nomor Rim" class="text-xl font-bold mb-3 dark:text-gray-300" />
                         <template v-if="form.no_rim !== 999">
                             <TextInput
                                 id="no_rim"
                                 ref="no_rim"
                                 v-model="form.no_rim"
                                 type="number"
-                                class="w-full bg-gray-50 text-center font-bold"
+                                class="w-full bg-gray-50 dark:bg-gray-700 text-center font-bold dark:text-gray-300"
                                 disabled
                             />
                         </template>
@@ -257,7 +257,7 @@
                             <TextInput
                                 type="text"
                                 value="Inschiet"
-                                class="w-full bg-gray-50 text-center font-bold"
+                                class="w-full bg-gray-50 dark:bg-gray-700 text-center font-bold dark:text-gray-300"
                                 disabled
                             />
                         </template>
@@ -265,26 +265,26 @@
 
                     <!-- Cut Sheet -->
                     <div>
-                        <InputLabel for="lbr_ptg" value="Lembar Potong" class="text-xl font-bold mb-3" />
+                        <InputLabel for="lbr_ptg" value="Lembar Potong" class="text-xl font-bold mb-3 dark:text-gray-300" />
                         <TextInput
                             id="lbr_ptg"
                             ref="lbr_ptg"
                             v-model="form.lbr_ptg"
                             type="text"
-                            class="w-full bg-gray-50 text-center font-bold"
+                            class="w-full bg-gray-50 dark:bg-gray-700 text-center font-bold dark:text-gray-300"
                             disabled
                         />
                     </div>
 
                     <!-- Plate Code -->
                     <div>
-                        <InputLabel for="noPlat" value="Kode Plat" class="text-xl font-bold mb-3" />
+                        <InputLabel for="noPlat" value="Kode Plat" class="text-xl font-bold mb-3 dark:text-gray-300" />
                         <TextInput
                             id="noPlat"
                             ref="noPlat"
                             v-model="form.noPlat"
                             type="number"
-                            class="w-full bg-gray-50 text-center font-bold"
+                            class="w-full bg-gray-50 dark:bg-gray-700 text-center font-bold dark:text-gray-300"
                             disabled
                         />
                     </div>
@@ -292,12 +292,12 @@
 
                 <!-- Operator ID -->
                 <div>
-                    <InputLabel for="periksa1" value="Silahkan Scan NP mu" class="text-xl font-bold mb-3" />
+                    <InputLabel for="periksa1" value="Silahkan Scan NP mu" class="text-xl font-bold mb-3 dark:text-gray-300" />
                     <TextInput
                         id="periksa1"
                         type="text"
                         v-model="form.periksa1"
-                        class="w-full uppercase"
+                        class="w-full uppercase dark:bg-gray-700 dark:text-gray-300"
                         required
                         autofocus
                     />
@@ -309,20 +309,20 @@
                     <button
                         type="button"
                         @click="form.periksa1 = null"
-                        class="px-6 py-3 text-white bg-violet-600 hover:bg-violet-700 rounded-lg transition-colors"
+                        class="px-6 py-3 text-white bg-violet-600 dark:bg-violet-700 hover:bg-violet-700 dark:hover:bg-violet-800 rounded-lg transition-colors"
                     >
                         Clear
                     </button>
                     <button
                         type="submit"
-                        class="px-6 py-3 text-white bg-green-600 hover:bg-green-700 rounded-lg transition-colors"
+                        class="px-6 py-3 text-white bg-green-600 dark:bg-green-700 hover:bg-green-700 dark:hover:bg-green-800 rounded-lg transition-colors"
                     >
                         Generate
                     </button>
                     <button
                         type="button"
                         @click="[getDataRim(), (printUlangModal = !printUlangModal)]"
-                        class="px-6 py-3 text-white bg-green-600 hover:bg-green-700 rounded-lg transition-colors"
+                        class="px-6 py-3 text-white bg-green-600 dark:bg-green-700 hover:bg-green-700 dark:hover:bg-green-800 rounded-lg transition-colors"
                     >
                         Print Ulang
                     </button>
@@ -331,7 +331,7 @@
                 <button
                     type="button"
                     @click="finish_order"
-                    class="w-full px-6 py-3 text-white bg-cyan-600 hover:bg-cyan-700 rounded-lg transition-colors"
+                    class="w-full px-6 py-3 text-white bg-cyan-600 dark:bg-cyan-700 hover:bg-cyan-700 dark:hover:bg-cyan-800 rounded-lg transition-colors"
                 >
                     Selesaikan Order
                 </button>
@@ -342,7 +342,7 @@
                 <a
                     href="#"
                     onclick="history.back()"
-                    class="inline-flex items-center px-6 py-3 text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors"
+                    class="inline-flex items-center px-6 py-3 text-white bg-blue-600 dark:bg-blue-700 hover:bg-blue-700 dark:hover:bg-blue-800 rounded-lg transition-colors"
                 >
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
@@ -351,7 +351,7 @@
                 </a>
                 <Link
                     :href="route('dashboard')"
-                    class="inline-flex items-center px-6 py-3 text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors"
+                    class="inline-flex items-center px-6 py-3 text-white bg-blue-600 dark:bg-blue-700 hover:bg-blue-700 dark:hover:bg-blue-800 rounded-lg transition-colors"
                 >
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
