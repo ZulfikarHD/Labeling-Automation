@@ -2347,10 +2347,10 @@ keyv@^4.0.0:
   dependencies:
     json-buffer "3.0.1"
 
-laravel-vite-plugin@^1.0.6:
-  version "1.0.6"
-  resolved "https://registry.yarnpkg.com/laravel-vite-plugin/-/laravel-vite-plugin-1.0.6.tgz#14c4f33574dda3ff4636ee73c83cd0c5f39e5d09"
-  integrity sha512-B34OqmZc/rV1KvSjst8SsUm/LKHsuDusw8jiZCIhlnTHXbXnK89JUM9pTJuk6E/Vc/1DT2gX7qNfhipak1WS8w==
+laravel-vite-plugin@1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/laravel-vite-plugin/-/laravel-vite-plugin-1.0.0.tgz#4760909ee385ffcc554ed9b79ca318e3c827318f"
+  integrity sha512-tuiir0LjqrgpYlOUP8plaEPwXAHcvCmB0HKD+noJrBew2yER1ahSz82u2lQMEWAJzBAFSEB4UytOxX+FQ1dOuA==
   dependencies:
     picocolors "^1.0.0"
     vite-plugin-full-reload "^1.1.0"
