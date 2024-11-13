@@ -243,7 +243,7 @@ const submit = () => {
             </form>
         </div>
 
-        <TableVerifikasiPegawai :team="form.team" />
+        <TableVerifikasiPegawai :team="form.team" :date="new Date().toISOString().split('T')[0]"/>
     </AuthenticatedLayout>
     <iframe ref="printFrame" style="display: none"></iframe>
 </template>

@@ -8,8 +8,8 @@ import Modal from "@/Components/Modal.vue";
 import PaginateLink from "@/Components/PaginateLink.vue";
 import { Search, Printer, Home, Trash2, Eye, Filter, Edit } from 'lucide-vue-next';
 
-const swal = inject("$swal");
-
+// Menginisialisasi variabel dan fungsi yang diperlukan
+const swal = inject("$swal"); // Menggunakan inject untuk mengakses swal dari parent component
 const props = defineProps({
     products: Object,
     listTeam: Object,
@@ -20,8 +20,8 @@ const props = defineProps({
     },
 });
 
-const listProduct = ref(props.products);
-const paginateUrl = ref(props.products);
+const listProduct = ref(props.products); // Menginisialisasi listProduct dengan nilai awal dari props
+const paginateUrl = ref(props.products); // Menginisialisasi paginateUrl dengan nilai awal dari props
 
 const form = useForm({
     id: "",
@@ -30,8 +30,9 @@ const form = useForm({
     search: "",
 });
 
-const deleteModal = ref(false);
+const deleteModal = ref(false); // Menginisialisasi deleteModal sebagai Boolean
 
+// Fungsi untuk mengformat tanggal
 const formatDate = (dateString) => {
     const date = new Date(dateString);
     const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
@@ -45,22 +46,25 @@ const formatDate = (dateString) => {
     return `${day} ${month} ${year} ${hours}:${minutes}`;
 };
 
+// Fungsi untuk memfilter produk berdasarkan tim
 const filterTeam = () => {
     axios.post("/data-po/" + form.team, form).then((res) => {
         listProduct.value = res.data;
     });
 };
 
+// Fungsi untuk mencari produk berdasarkan kata kunci
 const search = () => {
     axios.post("/data-po/" + form.team, form).then((res) => {
         listProduct.value = res.data;
     });
 };
 
+// Fungsi untuk menghapus order
 const deleteOrder = () => {
     router.delete(route('dataPo.destroy', form.po), {
         onSuccess: () => {
-            filterTeam();
+            filterTeam(); // Memfilter ulang produk setelah menghapus
             swal.fire({
                 icon: "success",
                 title: "Berhasil",
@@ -68,8 +72,8 @@ const deleteOrder = () => {
                 showConfirmButton: false,
                 timer: 1500
             });
-            form.reset();
-            deleteModal.value = !deleteModal.value;
+            form.reset(); // Mengreset form setelah menghapus
+            deleteModal.value = !deleteModal.value; // Menutup modal setelah menghapus
         },
     });
 };
