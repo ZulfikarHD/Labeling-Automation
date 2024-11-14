@@ -140,6 +140,7 @@
                             type="text"
                             v-model="formPrintUlang.npPetugas"
                             class="w-full uppercase text-sm dark:bg-gray-700 dark:text-gray-300"
+                            maxlength="4"
                             required
                         />
                     </div>
