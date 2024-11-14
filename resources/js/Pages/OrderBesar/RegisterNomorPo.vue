@@ -1,26 +1,32 @@
 <script setup>
+/**
+ * This script handles the registration of Nomor PO (Production Order Number).
+ * It utilizes Vue's Composition API and Inertia.js for form handling and API requests.
+ */
+
 import { inject, ref } from "vue";
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import InputLabel from "@/Components/InputLabel.vue";
 import TextInput from "@/Components/TextInput.vue";
-import { Head, Link, router, useForm } from "@inertiajs/vue3";
+import InputError from "@/Components/InputError.vue";
+import { Head, router, useForm } from "@inertiajs/vue3";
 import axios from "axios";
-import NavigateBackButton from "@/Components/NavigateBackButton.vue";
 
-const swal = inject('$swal');
-const isLoading = ref(false);
-const errorPo = ref("");
-const errorObc = ref("");
-const confirmationMessage = ref("tests");
+const swal = inject('$swal'); // Injecting SweetAlert for notifications
+const isLoading = ref(false); // Loading state for API calls
+const errorPo = ref(""); // Error message for PO input
+const errorObc = ref(""); // Error message for OBC input
+const confirmationMessage = ref("tests"); // Confirmation message for submission
 
 const props = defineProps({
-    workstation: Object,
-    currentTeam: Number,
+    workstation: Object, // Workstation data passed as props
+    currentTeam: Number, // Current team ID passed as props
 });
 
-const seri = ref("");
-const seriColor = ref("");
+const seri = ref(""); // Serial number state
+const seriColor = ref(""); // Serial color state
 
+// Form state using Inertia's useForm
 const form = useForm({
     po: null,
     obc: "",
@@ -34,6 +40,10 @@ const form = useForm({
     team: props.currentTeam,
 });
 
+/**
+ * Fetch data based on the PO number.
+ * Updates form fields and handles errors.
+ */
 const fetchData = () => {
     isLoading.value = true;
     errorPo.value = "";
@@ -49,13 +59,18 @@ const fetchData = () => {
         updateConfirmationMessage();
     }).catch(() => {
         errorPo.value = "Nomor PO Tidak Ditemukan";
-
         resetForm();
     }).finally(() => {
         isLoading.value = false;
     });
 };
 
+/**
+ * Debounce function to limit the rate of API calls.
+ * @param {Function} func - The function to debounce.
+ * @param {number} delay - The delay in milliseconds.
+ * @returns {Function} - The debounced function.
+ */
 const debounce = (func, delay) => {
     let timeout;
     return () => {
@@ -64,8 +79,11 @@ const debounce = (func, delay) => {
     };
 };
 
-const debouncedFetchData = debounce(fetchData, 500);
+const debouncedFetchData = debounce(fetchData, 500); // Debounced fetch function
 
+/**
+ * Calculate the end rim based on the number of sheets.
+ */
 const calcEndRim = () => {
     form.end_rim = form.jml_lembar > 500
         ? Math.max(1, parseInt(form.start_rim) + Math.floor(form.jml_lembar / 500 / 2 - 1))
@@ -76,6 +94,9 @@ const calcEndRim = () => {
         : form.jml_lembar % 1000;
 };
 
+/**
+ * Validate the OBC input and update the confirmation message.
+ */
 const cekSpec = () => {
     if (typeof form.obc === 'string' && form.obc.length >= 3) {
         const firstThreeLetters = form.obc.substring(0, 3);
@@ -87,6 +108,9 @@ const cekSpec = () => {
     }
 };
 
+/**
+ * Update the confirmation message based on the OBC input.
+ */
 const updateConfirmationMessage = () => {
     const firstThreeLetters = form.obc.substring(0, 3);
     let daerahOrder;
@@ -108,6 +132,9 @@ const updateConfirmationMessage = () => {
     confirmationMessage.value = `Order ${daerahOrder} Seri ${seri.value} ?`;
 };
 
+/**
+ * Reset the form fields to their initial state.
+ */
 const resetForm = () => {
     form.obc = null;
     form.jml_lembar = 0;
@@ -117,6 +144,9 @@ const resetForm = () => {
     form.team = props.currentTeam;
 };
 
+/**
+ * Submit the form after confirmation.
+ */
 function submit() {
     swal.fire({
         html: confirmationMessage.value,
@@ -143,6 +173,7 @@ function submit() {
     });
 }
 </script>
+
 <template>
     <Head title="Register No Po" />
     <!-- Loading Indicator -->
@@ -189,6 +220,8 @@ function submit() {
                         placeholder="Masukan Nomor PO"
                         class="placeholder:text-center text-center text-xl font-bold dark:bg-gray-700 dark:text-gray-300"
                     />
+
+                    <InputError :message="errorPo" />
                 </div>
 
                 <!-- Keterangan Barang -->
@@ -215,7 +248,7 @@ function submit() {
                             id="jmlLembar"
                             v-model="form.jml_lembar"
                             type="text"
-                            placeholder="Masukan Nomor PO"
+                            placeholder="Masukan Jumlah Lembar"
                             class="placeholder:text-center text-center text-base font-medium dark:bg-gray-700 dark:text-gray-300"
                         />
                     </div>
@@ -229,7 +262,7 @@ function submit() {
                             v-model="form.inschiet"
                             type="number"
                             min="0"
-                            placeholder="Masukan Nomor PO"
+                            placeholder="Masukan Inschiet"
                             class="placeholder:text-center text-center text-base font-medium dark:bg-gray-700 dark:text-gray-300"
                         />
                     </div>
@@ -242,7 +275,7 @@ function submit() {
                             v-model="form.jml_rim"
                             type="number"
                             min="0"
-                            placeholder="Masukan Nomor PO"
+                            placeholder="Jumlah RIM"
                             class="bg-gray-200 dark:bg-gray-600 text-center dark:text-gray-300"
                             disabled
                         />
