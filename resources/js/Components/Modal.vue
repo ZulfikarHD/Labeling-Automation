@@ -14,10 +14,16 @@ const props = defineProps({
         type: Boolean,
         default: true,
     },
+    // Add backdrop blur option
+    blurred: {
+        type: Boolean,
+        default: true
+    }
 });
 
 const emit = defineEmits(['close']);
 
+// Handle body scroll lock
 watch(
     () => props.show,
     () => {
@@ -35,6 +41,7 @@ const close = () => {
     }
 };
 
+// Handle escape key
 const closeOnEscape = (e) => {
     if (e.key === 'Escape' && props.show) {
         close();
@@ -48,6 +55,7 @@ onUnmounted(() => {
     document.body.style.overflow = null;
 });
 
+// Responsive max width classes
 const maxWidthClass = computed(() => {
     return {
         sm: 'sm:max-w-sm',
@@ -62,32 +70,50 @@ const maxWidthClass = computed(() => {
 <template>
     <teleport to="body">
         <transition leave-active-class="duration-200">
-            <div v-show="show" class="fixed inset-0 z-50 px-4 py-6 overflow-y-auto sm:px-0" scroll-region>
+            <div
+                v-show="show"
+                class="fixed inset-0 z-50 flex items-center justify-center min-h-screen px-4 py-6 overflow-y-auto sm:px-0"
+                scroll-region
+            >
                 <transition
-                    enter-active-class="duration-300 ease-out"
+                    enter-active-class="ease-out duration-300"
                     enter-from-class="opacity-0"
                     enter-to-class="opacity-100"
-                    leave-active-class="duration-200 ease-in"
+                    leave-active-class="ease-in duration-200"
                     leave-from-class="opacity-100"
                     leave-to-class="opacity-0"
                 >
-                    <div v-show="show" class="fixed inset-0 transition-all transform" @click="close">
-                        <div class="absolute inset-0 bg-gray-500 opacity-75" />
+                    <div
+                        v-show="show"
+                        class="fixed inset-0 transition-all transform"
+                        @click="close"
+                    >
+                        <div
+                            :class="[
+                                'absolute inset-0 bg-gray-500/75 dark:bg-gray-900/90',
+                                { 'backdrop-blur-sm': blurred }
+                            ]"
+                        />
                     </div>
                 </transition>
 
                 <transition
-                    enter-active-class="duration-300 ease-out"
-                    enter-from-class="translate-y-4 opacity-0 sm:translate-y-0 sm:scale-95"
-                    enter-to-class="translate-y-0 opacity-100 sm:scale-100"
-                    leave-active-class="duration-200 ease-in"
-                    leave-from-class="translate-y-0 opacity-100 sm:scale-100"
-                    leave-to-class="translate-y-4 opacity-0 sm:translate-y-0 sm:scale-95"
+                    enter-active-class="ease-out duration-300"
+                    enter-from-class="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                    enter-to-class="opacity-100 translate-y-0 sm:scale-100"
+                    leave-active-class="ease-in duration-200"
+                    leave-from-class="opacity-100 translate-y-0 sm:scale-100"
+                    leave-to-class="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
                 >
                     <div
                         v-show="show"
-                        class="mb-6 overflow-hidden transition-all transform bg-white rounded-lg shadow-xl sm:w-full sm:mx-auto"
-                        :class="maxWidthClass"
+                        class="relative w-full transition-all transform sm:mx-auto"
+                        :class="[
+                            maxWidthClass,
+                            'rounded-xl shadow-2xl',
+                            'bg-white dark:bg-gray-800',
+                            'overflow-hidden'
+                        ]"
                     >
                         <slot v-if="show" />
                     </div>
