@@ -26,6 +26,7 @@ class PrintLabelService
      */
     public function populateLabelForRegisteredPo($dataPo): void
     {
+        // dd($dataPo);
         $sumRim = max(floor($dataPo['jml_lembar'] / self::SHEETS_PER_RIM), 1);
 
         if ($this->shouldGenerateLabels($dataPo['jml_lembar'])) {
@@ -35,8 +36,8 @@ class PrintLabelService
         $this->insertInschiet(
             $dataPo['po'],
             $dataPo['jml_lembar'],
-            $dataPo['periksa1'],
-            $dataPo['periksa2'],
+            $dataPo['periksa1'] ?? null,
+            $dataPo['periksa2'] ?? null,
             $dataPo['team']
         );
     }
@@ -64,12 +65,12 @@ class PrintLabelService
     {
         try {
             DB::transaction(function () use ($dataPo, $sumRim) {
-                $periksa1 = $this->formatPeriksaName($dataPo->periksa1);
-                $periksa2 = $this->formatPeriksaName($dataPo->periksa2);
+                $periksa1 = $this->formatPeriksaName($dataPo['periksa1'] ?? null);
+                $periksa2 = $this->formatPeriksaName($dataPo['periksa2'] ?? null);
 
                 for ($i = 1; $i <= $sumRim; $i++) {
                     foreach (self::POTONGAN_TYPES as $potongan) {
-                        $this->createLabel($dataPo->no_po, $i, $potongan, $periksa1, $periksa2, $dataPo->team);
+                        $this->createLabel($dataPo['po'], $i, $potongan, $periksa1, $periksa2, $dataPo['team']);
                     }
                 }
             });
@@ -105,7 +106,7 @@ class PrintLabelService
             [
                 'np_users' => $this->formatPeriksaName($periksa1),
                 'periksa2' => $this->formatPeriksaName($periksa2),
-                'start' => now(),
+                'start' => $periksa1 ? now() : null,
                 'finish' => $periksa2 ? now() : null,
                 'workstation' => $team,
         ]);

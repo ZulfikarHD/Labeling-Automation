@@ -161,7 +161,7 @@ function submit() {
             isLoading.value = true;
 
             // Use axios instead of router for better error handling
-            axios.post("/api/order-besar/register-no-po", form)
+            axios.post("/api/order-besar/register-no-po", form) // change to router from axios when debug error
                 .then(response => {
                     swal.fire({
                         icon: 'success',
@@ -194,9 +194,9 @@ function submit() {
                         title: 'Gagal',
                         html: `<div class="text-left">
                             <p class="text-red-500 font-medium text-lg mb-2">Error:</p>
-                            <div class="text-gray-700 text-base space-y-1">
-                                ${errorMessage}
-                            </div>
+                            <ul class="text-gray-700 text-base space-y-1 list-disc pl-5">
+                                ${errorMessage.split('<br>').map(error => `<li>${error}</li>`).join('')}
+                            </ul>
                         </div>`,
                         customClass: {
                             popup: 'rounded-lg',
