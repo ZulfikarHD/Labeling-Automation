@@ -24,8 +24,11 @@ const obc_color = ref();
 
 const form = useForm({
     team: props.currentTeam,
-    no_po: "",
+    po: "",
     obc: "",
+    start_rim:1,
+    end_rim:1,
+    produk:"PCHT",
     jml_lembar: "",
     jml_label: "",
     seri: "",
@@ -38,13 +41,14 @@ const fetchData = () => {
     errorPo.value = "";
     isLoading.value = true;
 
-    axios.get(`/api/order-kecil/fetch-spec/${form.no_po}`).then((res) => {
+    axios.get(`/api/order-kecil/fetch-spec/${form.po}`).then((res) => {
         let total_label = Math.ceil(res.data.rencet / 500);
 
         form.obc = res.data.no_obc;
         form.jml_rim = `${res.data.rencet} / ${total_label} Rim`;
         form.jml_lembar = res.data.rencet;
         form.jml_label = total_label;
+        form.end_rim = Math.max(1, Math.floor(res.data.rencet / 500 / 2));
         form.seri = res.data.no_obc.substr(4, 1) > 3 ? 1 : res.data.no_obc.substr(4, 1);
         obc_color.value = form.seri == 3 ? "#b91c1c" : "#1d4ed8";
     }).catch(() => {
@@ -111,8 +115,11 @@ const submit = () => {
         confirmButtonText: 'Buat Label',
     }).then((result) => {
         if (result.isConfirmed) {
-            router.post("/api/order-kecil/cetak-label", form, {
-                onSuccess: () => {
+            isLoading.value = true;
+
+            // Use axios instead of router for better error handling
+            axios.post("/api/order-kecil/cetak-label", form) // untuk debug error ganti axioss ke router
+                .then(response => {
                     let printLabel = batchFullPageLabel(
                         form.obc,
                         undefined,
@@ -133,15 +140,54 @@ const submit = () => {
                     setTimeout(() => {
                         swal.fire({
                             icon: 'success',
-                            title: 'Success',
+                            title: 'Berhasil',
                             text: 'Label Berhasil Dibuat',
+                            customClass: {
+                                popup: 'rounded-lg',
+                                title: 'text-xl font-bold text-green-600 mb-4',
+                                htmlContainer: 'text-base text-gray-600',
+                                confirmButton: 'bg-green-500 hover:bg-green-600 text-white font-medium rounded-lg px-4 py-2'
+                            },
+                            iconColor: '#22c55e'
                         });
                         isLoading.value = false;
                     }, timeoutDuration.value);
 
                     form.reset();
-                }
-            });
+                })
+                .catch(error => {
+                    let errorMessage = 'Terjadi kesalahan';
+
+                    if (error.response) {
+                        if (error.response.status === 422) {
+                            const errors = error.response.data.errors;
+                            errorMessage = Object.values(errors).flat().join('<br>');
+                        } else {
+                            errorMessage = error.response.data.message || 'Terjadi kesalahan pada server';
+                        }
+                    }
+
+                    swal.fire({
+                        icon: 'error',
+                        title: 'Gagal',
+                        html: `<div class="text-left">
+                            <p class="text-red-500 font-medium text-lg mb-2">Error:</p>
+                            <ul class="text-gray-700 text-base space-y-1 list-disc pl-5">
+                                ${errorMessage.split('<br>').map(error => `<li>${error}</li>`).join('')}
+                            </ul>
+                        </div>`,
+                        customClass: {
+                            popup: 'rounded-lg',
+                            title: 'text-xl font-bold text-red-600 mb-4',
+                            htmlContainer: 'p-4',
+                            confirmButton: 'bg-red-500 hover:bg-red-600 text-white font-medium rounded-lg px-4 py-2'
+                        },
+                        iconColor: '#ef4444'
+                    });
+                })
+                .finally(() => {
+                    isLoading.value = false;
+                });
         }
     });
 };
@@ -182,10 +228,10 @@ const submit = () => {
 
                 <!-- Production Order -->
                 <div class="flex flex-col mt-4">
-                    <InputLabel for="no_po" value="Nomor Production Order" class="dark:text-gray-200" />
+                    <InputLabel for="po" value="Nomor Production Order" class="dark:text-gray-200" />
                     <TextInput
-                        id="no_po"
-                        v-model="form.no_po"
+                        id="po"
+                        v-model="form.po"
                         @input="debouncedFetchData"
                         type="number"
                         placeholder="Masukkan Nomor PO"

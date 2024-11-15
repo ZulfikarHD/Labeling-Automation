@@ -5,58 +5,87 @@ namespace App\Services;
 use App\Models\GeneratedLabels;
 use App\Models\GeneratedProducts;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Eloquent\Builder;
 
 class ProductionOrderService
 {
-    public function registerProductionOrder($productionOrder)
+    private const SHEETS_PER_RIM = 500;
+    private const MIN_RIM = 1;
+    private const PRODUCT_TYPE = 'PCHT';
+    private const INITIAL_STATUS = 1;
+
+    /**
+     * Register a new production order
+     *
+     * @param array $productionOrder Production order data
+     * @throws \Exception If PO number already exists
+     */
+    public function registerProductionOrder(array $productionOrder): void
     {
-        if ($this->registeredProductionOrder($productionOrder->no_po)->exists()) {
-            throw new \Exception('Nomor Po Sudah Terdaftar');
+        if ($this->registeredProductionOrder($productionOrder['po'])->exists()) {
+            throw new \Exception('Nomor PO sudah terdaftar dalam sistem');
         }
 
-        return DB::transaction(function () use ($productionOrder) {
-            $sumRim = max(floor($productionOrder->jml_lembar / 1000), 1);
+        DB::transaction(function () use ($productionOrder) {
+            $sumRim = $this->calculateTotalRims($productionOrder['jml_lembar']);
 
             GeneratedProducts::create([
-                'no_po'   => $productionOrder->no_po,
-                'no_obc'  => $productionOrder->obc,
-                'type'    => "PCHT",
-                'status'  => 1,
+                'no_po' => $productionOrder['po'],
+                'no_obc' => $productionOrder['obc'],
+                'type' => self::PRODUCT_TYPE,
+                'status' => self::INITIAL_STATUS,
                 'sum_rim' => $sumRim,
-                'start_rim' => 1,
-                'end_rim'   => $sumRim,
-                'assigned_team' => $productionOrder->team,
+                'start_rim' => self::MIN_RIM,
+                'end_rim' => $sumRim,
+                'assigned_team' => $productionOrder['team'],
             ]);
         });
     }
 
-    public function registeredProductionOrder(Int $no_po)
+    /**
+     * Calculate total rims based on number of sheets
+     */
+    private function calculateTotalRims(int $totalSheets): int
+    {
+        return max(floor($totalSheets / self::SHEETS_PER_RIM), self::MIN_RIM);
+    }
+
+    /**
+     * Get registered production order query
+     */
+    public function registeredProductionOrder(int $no_po): Builder
     {
         return GeneratedProducts::where('no_po', $no_po);
     }
 
-    public function cekLabelPchtTerdaftar(Int $no_po)
+    /**
+     * Get registered PCHT labels
+     */
+    public function cekLabelPchtTerdaftar(int $no_po): Builder
     {
-        return GeneratedLabels::where('no_po_generated_products', $no_po)->get();
+        return GeneratedLabels::where('no_po_generated_products', $no_po);
     }
 
-    public function getListNomorRimPcht(Int $no_po)
+    /**
+     * Get list of rim numbers for PCHT
+     */
+    public function getListNomorRimPcht(int $no_po): Builder
     {
         return $this->cekLabelPchtTerdaftar($no_po)
-            ->orderBy('no_rim')
             ->select('no_rim', 'potongan')
-            ->get();
+            ->orderBy('no_rim');
     }
 
-    public function isPoFinished(Int $no_po)
+    /**
+     * Check if production order is finished
+     */
+    public function isPoFinished(int $no_po): bool
     {
-        $countUnfinishedRim = GeneratedLabels::where('no_po_generated_products', $no_po)
-                                        ->whereNull('np_users')
-                                        ->orWhere('np_users','')
-                                        ->count();
-
-        $isPoFinished = $countUnfinishedRim > 0 ? false : true ;
-
-        return $isPoFinished;
+        return $this->cekLabelPchtTerdaftar($no_po)
+            ->where(function ($query) {
+                $query->whereNull('np_users')
+                    ->orWhere('np_users', '');
+            })
+            ->count() === 0;
     }
 }

@@ -167,6 +167,13 @@ function submit() {
                         icon: 'success',
                         title: 'Berhasil',
                         text: 'Label Berhasil Dibuat',
+                        customClass: {
+                            popup: 'rounded-lg',
+                            title: 'text-xl font-bold text-green-600 mb-4',
+                            htmlContainer: 'text-base text-gray-600',
+                            confirmButton: 'bg-green-500 hover:bg-green-600 text-white font-medium rounded-lg px-4 py-2'
+                        },
+                        iconColor: '#22c55e'
                     });
                     form.reset();
                 })
@@ -174,14 +181,10 @@ function submit() {
                     let errorMessage = 'Terjadi kesalahan';
 
                     if (error.response) {
-                        // Handle validation errors
                         if (error.response.status === 422) {
                             const errors = error.response.data.errors;
-                            errorMessage = Object.values(errors)
-                                .flat()
-                                .join('\n');
+                            errorMessage = Object.values(errors).flat().join('<br>');
                         } else {
-                            // Handle other errors
                             errorMessage = error.response.data.message || 'Terjadi kesalahan pada server';
                         }
                     }
@@ -189,7 +192,19 @@ function submit() {
                     swal.fire({
                         icon: 'error',
                         title: 'Gagal',
-                        text: errorMessage,
+                        html: `<div class="text-left">
+                            <p class="text-red-500 font-medium text-lg mb-2">Error:</p>
+                            <div class="text-gray-700 text-base space-y-1">
+                                ${errorMessage}
+                            </div>
+                        </div>`,
+                        customClass: {
+                            popup: 'rounded-lg',
+                            title: 'text-xl font-bold text-red-600 mb-4',
+                            htmlContainer: 'p-4',
+                            confirmButton: 'bg-red-500 hover:bg-red-600 text-white font-medium rounded-lg px-4 py-2'
+                        },
+                        iconColor: '#ef4444'
                     });
                 })
                 .finally(() => {

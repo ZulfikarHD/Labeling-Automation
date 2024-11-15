@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 /**
  * Class StoreGeneratedProductsRequest
@@ -36,6 +37,7 @@ class StoreGeneratedProductsRequest extends FormRequest
                 'string', // Nomor PO harus berupa string
                 'max:20', // Maksimal 20 karakter
                 'min:10', // Minimal 10 karakter
+                Rule::unique('generated_products', 'no_po'), // Nomor PO harus unik
             ],
             'obc'   => [
                 'required', // Nomor OBC harus diisi
@@ -45,11 +47,12 @@ class StoreGeneratedProductsRequest extends FormRequest
                 'regex:/^[A-Za-z]{3}/', // Format harus diawali dengan 3 huruf
             ],
             'team'  => 'required|integer|min:1|exists:workstation,id', // Tim harus ada dan valid
-            'seri'  => 'required|integer|min:1|max:5', // Seri harus antara 1 dan 5
             'produk'    => 'required|string|max:4', // Produk harus diisi dan maksimal 4 karakter
             'jml_rim'   => 'required|integer|min:1', // Jumlah rim harus diisi dan minimal 1
             'inschiet'  => 'nullable|integer|min:0', // Inschiet boleh kosong, minimal 0
             'start_rim' => 'required|integer|min:1', // Start rim harus diisi dan minimal 1
+            'periksa1'  => 'nullable|string|max:4',
+            'periksa2'  => 'nullable|string|max:4',
             'end_rim'   => [
                 'required', // End rim harus diisi
                 'integer', // End rim harus berupa integer
@@ -79,6 +82,7 @@ class StoreGeneratedProductsRequest extends FormRequest
             'po.string' => 'Nomor PO harus berupa teks.',
             'po.max' => 'Nomor PO maksimal 20 karakter.',
             'po.min' => 'Nomor PO minimal 10 karakter.',
+            'po.unique' => 'Nomor PO sudah terdaftar.', // Pesan untuk validasi unik
             'obc.required' => 'Nomor OBC harus diisi.',
             'obc.string' => 'Nomor OBC harus berupa teks.',
             'obc.max' => 'Nomor OBC maksimal 9 karakter.',
@@ -87,10 +91,6 @@ class StoreGeneratedProductsRequest extends FormRequest
             'team.required' => 'Tim harus diisi.',
             'team.integer' => 'Tim harus berupa angka.',
             'team.min' => 'Tim harus minimal 1.',
-            'seri.required' => 'Seri harus diisi.',
-            'seri.integer' => 'Seri harus berupa angka.',
-            'seri.min' => 'Seri harus minimal 1.',
-            'seri.max' => 'Seri tidak boleh lebih dari 5.',
             'produk.required' => 'Produk harus diisi.',
             'produk.string' => 'Produk harus berupa string.',
             'produk.max' => 'Produk tidak boleh lebih dari 4 karakter.',
@@ -108,6 +108,10 @@ class StoreGeneratedProductsRequest extends FormRequest
             'jml_lembar.required' => 'Jumlah lembar harus diisi.',
             'jml_lembar.integer' => 'Jumlah lembar harus berupa angka.',
             'jml_lembar.min' => 'Jumlah lembar harus minimal 1.',
+            'periksa1.string' => 'Periksa 1 harus berupa teks.',
+            'periksa1.max' => 'Periksa 1 tidak boleh lebih dari 4 karakter.',
+            'periksa2.string' => 'Periksa 2 harus berupa teks.',
+            'periksa2.max' => 'Periksa 2 tidak boleh lebih dari 4 karakter.',
         ];
     }
 

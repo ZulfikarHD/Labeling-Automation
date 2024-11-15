@@ -26,18 +26,18 @@ class PrintLabelService
      */
     public function populateLabelForRegisteredPo($dataPo): void
     {
-        $sumRim = max(floor($dataPo->jml_lembar / self::SHEETS_PER_RIM), 1);
+        $sumRim = max(floor($dataPo['jml_lembar'] / self::SHEETS_PER_RIM), 1);
 
-        if ($this->shouldGenerateLabels($dataPo->jml_lembar)) {
+        if ($this->shouldGenerateLabels($dataPo['jml_lembar'])) {
             $this->generateLabels($dataPo, $sumRim);
         }
 
         $this->insertInschiet(
-            $dataPo->no_po,
-            $dataPo->jml_lembar,
-            $dataPo->periksa1,
-            $dataPo->periksa2,
-            $dataPo->team
+            $dataPo['po'],
+            $dataPo['jml_lembar'],
+            $dataPo['periksa1'],
+            $dataPo['periksa2'],
+            $dataPo['team']
         );
     }
 

@@ -41,7 +41,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 // Print Label OrderKecil
     Route::get('/order-kecil/fetch-spec/{no_po}',[App\Http\Controllers\OrderKecil\CetakLabelController::class, 'show']);
-    Route::post('/order-kecil/cetak-label',[App\Http\Controllers\OrderKecil\CetakLabelController::class, 'store']);
+    Route::post('/order-kecil/cetak-label',[App\Http\Controllers\OrderKecil\CetakLabelController::class, 'cetakLabel']);
 
 // Calculation
     Route::get('/pendapatan-harian', [PendapatanHarianController::class, 'gradeHarian']);
