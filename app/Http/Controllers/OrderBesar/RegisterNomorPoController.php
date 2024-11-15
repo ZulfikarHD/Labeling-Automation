@@ -5,6 +5,7 @@ namespace App\Http\Controllers\OrderBesar;
 use App\Services\SpecificationService;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreGeneratedProductsRequest;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Models\Workstations;
@@ -35,26 +36,36 @@ class RegisterNomorPoController extends Controller
      * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function store(Request $request)
+    public function store(StoreGeneratedProductsRequest $request)
     {
-        $sumRim = max(floor($request->jml_lembar / 1000), 1);
+        try {
+            DB::beginTransaction();
 
-        $cnt_gen_po = GeneratedLabels::where('no_po_generated_products', $request->po)->count();
+            $validatedData = $request->validated();
+            $sumRim = max(floor($validatedData['jml_lembar'] / 1000), 1);
+            $cnt_gen_po = GeneratedLabels::where('no_po_generated_products', $validatedData['po'])->count();
 
-        DB::transaction(function () use ($request, $sumRim, $cnt_gen_po) {
             if ($cnt_gen_po === 0) {
-                $this->createOrUpdateGeneratedProducts($request, $sumRim);
-                $this->createOrUpdateGeneratedLabels($request, $sumRim);
+                $this->createOrUpdateGeneratedProducts($validatedData, $sumRim);
+                $this->createOrUpdateGeneratedLabels($validatedData, $sumRim);
             } else {
-                $this->updateGeneratedProductsAndLabels($request, $sumRim);
+                $this->updateGeneratedProductsAndLabels($validatedData, $sumRim);
             }
 
-            if ($request->inschiet > 0) {
-                $this->createInschietLabels($request);
+            if ($validatedData['inschiet'] > 0) {
+                $this->createInschietLabels($validatedData);
             }
-        });
 
-        return redirect()->back();
+            DB::commit();
+            return response()->json(['message' => 'Data berhasil disimpan']);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(
+                ['message' => 'Terjadi kesalahan: ' . $e->getMessage()],
+                500
+            );
+        }
     }
 
     /**
@@ -67,15 +78,15 @@ class RegisterNomorPoController extends Controller
     private function createOrUpdateGeneratedProducts($request, $sumRim)
     {
         GeneratedProducts::updateOrCreate(
-            ['no_po' => $request->po],
+            ['no_po' => $request['po']],
             [
-                'no_obc' => $request->obc,
-                'type' => $request->produk,
+                'no_obc' => $request['obc'],
+                'type' => $request['produk'],
                 'sum_rim' => $sumRim,
-                'start_rim' => $request->start_rim,
-                'end_rim' => $request->end_rim,
+                'start_rim' => $request['start_rim'],
+                'end_rim' => $request['end_rim'],
                 'status' => 0,
-                'assigned_team' => $request->team,
+                'assigned_team' => $request['team'],
             ]
         );
     }
@@ -93,8 +104,8 @@ class RegisterNomorPoController extends Controller
             foreach (['Kiri', 'Kanan'] as $potongan) {
                 GeneratedLabels::updateOrCreate(
                     [
-                        'no_po_generated_products' => $request->po,
-                        'no_rim' => $request->start_rim + $i,
+                        'no_po_generated_products' => $request['po'],
+                        'no_rim' => $request['start_rim'] + $i,
                         'potongan' => $potongan
                     ]
                 );
@@ -111,12 +122,12 @@ class RegisterNomorPoController extends Controller
      */
     private function updateGeneratedProductsAndLabels($request, $sumRim)
     {
-        $current_start_rim = GeneratedProducts::where('no_po', $request->po)->value('start_rim');
+        $current_start_rim = GeneratedProducts::where('no_po', $request['po'])->value('start_rim');
 
-        if ($current_start_rim !== $request->start_rim) {
-            $labels = GeneratedLabels::where('no_po_generated_products', $request->po)->get();
+        if ($current_start_rim !== $request['start_rim']) {
+            $labels = GeneratedLabels::where('no_po_generated_products', $request['po'])->get();
             foreach ($labels as $index => $label) {
-                $label->update(['no_rim' => $request->start_rim + floor($index / 2)]);
+                $label->update(['no_rim' => $request['start_rim'] + floor($index / 2)]);
             }
 
             $this->createOrUpdateGeneratedProducts($request, $sumRim);
@@ -134,7 +145,7 @@ class RegisterNomorPoController extends Controller
         foreach (['Kiri', 'Kanan'] as $potongan) {
             GeneratedLabels::updateOrCreate(
                 [
-                    'no_po_generated_products' => $request->po,
+                    'no_po_generated_products' => $request['po'],
                     'no_rim' => 999,
                     'potongan' => $potongan
                 ]
@@ -142,8 +153,8 @@ class RegisterNomorPoController extends Controller
         }
 
         DataInschiet::updateOrCreate(
-            ['no_po' => $request->po],
-            ['inschiet' => $request->inschiet]
+            ['no_po' => $request['po']],
+            ['inschiet' => $request['inschiet']]
         );
     }
 

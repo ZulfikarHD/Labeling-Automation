@@ -151,7 +151,6 @@ function submit() {
     swal.fire({
         html: confirmationMessage.value,
         title: 'Periksa Kembali Spesifikasi',
-        text: "test",
         icon: 'warning',
         showCancelButton: true,
         cancelButtonColor: '#d33',
@@ -159,16 +158,43 @@ function submit() {
         confirmButtonText: 'Buat Label',
     }).then((result) => {
         if (result.isConfirmed) {
-            router.post("/api/order-besar/register-no-po", form, {
-                onSuccess: () => {
+            isLoading.value = true;
+
+            // Use axios instead of router for better error handling
+            axios.post("/api/order-besar/register-no-po", form)
+                .then(response => {
                     swal.fire({
                         icon: 'success',
-                        title: 'Success',
+                        title: 'Berhasil',
                         text: 'Label Berhasil Dibuat',
                     });
                     form.reset();
-                }
-            });
+                })
+                .catch(error => {
+                    let errorMessage = 'Terjadi kesalahan';
+
+                    if (error.response) {
+                        // Handle validation errors
+                        if (error.response.status === 422) {
+                            const errors = error.response.data.errors;
+                            errorMessage = Object.values(errors)
+                                .flat()
+                                .join('\n');
+                        } else {
+                            // Handle other errors
+                            errorMessage = error.response.data.message || 'Terjadi kesalahan pada server';
+                        }
+                    }
+
+                    swal.fire({
+                        icon: 'error',
+                        title: 'Gagal',
+                        text: errorMessage,
+                    });
+                })
+                .finally(() => {
+                    isLoading.value = false;
+                });
         }
     });
 }
