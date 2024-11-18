@@ -7,26 +7,54 @@ use App\Models\GeneratedLabels;
 use Illuminate\Support\Facades\DB;
 
 /**
- * Service class untuk menangani operasi pencetakan label
+ * Service class untuk menangani operasi pencetakan label dan manajemen data produksi
  *
- * Service ini mengelola pembuatan dan penanganan label untuk order produksi,
- * termasuk perhitungan inschiet dan populasi label untuk PO yang terdaftar.
+ * Class ini bertanggung jawab untuk:
+ * - Membuat dan mengelola label produksi
+ * - Menghitung dan memproses data inschiet
+ * - Mengelola status pemeriksaan label
+ * - Mengoptimalkan performa database dengan batch processing
+ *
+ * @package App\Services
  */
 class PrintLabelService
 {
+    /**
+     * Konstanta untuk tipe potongan label
+     * @var array
+     */
     private const POTONGAN_TYPES = ['Kiri', 'Kanan'];
+
+    /**
+     * Nomor rim khusus untuk inschiet
+     * @var int
+     */
     private const INSCHIET_RIM_NUMBER = 999;
+
+    /**
+     * Jumlah lembar per rim
+     * @var int
+     */
     private const SHEETS_PER_RIM = 1000;
 
     /**
-     * Mengisi label untuk order produksi yang terdaftar
+     * Mengisi dan membuat label untuk order produksi yang terdaftar
      *
-     * @param object $dataPo Objek data order produksi
+     * Method ini menangani:
+     * - Perhitungan jumlah rim berdasarkan lembar
+     * - Pembuatan label untuk setiap rim
+     * - Penanganan data inschiet
+     *
+     * @param array $dataPo Data order produksi yang berisi:
+     *                      - po: nomor PO
+     *                      - jml_lembar: jumlah lembar
+     *                      - periksa1: pemeriksa pertama
+     *                      - periksa2: pemeriksa kedua
+     *                      - team: ID tim
      * @return void
      */
-    public function populateLabelForRegisteredPo($dataPo): void
+    public function populateLabelForRegisteredPo(array $dataPo): void
     {
-        // dd($dataPo);
         $sumRim = max(floor($dataPo['jml_lembar'] / self::SHEETS_PER_RIM), 1);
 
         if ($this->shouldGenerateLabels($dataPo['jml_lembar'])) {
@@ -43,10 +71,10 @@ class PrintLabelService
     }
 
     /**
-     * Menentukan apakah label harus dibuat berdasarkan total lembar
+     * Menentukan apakah perlu membuat label berdasarkan total lembar
      *
      * @param int $totalSheets Total jumlah lembar
-     * @return bool
+     * @return bool True jika perlu membuat label
      */
     private function shouldGenerateLabels(int $totalSheets): bool
     {
@@ -54,24 +82,43 @@ class PrintLabelService
     }
 
     /**
-     * Membuat label untuk order produksi
+     * Membuat label untuk order produksi dengan batch processing
+     * untuk optimasi performa
      *
-     * @param object $dataPo Data order produksi
+     * @param array $dataPo Data order produksi
      * @param int $sumRim Total jumlah rim
-     * @return void
-     * @throws \Exception
+     * @throws \Exception Jika terjadi kesalahan dalam transaksi
      */
-    private function generateLabels($dataPo, int $sumRim): void
+    private function generateLabels(array $dataPo, int $sumRim): void
     {
         try {
             DB::transaction(function () use ($dataPo, $sumRim) {
                 $periksa1 = $this->formatPeriksaName($dataPo['periksa1'] ?? null);
                 $periksa2 = $this->formatPeriksaName($dataPo['periksa2'] ?? null);
 
+                $labels = [];
                 for ($i = 1; $i <= $sumRim; $i++) {
                     foreach (self::POTONGAN_TYPES as $potongan) {
-                        $this->createLabel($dataPo['po'], $i, $potongan, $periksa1, $periksa2, $dataPo['team']);
+                        $labels[] = [
+                            'no_po_generated_products' => $dataPo['po'],
+                            'no_rim' => $i,
+                            'potongan' => $potongan,
+                            'np_users' => $periksa1,
+                            'np_user_p2' => $periksa2,
+                            'start' => $periksa1 ? now() : null,
+                            'finish' => $periksa2 ? now() : null,
+                            'workstation' => $dataPo['team']
+                        ];
                     }
+                }
+
+                // Batch insert untuk optimasi performa
+                foreach (array_chunk($labels, 100) as $batch) {
+                    GeneratedLabels::upsert(
+                        $batch,
+                        ['no_po_generated_products', 'no_rim', 'potongan'],
+                        ['np_users', 'np_user_p2', 'start', 'finish', 'workstation']
+                    );
                 }
             });
         } catch (\Exception $e) {
@@ -81,7 +128,7 @@ class PrintLabelService
     }
 
     /**
-     * Membuat satu record label
+     * Membuat atau memperbarui satu record label
      *
      * @param int $noPo Nomor order produksi
      * @param int $rimNumber Nomor rim
@@ -89,15 +136,14 @@ class PrintLabelService
      * @param string|null $periksa1 Pemeriksa pertama
      * @param string|null $periksa2 Pemeriksa kedua
      * @param int $team ID Tim
-     * @return void
      */
     public function createLabel(int $noPo, int $rimNumber, string $potongan, ?string $periksa1, ?string $periksa2, int $team): void
     {
-        if($rimNumber == 999) {
-            $this->updateInschietData($noPo,null,$periksa1,$potongan);
+        if ($rimNumber === self::INSCHIET_RIM_NUMBER) {
+            $this->updateInschietData($noPo, null, $periksa1, $potongan);
         }
 
-        GeneratedLabels::updateOrcreate(
+        GeneratedLabels::updateOrCreate(
             [
                 'no_po_generated_products' => $noPo,
                 'no_rim' => $rimNumber,
@@ -105,24 +151,23 @@ class PrintLabelService
             ],
             [
                 'np_users' => $this->formatPeriksaName($periksa1),
-                'periksa2' => $this->formatPeriksaName($periksa2),
+                'np_user_p2' => $this->formatPeriksaName($periksa2),
                 'start' => $periksa1 ? now() : null,
                 'finish' => $periksa2 ? now() : null,
                 'workstation' => $team,
-        ]);
-
+            ]
+        );
     }
 
     /**
-     * Memasukkan data inschiet untuk order produksi
+     * Menangani pembuatan dan pembaruan data inschiet
      *
      * @param int $noPo Nomor order produksi
      * @param int $lembar Jumlah lembar
      * @param string|null $periksa1 Pemeriksa pertama
      * @param string|null $periksa2 Pemeriksa kedua
      * @param int|null $workstation ID Workstation
-     * @return void
-     * @throws \Exception
+     * @throws \Exception Jika terjadi kesalahan dalam transaksi
      */
     public function insertInschiet(int $noPo, int $lembar, ?string $periksa1 = null, ?string $periksa2 = null, ?int $workstation = null): void
     {
@@ -150,20 +195,18 @@ class PrintLabelService
      * Memperbarui data inschiet untuk order produksi
      *
      * @param int $noPo Nomor order produksi
-     * @param int $calcInschiet Nilai inschiet yang dihitung
+     * @param int|null $calcInschiet Nilai inschiet yang dihitung
      * @param string|null $periksa1 Pemeriksa pertama
-     * @return void
+     * @param string|null $potongan Tipe potongan (Kiri/Kanan)
      */
-    private function updateInschietData(int $noPo, ?int $calcInschiet = null , ?string $periksa1, ?string $potongan = null): void
+    private function updateInschietData(int $noPo, ?int $calcInschiet = null, ?string $periksa1, ?string $potongan = null): void
     {
         $periksa1 = $this->formatPeriksaName($periksa1);
 
-        if($potongan == "Kiri") {
-            DataInschiet::where('no_po',$noPo)
-                    ->update(['np_kiri' => $periksa1]);
-        } elseif($potongan == "Kanan") {
-            DataInschiet::where('no_po',$noPo)
-                    ->update(['np_kanan' => $periksa1]);
+        if ($potongan === "Kiri") {
+            DataInschiet::where('no_po', $noPo)->update(['np_kiri' => $periksa1]);
+        } elseif ($potongan === "Kanan") {
+            DataInschiet::where('no_po', $noPo)->update(['np_kanan' => $periksa1]);
         } else {
             DataInschiet::updateOrCreate(
                 ['no_po' => $noPo],
@@ -177,41 +220,43 @@ class PrintLabelService
     }
 
     /**
-     * Membuat label inschiet untuk kedua sisi
+     * Membuat label inschiet untuk kedua sisi potongan
      *
      * @param int $noPo Nomor order produksi
      * @param string|null $periksa1 Pemeriksa pertama
      * @param string|null $periksa2 Pemeriksa kedua
      * @param int|null $workstation ID Workstation
-     * @return void
      */
     private function createInschietLabels(int $noPo, ?string $periksa1, ?string $periksa2, ?int $workstation): void
     {
         $periksa1 = $this->formatPeriksaName($periksa1);
         $periksa2 = $this->formatPeriksaName($periksa2);
 
+        $labels = [];
         foreach (self::POTONGAN_TYPES as $potongan) {
-            GeneratedLabels::updateOrCreate(
-                [
-                    'no_po_generated_products' => $noPo,
-                    'no_rim' => self::INSCHIET_RIM_NUMBER,
-                    'potongan' => $potongan,
-                ],
-                [
-                    'np_users' => $periksa1,
-                    'periksa2' => $periksa2,
-                    'start' => $periksa1 ? now() : null,
-                    'workstation' => $workstation,
-                ]
-            );
+            $labels[] = [
+                'no_po_generated_products' => $noPo,
+                'no_rim' => self::INSCHIET_RIM_NUMBER,
+                'potongan' => $potongan,
+                'np_users' => $periksa1,
+                'np_user_p2' => $periksa2,
+                'start' => $periksa1 ? now() : null,
+                'workstation' => $workstation
+            ];
         }
+
+        GeneratedLabels::upsert(
+            $labels,
+            ['no_po_generated_products', 'no_rim', 'potongan'],
+            ['np_users', 'np_user_p2', 'start', 'workstation']
+        );
     }
 
     /**
-     * Format nama pemeriksa menjadi huruf besar
+     * Format nama pemeriksa menjadi huruf kapital
      *
      * @param string|null $name Nama pemeriksa
-     * @return string|null
+     * @return string|null Nama yang sudah diformat atau null
      */
     private function formatPeriksaName(?string $name): ?string
     {
@@ -222,7 +267,6 @@ class PrintLabelService
      * Menyelesaikan sesi pengguna sebelumnya dengan memperbarui timestamp finish
      *
      * @param string $npPegawai Nomor pegawai
-     * @return void
      */
     public function finishPreviousUserSession(string $npPegawai): void
     {
