@@ -89,7 +89,7 @@ class CetakLabelController extends Controller
                 $this->updateProgress($validatedRequest['po'], 2);
             });
 
-            return redirect()->back();
+            return response()->json(['message' => 'Label berhasil dibuat'], 200);
         } catch (\Exception $exception) {
             \Log::error('Transaction failed: ' . $exception->getMessage());
 
