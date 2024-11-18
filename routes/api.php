@@ -25,7 +25,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 // Generate Label Category Personal API
-    Route::get('/gen-perso-label/{noPo}',[GenerateLabelsPersonalController::class, 'show']);
+    // Route::get('/gen-perso-label/{noPo}',[GenerateLabelsPersonalController::class, 'show']);
     Route::put('/production-order-finish/{noPo}', [ProductionOrderController::class, 'updateStatusFinish']);
 
 // Generate Label Category Non-Personal API

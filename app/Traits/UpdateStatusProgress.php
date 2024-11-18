@@ -9,6 +9,8 @@ trait UpdateStatusProgress {
     // Update Status Orderan
     public function updateProgress(String $po, String $status)
     {
-        GeneratedProducts::where('no_po',$po)->update(['status' => $status]);
+        GeneratedProducts::where('no_po',$po)
+                    ->firstOrFail()
+                    ->update(['status' => $status]);
     }
 }
