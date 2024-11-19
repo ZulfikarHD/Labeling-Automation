@@ -17,7 +17,7 @@ use Illuminate\Foundation\Testing\DatabaseTransactions;
  * This class contains feature tests for the small order label printing functionality.
  * It includes tests for creating labels and handling duplicate production order numbers.
  */
-class CetakLabelOrderKecil extends TestCase
+class CetakLabelOrderKecilTest extends TestCase
 {
     use DatabaseTransactions;
 

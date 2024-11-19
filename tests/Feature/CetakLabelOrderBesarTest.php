@@ -11,7 +11,7 @@ use App\Models\Users;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 
-class CetakLabelOrderBesar extends TestCase
+class CetakLabelOrderBesarTest extends TestCase
 {
     use DatabaseTransactions;
 
