@@ -18,6 +18,7 @@ return new class extends Migration
             $table->integer('seri');
             $table->string('type');
             $table->integer('rencet');
+            $table->string('mesin');
             $table->timestamps();
         });
     }

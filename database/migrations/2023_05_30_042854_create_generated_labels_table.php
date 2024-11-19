@@ -16,6 +16,7 @@ return new class extends Migration
             $table->bigInteger('no_po_generated_products');
             $table->integer('no_rim');
             $table->string('np_users')->nullable();
+            $table->string('np_user_p2')->nullable();
             $table->string('potongan');
             $table->dateTime('start')->nullable();
             $table->dateTime('finish')->nullable();
