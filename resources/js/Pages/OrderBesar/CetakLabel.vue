@@ -331,7 +331,7 @@
 
                 <button
                     type="button"
-                    @click="finish_order"
+                    @click="confirmFinishOrder"
                     class="w-full px-6 py-3 text-white bg-cyan-600 dark:bg-cyan-700 hover:bg-cyan-700 dark:hover:bg-cyan-800 rounded-lg transition-colors"
                 >
                     Selesaikan Order
@@ -377,6 +377,7 @@ import TableVerifikasiPegawai from "@/Components/TableVerifikasiPegawai.vue";
 import { fullPageLabel } from "@/Components/PrintPages/PrintLabel";
 import { Link, useForm, router, Head } from "@inertiajs/vue3";
 import axios from "axios";
+import Swal from 'sweetalert2';
 
 // Props definition
 const props = defineProps({
@@ -524,10 +525,23 @@ const submit = () => {
     }, 500);
 };
 
-// Handle order completion
-const finish_order = () => {
-    axios.put(`/api/production-order-finish/${form.po}`);
-    router.get("/order-besar/po-siap-verif");
+// Handle order completion confirmation with SweetAlert2
+const confirmFinishOrder = () => {
+    Swal.fire({
+        title: 'Selesaikan Order',
+        text: 'Apakah Anda yakin ingin menyelesaikan order ini?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Ya, Selesaikan',
+        cancelButtonText: 'Batal',
+        confirmButtonColor: '#0891b2', // cyan-600
+        cancelButtonColor: '#6b7280', // gray-500
+    }).then((result) => {
+        if (result.isConfirmed) {
+            axios.put(`/api/production-order-finish/${form.po}`);
+            router.get("/order-besar/po-siap-verif");
+        }
+    });
 };
 
 // Fetch plate number from external API

@@ -235,7 +235,7 @@ const deleteOrder = () => {
                                             </Link>
 
                                             <Link
-                                                :href="route('orderBesar.cetakLabel', { team: product.assigned_team, id: product.id })"
+                                                :href="route('dataPo.edit', { no_po: product.no_po })"
                                                 class="p-1.5 text-amber-600 dark:text-amber-400 transition-colors duration-200 rounded-lg hover:bg-amber-50 dark:hover:bg-amber-900/50"
                                                 title="Edit"
                                             >

@@ -15,8 +15,8 @@ class Workstations extends Model
         'updated_at',
     ];
 
-    public function listWorkstation()
+    public static function listWorkstation()
     {
-        return $this->select('id','workstation')->orderBy('workstation')->get();
+        return self::select('id','workstation')->orderBy('workstation')->get();
     }
 }

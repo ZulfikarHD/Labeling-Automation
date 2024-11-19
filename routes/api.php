@@ -50,3 +50,4 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     Route::post('/update-spec', [UpdateSpecController::class, 'updateSpec']);
 
     Route::post('/register-production-order',   [App\Http\Controllers\ProductionOrderController::class, 'store']);
+    Route::post('/production-order/update-rim', [ProductionOrderController::class, 'update']);

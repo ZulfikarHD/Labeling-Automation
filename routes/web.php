@@ -57,10 +57,11 @@ Route::middleware('auth')->group(function () {
      * Route Group Data PO
      * ---------------------------------------
      */
-    Route::get('/data-po/{team}', [App\Http\Controllers\ProductionOrderController::class, 'index'])->name('dataPo.index');
-    Route::post('/data-po/{team}', [App\Http\Controllers\ProductionOrderController::class, 'data_products'])->name('dataPo.filterTeam');
-    Route::delete('/data-po/{no_po}', [App\Http\Controllers\ProductionOrderController::class, 'destroy'])->name('dataPo.destroy');
-    Route::get('/data-po/{team}/{no_po}', [App\Http\Controllers\ProductionOrderController::class, 'show'])->name('dataPo.show');
+    Route::get('/data-po/{team}', [\App\Http\Controllers\ProductionOrderController::class, 'index'])->name('dataPo.index');
+    Route::get('/data-po/edit/{no_po}', [\App\Http\Controllers\ProductionOrderController::class, 'edit'])->name('dataPo.edit');
+    Route::post('/data-po/{team}', [\App\Http\Controllers\ProductionOrderController::class, 'data_products'])->name('dataPo.filterTeam');
+    Route::delete('/data-po/{no_po}', [\App\Http\Controllers\ProductionOrderController::class, 'destroy'])->name('dataPo.destroy');
+    Route::get('/data-po/{team}/{no_po}', [\App\Http\Controllers\ProductionOrderController::class, 'show'])->name('dataPo.show');
 
 
     /**
