@@ -485,11 +485,10 @@ const printUlangLabel = () => {
     printWithoutDialog(printLabel);
 
     setTimeout(() => {
-        router.post("/api/order-besar/cetak-label/update", formPrintUlang, {
-            onFinish: () => {
-                router.get(`/order-besar/cetak-label/${form.team}/${form.id}`);
-            },
-        });
+        axios.post("/api/order-besar/cetak-label/update", formPrintUlang)
+            .then(() => {
+                router.visit(`/order-besar/cetak-label/${form.team}/${form.id}`);
+            });
     }, 500);
 };
 
@@ -507,16 +506,21 @@ const submit = () => {
     printWithoutDialog(printLabel);
 
     setTimeout(() => {
-        router.post("/api/order-besar/cetak-label", form, {
-            onFinish: () => {
-                router.get(
+        // Use axios for API call instead of Inertia
+        axios.post("/api/order-besar/cetak-label", form)
+            .then(() => {
+                // After successful API call, use router.visit for page navigation
+                router.visit(
                     props.noRim !== 0
                         ? `/order-besar/cetak-label/${form.team}/${form.id}`
                         : "/order-besar/po-siap-verif"
                 );
                 form.periksa1 = null;
-            },
-        });
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                // Handle error appropriately
+            });
     }, 500);
 };
 
