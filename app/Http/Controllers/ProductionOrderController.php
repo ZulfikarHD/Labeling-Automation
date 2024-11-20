@@ -8,6 +8,7 @@ use Inertia\Inertia;
 
 use App\Models\GeneratedProducts;
 use App\Models\GeneratedLabels;
+use App\Models\Specification;
 use App\Models\Workstations;
 use App\Services\PrintLabelService;
 use App\Services\ProductionOrderService;
@@ -71,13 +72,19 @@ class ProductionOrderController extends Controller
     public function edit(Int $po)
     {
         $dataPo = GeneratedProducts::where('no_po', $po)->firstOrFail();
+        $specPo = Specification::where('no_po',$po)
+            ->select('seri','type','rencet','mesin')
+            ->firstOrFail();
+
         $dataLabel  = GeneratedLabels::where('no_po_generated_products', $po)
             ->select('id', 'no_po_generated_products', 'no_rim', 'np_users', 'np_user_p2', 'potongan', 'start', 'finish')
             ->get();
+
         $inschiet   = DataInschiet::where('no_po', $po)->first()->inschiet ?? 0;
 
         return Inertia::render('EditProductionOrder', [
             'dataPo'    => $dataPo,
+            'specPo'    => $specPo,
             'dataLabel' => $dataLabel,
             'teamList'  => Workstations::listWorkstation(),
             'inschiet'  => $inschiet,
@@ -111,22 +118,20 @@ class ProductionOrderController extends Controller
 
     public function update(Request $request)
     {
-        $labels = GeneratedLabels::where('no_po_generated_products', $request->no_po)
+        DB::beginTransaction();
+        try {
+            $labels = GeneratedLabels::where('no_po_generated_products', $request->no_po)
                         ->orderBy('no_rim')
                         ->get();
 
-        $newRimNumber = $request->start_rim;
-        $previousRim = null;
+            $newRimNumber = $request->start_rim;
+            $previousRim = null;
 
-        DB::beginTransaction();
-        try {
             foreach ($labels as $label) {
-                // If current rim number is different from previous, increment newRimNumber
                 if ($previousRim !== null && $label->no_rim != $previousRim) {
                     $newRimNumber++;
                 }
 
-                // Update the record
                 GeneratedLabels::where('id', $label->id)
                     ->update([
                         'no_rim' => $newRimNumber
@@ -134,24 +139,38 @@ class ProductionOrderController extends Controller
 
                 $previousRim = $label->no_rim;
             }
-        /**
-         * add some return message here
-         */
+
+            GeneratedProducts::where('no_po', $request->no_po)->update([
+                'type'  => $request->type,
+                'sum_rim'   => $request->sum_rim,
+                'start_rim' => $request->start_rim,
+                'end_rim'   => $request->end_rim,
+                'assigned_team' => $request->assigned_team,
+                'status'    => $request->status,
+            ]);
 
             DB::commit();
+
+            // Get fresh label data
+            $updatedLabels = GeneratedLabels::where('no_po_generated_products', $request->no_po)
+                ->select('id', 'no_po_generated_products', 'no_rim', 'np_users', 'np_user_p2', 'potongan', 'start', 'finish')
+                ->get();
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Data berhasil diperbarui',
+                'labels' => $updatedLabels
+            ]);
+
         } catch (\Exception $e) {
             DB::rollBack();
-            throw $e;
-        }
 
-        GeneratedProducts::where('no_po', $request->no_po)->update([
-            'type'  => $request->type,
-            'sum_rim'   => $request->sum_rim,
-            'start_rim' => $request->start_rim,
-            'end_rim'   => $request->end_rim,
-            'assigned_team' => $request->assigned_team,
-            'status'    => $request->status,
-        ]);
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Terjadi kesalahan saat memperbarui data',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 
     /**
