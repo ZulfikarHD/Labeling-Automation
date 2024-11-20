@@ -21,18 +21,31 @@ use App\Http\Controllers\UpdateSpecController;
 |
 */
 
+/*
+|--------------------------------------------------------------------------
+| Authentication Routes
+|--------------------------------------------------------------------------
+*/
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-// Production Order Routes
+/*
+|--------------------------------------------------------------------------
+| Production Order Routes
+|--------------------------------------------------------------------------
+*/
 Route::post('/register-production-order', [ProductionOrderController::class, 'store']);
 Route::post('/production-order/update-rim', [ProductionOrderController::class, 'update']);
 Route::put('/production-order-finish/{noPo}', [ProductionOrderController::class, 'updateStatusFinish']);
 Route::get('/production-order/get-labels/{no_po}', [GeneratedLabelController::class, 'getLabels']);
 Route::post('/production-order/update-label', [GeneratedLabelController::class, 'update']);
 
-// Order Besar Routes
+/*
+|--------------------------------------------------------------------------
+| Order Besar Routes
+|--------------------------------------------------------------------------
+*/
 Route::get('/order-besar/register-no-po/{noPo}', [App\Http\Controllers\OrderBesar\RegisterNomorPoController::class, 'show']);
 Route::post('/order-besar/register-no-po', [App\Http\Controllers\OrderBesar\RegisterNomorPoController::class, 'store']);
 Route::post('/order-besar/cetak-label', [App\Http\Controllers\OrderBesar\CetakLabelController::class, 'store']);
@@ -40,13 +53,18 @@ Route::post('/order-besar/cetak-label/edit', [App\Http\Controllers\OrderBesar\Ce
 Route::post('/order-besar/cetak-label/update', [App\Http\Controllers\OrderBesar\CetakLabelController::class, 'update']);
 Route::get('/order-besar/verif/{team}', [PoSiapVerifController::class, 'fetchWorkPo']);
 
-// Order Kecil Routes
+/*
+|--------------------------------------------------------------------------
+| Order Kecil Routes
+|--------------------------------------------------------------------------
+*/
 Route::get('/order-kecil/fetch-spec/{no_po}', [App\Http\Controllers\OrderKecil\CetakLabelController::class, 'show']);
 Route::post('/order-kecil/cetak-label', [App\Http\Controllers\OrderKecil\CetakLabelController::class, 'cetakLabel']);
 
-// Calculation Route
+/*
+|--------------------------------------------------------------------------
+| Utility Routes
+|--------------------------------------------------------------------------
+*/
 Route::get('/pendapatan-harian', [PendapatanHarianController::class, 'gradeHarian']);
-
-// Update Spec Route
 Route::post('/update-spec', [UpdateSpecController::class, 'updateSpec']);
-

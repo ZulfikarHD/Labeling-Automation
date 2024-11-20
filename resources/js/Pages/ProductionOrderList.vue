@@ -57,6 +57,8 @@ const filterTeam = () => {
 const search = () => {
     axios.post("/data-po/" + form.team, form).then((res) => {
         listProduct.value = res.data;
+    }).catch(error => {
+        console.error("Error fetching search results:", error);
     });
 };
 
