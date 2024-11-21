@@ -40,6 +40,7 @@ Route::post('/production-order/update-rim', [ProductionOrderController::class, '
 Route::put('/production-order-finish/{noPo}', [ProductionOrderController::class, 'updateStatusFinish']);
 Route::get('/production-order/get-labels/{no_po}', [GeneratedLabelController::class, 'getLabels']);
 Route::post('/production-order/update-label', [GeneratedLabelController::class, 'update']);
+Route::post('/production-order/add-rim', [GeneratedLabelController::class, 'addRim']);
 
 /*
 |--------------------------------------------------------------------------

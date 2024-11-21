@@ -91,7 +91,7 @@ class RegisterProductionOrderTest extends TestCase
         $this->assertEquals(1, $result->status);
         $this->assertEquals(5, $result->sum_rim);
         $this->assertEquals(1, $result->start_rim);
-        $this->assertEquals(5, $result->end_rim);
+        $this->assertEquals(3, $result->end_rim);
         $this->assertEquals($productionOrder['team'], $result->assigned_team);
     }
 
