@@ -28,6 +28,8 @@ const form = useForm({
     po: "",
     team: props.crntTeam,
     search: "",
+    sort_field: "created_at",
+    sort_direction: "desc",
 });
 
 const deleteModal = ref(false); // Menginisialisasi deleteModal sebagai Boolean
@@ -77,6 +79,22 @@ const deleteOrder = () => {
             form.reset(); // Mengreset form setelah menghapus
             deleteModal.value = !deleteModal.value; // Menutup modal setelah menghapus
         },
+    });
+};
+
+// Add new sorting function
+const sort = (field) => {
+    if (form.sort_field === field) {
+        form.sort_direction = form.sort_direction === 'asc' ? 'desc' : 'asc';
+    } else {
+        form.sort_field = field;
+        form.sort_direction = 'asc';
+    }
+
+    axios.post("/data-po/" + form.team, form).then((res) => {
+        listProduct.value = res.data;
+    }).catch(error => {
+        console.error("Error sorting data:", error);
     });
 };
 </script>
@@ -170,11 +188,59 @@ const deleteOrder = () => {
                             <thead class="bg-slate-50 dark:bg-slate-700/50">
                                 <tr>
                                     <th scope="col" class="px-4 py-4 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase text-center">No</th>
-                                    <th scope="col" class="px-4 py-4 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase text-left">Nomor PO</th>
-                                    <th scope="col" class="px-4 py-4 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase text-left">OBC</th>
+                                    <th
+                                        scope="col"
+                                        @click="sort('no_po')"
+                                        class="px-4 py-4 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase text-left cursor-pointer hover:text-slate-700 dark:hover:text-slate-300 group"
+                                    >
+                                        <div class="flex items-center gap-1">
+                                            Nomor PO
+                                            <span v-if="form.sort_field === 'no_po'" class="text-blue-500">
+                                                {{ form.sort_direction === 'asc' ? '↑' : '↓' }}
+                                            </span>
+                                            <span v-else class="opacity-0 group-hover:opacity-50">↑</span>
+                                        </div>
+                                    </th>
+                                    <th
+                                        scope="col"
+                                        @click="sort('no_obc')"
+                                        class="px-4 py-4 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase text-left cursor-pointer hover:text-slate-700 dark:hover:text-slate-300 group"
+                                    >
+                                        <div class="flex items-center gap-1">
+                                            OBC
+                                            <span v-if="form.sort_field === 'no_obc'" class="text-blue-500">
+                                                {{ form.sort_direction === 'asc' ? '↑' : '↓' }}
+                                            </span>
+                                            <span v-else class="opacity-0 group-hover:opacity-50">↑</span>
+                                        </div>
+                                    </th>
                                     <th scope="col" class="px-4 py-4 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase text-center">Tim</th>
-                                    <th scope="col" class="px-4 py-4 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase text-center">Tanggal Dibuat</th>
-                                    <th scope="col" class="px-4 py-4 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase text-center">Status</th>
+                                    <th
+                                        scope="col"
+                                        @click="sort('created_at')"
+                                        class="px-4 py-4 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase text-center cursor-pointer hover:text-slate-700 dark:hover:text-slate-300 group"
+                                    >
+                                        <div class="flex items-center justify-center gap-1">
+                                            Tanggal Dibuat
+                                            <span v-if="form.sort_field === 'created_at'" class="text-blue-500">
+                                                {{ form.sort_direction === 'asc' ? '↑' : '↓' }}
+                                            </span>
+                                            <span v-else class="opacity-0 group-hover:opacity-50">↑</span>
+                                        </div>
+                                    </th>
+                                    <th
+                                        scope="col"
+                                        @click="sort('status')"
+                                        class="px-4 py-4 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase text-center cursor-pointer hover:text-slate-700 dark:hover:text-slate-300 group"
+                                    >
+                                        <div class="flex items-center justify-center gap-1">
+                                            Status
+                                            <span v-if="form.sort_field === 'status'" class="text-blue-500">
+                                                {{ form.sort_direction === 'asc' ? '↑' : '↓' }}
+                                            </span>
+                                            <span v-else class="opacity-0 group-hover:opacity-50">↑</span>
+                                        </div>
+                                    </th>
                                     <th scope="col" class="px-4 py-4 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase text-center">Selesai</th>
                                     <th scope="col" class="px-4 py-4 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase text-center">Aksi</th>
                                 </tr>

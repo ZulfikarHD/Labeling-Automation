@@ -43,6 +43,15 @@ class ProductionOrderController extends Controller
     public function data_products(String $team, Request $request)
     {
         $search = $request->search;
+        $sort_field = $request->sort_field ?? 'created_at';
+        $sort_direction = $request->sort_direction ?? 'desc';
+
+        // Validate allowed sort fields for security
+        $allowed_sort_fields = ['no_po', 'no_obc', 'created_at', 'updated_at', 'status'];
+        if (!in_array($sort_field, $allowed_sort_fields)) {
+            $sort_field = 'created_at';
+        }
+
         $team_filter = $team == 0 ? "!=" : "=";
         $data_product = GeneratedProducts::query()
             ->with('workstation')
@@ -51,7 +60,7 @@ class ProductionOrderController extends Controller
                 $query->where('no_po', 'LIKE', "%{$search}%")
                     ->orWhere('no_obc', 'LIKE', "%{$search}%");
             })
-            ->orderBy('created_at', 'desc')
+            ->orderBy($sort_field, $sort_direction)
             ->paginate(10)
             ->through(function ($q) {
                 return [
