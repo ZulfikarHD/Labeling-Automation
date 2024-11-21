@@ -97,6 +97,7 @@ class PrintLabelService
                 $periksa2 = $this->formatPeriksaName($dataPo['periksa2'] ?? null);
 
                 $labels = [];
+                // Kumpulkan semua label terlebih dahulu
                 for ($i = 1; $i <= $sumRim; $i++) {
                     foreach (self::POTONGAN_TYPES as $potongan) {
                         $labels[] = [
@@ -112,17 +113,19 @@ class PrintLabelService
                     }
                 }
 
-                // Batch insert untuk optimasi performa
-                foreach (array_chunk($labels, 100) as $batch) {
+                // Pastikan semua data terkumpul sebelum melakukan single batch operation
+                if (count($labels) === ($sumRim * count(self::POTONGAN_TYPES))) {
                     GeneratedLabels::upsert(
-                        $batch,
+                        $labels,
                         ['no_po_generated_products', 'no_rim', 'potongan'],
                         ['np_users', 'np_user_p2', 'start', 'finish', 'workstation']
                     );
+                } else {
+                    throw new \Exception('Jumlah label tidak sesuai dengan yang diharapkan');
                 }
             });
         } catch (\Exception $e) {
-            DB::rollback();
+            DB::rollBack();
             throw $e;
         }
     }
