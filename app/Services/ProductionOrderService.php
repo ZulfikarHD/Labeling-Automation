@@ -35,8 +35,8 @@ class ProductionOrderService
                 'type' => self::PRODUCT_TYPE,
                 'status' => self::INITIAL_STATUS,
                 'sum_rim' => $sumRim,
-                'start_rim' => self::MIN_RIM,
-                'end_rim' => $sumRim > 1 ? $sumRim / 2 : $sumRim,
+                'start_rim' => $productionOrder['start_rim'],
+                'end_rim' => $productionOrder['end_rim'],
                 'assigned_team' => $productionOrder['team'],
             ]);
         });

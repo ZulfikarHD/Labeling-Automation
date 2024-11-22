@@ -74,7 +74,9 @@ class RegisterProductionOrderTest extends TestCase
             'po' => 4000000000,
             'obc' => 'TST010110',
             'jml_lembar' => 2500, // 5 rims (2500/500)
-            'team' => 1
+            'team' => 1,
+            'start_rim' => 1,
+            'end_rim' => 3
         ];
 
         // Register the production order
@@ -128,7 +130,9 @@ class RegisterProductionOrderTest extends TestCase
             'po' => 4000000002,
             'obc' => 'TEST124',
             'jml_lembar' => 100, // Less than 500 sheets
-            'team' => 1
+            'team' => 1,
+            'start_rim' => 1,
+            'end_rim' => 1
         ];
 
         // Register the production order

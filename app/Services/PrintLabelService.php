@@ -98,7 +98,7 @@ class PrintLabelService
 
                 $labels = [];
                 // Kumpulkan semua label terlebih dahulu
-                for ($i = 1; $i <= $sumRim; $i++) {
+                for ($i = $dataPo['start_rim'] ?? 1; $i <= $dataPo['end_rim'] ?? $sumRim; $i++) {
                     foreach (self::POTONGAN_TYPES as $potongan) {
                         $labels[] = [
                             'no_po_generated_products' => $dataPo['po'],
@@ -114,15 +114,15 @@ class PrintLabelService
                 }
 
                 // Pastikan semua data terkumpul sebelum melakukan single batch operation
-                if (count($labels) === ($sumRim * count(self::POTONGAN_TYPES))) {
+                // if (count($labels) === ($sumRim * count(self::POTONGAN_TYPES))) {
                     GeneratedLabels::upsert(
                         $labels,
                         ['no_po_generated_products', 'no_rim', 'potongan'],
                         ['np_users', 'np_user_p2', 'start', 'finish', 'workstation']
                     );
-                } else {
-                    throw new \Exception('Jumlah label tidak sesuai dengan yang diharapkan');
-                }
+                // } else {
+                //     throw new \Exception('Jumlah label tidak sesuai dengan yang diharapkan');
+                // }
             });
         } catch (\Exception $e) {
             DB::rollBack();

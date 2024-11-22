@@ -44,7 +44,9 @@ class PrintLabelTest extends TestCase
             'jml_lembar' => 2500,
             'periksa1' => 'I444',
             'periksa2' => 'I406',
-            'team' => 1
+            'team' => 1,
+            'start_rim' => 1,
+            'end_rim' => 3
         ];
 
         // Act
