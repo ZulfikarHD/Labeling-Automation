@@ -36,8 +36,8 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 |--------------------------------------------------------------------------
 */
 Route::post('/register-production-order', [ProductionOrderController::class, 'store']);
-Route::post('/production-order/update-rim', [ProductionOrderController::class, 'update']);
 Route::put('/production-order-finish/{noPo}', [ProductionOrderController::class, 'updateStatusFinish']);
+Route::post('/production-order/update-rim', [ProductionOrderController::class, 'update']);
 Route::get('/production-order/get-labels/{no_po}', [GeneratedLabelController::class, 'getLabels']);
 Route::post('/production-order/update-label', [GeneratedLabelController::class, 'update']);
 Route::post('/production-order/add-rim', [GeneratedLabelController::class, 'addRim']);

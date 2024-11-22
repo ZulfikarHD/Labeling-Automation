@@ -11,11 +11,22 @@ use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Exception;
 
 /**
- * Class RegisterProductionOrderTest
+ * Test case untuk fitur registrasi dan pengelolaan Production Order
  *
- * This class contains unit tests for the Production Order registration functionality.
- * It tests various scenarios including successful registration, handling of duplicate
- * PO numbers, and validation of rim calculations.
+ * Class ini menguji fungsionalitas terkait:
+ * - Registrasi Production Order baru
+ * - Penanganan duplikasi nomor PO
+ * - Kalkulasi jumlah rim
+ * - Pengelolaan label PCHT
+ * - Status penyelesaian PO
+ *
+ * Related files:
+ * - Services:
+ *   - App\Services\ProductionOrderService
+ * - Models:
+ *   - App\Models\GeneratedProducts
+ *   - App\Models\GeneratedLabels
+ *   - App\Models\Specification
  */
 class RegisterProductionOrderTest extends TestCase
 {
@@ -24,8 +35,11 @@ class RegisterProductionOrderTest extends TestCase
     private ProductionOrderService $service;
 
     /**
-     * Set up the test environment.
-     * Initializes the ProductionOrderService before each test.
+     * Set up test environment
+     *
+     * Inisialisasi ProductionOrderService sebelum setiap test
+     *
+     * @return void
      */
     protected function setUp(): void
     {
@@ -34,12 +48,15 @@ class RegisterProductionOrderTest extends TestCase
     }
 
     /**
-     * Create dummy data for testing purposes.
-     * This method sets up initial data in the database to facilitate testing.
+     * Helper untuk membuat data dummy testing
+     *
+     * Membuat data spesifikasi dan generated product untuk pengujian
+     *
+     * @return void
      */
     private function create_dummy_data_for_testing()
     {
-        // Create a specification entry for testing
+        // Buat data spesifikasi
         $create_specification = Specification::create([
             'no_po'  => 3999999999,
             'no_obc' => "TST010110",
@@ -48,7 +65,7 @@ class RegisterProductionOrderTest extends TestCase
             'rencet' => 38123,
         ]);
 
-        // Create a generated product entry for testing
+        // Buat data generated product
         $create_generated_products  = GeneratedProducts::create([
             'no_po'     => 3999999999,
             'no_obc'    => "TST010110",
@@ -62,30 +79,35 @@ class RegisterProductionOrderTest extends TestCase
     }
 
     /**
-     * Test successful registration of a production order.
-     * This test verifies that a production order can be registered correctly.
+     * Test registrasi Production Order berhasil
+     *
+     * Memverifikasi bahwa:
+     * - PO dapat diregistrasi dengan benar
+     * - Data tersimpan sesuai di database
+     * - Kalkulasi rim berjalan dengan benar
+     *
+     * Steps:
+     * 1. Siapkan data PO
+     * 2. Registrasi PO
+     * 3. Verifikasi data tersimpan
+     *
+     * @return void
      */
     public function test_register_production_order_successfully(): void
     {
-        // Uncomment the line below to create dummy data for testing
-        // $this->create_dummy_data_for_testing();
-
         $productionOrder = [
             'po' => 4000000000,
             'obc' => 'TST010110',
-            'jml_lembar' => 2500, // 5 rims (2500/500)
+            'jml_lembar' => 2500, // 5 rim (2500/500)
             'team' => 1,
             'start_rim' => 1,
             'end_rim' => 3
         ];
 
-        // Register the production order
         $this->service->registerProductionOrder($productionOrder);
 
-        // Retrieve the generated product to verify registration
         $result = GeneratedProducts::where('no_po', $productionOrder['po'])->first();
 
-        // Assertions to verify the registration was successful
         $this->assertNotNull($result);
         $this->assertEquals($productionOrder['po'], $result->no_po);
         $this->assertEquals($productionOrder['obc'], $result->no_obc);
@@ -98,84 +120,114 @@ class RegisterProductionOrderTest extends TestCase
     }
 
     /**
-     * Test that registering a duplicate PO throws an exception.
-     * This test ensures that the system prevents duplicate PO registrations.
+     * Test penanganan duplikasi nomor PO
+     *
+     * Memverifikasi bahwa:
+     * - Sistem menolak PO yang sudah terdaftar
+     * - Exception dilempar dengan pesan yang sesuai
+     *
+     * Steps:
+     * 1. Buat data PO awal
+     * 2. Coba registrasi PO yang sama
+     * 3. Verifikasi exception
+     *
+     * @return void
      */
     public function test_register_duplicate_po_throws_exception(): void
     {
         $this->expectException(Exception::class);
         $this->expectExceptionMessage('Nomor PO sudah terdaftar dalam sistem');
 
-        // Create dummy data for testing
         $this->create_dummy_data_for_testing();
 
         $productionOrder = [
-            'po' => 3999999999, // Using same PO from dummy data
+            'po' => 3999999999,
             'obc' => 'TST010110',
             'jml_lembar' => 38123,
             'team' => 1
         ];
 
-        // Attempt to register the duplicate production order
         $this->service->registerProductionOrder($productionOrder);
     }
 
     /**
-     * Test the calculation of minimum rims for small orders.
-     * This test verifies that small orders default to a minimum of 1 rim.
+     * Test kalkulasi minimum rim untuk order kecil
+     *
+     * Memverifikasi bahwa:
+     * - Order dengan jumlah lembar kecil tetap mendapat minimal 1 rim
+     * - Data tersimpan dengan jumlah rim yang benar
+     *
+     * Steps:
+     * 1. Buat order dengan jumlah lembar kecil
+     * 2. Registrasi PO
+     * 3. Verifikasi jumlah rim
+     *
+     * @return void
      */
     public function test_calculate_minimum_rim_for_small_orders(): void
     {
         $productionOrder = [
             'po' => 4000000002,
             'obc' => 'TEST124',
-            'jml_lembar' => 100, // Less than 500 sheets
+            'jml_lembar' => 100,
             'team' => 1,
             'start_rim' => 1,
             'end_rim' => 1
         ];
 
-        // Register the production order
         $this->service->registerProductionOrder($productionOrder);
 
-        // Retrieve the generated product to verify rim calculation
         $result = GeneratedProducts::where('no_po', $productionOrder['po'])->first();
 
-        // Assert that the sum_rim is set to the minimum of 1
-        $this->assertEquals(1, $result->sum_rim); // Should default to minimum 1 rim
+        $this->assertEquals(1, $result->sum_rim);
     }
 
     /**
-     * Test the registration of PCHT labels.
-     * This test checks if the labels are correctly registered for a given PO number.
+     * Test registrasi label PCHT
+     *
+     * Memverifikasi bahwa:
+     * - Label PCHT dapat diregistrasi
+     * - Jumlah label terdaftar sesuai
+     *
+     * Steps:
+     * 1. Buat data label
+     * 2. Verifikasi jumlah label
+     *
+     * @return void
      */
     public function test_check_pcht_label_registration(): void
     {
         $po_number = 4000000003;
 
-        // Create test data for label registration
         GeneratedLabels::create([
             'no_po_generated_products' => $po_number,
             'no_rim' => 1,
             'potongan' => 'Kiri'
         ]);
 
-        // Check the count of registered labels
         $result = $this->service->cekLabelPchtTerdaftar($po_number)->count();
 
-        // Assert that the label count matches the expected value
         $this->assertEquals(1, $result);
     }
 
     /**
-     * Test that rim numbers are ordered correctly.
-     * This test verifies that the rim numbers are returned in the correct order.
+     * Test pengurutan nomor rim
+     *
+     * Memverifikasi bahwa:
+     * - Nomor rim terurut dengan benar
+     * - Data diambil sesuai urutan
+     *
+     * Steps:
+     * 1. Buat data label dengan urutan acak
+     * 2. Ambil data terurut
+     * 3. Verifikasi urutan
+     *
+     * @return void
      */
     public function test_get_rim_numbers_ordered_correctly(): void
     {
         $po_number = 4000000004;
 
-        // Create test data in random order
         GeneratedLabels::create([
             'no_po_generated_products' => $po_number,
             'no_rim' => 2,
@@ -188,23 +240,29 @@ class RegisterProductionOrderTest extends TestCase
             'potongan' => 'Kanan'
         ]);
 
-        // Retrieve the list of rim numbers
         $results = $this->service->getListNomorRimPcht($po_number)->get();
 
-        // Assert that the rim numbers are ordered correctly
         $this->assertEquals(1, $results[0]->no_rim);
         $this->assertEquals(2, $results[1]->no_rim);
     }
 
     /**
-     * Test that a PO is marked as finished when all labels are processed.
-     * This test checks the completion status of a PO based on label processing.
+     * Test status penyelesaian PO
+     *
+     * Memverifikasi bahwa:
+     * - PO ditandai selesai saat semua label diproses
+     * - Status selesai terdeteksi dengan benar
+     *
+     * Steps:
+     * 1. Buat label yang sudah diproses
+     * 2. Verifikasi status selesai
+     *
+     * @return void
      */
     public function test_po_is_finished_when_all_labels_processed(): void
     {
         $po_number = 4000000005;
 
-        // Create a label entry for the PO
         GeneratedLabels::create([
             'no_po_generated_products' => $po_number,
             'no_rim' => 1,
@@ -212,19 +270,26 @@ class RegisterProductionOrderTest extends TestCase
             'np_users' => 'TestUser1'
         ]);
 
-        // Assert that the PO is marked as finished
         $this->assertTrue($this->service->isPoFinished($po_number));
     }
 
     /**
-     * Test that a PO is not finished with unprocessed labels.
-     * This test verifies that the completion status is correctly determined.
+     * Test status PO belum selesai
+     *
+     * Memverifikasi bahwa:
+     * - PO tidak ditandai selesai jika masih ada label belum diproses
+     * - Status belum selesai terdeteksi dengan benar
+     *
+     * Steps:
+     * 1. Buat label yang belum diproses
+     * 2. Verifikasi status belum selesai
+     *
+     * @return void
      */
     public function test_po_is_not_finished_with_unprocessed_labels(): void
     {
         $po_number = 4000000006;
 
-        // Create a label entry with unprocessed status
         GeneratedLabels::create([
             'no_po_generated_products' => $po_number,
             'no_rim' => 1,
@@ -232,7 +297,6 @@ class RegisterProductionOrderTest extends TestCase
             'np_users' => null
         ]);
 
-        // Assert that the PO is not marked as finished
         $this->assertFalse($this->service->isPoFinished($po_number));
     }
 }

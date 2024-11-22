@@ -10,10 +10,20 @@ use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
 /**
- * Class PrintLabelTest
+ * Test case untuk fitur pencetakan label produksi
  *
- * This class contains unit tests for the PrintLabelService.
- * It tests various functionalities related to label printing and data management.
+ * Class ini menguji fungsionalitas terkait:
+ * - Pembuatan dan populasi data label
+ * - Penanganan data inschiet (sisa produksi)
+ * - Manajemen sesi pengguna
+ * - Validasi dan penyimpanan data label
+ *
+ * Related files:
+ * - Services:
+ *   - App\Services\PrintLabelService
+ * - Models:
+ *   - App\Models\GeneratedLabels
+ *   - App\Models\DataInschiet
  */
 class PrintLabelTest extends TestCase
 {
@@ -22,8 +32,12 @@ class PrintLabelTest extends TestCase
     private PrintLabelService $printLabelService;
 
     /**
-     * Set up the test environment.
-     * Initializes the PrintLabelService before each test.
+     * Setup test environment
+     *
+     * Mempersiapkan:
+     * - Inisialisasi service untuk pengujian
+     *
+     * @return void
      */
     protected function setUp(): void
     {
@@ -32,9 +46,18 @@ class PrintLabelTest extends TestCase
     }
 
     /**
-     * Test populating labels for a registered production order.
-     * This test verifies that labels are correctly populated in the database
-     * based on the provided production order data.
+     * Test populasi label untuk PO yang terdaftar
+     *
+     * Memverifikasi bahwa:
+     * - Label dibuat dengan benar di database
+     * - Data inschiet tersimpan sesuai perhitungan
+     *
+     * Steps:
+     * 1. Siapkan data PO test
+     * 2. Jalankan proses populasi label
+     * 3. Verifikasi data tersimpan
+     *
+     * @return void
      */
     public function test_populate_label_for_registered_po(): void
     {
@@ -68,9 +91,18 @@ class PrintLabelTest extends TestCase
     }
 
     /**
-     * Test creating a label for a production order.
-     * This test verifies that a label can be created and stored in the database
-     * with the correct attributes.
+     * Test pembuatan label produksi
+     *
+     * Memverifikasi bahwa:
+     * - Label dapat dibuat dengan atribut yang benar
+     * - Data tersimpan sesuai parameter yang diberikan
+     *
+     * Steps:
+     * 1. Siapkan data label
+     * 2. Buat label baru
+     * 3. Verifikasi penyimpanan
+     *
+     * @return void
      */
     public function test_create_label(): void
     {
@@ -104,9 +136,18 @@ class PrintLabelTest extends TestCase
     }
 
     /**
-     * Test inserting inschiet data when there is a remainder.
-     * This test verifies that the correct inschiet data is inserted into the database
-     * when the number of sheets results in a remainder.
+     * Test penyimpanan data inschiet dengan sisa
+     *
+     * Memverifikasi bahwa:
+     * - Data inschiet tersimpan saat ada sisa lembar
+     * - Label inschiet dibuat untuk kedua potongan
+     *
+     * Steps:
+     * 1. Siapkan data dengan sisa lembar
+     * 2. Proses penyimpanan inschiet
+     * 3. Verifikasi data tersimpan
+     *
+     * @return void
      */
     public function test_insert_inschiet_with_remainder(): void
     {
@@ -148,9 +189,17 @@ class PrintLabelTest extends TestCase
     }
 
     /**
-     * Test inserting inschiet data when there is no remainder.
-     * This test verifies that no inschiet data is inserted into the database
-     * when the number of sheets does not result in a remainder.
+     * Test penyimpanan data inschiet tanpa sisa
+     *
+     * Memverifikasi bahwa:
+     * - Tidak ada data inschiet saat lembar habis dibagi
+     *
+     * Steps:
+     * 1. Siapkan data tanpa sisa lembar
+     * 2. Proses penyimpanan inschiet
+     * 3. Verifikasi tidak ada data tersimpan
+     *
+     * @return void
      */
     public function test_insert_inschiet_without_remainder(): void
     {
@@ -177,9 +226,18 @@ class PrintLabelTest extends TestCase
     }
 
     /**
-     * Test finishing a previous user session.
-     * This test verifies that the finish timestamp is updated for the previous user session
-     * in the generated labels table.
+     * Test penyelesaian sesi pengguna sebelumnya
+     *
+     * Memverifikasi bahwa:
+     * - Timestamp finish diupdate untuk sesi sebelumnya
+     * - Data label teridentifikasi dengan benar
+     *
+     * Steps:
+     * 1. Buat data sesi pengguna
+     * 2. Proses penyelesaian sesi
+     * 3. Verifikasi update timestamp
+     *
+     * @return void
      */
     public function test_finish_previous_user_session(): void
     {

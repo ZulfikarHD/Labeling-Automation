@@ -11,10 +11,33 @@ use App\Models\Users;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 
+/**
+ * Test case untuk fitur cetak label order besar
+ *
+ * Class ini menguji fungsionalitas terkait:
+ * - Pencetakan label baru untuk order besar
+ * - Edit data label yang sudah ada
+ * - Update data label
+ *
+ * Related files:
+ * - Controllers:
+ *   - App\Http\Controllers\OrderBesar\CetakLabelController
+ * - Services:
+ *   - App\Services\PrintLabelService
+ * - API Routes:
+ *   - POST /api/order-besar/cetak-label
+ *   - POST /api/order-besar/cetak-label/edit
+ *   - POST /api/order-besar/cetak-label/update
+ */
 class CetakLabelOrderBesarTest extends TestCase
 {
     use DatabaseTransactions;
 
+    /**
+     * Helper untuk membuat user test
+     *
+     * @return Users
+     */
     private function createTestUser()
     {
         return Users::create([
@@ -25,6 +48,12 @@ class CetakLabelOrderBesarTest extends TestCase
         ]);
     }
 
+    /**
+     * Helper untuk membuat data spesifikasi test
+     *
+     * @param int $noPo Nomor PO untuk spesifikasi
+     * @return Specification
+     */
     private function createTestSpecification($noPo = 4000000001)
     {
         return Specification::create([
@@ -37,6 +66,12 @@ class CetakLabelOrderBesarTest extends TestCase
         ]);
     }
 
+    /**
+     * Helper untuk membuat data produk yang digenerate
+     *
+     * @param int $noPo Nomor PO untuk produk
+     * @return GeneratedProducts
+     */
     private function createTestGeneratedProduct($noPo = 4000000001)
     {
         return GeneratedProducts::create([
@@ -51,6 +86,12 @@ class CetakLabelOrderBesarTest extends TestCase
         ]);
     }
 
+    /**
+     * Test pencetakan label baru untuk order besar
+     *
+     * @see App\Http\Controllers\OrderBesar\CetakLabelController::store()
+     * @see POST /api/order-besar/cetak-label
+     */
     public function test_can_cetak_label_for_order_besar(): void
     {
         $user = $this->createTestUser();
@@ -82,6 +123,12 @@ class CetakLabelOrderBesarTest extends TestCase
         ]);
     }
 
+    /**
+     * Test edit data label yang sudah ada
+     *
+     * @see App\Http\Controllers\OrderBesar\CetakLabelController::edit()
+     * @see POST /api/order-besar/cetak-label/edit
+     */
     public function test_can_edit_label(): void
     {
         $user = $this->createTestUser();
@@ -117,6 +164,12 @@ class CetakLabelOrderBesarTest extends TestCase
             ]);
     }
 
+    /**
+     * Test update data label
+     *
+     * @see App\Http\Controllers\OrderBesar\CetakLabelController::update()
+     * @see POST /api/order-besar/cetak-label/update
+     */
     public function test_can_update_label(): void
     {
         $user = $this->createTestUser();

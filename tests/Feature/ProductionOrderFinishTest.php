@@ -7,10 +7,33 @@ use App\Models\GeneratedProducts;
 use App\Models\GeneratedLabels;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 
+/**
+ * Test case untuk fitur penyelesaian order produksi
+ *
+ * Class ini menguji fungsionalitas terkait:
+ * - Penandaan order produksi sebagai selesai
+ * - Penanganan order produksi yang tidak ditemukan
+ *
+ * Related files:
+ * - Controllers:
+ *   - App\Http\Controllers\ProductionOrderController
+ * - Services:
+ *   - App\Services\ProductionOrderService
+ * - API Routes:
+ *   - PUT /api/production-order-finish/{po}
+ */
 class ProductionOrderFinishTest extends TestCase
 {
     use DatabaseTransactions;
 
+    /**
+     * Helper untuk membuat data test
+     *
+     * Membuat data order produksi dan label terkait untuk pengujian
+     *
+     * @param string $noPo Nomor PO untuk data test
+     * @return void
+     */
     private function createTestData($noPo)
     {
         // Create a test production order
@@ -43,6 +66,20 @@ class ProductionOrderFinishTest extends TestCase
         ]);
     }
 
+    /**
+     * Test penandaan order produksi sebagai selesai
+     *
+     * Memverifikasi bahwa:
+     * - Order produksi dapat ditandai sebagai selesai
+     * - Status order berubah menjadi selesai di database
+     *
+     * Steps:
+     * 1. Buat data test order produksi
+     * 2. Kirim request untuk menandai order selesai
+     * 3. Verifikasi response dan perubahan status
+     *
+     * @return void
+     */
     public function test_production_order_can_be_marked_as_finished(): void
     {
         $noPo = 4000000001;
@@ -54,10 +91,22 @@ class ProductionOrderFinishTest extends TestCase
 
         $this->assertDatabaseHas('generated_products', [
             'no_po' => $noPo,
-            'status' => 2 // Verify status is updated to finished (1)
+            'status' => 2 // Verify status is updated to finished (2)
         ]);
     }
 
+    /**
+     * Test penanganan order produksi yang tidak ditemukan
+     *
+     * Memverifikasi bahwa:
+     * - Sistem mengembalikan 404 untuk order yang tidak ada
+     *
+     * Steps:
+     * 1. Kirim request dengan nomor PO yang tidak ada
+     * 2. Verifikasi response 404
+     *
+     * @return void
+     */
     public function test_returns_404_if_production_order_to_be_marked_have_nonexistent_po(): void
     {
         $nonexistentPo = 9999999999;

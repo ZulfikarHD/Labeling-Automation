@@ -12,20 +12,32 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 
 /**
- * Class CetakLabelOrderKecil
+ * Test case untuk fitur cetak label order kecil
  *
- * This class contains feature tests for the small order label printing functionality.
- * It includes tests for creating labels and handling duplicate production order numbers.
+ * Class ini menguji fungsionalitas terkait:
+ * - Pembuatan label untuk order kecil
+ * - Penanganan duplikasi nomor PO
+ * - Validasi input dan penyimpanan data
+ *
+ * Related files:
+ * - Controllers:
+ *   - App\Http\Controllers\OrderKecil\CetakLabelController
+ * - Services:
+ *   - App\Services\PrintLabelService
+ * - API Routes:
+ *   - POST /api/order-kecil/cetak-label
  */
 class CetakLabelOrderKecilTest extends TestCase
 {
     use DatabaseTransactions;
 
     /**
-     * Create a test specification for a given purchase order number.
+     * Helper untuk membuat data spesifikasi test
      *
-     * @param int $noPo The purchase order number to create a specification for.
-     * @return Specification The created specification instance.
+     * Membuat data spesifikasi dengan nilai default untuk pengujian
+     *
+     * @param int $noPo Nomor PO untuk spesifikasi
+     * @return Specification Instance spesifikasi yang dibuat
      */
     private function createTestSpecification($noPo = 4000000001)
     {
@@ -40,10 +52,18 @@ class CetakLabelOrderKecilTest extends TestCase
     }
 
     /**
-     * Test the creation of a label for a small order.
+     * Test pembuatan label untuk order kecil
      *
-     * This test verifies that a label can be successfully created for a small order
-     * and that the relevant data is stored in the database.
+     * Memverifikasi bahwa:
+     * - Label dapat dibuat dengan sukses
+     * - Data tersimpan dengan benar di database
+     * - Response sesuai format yang diharapkan
+     *
+     * Steps:
+     * 1. Buat user test
+     * 2. Buat spesifikasi test
+     * 3. Kirim request pembuatan label
+     * 4. Verifikasi response dan data tersimpan
      *
      * @return void
      */
@@ -98,10 +118,17 @@ class CetakLabelOrderKecilTest extends TestCase
     }
 
     /**
-     * Test handling of duplicate purchase order numbers.
+     * Test penanganan duplikasi nomor PO
      *
-     * This test verifies that an error response is returned when attempting to create
-     * a label with a duplicate purchase order number.
+     * Memverifikasi bahwa:
+     * - Sistem menolak pembuatan label dengan nomor PO yang sudah ada
+     * - Response error sesuai format yang diharapkan
+     *
+     * Steps:
+     * 1. Buat user test
+     * 2. Buat data order produksi yang sudah ada
+     * 3. Coba buat label dengan nomor PO yang sama
+     * 4. Verifikasi response error
      *
      * @return void
      */
