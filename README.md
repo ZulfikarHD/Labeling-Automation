@@ -7,7 +7,7 @@
 </div>
 
 ## 📋 Deskripsi
-Automated Label Generator adalah sistem yang dirancang untuk mengotomatisasi proses pembuatan dan pencetakan label produksi. Sistem ini dikembangkan khusus untuk Perum Percetakan Uang RI (PERURI) dengan fokus pada efisiensi dan akurasi dalam manajemen label produksi.
+Automated Label Generator adalah sistem yang dirancang untuk mengotomatisasi proses pembuatan dan pencetakan label produksi. Sistem ini dikembangkan khusus untuk SBU High Security Solution pada Perum Percetakan Uang RI (PERURI) dengan fokus pada efisiensi maupun akurasi dalam manajemen label produksi dan tracing hasil produksi pegawai.
 
 ## 🚀 Fitur Utama
 
@@ -47,14 +47,11 @@ Automated Label Generator adalah sistem yang dirancang untuk mengotomatisasi pro
 - Laravel
 - MySQL/PostgreSQL
 
-### Desktop Integration
-- Electron
-
 ## 📦 Instalasi
 
 ```bash
 # Clone repository
-git clone [repository-url]
+git clone https://github.com/ZulfikarHD/Labeling-Automation
 
 # Install dependencies
 composer install
@@ -112,23 +109,10 @@ Sistem didesain untuk dapat diakses dari berbagai perangkat dengan tampilan yang
 - Tablet
 - Mobile devices
 
-## 🤝 Kontribusi
-
-Untuk berkontribusi pada project ini:
-1. Fork repository
-2. Buat branch baru (`git checkout -b feature/AmazingFeature`)
-3. Commit perubahan (`git commit -m 'Add some AmazingFeature'`)
-4. Push ke branch (`git push origin feature/AmazingFeature`)
-5. Buat Pull Request
-
-## 📄 Lisensi
-
-Hak Cipta © 2024 Perum Percetakan Uang RI (PERURI). Seluruh hak dilindungi.
-
 ## 📞 Kontak
 
-Project Owner - [Nama PO]
-Developer Team - [Kontak Tim Developer]
+Project Owner - Zulfikar Hidayatullah
+Developer Team - SIRINE Team
 
 ---
 
