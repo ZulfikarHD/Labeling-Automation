@@ -143,7 +143,7 @@ class ProductionOrderController extends Controller
 
                 GeneratedLabels::where('id', $label->id)
                     ->update([
-                        'no_rim' => $newRimNumber
+                        'no_rim' => $label->no_rim == 999 ? 999 : $newRimNumber
                     ]);
 
                 $previousRim = $label->no_rim;
