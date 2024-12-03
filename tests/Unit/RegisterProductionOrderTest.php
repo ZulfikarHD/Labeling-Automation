@@ -112,7 +112,7 @@ class RegisterProductionOrderTest extends TestCase
         $this->assertEquals($productionOrder['po'], $result->no_po);
         $this->assertEquals($productionOrder['obc'], $result->no_obc);
         $this->assertEquals('PCHT', $result->type);
-        $this->assertEquals(1, $result->status);
+        $this->assertEquals(0, $result->status);
         $this->assertEquals(5, $result->sum_rim);
         $this->assertEquals(1, $result->start_rim);
         $this->assertEquals(3, $result->end_rim);

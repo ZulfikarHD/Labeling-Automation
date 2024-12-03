@@ -20,7 +20,7 @@ createInertiaApp({
             .use(plugin)
             .use(ZiggyVue, Ziggy)
             .use(VueSweetalert2)
-            .use(VAnimateCss, { animateCSSPath: './plugin/animate.min.css' })
+            .use(VAnimateCss)
             .mount(el);
     },
     progress: {

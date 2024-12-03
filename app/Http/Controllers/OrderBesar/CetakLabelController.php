@@ -95,7 +95,8 @@ class CetakLabelController extends Controller
             $this->updateProgress($request->po, $poStatus); // Update progress
 
             DB::commit(); // Commit transaction
-            return response()->json(['status' => 'success']); // Return success response
+
+            return response()->json(['status' => 'success', 'poStatus' => $poStatus]); // Return success response
 
         } catch (\Exception $e) {
             DB::rollback(); // Rollback transaction on error

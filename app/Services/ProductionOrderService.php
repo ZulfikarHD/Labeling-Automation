@@ -12,7 +12,7 @@ class ProductionOrderService
     private const SHEETS_PER_RIM = 500;
     private const MIN_RIM = 1;
     private const PRODUCT_TYPE = 'PCHT';
-    private const INITIAL_STATUS = 1;
+    private const INITIAL_STATUS = 0;
 
     /**
      * Register a new production order
