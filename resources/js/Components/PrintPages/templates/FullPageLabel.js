@@ -1,4 +1,21 @@
-<!DOCTYPE html>
+import { detectBrowser } from "../utils/browserUtils";
+import { formatDate, formatTime } from "../utils/dateUtils";
+
+export function fullPageLabel(
+    obc,
+    noRim = "",
+    color,
+    sisiran = "",
+    periksa1,
+    periksa2 = ""
+) {
+    const date = new Date();
+    const topMargin = detectBrowser() !== "Firefox" ? "-354px" : "-236px";
+    const tgl = formatDate(date);
+    const time = formatTime(date);
+    const p2 = periksa2 == "" ? "" : "/" + periksa2;
+
+    return `<!DOCTYPE html>
 <html>
 
 <head>
@@ -94,19 +111,19 @@
     </style>
 </head>
 
-<body style="margin-top: ${topMargin}">
+<body>
     <div style='page-break-after:avoid; width: 100%; height: 100%; border-style: solid;'>
         <div class="wrapper">
             <!-- Header -->
             <div class="sectionWrapper" style="flex: 0 0 auto; padding: 0.25rem; padding-bottom: 0.25rem;">
-                <img src="/public/img/logo_peruri.svg"
+                <img src="/img/logo_peruri.svg"
                     style="width: 100%; max-height: 40px; object-fit: contain; margin-bottom: 0.25rem; filter: grayscale(100%);" />
                 <h1 style="margin: 0.125rem 0; font-size: 14px; font-weight: 800; width: 100%; padding-top: 0.25rem; text-align: center;">PERUM PERCETAKAN UANG RI</h1>
             </div>
 
             <!-- Title -->
             <div class="sectionWrapper" style="flex: 0 0 auto; padding-bottom: 0.25rem;">
-                <h1 style="text-align: center; font-weight: 600; margin: 0; font-size: 13px; width: 100%; font-family: sans-serif; line-height: 1.5;">LABEL KONTROL
+                <h1 style="text-align: center; font-weight: 300; margin: 0; font-size: 13px; width: 100%; font-family: sans-serif; line-height: 1.5;">LABEL KONTROL
                     <BR>PRODUKSI PITA CUKAI</h1>
             </div>
 
@@ -203,13 +220,13 @@
                     <!-- Row 5 -->
                     <tr>
                         <td class="grid-wrapper">
-                            <p class="p-content"></p>
+                            <p class="p-content" style="font-size: 0.6rem;">${tgl}</p>
                         </td>
                         <td class="grid-wrapper" colspan="2">
-                            <p class="p-content"></p>
+                            <p class="p-content" style="font-size: 1rem; font-weight: 600; color: ${color};">${obc}</p>
                         </td>
                         <td class="grid-wrapper">
-                            <p class="p-content"></p>
+                            <p class="p-content">500 Lbr</p>
                         </td>
                     </tr>
 
@@ -229,3 +246,5 @@
 </body>
 
 </html>
+`;
+}

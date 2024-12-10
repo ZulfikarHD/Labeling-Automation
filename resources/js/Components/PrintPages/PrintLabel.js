@@ -85,7 +85,6 @@ export function fullPageLabel(
             align-items: center;
             gap: 4px;
         }
-
         .text-content {
             border-style: solid;
             height: 100%;
@@ -709,3 +708,4 @@ export function batchLabelPage(
 }
 
 // Full Page Prin Label
+

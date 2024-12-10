@@ -374,7 +374,7 @@ import InputLabel from "@/Components/InputLabel.vue";
 import InputError from "@/Components/InputError.vue";
 import TextInput from "@/Components/TextInput.vue";
 import TableVerifikasiPegawai from "@/Components/TableVerifikasiPegawai.vue";
-import { fullPageLabel } from "@/Components/PrintPages/PrintLabel";
+import { fullPageLabel } from "@/Components/PrintPages/index";
 import { Link, useForm, router, Head } from "@inertiajs/vue3";
 import axios from "axios";
 import Swal from 'sweetalert2';
