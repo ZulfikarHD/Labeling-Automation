@@ -1,21 +1,20 @@
-import { detectBrowser } from "../utils/browserUtils";
 import { formatDate, formatTime } from "../utils/dateUtils";
 
-export function fullPageLabel(
+export function batchFullPageLabel(
     obc,
     noRim = "",
     color,
     sisiran = "",
     periksa1,
-    periksa2 = ""
+    periksa2 = "",
+    jml_label
 ) {
     const date = new Date();
-    const topMargin = detectBrowser() !== "Firefox" ? "-354px" : "-236px";
     const tgl = formatDate(date);
     const time = formatTime(date);
     const p2 = periksa2 == "" ? "" : periksa2;
 
-    return `<!DOCTYPE html>
+    const contentPrint = `<!DOCTYPE html>
 <html>
 
 <head>
@@ -87,7 +86,6 @@ export function fullPageLabel(
             width: 100%;
             height: 100%;
             border-collapse: collapse;
-            border: 0px !important;
             table-layout: fixed;
             margin-top: 0.5rem;
         }
@@ -241,7 +239,7 @@ export function fullPageLabel(
                             <p class="p-content" style="font-weight: 600;">CATATAN</p>
                         </td>
                         <td class="grid-wrapper" colspan="3">
-                            <p class="p-content" style="color: ${color};">${noRim} ${sisiran} - ${time}</p>
+                            <p class="p-content" style="color: ${color};">${time}</p>
                         </td>
                     </tr>
                 </table>
@@ -252,4 +250,15 @@ export function fullPageLabel(
 
 </html>
 `;
+
+    let printPage = "";
+    for (let print = 0; print < jml_label; print++) {
+        printPage += `<body>
+            <span style="color:white">${print}</span>
+            ${contentPrint}
+            <div style="page-break-after: always;"></div>
+        </body>`;
+    }
+
+    return printPage;
 }

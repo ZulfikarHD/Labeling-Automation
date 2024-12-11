@@ -7,7 +7,7 @@ import InputError from "@/Components/InputError.vue";
 import TextInput from "@/Components/TextInput.vue";
 import { Link, useForm, router, Head } from "@inertiajs/vue3";
 import axios from "axios";
-import { batchFullPageLabel } from "@/Components/PrintPages/PrintLabel";
+import { batchFullPageLabel } from "@/Components/PrintPages/index";
 import NavigateBackButton from "@/Components/NavigateBackButton.vue";
 
 const swal = inject('$swal');
