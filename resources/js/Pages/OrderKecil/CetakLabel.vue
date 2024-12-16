@@ -7,7 +7,7 @@ import InputError from "@/Components/InputError.vue";
 import TextInput from "@/Components/TextInput.vue";
 import { Link, useForm, router, Head } from "@inertiajs/vue3";
 import axios from "axios";
-import { batchFullPageLabel } from "@/Components/PrintPages/index";
+import { batchSingleLabel } from "@/Components/PrintPages/index";
 import NavigateBackButton from "@/Components/NavigateBackButton.vue";
 
 const swal = inject('$swal');
@@ -120,7 +120,7 @@ const submit = () => {
             // Use axios instead of router for better error handling
             axios.post("/api/order-kecil/cetak-label", form) // untuk debug error ganti axioss ke router
                 .then(response => {
-                    let printLabel = batchFullPageLabel(
+                    let printLabel = batchSingleLabel(
                         form.obc,
                         undefined,
                         obc_color.value,

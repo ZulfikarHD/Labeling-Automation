@@ -374,7 +374,7 @@ import InputLabel from "@/Components/InputLabel.vue";
 import InputError from "@/Components/InputError.vue";
 import TextInput from "@/Components/TextInput.vue";
 import TableVerifikasiPegawai from "@/Components/TableVerifikasiPegawai.vue";
-import { fullPageLabel } from "@/Components/PrintPages/index";
+import { singleLabel } from "@/Components/PrintPages/index";
 import { Link, useForm, router, Head } from "@inertiajs/vue3";
 import axios from "axios";
 import Swal from 'sweetalert2';
@@ -469,13 +469,14 @@ const printWithoutDialog = (content) => {
 
     iframe.contentWindow.focus();
     setTimeout(() => {
+
         iframe.contentWindow.print();
     }, 200);
 };
 
 // Handle reprint label submission
 const printUlangLabel = () => {
-    const printLabel = fullPageLabel(
+    const printLabel = singleLabel(
         formPrintUlang.obc,
         formPrintUlang.noRim !== 999 ? formPrintUlang.noRim : "INS",
         colorObc,
@@ -495,7 +496,7 @@ const printUlangLabel = () => {
 
 // Handle main form submission
 const submit = () => {
-    const printLabel = fullPageLabel(
+    const printLabel = singleLabel(
         form.obc,
         form.no_rim !== 999 ? form.no_rim : "INS",
         colorObc,

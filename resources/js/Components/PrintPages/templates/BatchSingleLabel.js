@@ -1,19 +1,20 @@
 import { formatDate, formatTime } from "../utils/dateUtils";
 
-export function singleLabel(
+export function batchSingleLabel(
     obc,
     noRim = "",
     color,
     sisiran = "",
     periksa1,
-    periksa2 = ""
+    periksa2 = "",
+    jml_label
 ) {
     const date = new Date();
     const tgl = formatDate(date);
     const time = formatTime(date);
     const p2 = periksa2 == "" ? "" : periksa2;
 
-    return `<!DOCTYPE html>
+    const contentPrint = `<!DOCTYPE html>
 <html>
 <head>
     <style>
@@ -124,7 +125,7 @@ export function singleLabel(
                     <tr>
                         <td class="grid-wrapper"></td>
                         <td class="grid-wrapper" colspan="3">
-                            <p class="p-content" style="color: ${color}; margin-top: -2rem;">${noRim} ${sisiran} - ${time}</p>
+                            <p class="p-content" style="color: ${color}; margin-top: -2rem;">${noRim} ${sisiran} ${time}</p>
                         </td>
                     </tr>
                 </table>
@@ -133,4 +134,15 @@ export function singleLabel(
     </div>
 </body>
 </html>`;
+
+    let printPage = "";
+    for (let print = 0; print < jml_label; print++) {
+        printPage += `<body>
+            <span style="color:white">${print}</span>
+            ${contentPrint}
+            <div style="page-break-after: always;"></div>
+        </body>`;
+    }
+
+    return printPage;
 }
