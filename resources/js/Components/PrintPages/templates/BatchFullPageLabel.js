@@ -34,6 +34,7 @@ export function batchFullPageLabel(
             align-items: stretch;
             height: 100%;
             gap: 0.25rem;
+            overflow: hidden;
         }
 
         .sectionWrapper {

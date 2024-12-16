@@ -1,4 +1,3 @@
-import { detectBrowser } from "../utils/browserUtils";
 import { formatDate, formatTime } from "../utils/dateUtils";
 
 export function fullPageLabel(
@@ -10,7 +9,6 @@ export function fullPageLabel(
     periksa2 = ""
 ) {
     const date = new Date();
-    const topMargin = detectBrowser() !== "Firefox" ? "-354px" : "-236px";
     const tgl = formatDate(date);
     const time = formatTime(date);
     const p2 = periksa2 == "" ? "" : periksa2;
@@ -35,6 +33,7 @@ export function fullPageLabel(
             align-items: stretch;
             height: 100%;
             gap: 0.25rem;
+            overflow: hidden;
         }
 
         .sectionWrapper {
