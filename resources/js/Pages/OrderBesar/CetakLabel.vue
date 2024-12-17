@@ -300,6 +300,7 @@
                         v-model="form.periksa1"
                         class="w-full uppercase dark:bg-gray-700 dark:text-gray-300"
                         required
+                        ref="periksa1Input"
                         autofocus
                     />
                     <InputError class="mt-2" />
@@ -367,7 +368,7 @@
 </template>
 
 <script setup>
-import { reactive, ref } from "vue";
+import { reactive, ref, nextTick } from "vue";
 import Modal from "@/Components/Modal.vue";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import InputLabel from "@/Components/InputLabel.vue";
@@ -490,6 +491,9 @@ const printUlangLabel = () => {
         axios.post("/api/order-besar/cetak-label/update", formPrintUlang)
             .then(() => {
                 router.visit(`/order-besar/cetak-label/${form.team}/${form.id}`);
+                nextTick(() => {
+                    periksa1Input.value?.focus();
+                });
             });
     }, 500);
 };
@@ -508,20 +512,21 @@ const submit = () => {
     printWithoutDialog(printLabel);
 
     setTimeout(() => {
-        // Use axios for API call instead of Inertia
         axios.post("/api/order-besar/cetak-label", form)
             .then((res) => {
                 console.log(res.data.poStatus);
                 if (res.data.poStatus !== 2) {
                     router.visit(`/order-besar/cetak-label/${form.team}/${form.id}`);
                     form.periksa1 = null;
+                    nextTick(() => {
+                        periksa1Input.value?.focus();
+                    });
                 } else {
                     router.get("/order-besar/po-siap-verif");
-                };
+                }
             })
             .catch(error => {
                 console.error('Error:', error);
-                // Handle error appropriately
             });
     }, 500);
 };
@@ -559,4 +564,7 @@ const fetchNoPlat = async () => {
 
 // Initial plate number fetch
 fetchNoPlat();
+
+// Add this ref
+const periksa1Input = ref(null);
 </script>
