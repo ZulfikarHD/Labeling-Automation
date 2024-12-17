@@ -78,11 +78,11 @@ class CetakLabelController extends Controller
     public function store(Request $request): JsonResponse|RedirectResponse
     {
         try {
-            DB::beginTransaction(); // Start database transaction
+            DB::beginTransaction();
 
-            $this->printLabelService->finishPreviousUserSession($request->periksa1); // Finish previous session
+            $this->printLabelService->finishPreviousUserSession($request->periksa1);
 
-            $this->printLabelService->createLabel(
+            $result = $this->printLabelService->createLabel(
                 $request->po,
                 $request->no_rim,
                 $request->lbr_ptg,
@@ -91,16 +91,26 @@ class CetakLabelController extends Controller
                 $request->team
             );
 
-            $poStatus = $this->productionOrderService->isPoFinished($request->po) ? 2 : 1; // Determine PO status
-            $this->updateProgress($request->po, $poStatus); // Update progress
+            // Check if label creation was successful
+            if ($result['status'] === 'error') {
+                DB::rollback();
+                return response()->json($result, 422);
+            }
 
-            DB::commit(); // Commit transaction
+            $poStatus = $this->productionOrderService->isPoFinished($request->po) ? 2 : 1;
+            $this->updateProgress($request->po, $poStatus);
 
-            return response()->json(['status' => 'success', 'poStatus' => $poStatus]); // Return success response
+            DB::commit();
+
+            return response()->json([
+                'status' => 'success',
+                'poStatus' => $poStatus,
+                'data' => $result['data']
+            ]);
 
         } catch (\Exception $e) {
-            DB::rollback(); // Rollback transaction on error
-            return redirect()->back()->withErrors(['error' => self::ERROR_PROCESS]); // Return error response
+            DB::rollback();
+            return redirect()->back()->withErrors(['error' => self::ERROR_PROCESS]);
         }
     }
 
@@ -288,4 +298,32 @@ class CetakLabelController extends Controller
         DataInschiet::where('no_po', $request->po)
             ->update([$field => $npPetugas]); // Update inschiet data
     }
+
+    public function getData(string $team, string $id)
+    {
+        try {
+            $product = GeneratedProducts::findOrFail($id);
+            $noRimData = $this->fetchNoRim($product->no_po);
+
+            return response()->json([
+                'product' => $product,
+                'noRim' => $noRimData['noRim'],
+                'potongan' => $noRimData['potongan'],
+                'printData' => GeneratedLabels::query()
+                    ->where('no_po_generated_products', $product->no_po)
+                    ->where('potongan', request('dataRim', 'Kiri'))
+                    ->select(['no_rim', 'np_users', 'potongan', 'start', 'finish'])
+                    ->get()
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Failed to fetch data'], 500);
+        }
+    }
+
+    // public function getVerificationStatus(string $team)
+    // {
+    //     return response()->json([
+    //         'verificationData' => // Your verification data query here
+    //     ]);
+    // }
 }

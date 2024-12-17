@@ -41,9 +41,16 @@ Route::middleware('auth')->group(function () {
     });
 
     // Order Besar routes
-    Route::get('/order-besar/po-siap-verif', [App\Http\Controllers\OrderBesar\PoSiapVerifController::class, 'index'])->name('orderBesar.poSiapVerif');
-    Route::get('/order-besar/register-nomor-po', [App\Http\Controllers\OrderBesar\RegisterNomorPoController::class, 'index'])->name('orderBesar.registerNomorPo');
-    Route::get('/order-besar/cetak-label/{team}/{id}', [App\Http\Controllers\OrderBesar\CetakLabelController::class, 'index'])->name('orderBesar.cetakLabel');
+    Route::prefix('order-besar')->group(function () {
+        Route::get('/po-siap-verif', [App\Http\Controllers\OrderBesar\PoSiapVerifController::class, 'index'])
+            ->name('orderBesar.poSiapVerif');
+
+        Route::get('/register-nomor-po', [App\Http\Controllers\OrderBesar\RegisterNomorPoController::class, 'index'])
+            ->name('orderBesar.registerNomorPo');
+
+        Route::get('/cetak-label/{team}/{id}', [App\Http\Controllers\OrderBesar\CetakLabelController::class, 'index'])
+            ->name('orderBesar.cetakLabel');
+    });
 
     // Order Kecil routes
     Route::get('/order-kecil/cetak-label', [App\Http\Controllers\OrderKecil\CetakLabelController::class, 'index'])->name('orderKecil.cetakLabel');
