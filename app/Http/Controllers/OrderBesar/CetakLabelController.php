@@ -288,4 +288,32 @@ class CetakLabelController extends Controller
         DataInschiet::where('no_po', $request->po)
             ->update([$field => $npPetugas]); // Update inschiet data
     }
+
+    public function getData(string $team, string $id)
+    {
+        try {
+            $product = GeneratedProducts::findOrFail($id);
+            $noRimData = $this->fetchNoRim($product->no_po);
+
+            return response()->json([
+                'product' => $product,
+                'noRim' => $noRimData['noRim'],
+                'potongan' => $noRimData['potongan'],
+                'printData' => GeneratedLabels::query()
+                    ->where('no_po_generated_products', $product->no_po)
+                    ->where('potongan', request('dataRim', 'Kiri'))
+                    ->select(['no_rim', 'np_users', 'potongan', 'start', 'finish'])
+                    ->get()
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Failed to fetch data'], 500);
+        }
+    }
+
+    // public function getVerificationStatus(string $team)
+    // {
+    //     return response()->json([
+    //         'verificationData' => // Your verification data query here
+    //     ]);
+    // }
 }

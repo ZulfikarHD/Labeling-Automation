@@ -47,12 +47,26 @@ Route::post('/production-order/add-rim', [GeneratedLabelController::class, 'addR
 | Order Besar Routes
 |--------------------------------------------------------------------------
 */
-Route::get('/order-besar/register-no-po/{noPo}', [App\Http\Controllers\OrderBesar\RegisterNomorPoController::class, 'show']);
-Route::post('/order-besar/register-no-po', [App\Http\Controllers\OrderBesar\RegisterNomorPoController::class, 'store']);
-Route::post('/order-besar/cetak-label', [App\Http\Controllers\OrderBesar\CetakLabelController::class, 'store']);
-Route::post('/order-besar/cetak-label/edit', [App\Http\Controllers\OrderBesar\CetakLabelController::class, 'edit']);
-Route::post('/order-besar/cetak-label/update', [App\Http\Controllers\OrderBesar\CetakLabelController::class, 'update']);
-Route::get('/order-besar/verif/{team}', [PoSiapVerifController::class, 'fetchWorkPo']);
+Route::prefix('order-besar')->group(function () {
+    Route::get('/register-no-po/{noPo}', [App\Http\Controllers\OrderBesar\RegisterNomorPoController::class, 'show']);
+    Route::post('/register-no-po', [App\Http\Controllers\OrderBesar\RegisterNomorPoController::class, 'store']);
+
+    Route::prefix('cetak-label')->group(function () {
+        Route::get('/data/{team}/{id}', [App\Http\Controllers\OrderBesar\CetakLabelController::class, 'getData']);
+
+        Route::post('/', [App\Http\Controllers\OrderBesar\CetakLabelController::class, 'store']);
+
+        Route::post('/edit', [App\Http\Controllers\OrderBesar\CetakLabelController::class, 'edit']);
+
+        Route::post('/update', [App\Http\Controllers\OrderBesar\CetakLabelController::class, 'update']);
+
+        Route::delete('/{id}', [App\Http\Controllers\OrderBesar\CetakLabelController::class, 'delete']);
+
+        Route::get('/verification-status/{team}', [App\Http\Controllers\OrderBesar\CetakLabelController::class, 'getVerificationStatus']);
+    });
+
+    Route::get('/verif/{team}', [PoSiapVerifController::class, 'fetchWorkPo']);
+});
 
 /*
 |--------------------------------------------------------------------------

@@ -156,9 +156,13 @@
                     </button>
                     <button
                         type="submit"
-                        class="px-6 py-2.5 text-white bg-blue-600 dark:bg-blue-700 hover:bg-blue-700 dark:hover:bg-blue-800 rounded-lg transition-colors"
+                        :disabled="loading"
+                        :class="[
+                            'px-6 py-2.5 text-white bg-blue-600 dark:bg-blue-700 hover:bg-blue-700 dark:hover:bg-blue-800 rounded-lg transition-colors',
+                            loading ? 'opacity-50 cursor-not-allowed' : ''
+                        ]"
                     >
-                        Print
+                        {{ loading ? 'Memproses...' : 'Print' }}
                     </button>
                 </div>
             </div>
@@ -316,9 +320,13 @@
                     </button>
                     <button
                         type="submit"
-                        class="px-6 py-3 text-white bg-green-600 dark:bg-green-700 hover:bg-green-700 dark:hover:bg-green-800 rounded-lg transition-colors"
+                        :disabled="loading"
+                        :class="[
+                            'px-6 py-3 text-white bg-green-600 dark:bg-green-700 hover:bg-green-700 dark:hover:bg-green-800 rounded-lg transition-colors',
+                            loading ? 'opacity-50 cursor-not-allowed' : ''
+                        ]"
                     >
-                        Generate
+                        {{ loading ? 'Memproses...' : 'Generate' }}
                     </button>
                     <button
                         type="button"
@@ -367,7 +375,7 @@
 </template>
 
 <script setup>
-import { reactive, ref } from "vue";
+import { reactive, ref, watch, onMounted } from "vue";
 import Modal from "@/Components/Modal.vue";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import InputLabel from "@/Components/InputLabel.vue";
@@ -475,74 +483,141 @@ const printWithoutDialog = (content) => {
 };
 
 // Handle reprint label submission
-const printUlangLabel = () => {
-    const printLabel = singleLabel(
-        formPrintUlang.obc,
-        formPrintUlang.noRim !== 999 ? formPrintUlang.noRim : "INS",
-        colorObc,
-        formPrintUlang.dataRim == "Kiri" ? "(*)" : "(**)",
-        formPrintUlang.npPetugas,
-        undefined
-    );
-    printWithoutDialog(printLabel);
+const printUlangLabel = async () => {
+    loading.value = true;
+    try {
+        const printLabel = singleLabel(
+            formPrintUlang.obc,
+            formPrintUlang.noRim !== 999 ? formPrintUlang.noRim : "INS",
+            colorObc,
+            formPrintUlang.dataRim == "Kiri" ? "(*)" : "(**)",
+            formPrintUlang.npPetugas,
+            undefined
+        );
+        printWithoutDialog(printLabel);
 
-    setTimeout(() => {
-        axios.post("/api/order-besar/cetak-label/update", formPrintUlang)
-            .then(() => {
-                router.visit(`/order-besar/cetak-label/${form.team}/${form.id}`);
-            });
-    }, 500);
+        await axios.post("/api/order-besar/cetak-label/update", formPrintUlang);
+
+        // Update local state without page refresh
+        await fetchUpdatedData();
+        printUlangModal.value = false;
+
+        showNotification('Label berhasil diperbarui', 'success');
+    } catch (error) {
+        console.error('Error:', error);
+        showNotification('Gagal memperbarui label', 'error');
+    } finally {
+        loading.value = false;
+    }
 };
 
 // Handle main form submission
-const submit = () => {
-    const printLabel = singleLabel(
-        form.obc,
-        form.no_rim !== 999 ? form.no_rim : "INS",
-        colorObc,
-        form.lbr_ptg == "Kiri" ? "(*)" : "(**)",
-        form.periksa1,
-        undefined
-    );
+const submit = async () => {
+    loading.value = true;
+    try {
+        // Print label first
+        const printLabel = singleLabel(
+            form.obc,
+            form.no_rim !== 999 ? form.no_rim : "INS",
+            colorObc,
+            form.lbr_ptg == "Kiri" ? "(*)" : "(**)",
+            form.periksa1,
+            undefined
+        );
+        printWithoutDialog(printLabel);
 
-    printWithoutDialog(printLabel);
+        // Make API call
+        const { data } = await axios.post("/api/order-besar/cetak-label", form);
 
-    setTimeout(() => {
-        // Use axios for API call instead of Inertia
-        axios.post("/api/order-besar/cetak-label", form)
-            .then((res) => {
-                console.log(res.data.poStatus);
-                if (res.data.poStatus !== 2) {
-                    router.visit(`/order-besar/cetak-label/${form.team}/${form.id}`);
-                    form.periksa1 = null;
-                } else {
-                    router.get("/order-besar/po-siap-verif");
-                };
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                // Handle error appropriately
-            });
-    }, 500);
+        // Update local state without page refresh
+        if (data.poStatus !== 2) {
+            // Reset form fields
+            form.periksa1 = null;
+            // Fetch updated data
+            await fetchUpdatedData();
+            showNotification('Label berhasil dicetak', 'success');
+        } else {
+            // Use Inertia without full page reload
+            router.get("/order-besar/po-siap-verif", {}, { preserveState: true });
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        showNotification('Gagal mencetak label', 'error');
+    } finally {
+        loading.value = false;
+    }
+};
+
+// Add reactive refs for form data
+const currentData = ref(null);
+const loading = ref(false);
+
+// Add method to fetch updated data
+const fetchUpdatedData = async () => {
+    try {
+        const { data } = await axios.get(`/api/order-besar/cetak-label/data/${form.team}/${form.id}`);
+        currentData.value = data;
+
+        // Update form with new data
+        form.no_rim = data.noRim;
+        form.lbr_ptg = data.potongan;
+        dataPrintUlang.value = data.printData;
+
+    } catch (error) {
+        console.error('Error fetching updated data:', error);
+        showNotification('Gagal memperbarui data', 'error');
+    }
+};
+
+// Add watch for data changes
+watch(currentData, (newData) => {
+    if (newData) {
+        // Update any additional reactive data here
+    }
+}, { deep: true });
+
+// Fetch initial data
+onMounted(async () => {
+    await fetchUpdatedData();
+});
+
+// Add notification system
+const showNotification = (message, type = 'info') => {
+    // You can use a toast library like vue-toastification
+    // or SweetAlert2 for notifications
+    Swal.fire({
+        title: message,
+        icon: type,
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 3000
+    });
 };
 
 // Handle order completion confirmation with SweetAlert2
-const confirmFinishOrder = () => {
-    Swal.fire({
-        title: 'Selesaikan Order',
-        text: 'Apakah Anda yakin ingin menyelesaikan order ini?',
-        icon: 'question',
-        showCancelButton: true,
-        confirmButtonText: 'Ya, Selesaikan',
-        cancelButtonText: 'Batal',
-        confirmButtonColor: '#0891b2', // cyan-600
-        cancelButtonColor: '#6b7280', // gray-500
-    }).then((result) => {
+const confirmFinishOrder = async () => {
+    try {
+        const result = await Swal.fire({
+            title: 'Selesaikan Order',
+            text: 'Apakah Anda yakin ingin menyelesaikan order ini?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Ya, Selesaikan',
+            cancelButtonText: 'Batal',
+            confirmButtonColor: '#0891b2',
+            cancelButtonColor: '#6b7280',
+        });
+
         if (result.isConfirmed) {
-            axios.put(`/api/production-order-finish/${form.po}`);
-            router.get("/order-besar/po-siap-verif");
+            await axios.put(`/api/production-order-finish/${form.po}`);
+            router.get("/order-besar/po-siap-verif", {}, { preserveState: true });
+            showNotification('Order berhasil diselesaikan', 'success');
         }
-    });
+    } catch (error) {
+        console.error('Error:', error);
+        showNotification('Gagal menyelesaikan order', 'error');
+    }
 };
 
 // Fetch plate number from external API
