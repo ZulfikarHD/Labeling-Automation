@@ -507,6 +507,11 @@ const printUlangLabel = async () => {
         printUlangModal.value = false;
 
         showNotification('Label berhasil diperbarui', 'success');
+
+        // Focus on periksa1 input after modal closes
+        await nextTick(() => {
+            periksa1Input.value?.focus();
+        });
     } catch (error) {
         console.error('Error:', error);
         showNotification('Gagal memperbarui label', 'error');
@@ -552,6 +557,11 @@ const submit = async () => {
             // Fetch updated data
             await fetchUpdatedData();
             showNotification('Label berhasil dicetak', 'success');
+
+            // Focus on periksa1 input after successful submission
+            await nextTick(() => {
+                periksa1Input.value?.focus();
+            });
         } else {
             router.get("/order-besar/po-siap-verif", {}, { preserveState: true });
         }
@@ -667,4 +677,7 @@ const checkOrderCompletion = (message) => {
     }
     return false;
 };
+
+// Add ref for input focus
+const periksa1Input = ref(null);
 </script>
