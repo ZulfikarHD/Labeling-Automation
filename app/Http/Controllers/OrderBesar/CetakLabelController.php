@@ -78,11 +78,11 @@ class CetakLabelController extends Controller
     public function store(Request $request): JsonResponse|RedirectResponse
     {
         try {
-            DB::beginTransaction(); // Start database transaction
+            DB::beginTransaction();
 
-            $this->printLabelService->finishPreviousUserSession($request->periksa1); // Finish previous session
+            $this->printLabelService->finishPreviousUserSession($request->periksa1);
 
-            $this->printLabelService->createLabel(
+            $result = $this->printLabelService->createLabel(
                 $request->po,
                 $request->no_rim,
                 $request->lbr_ptg,
@@ -91,16 +91,26 @@ class CetakLabelController extends Controller
                 $request->team
             );
 
-            $poStatus = $this->productionOrderService->isPoFinished($request->po) ? 2 : 1; // Determine PO status
-            $this->updateProgress($request->po, $poStatus); // Update progress
+            // Check if label creation was successful
+            if ($result['status'] === 'error') {
+                DB::rollback();
+                return response()->json($result, 422);
+            }
 
-            DB::commit(); // Commit transaction
+            $poStatus = $this->productionOrderService->isPoFinished($request->po) ? 2 : 1;
+            $this->updateProgress($request->po, $poStatus);
 
-            return response()->json(['status' => 'success', 'poStatus' => $poStatus]); // Return success response
+            DB::commit();
+
+            return response()->json([
+                'status' => 'success',
+                'poStatus' => $poStatus,
+                'data' => $result['data']
+            ]);
 
         } catch (\Exception $e) {
-            DB::rollback(); // Rollback transaction on error
-            return redirect()->back()->withErrors(['error' => self::ERROR_PROCESS]); // Return error response
+            DB::rollback();
+            return redirect()->back()->withErrors(['error' => self::ERROR_PROCESS]);
         }
     }
 

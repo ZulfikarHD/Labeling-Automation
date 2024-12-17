@@ -140,17 +140,71 @@ class PrintLabelService
      * @param string|null $periksa2 Pemeriksa kedua
      * @param int $team ID Tim
      */
-    public function createLabel(int $noPo, int $rimNumber, string $potongan, ?string $periksa1, ?string $periksa2, int $team): void
+    private function findNextAvailableLabel(int $noPo, int $rimNumber, string $potongan): ?array
+    {
+        $currentRim = $rimNumber;
+
+        while (true) {
+            // Check current potongan
+            $label = GeneratedLabels::where('no_po_generated_products', $noPo)
+                ->where('no_rim', $currentRim)
+                ->where('potongan', $potongan)
+                ->first();
+
+            if (!$label || is_null($label->np_users)) {
+                return ['rim' => $currentRim, 'potongan' => $potongan];
+            }
+
+            // If current potongan is 'Kiri', check 'Kanan'
+            if ($potongan === 'Kiri') {
+                $labelKanan = GeneratedLabels::where('no_po_generated_products', $noPo)
+                    ->where('no_rim', $currentRim)
+                    ->where('potongan', 'Kanan')
+                    ->first();
+
+                if (!$labelKanan || is_null($labelKanan->np_users)) {
+                    return ['rim' => $currentRim, 'potongan' => 'Kanan'];
+                }
+            }
+
+            // Move to next rim
+            $currentRim++;
+
+            // Check if next rim exists
+            $nextRimExists = GeneratedLabels::where('no_po_generated_products', $noPo)
+                ->where('no_rim', $currentRim)
+                ->exists();
+
+            if (!$nextRimExists) {
+                return null;
+            }
+
+            // Reset potongan to 'Kiri' for next rim
+            $potongan = 'Kiri';
+        }
+    }
+
+    public function createLabel(int $noPo, int $rimNumber, string $potongan, ?string $periksa1, ?string $periksa2, int $team): array
     {
         if ($rimNumber === self::INSCHIET_RIM_NUMBER) {
             $this->updateInschietData($noPo, null, $periksa1, $potongan);
+            $nextLabel = ['rim' => $rimNumber, 'potongan' => $potongan];
+        } else {
+            $nextLabel = $this->findNextAvailableLabel($noPo, $rimNumber, $potongan);
+        }
+
+        if (!$nextLabel) {
+            return [
+                'status' => 'error',
+                'message' => 'Order sudah selesai'
+            ];
         }
 
         GeneratedLabels::updateOrCreate(
             [
                 'no_po_generated_products' => $noPo,
-                'no_rim' => $rimNumber,
-                'potongan' => $potongan,
+                'no_rim' => $nextLabel['rim'],
+                'potongan' => $nextLabel['potongan'],
             ],
             [
                 'np_users' => $this->formatPeriksaName($periksa1),
@@ -160,6 +214,15 @@ class PrintLabelService
                 'workstation' => $team,
             ]
         );
+
+        return [
+            'status' => 'success',
+            'message' => 'Label berhasil dibuat',
+            'data' => [
+                'no_rim' => $nextLabel['rim'],
+                'potongan' => $nextLabel['potongan']
+            ]
+        ];
     }
 
     /**

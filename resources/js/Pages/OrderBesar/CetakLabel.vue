@@ -402,6 +402,9 @@ const showModal = ref(false);
 const printUlangModal = ref(false);
 const dataPrintUlang = ref();
 
+// Add loading state ref
+const loading = ref(false);
+
 // Form for main data entry
 const form = useForm({
     id: props.product.id,
@@ -515,6 +518,14 @@ const printUlangLabel = async () => {
 const submit = async () => {
     loading.value = true;
     try {
+        await fetchUpdatedData();
+        const { data } = await axios.post("/api/order-besar/cetak-label", form);
+
+        if (data.status === 'error') {
+            showNotification(data.message, 'error');
+            return;
+        }
+
         // Print label first
         const printLabel = singleLabel(
             form.obc,
@@ -526,18 +537,21 @@ const submit = async () => {
         );
         printWithoutDialog(printLabel);
 
-        // Make API call
-        const { data } = await axios.post("/api/order-besar/cetak-label", form);
-
         // Update local state without page refresh
         if (data.poStatus !== 2) {
             // Reset form fields
             form.periksa1 = null;
+
+            // Update form with new rim data if provided
+            if (data.data) {
+                form.no_rim = data.data.no_rim;
+                form.lbr_ptg = data.data.potongan;
+            }
+
             // Fetch updated data
             await fetchUpdatedData();
             showNotification('Label berhasil dicetak', 'success');
         } else {
-            // Use Inertia without full page reload
             router.get("/order-besar/po-siap-verif", {}, { preserveState: true });
         }
     } catch (error) {
@@ -550,7 +564,6 @@ const submit = async () => {
 
 // Add reactive refs for form data
 const currentData = ref(null);
-const loading = ref(false);
 
 // Add method to fetch updated data
 const fetchUpdatedData = async () => {
@@ -634,4 +647,23 @@ const fetchNoPlat = async () => {
 
 // Initial plate number fetch
 fetchNoPlat();
+
+// Add a new method to handle order completion status
+const checkOrderCompletion = (message) => {
+    if (message === 'Order sudah selesai') {
+        Swal.fire({
+            title: 'Order Selesai',
+            text: 'Semua label telah selesai diproses',
+            icon: 'success',
+            confirmButtonText: 'OK',
+            confirmButtonColor: '#0891b2'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                router.get("/order-besar/po-siap-verif", {}, { preserveState: true });
+            }
+        });
+        return true;
+    }
+    return false;
+};
 </script>
