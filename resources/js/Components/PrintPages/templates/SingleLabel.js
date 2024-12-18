@@ -6,7 +6,8 @@ export function singleLabel(
     color,
     sisiran = "",
     periksa1,
-    periksa2 = ""
+    periksa2 = "",
+    lembar = lembar ?? 500
 ) {
     const date = new Date();
     const tgl = formatDate(date);
@@ -106,7 +107,7 @@ export function singleLabel(
                         <td class="grid-wrapper" colspan="1">
                             <div class="flex justify-center">
                                 <div>
-                                    <strong class="p-content" style="font-size: 1rem; color: ${color};">${p2}</strong>
+                                    <strong class="p-content" style="font-size: 1.5rem; color: ${color};">${p2}</strong>
                                 </div>
                             </div>
                         </td>
@@ -119,7 +120,7 @@ export function singleLabel(
                         <td class="grid-wrapper" colspan="2">
                             <p class="p-content" style="font-size: 1rem; font-weight: 600; color: ${color};">${obc}</p>
                         </td>
-                        <td class="grid-wrapper" style="font-size: 0.8rem; font-family: sans-serif; font-weight: 300;">500 Lbr</td>
+                        <td class="grid-wrapper" style="font-size: 0.8rem; font-family: sans-serif; font-weight: 300;">${lembar} Lbr</td>
                     </tr>
                     <tr>
                         <td class="grid-wrapper"></td>

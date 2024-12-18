@@ -127,7 +127,8 @@ const submit = () => {
                         undefined,
                         form.periksa1,
                         form.periksa2,
-                        form.jml_label
+                        form.jml_label,
+                        500
                     );
                     printWithoutDialog(printLabel);
 

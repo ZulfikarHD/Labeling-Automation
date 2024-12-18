@@ -169,6 +169,110 @@
         </form>
     </Modal>
 
+    <!-- Add this modal component after the existing Modal component -->
+    <Modal :show="printManualModal" @close="() => (printManualModal = false)">
+        <form @submit.prevent="printLabelManual" class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+            <div class="flex flex-col gap-4">
+                <!-- Modal header -->
+                <h1 class="text-xl font-bold text-center text-gray-800 dark:text-gray-200">
+                    Print Label Manual
+                </h1>
+                <p class="text-red-600 dark:text-red-400 text-center">
+                    Label yang dibuat disini tidak tersimpan di database.
+                </p>
+
+                <!-- Input fields -->
+                <div class="grid grid-cols-2 gap-4">
+                    <!-- Left side inputs -->
+                    <div class="space-y-4">
+                        <div>
+                            <InputLabel for="npPetugas" value="NP Petugas 1" class="mb-1 text-sm dark:text-gray-300" />
+                            <TextInput
+                                id="npPetugas"
+                                type="text"
+                                v-model="formPrintManual.npPetugas"
+                                class="w-full uppercase text-sm dark:bg-gray-700 dark:text-gray-300"
+                                maxlength="4"
+                                required
+                            />
+                        </div>
+                        <div>
+                            <InputLabel for="npPetugas2" value="NP Petugas 2" class="mb-1 text-sm dark:text-gray-300" />
+                            <TextInput
+                                id="npPetugas2"
+                                type="text"
+                                v-model="formPrintManual.npPetugas2"
+                                class="w-full uppercase text-sm dark:bg-gray-700 dark:text-gray-300"
+                                maxlength="4"
+                            />
+                        </div>
+                    </div>
+
+                    <!-- Right side inputs -->
+                    <div class="space-y-4">
+                        <div>
+                            <InputLabel for="jmlLabel" value="Jumlah Label" class="mb-1 text-sm dark:text-gray-300" />
+                            <TextInput
+                                id="jmlLabel"
+                                type="number"
+                                v-model="formPrintManual.jml_label"
+                                class="w-full text-sm dark:bg-gray-700 dark:text-gray-300"
+                                min="1"
+                                max="100"
+                                required
+                            />
+                        </div>
+                        <div>
+                            <InputLabel for="dataRimManual" value="Potongan" class="mb-1 text-sm dark:text-gray-300" />
+                            <select
+                                id="dataRimManual"
+                                v-model="formPrintManual.dataRim"
+                                class="w-full rounded-lg border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-300"
+                            >
+                                <option value="">-</option>
+                                <option value="Kiri">Kiri (*)</option>
+                                <option value="Kanan">Kanan (**)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <InputLabel for="lembarManual" value="Lembar" class="mb-1 text-sm dark:text-gray-300" />
+                            <TextInput
+                                id="lembarManual"
+                                type="number"
+                                v-model="formPrintManual.lembar"
+                                class="w-full text-sm dark:bg-gray-700 dark:text-gray-300"
+                                min="1"
+                                max="500"
+                                required
+                            />
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action buttons -->
+                <div class="flex justify-end gap-3 mt-4">
+                    <button
+                        type="button"
+                        @click="printManualModal = false"
+                        class="px-4 py-2 text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-colors"
+                    >
+                        Batal
+                    </button>
+                    <button
+                        type="submit"
+                        :disabled="loading"
+                        :class="[
+                            'px-4 py-2 text-white bg-blue-600 dark:bg-blue-700 hover:bg-blue-700 dark:hover:bg-blue-800 rounded-lg transition-colors',
+                            loading ? 'opacity-50 cursor-not-allowed' : ''
+                        ]"
+                    >
+                        {{ loading ? 'Memproses...' : 'Print' }}
+                    </button>
+                </div>
+            </div>
+        </form>
+    </Modal>
+
     <!-- Main layout -->
     <AuthenticatedLayout>
         <div class="w-full max-w-5xl bg-white dark:bg-gray-800 rounded-lg py-4 shadow-md px-6 mx-auto mt-8 flex flex-col gap-3 mb-8">
@@ -312,6 +416,7 @@
 
                 <!-- Action buttons -->
                 <div class="flex justify-center gap-4">
+                    <!-- clear -->
                     <button
                         type="button"
                         @click="form.periksa1 = null"
@@ -319,6 +424,8 @@
                     >
                         Clear
                     </button>
+
+                    <!-- generate label -->
                     <button
                         type="submit"
                         :disabled="loading"
@@ -329,12 +436,23 @@
                     >
                         {{ loading ? 'Memproses...' : 'Generate' }}
                     </button>
+
+                    <!-- print ulang -->
                     <button
                         type="button"
                         @click="[getDataRim(), (printUlangModal = !printUlangModal)]"
                         class="px-6 py-3 text-white bg-green-600 dark:bg-green-700 hover:bg-green-700 dark:hover:bg-green-800 rounded-lg transition-colors"
                     >
                         Print Ulang
+                    </button>
+
+                    <!-- print label manual -->
+                    <button
+                        type="button"
+                        @click="printManualModal = true"
+                        class="px-6 py-3 text-green-600 bg-inherit dark:bg-inherit border border-green-600 dark:border-green-700 hover:bg-green-50 dark:hover:bg-green-800 rounded-lg transition-colors"
+                    >
+                        Print Manual
                     </button>
                 </div>
 
@@ -383,7 +501,7 @@ import InputLabel from "@/Components/InputLabel.vue";
 import InputError from "@/Components/InputError.vue";
 import TextInput from "@/Components/TextInput.vue";
 import TableVerifikasiPegawai from "@/Components/TableVerifikasiPegawai.vue";
-import { singleLabel } from "@/Components/PrintPages/index";
+import { singleLabel, batchSingleLabel } from "@/Components/PrintPages/index";
 import { Link, useForm, router, Head } from "@inertiajs/vue3";
 import axios from "axios";
 import Swal from 'sweetalert2';
@@ -429,6 +547,18 @@ const formPrintUlang = reactive({
     po: props.product.no_po,
     obc: props.product.no_obc,
     team: props.crntTeam,
+});
+
+const formPrintManual = reactive({
+    dataRim: "",
+    noRim: "",
+    npPetugas: "",
+    npPetugas2: "",
+    lembar: 500,
+    po: props.product.no_po,
+    obc: props.product.no_obc,
+    team: props.crntTeam,
+    jml_label: 1,
 });
 
 // Color coding for OBC series
@@ -480,10 +610,10 @@ const printWithoutDialog = (content) => {
     `);
 
     iframe.contentWindow.focus();
-    setTimeout(() => {
+    iframe.contentWindow.print();
+    // setTimeout(() => {
 
-        iframe.contentWindow.print();
-    }, 200);
+    // }, 200);
 };
 
 // Handle reprint label submission
@@ -496,7 +626,8 @@ const printUlangLabel = async () => {
             colorObc,
             formPrintUlang.dataRim == "Kiri" ? "(*)" : "(**)",
             formPrintUlang.npPetugas,
-            undefined
+            undefined,
+            500,
         );
         printWithoutDialog(printLabel);
 
@@ -539,7 +670,8 @@ const submit = async () => {
             colorObc,
             form.lbr_ptg == "Kiri" ? "(*)" : "(**)",
             form.periksa1,
-            undefined
+            undefined,
+            500,
         );
         printWithoutDialog(printLabel);
 
@@ -678,6 +810,42 @@ const checkOrderCompletion = (message) => {
     return false;
 };
 
+// Print label manual
+const printLabelManual = async () => {
+    try {
+        loading.value = true;
+        const printLabel = batchSingleLabel(
+            formPrintManual.obc,
+            "",
+            colorObc,
+            formPrintManual.dataRim,
+            formPrintManual.npPetugas,
+            formPrintManual.npPetugas2,
+            formPrintManual.jml_label,
+            formPrintManual.lembar,
+        );
+        printWithoutDialog(printLabel);
+
+        // Reset form and close modal
+        formPrintManual.npPetugas = '';
+        formPrintManual.npPetugas2 = '';
+        formPrintManual.jml_label = 1;
+        formPrintManual.dataRim = 'Kiri';
+        formPrintManual.lembar = 500;
+        printManualModal.value = false;
+
+        showNotification('Label berhasil dicetak', 'success');
+    } catch (error) {
+        console.error('Error:', error);
+        showNotification('Gagal mencetak label', 'error');
+    } finally {
+        loading.value = false;
+    }
+};
+
 // Add ref for input focus
 const periksa1Input = ref(null);
+
+// Add this to the script setup section
+const printManualModal = ref(false);
 </script>

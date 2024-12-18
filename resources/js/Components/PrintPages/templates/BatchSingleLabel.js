@@ -7,7 +7,8 @@ export function batchSingleLabel(
     sisiran = "",
     periksa1,
     periksa2 = "",
-    jml_label
+    jml_label,
+    lembar = lembar ?? 500
 ) {
     const date = new Date();
     const tgl = formatDate(date);
@@ -118,9 +119,9 @@ export function batchSingleLabel(
                             <p class="p-content" style="font-size: 0.8rem; font-weight: 300;">${tgl}</p>
                         </td>
                         <td class="grid-wrapper" colspan="2">
-                            <p class="p-content" style="font-size: 1rem; font-weight: 600; color: ${color};">${obc}</p>
+                            <p class="p-content" style="font-size: 1.5rem; font-weight: 600; color: ${color};">${obc}</p>
                         </td>
-                        <td class="grid-wrapper" style="font-size: 0.8rem; font-family: sans-serif; font-weight: 300;">500 Lbr</td>
+                        <td class="grid-wrapper" style="font-size: 0.8rem; font-family: sans-serif; font-weight: 300;">${lembar}  Lbr</td>
                     </tr>
                     <tr>
                         <td class="grid-wrapper"></td>
