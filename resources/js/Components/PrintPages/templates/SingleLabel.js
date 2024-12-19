@@ -118,7 +118,7 @@ export function singleLabel(
                             <p class="p-content" style="font-size: 0.8rem; font-weight: 300;">${tgl}</p>
                         </td>
                         <td class="grid-wrapper" colspan="2">
-                            <p class="p-content" style="font-size: 1rem; font-weight: 600; color: ${color};">${obc}</p>
+                            <p class="p-content" style="font-size: 1.5rem; font-weight: 600; color: ${color};">${obc}</p>
                         </td>
                         <td class="grid-wrapper" style="font-size: 0.8rem; font-family: sans-serif; font-weight: 300;">${lembar} Lbr</td>
                     </tr>
