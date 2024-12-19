@@ -385,7 +385,8 @@ const openModalDetailProduksi = (dataLabel) => {
                                 <template v-for="status in dataRim">
                                     <template v-if="status.potongan == 'Kanan'">
                                         <!-- Selesai -->
-                                        <div
+                                        <button
+                                            @click="openModalDetailProduksi(status)"
                                             v-if="status.finish != null"
                                             class="bg-emerald-50 dark:bg-emerald-900/30 border border-emerald-200 dark:border-emerald-700 rounded-xl p-3 transition-all hover:shadow-md hover:scale-105"
                                         >
@@ -401,10 +402,11 @@ const openModalDetailProduksi = (dataLabel) => {
                                                     >{{ status.no_rim }}</span
                                                 >
                                             </div>
-                                        </div>
+                                        </button>
 
                                         <!-- Proses -->
-                                        <div
+                                        <button
+                                            @click="openModalDetailProduksi(status)"
                                             v-else-if="
                                                 status.start != null &&
                                                 status.finish == null
@@ -423,10 +425,11 @@ const openModalDetailProduksi = (dataLabel) => {
                                                     >{{ status.no_rim }}</span
                                                 >
                                             </div>
-                                        </div>
+                                        </button>
 
                                         <!-- Belum -->
-                                        <div
+                                        <button
+                                            @click="openModalDetailProduksi(status)"
                                             v-else
                                             class="bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-xl p-3 transition-all hover:shadow-md hover:scale-105"
                                         >
@@ -442,7 +445,7 @@ const openModalDetailProduksi = (dataLabel) => {
                                                     >{{ status.no_rim }}</span
                                                 >
                                             </div>
-                                        </div>
+                                        </button>
                                     </template>
                                 </template>
                             </div>
