@@ -28,6 +28,11 @@ class GeneratedLabelController extends Controller
         return DB::transaction(function () use ($request) {
             try {
                 $label = GeneratedLabels::findOrFail($request->id);
+
+                if($request->np_users === null && $request->np_user_p2 === null) {
+                    $this->resetProductionOrderStatus($label->no_po_generated_products);
+                }
+
                 $label->update($this->prepareUpdateData($request));
 
                 return $this->successResponse('Label berhasil diperbarui');
@@ -79,9 +84,13 @@ class GeneratedLabelController extends Controller
     public function addRim(Request $request)
     {
         $validatedData = $this->validateAddRimRequest($request);
+
         if ($validatedData->fails()) {
             return $this->validationErrorResponse($validatedData->errors());
         }
+
+        $this->resetProductionOrderStatus($request->no_po);
+
 
         return DB::transaction(function () use ($request) {
             try {
@@ -99,6 +108,18 @@ class GeneratedLabelController extends Controller
                 throw $e;
             }
         });
+    }
+
+    private function resetProductionOrderStatus(string $noPo)
+    {
+        $productionOrder = GeneratedProducts::where('no_po', $noPo)->firstOrFail();
+        if($productionOrder->status === 2) {
+            $productionOrder->update([
+                'status' => 1
+            ]);
+        } else {
+        // do nothing
+        }
     }
 
     /**

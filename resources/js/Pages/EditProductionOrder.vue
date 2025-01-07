@@ -53,7 +53,7 @@ const teams = ref(props.teamList); // List of teams
 const labels = ref(props.dataLabel); // List of labels
 const selectedLabel = ref(null); // Currently selected label for editing
 const showEditModal = ref(false); // Control visibility of the edit modal
-const showAddRimModal = ref(false);
+const showAddRimModal = ref(false); // Control visibility of the add rim modal
 
 // Form initialization with default values
 const form = useForm({
@@ -83,7 +83,7 @@ const labelForm = useForm({
     team: props.dataPo.assigned_team
 });
 
-// Add these new refs and form
+// Add these new refs and form for adding rims
 const addRimForm = useForm({
     no_rim: '',
     potongan: 'both',
@@ -95,12 +95,12 @@ watch(
     ([newStartRim, newSumRim], [oldStartRim, oldSumRim]) => {
         // Input validation to ensure start rim is positive
         if (newStartRim <= 0) {
-            form.start_rim = 1;
+            form.start_rim = 1; // Set start rim to 1 if invalid
         }
 
         // Calculate end rim only if values have changed
         if (newStartRim !== oldStartRim || newSumRim !== oldSumRim) {
-            form.end_rim = parseInt(form.start_rim) + Math.ceil(parseInt(form.sum_rim)/2) - 1;
+            form.end_rim = parseInt(form.start_rim) + Math.ceil(parseInt(form.sum_rim)/2) - 1; // Calculate end rim
         }
     },
     { immediate: true }
@@ -112,7 +112,7 @@ const refreshLabelData = async () => {
         const response = await axios.get(`/api/production-order/get-labels/${form.no_po}`);
         labels.value = response.data; // Update labels with fetched data
     } catch (error) {
-        console.error("Failed to refresh label data:", error);
+        console.error("Failed to refresh label data:", error); // Log error if fetching fails
     }
 };
 
@@ -133,32 +133,33 @@ const openEditModal = (label) => {
 const updateLabel = async () => {
     // Set status based on conditions
     if (isCompleted.value) {
-        labelForm.status = 'completed';
+        labelForm.status = 'completed'; // Set status to completed
     } else if (isInProgress.value) {
-        labelForm.status = 'in_progress';
+        labelForm.status = 'in_progress'; // Set status to in progress
     } else {
-        labelForm.status = 'pending';
+        labelForm.status = 'pending'; // Set status to pending
     }
 
     try {
         await axios.post(`/api/production-order/update-label`, labelForm); // Send update request
+        // await router.post(`/api/production-order/update-label`, labelForm); // Send update request
         await refreshLabelData(); // Refresh label data after update
         showEditModal.value = false; // Close the edit modal
 
         // Show success message
         await Swal.fire({
             title: 'Berhasil!',
-            text: 'Label berhasil diperbarui',
+            text: 'Label berhasil diperbarui', // Success message in Indonesian
             icon: 'success',
             timer: 2000,
             showConfirmButton: false
         });
     } catch (error) {
-        console.error("Failed to update label:", error);
+        console.error("Failed to update label:", error); // Log error if updating fails
         // Show error message
         await Swal.fire({
             title: 'Gagal!',
-            text: 'Terjadi kesalahan saat memperbarui label',
+            text: 'Terjadi kesalahan saat memperbarui label', // Error message in Indonesian
             icon: 'error',
             confirmButtonText: 'OK'
         });
@@ -169,12 +170,12 @@ const updateLabel = async () => {
 const updateOrder = async () => {
     // Show confirmation dialog
     const result = await Swal.fire({
-        title: 'Konfirmasi Perubahan',
-        text: 'Apakah Anda yakin ingin menyimpan perubahan ini?',
+        title: 'Konfirmasi Perubahan', // Confirmation title in Indonesian
+        text: 'Apakah Anda yakin ingin menyimpan perubahan ini?', // Confirmation text in Indonesian
         icon: 'question',
         showCancelButton: true,
-        confirmButtonText: 'Ya, Simpan',
-        cancelButtonText: 'Batal',
+        confirmButtonText: 'Ya, Simpan', // Confirm button text in Indonesian
+        cancelButtonText: 'Batal', // Cancel button text in Indonesian
         confirmButtonColor: '#3085d6',
         cancelButtonColor: '#d33',
     });
@@ -188,19 +189,19 @@ const updateOrder = async () => {
 
             // Show success message
             await Swal.fire({
-                title: 'Berhasil!',
-                text: 'Data berhasil diperbarui',
+                title: 'Berhasil!', // Success title in Indonesian
+                text: 'Data berhasil diperbarui', // Success text in Indonesian
                 icon: 'success',
                 timer: 2000,
                 showConfirmButton: false
             });
 
         } catch (error) {
-            console.error("Failed to update order:", error);
+            console.error("Failed to update order:", error); // Log error if updating fails
             // Show error message
             await Swal.fire({
-                title: 'Gagal!',
-                text: 'Terjadi kesalahan saat memperbarui data',
+                title: 'Gagal!', // Error title in Indonesian
+                text: 'Terjadi kesalahan saat memperbarui data', // Error text in Indonesian
                 icon: 'error',
                 confirmButtonText: 'OK'
             });
@@ -212,20 +213,20 @@ const updateOrder = async () => {
 const isCompleted = computed(() => {
     return labelForm.np_users &&
            labelForm.start &&
-           labelForm.finish;
+           labelForm.finish; // Check if label is completed
 });
 
 const isInProgress = computed(() => {
     return (labelForm.np_users || labelForm.np_user_p2) &&
            labelForm.start &&
-           !labelForm.finish;
+           !labelForm.finish; // Check if label is in progress
 });
 
 // Computed property to get the status text
 const statusText = computed(() => {
-    if (isCompleted.value) return 'Selesai Verif';
-    if (isInProgress.value) return 'Proses Verif';
-    return 'Belum Verif';
+    if (isCompleted.value) return 'Selesai Verif'; // Status text in Indonesian
+    if (isInProgress.value) return 'Proses Verif'; // Status text in Indonesian
+    return 'Belum Verif'; // Status text in Indonesian
 });
 
 // Function to clear the label form
@@ -251,10 +252,10 @@ const rimAvailability = computed(() => {
     }
 
     const leftExists = labels.value.some(label =>
-        label.no_rim.toString() === rimNumber && label.potongan === 'Kiri'
+        label.no_rim.toString() === rimNumber && label.potongan === 'Kiri' // Check if left rim exists
     );
     const rightExists = labels.value.some(label =>
-        label.no_rim.toString() === rimNumber && label.potongan === 'Kanan'
+        label.no_rim.toString() === rimNumber && label.potongan === 'Kanan' // Check if right rim exists
     );
 
     return {
@@ -268,28 +269,28 @@ const rimAvailability = computed(() => {
 
 // Add this watch effect to handle rim number changes
 watch(() => addRimForm.no_rim, (newValue) => {
-    if (!newValue) return;
+    if (!newValue) return; // Exit if no rim number is provided
 
     const availability = rimAvailability.value;
 
     // If current selection is not available, reset to available option
     if (addRimForm.potongan === 'both' && !availability.canAddBoth) {
         if (availability.canAddLeft) {
-            addRimForm.potongan = 'Kiri';
+            addRimForm.potongan = 'Kiri'; // Set to left if available
         } else if (availability.canAddRight) {
-            addRimForm.potongan = 'Kanan';
+            addRimForm.potongan = 'Kanan'; // Set to right if available
         }
     } else if (addRimForm.potongan === 'Kiri' && !availability.canAddLeft) {
         if (availability.canAddRight) {
-            addRimForm.potongan = 'Kanan';
+            addRimForm.potongan = 'Kanan'; // Set to right if available
         } else if (availability.canAddBoth) {
-            addRimForm.potongan = 'both';
+            addRimForm.potongan = 'both'; // Set to both if available
         }
     } else if (addRimForm.potongan === 'Kanan' && !availability.canAddRight) {
         if (availability.canAddLeft) {
-            addRimForm.potongan = 'Kiri';
+            addRimForm.potongan = 'Kiri'; // Set to left if available
         } else if (availability.canAddBoth) {
-            addRimForm.potongan = 'both';
+            addRimForm.potongan = 'both'; // Set to both if available
         }
     }
 });
@@ -298,12 +299,12 @@ watch(() => addRimForm.no_rim, (newValue) => {
 const addNewRim = async () => {
     if (!addRimForm.no_rim) {
         await Swal.fire({
-            title: 'Peringatan!',
-            text: 'Nomor rim harus diisi',
+            title: 'Peringatan!', // Warning title in Indonesian
+            text: 'Nomor rim harus diisi', // Warning text in Indonesian
             icon: 'warning',
             confirmButtonText: 'OK'
         });
-        return;
+        return; // Exit if no rim number is provided
     }
 
     const availability = rimAvailability.value;
@@ -315,12 +316,12 @@ const addNewRim = async () => {
         (addRimForm.potongan === 'Kanan' && !availability.canAddRight)
     ) {
         await Swal.fire({
-            title: 'Peringatan!',
-            text: 'Posisi rim yang dipilih sudah terisi',
+            title: 'Peringatan!', // Warning title in Indonesian
+            text: 'Posisi rim yang dipilih sudah terisi', // Warning text in Indonesian
             icon: 'warning',
             confirmButtonText: 'OK'
         });
-        return;
+        return; // Exit if selected position is not available
     }
 
     try {
@@ -331,23 +332,24 @@ const addNewRim = async () => {
             team: form.assigned_team
         };
 
-        await axios.post('/api/production-order/add-rim', payload);
-        await refreshLabelData();
-        showAddRimModal.value = false;
-        addRimForm.reset();
+        await axios.post('/api/production-order/add-rim', payload); // Send request to add rim
+        // await router.post('/api/production-order/add-rim', payload); // Send request to add rim
+        await refreshLabelData(); // Refresh label data
+        showAddRimModal.value = false; // Close the add rim modal
+        addRimForm.reset(); // Reset the add rim form
 
         await Swal.fire({
-            title: 'Berhasil!',
-            text: 'Rim berhasil ditambahkan',
+            title: 'Berhasil!', // Success title in Indonesian
+            text: 'Rim berhasil ditambahkan', // Success text in Indonesian
             icon: 'success',
             timer: 2000,
             showConfirmButton: false
         });
     } catch (error) {
-        console.error("Failed to add rim:", error);
+        console.error("Failed to add rim:", error); // Log error if adding fails
         await Swal.fire({
-            title: 'Gagal!',
-            text: 'Terjadi kesalahan saat menambahkan rim',
+            title: 'Gagal!', // Error title in Indonesian
+            text: 'Terjadi kesalahan saat menambahkan rim', // Error text in Indonesian
             icon: 'error',
             confirmButtonText: 'OK'
         });
