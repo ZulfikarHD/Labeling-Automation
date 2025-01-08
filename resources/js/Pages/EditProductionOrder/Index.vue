@@ -20,6 +20,7 @@ import {
     X,
     Trash2,
     PlusCircle,
+    CheckIcon
 } from "lucide-vue-next";
 import { ref, watch, computed } from "vue";
 import Swal from 'sweetalert2';
@@ -88,6 +89,84 @@ const addRimForm = useForm({
     no_rim: '',
     potongan: 'both',
 });
+
+// Add these refs
+const batchDeleteMode = ref(false);
+const selectedLabels = ref(new Set());
+const deletePassword = ref('');
+
+// Add this computed
+const hasSelectedLabels = computed(() => selectedLabels.value.size > 0);
+
+// Add these methods
+const toggleBatchDeleteMode = () => {
+  batchDeleteMode.value = !batchDeleteMode.value;
+  if (!batchDeleteMode.value) {
+    selectedLabels.value.clear();
+  }
+};
+
+const toggleLabelSelection = (labelId) => {
+  if (selectedLabels.value.has(labelId)) {
+    selectedLabels.value.delete(labelId);
+  } else {
+    selectedLabels.value.add(labelId);
+  }
+};
+
+const confirmBatchDelete = async () => {
+  try {
+    const result = await Swal.fire({
+      title: 'Konfirmasi Penghapusan',
+      html: `
+        <p class="mb-4">Anda akan menghapus ${selectedLabels.value.size} label. Tindakan ini tidak dapat dibatalkan.</p>
+        <input
+          type="password"
+          id="password"
+          class="swal2-input"
+          placeholder="Masukkan password Anda"
+        >
+      `,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Ya, Hapus',
+      cancelButtonText: 'Batal',
+      preConfirm: () => {
+        const password = document.getElementById('password').value;
+        if (!password) {
+          Swal.showValidationMessage('Password harus diisi');
+        }
+        return password;
+      }
+    });
+
+    if (result.isConfirmed) {
+      await axios.post('/api/production-order/batch-delete-labels', {
+        labelIds: Array.from(selectedLabels.value),
+        password: result.value
+      });
+
+      await refreshLabelData();
+      toggleBatchDeleteMode();
+
+      await Swal.fire({
+        title: 'Berhasil!',
+        text: 'Label berhasil dihapus',
+        icon: 'success',
+        timer: 2000,
+        showConfirmButton: false
+      });
+    }
+  } catch (error) {
+    console.error('Failed to delete labels:', error);
+    await Swal.fire({
+      title: 'Gagal!',
+      text: error.response?.data?.message || 'Terjadi kesalahan saat menghapus label',
+      icon: 'error',
+      confirmButtonText: 'OK'
+    });
+  }
+};
 
 // Watch effect for automatic rim calculation
 watch(
@@ -509,17 +588,27 @@ const addNewRim = async () => {
                                     Edit Nomor Rim Manual
                                 </p>
                             </div>
-                            <button
-                                @click="showAddRimModal = true"
-                                class="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                            <div class="flex items-center gap-2">
+                                <button
+                                    @click="showAddRimModal = true"
+                                    class="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                             >
-                                <PlusCircle class="w-5 h-5" />
-                                Tambah Rim
-                            </button>
+                                    <PlusCircle class="w-5 h-5" />
+                                    Tambah Rim
+                                </button>
+                                <button
+                                    @click="toggleBatchDeleteMode"
+                                    class="flex items-center gap-2 px-4 py-2 text-white transition-all duration-200 rounded-xl"
+                                    :class="batchDeleteMode ? 'bg-red-500 hover:bg-red-600' : 'bg-slate-500 hover:bg-slate-600'"
+                                >
+                                    <Trash2 class="w-5 h-5" />
+                                    {{ batchDeleteMode ? 'Batal' : 'Hapus Batch' }}
+                                </button>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="flex flex-col lg:flex-row justify-between gap-8">
+                    <div class="flex flex-col lg:flex-row justify-between gap-8 mb-12">
                         <!-- Lembar Kiri -->
                         <div class="flex-1">
                             <h3 class="text-2xl font-bold text-slate-800 dark:text-white text-center mb-6">
@@ -528,33 +617,42 @@ const addNewRim = async () => {
                             <div class="grid grid-cols-4 sm:grid-cols-6 gap-4">
                                 <template v-for="status in labels" :key="`${status.id}-${status.updated_at}`">
                                     <template v-if="status.potongan == 'Kiri'">
-                                        <!-- Selesai -->
-                                        <div v-if="status.finish != null"
-                                             @click="openEditModal(status)"
-                                             class="bg-emerald-50 dark:bg-emerald-900/30 border border-emerald-200 dark:border-emerald-700 rounded-xl p-3 transition-all duration-300 hover:shadow-md hover:scale-105 cursor-pointer">
-                                            <div class="flex flex-col items-center gap-1">
-                                                <span class="text-sm font-bold text-emerald-700 dark:text-emerald-400">{{ status.np_users }}</span>
-                                                <span class="text-sm font-medium text-indigo-600 dark:text-indigo-400">{{ status.no_rim }}</span>
+                                        <div
+                                            :class="[
+                                                'relative transition-all duration-300 hover:shadow-md cursor-pointer rounded-xl',
+                                                batchDeleteMode ? 'hover:scale-100' : 'hover:scale-105'
+                                            ]"
+                                            @click="batchDeleteMode ? toggleLabelSelection(status.id) : openEditModal(status)"
+                                        >
+                                            <!-- Selection overlay -->
+                                            <div
+                                                v-if="batchDeleteMode"
+                                                class="absolute inset-0 z-10 rounded-xl"
+                                                :class="selectedLabels.has(status.id) ? 'bg-red-500/20 ring-2 ring-red-500' : 'hover:bg-slate-500/10'"
+                                            >
                                             </div>
-                                        </div>
 
-                                        <!-- Proses -->
-                                        <div v-else-if="status.start != null && status.finish == null"
-                                             @click="openEditModal(status)"
-                                             class="bg-amber-50 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-700 rounded-xl p-3 transition-all duration-300 hover:shadow-md hover:scale-105 cursor-pointer">
-                                            <div class="flex flex-col items-center gap-1">
-                                                <span class="text-sm font-bold text-amber-700 dark:text-amber-400">{{ status.np_users }}</span>
-                                                <span class="text-sm font-medium text-indigo-600 dark:text-indigo-400">{{ status.no_rim }}</span>
+                                            <!-- Existing status cards -->
+                                            <div v-if="status.finish != null"
+                                                 class="bg-emerald-50 dark:bg-emerald-900/30 border border-emerald-200 dark:border-emerald-700 rounded-xl p-3">
+                                                <div class="flex flex-col items-center gap-1">
+                                                    <span class="text-sm font-bold text-emerald-700 dark:text-emerald-400">{{ status.np_users }}</span>
+                                                    <span class="text-sm font-medium text-indigo-600 dark:text-indigo-400">{{ status.no_rim }}</span>
+                                                </div>
                                             </div>
-                                        </div>
-
-                                        <!-- Belum -->
-                                        <div v-else
-                                             @click="openEditModal(status)"
-                                             class="bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-xl p-3 transition-all duration-300 hover:shadow-md hover:scale-105 cursor-pointer">
-                                            <div class="flex flex-col items-center gap-1">
-                                                <span class="text-sm font-bold text-slate-400 dark:text-slate-500">-</span>
-                                                <span class="text-sm font-medium text-indigo-600 dark:text-indigo-400">{{ status.no_rim }}</span>
+                                            <div v-else-if="status.start != null && status.finish == null"
+                                                 class="bg-amber-50 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-700 rounded-xl p-3">
+                                                <div class="flex flex-col items-center gap-1">
+                                                    <span class="text-sm font-bold text-amber-700 dark:text-amber-400">{{ status.np_users }}</span>
+                                                    <span class="text-sm font-medium text-indigo-600 dark:text-indigo-400">{{ status.no_rim }}</span>
+                                                </div>
+                                            </div>
+                                            <div v-else
+                                                 class="bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-xl p-3">
+                                                <div class="flex flex-col items-center gap-1">
+                                                    <span class="text-sm font-bold text-slate-400 dark:text-slate-500">-</span>
+                                                    <span class="text-sm font-medium text-indigo-600 dark:text-indigo-400">{{ status.no_rim }}</span>
+                                                </div>
                                             </div>
                                         </div>
                                     </template>
@@ -592,38 +690,61 @@ const addNewRim = async () => {
                             <div class="grid grid-cols-4 sm:grid-cols-6 gap-4">
                                 <template v-for="status in labels" :key="`${status.id}-${status.updated_at}`">
                                     <template v-if="status.potongan == 'Kanan'">
-                                        <!-- Selesai -->
-                                        <div v-if="status.finish != null"
-                                             @click="openEditModal(status)"
-                                             class="bg-emerald-50 dark:bg-emerald-900/30 border border-emerald-200 dark:border-emerald-700 rounded-xl p-3 transition-all duration-300 hover:shadow-md hover:scale-105 cursor-pointer">
-                                            <div class="flex flex-col items-center gap-1">
-                                                <span class="text-sm font-bold text-emerald-700 dark:text-emerald-400">{{ status.np_users }}</span>
-                                                <span class="text-sm font-medium text-indigo-600 dark:text-indigo-400">{{ status.no_rim }}</span>
+                                        <div
+                                            :class="[
+                                                'relative transition-all duration-300 hover:shadow-md cursor-pointer rounded-xl',
+                                                batchDeleteMode ? 'hover:scale-100' : 'hover:scale-105'
+                                            ]"
+                                            @click="batchDeleteMode ? toggleLabelSelection(status.id) : openEditModal(status)"
+                                        >
+                                            <!-- Selection overlay -->
+                                            <div
+                                                v-if="batchDeleteMode"
+                                                class="absolute inset-0 z-10 rounded-xl"
+                                                :class="selectedLabels.has(status.id) ? 'bg-red-500/20 ring-2 ring-red-500' : 'hover:bg-slate-500/10'"
+                                            >
                                             </div>
-                                        </div>
 
-                                        <!-- Proses -->
-                                        <div v-else-if="status.start != null && status.finish == null"
-                                             @click="openEditModal(status)"
-                                             class="bg-amber-50 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-700 rounded-xl p-3 transition-all duration-300 hover:shadow-md hover:scale-105 cursor-pointer">
-                                            <div class="flex flex-col items-center gap-1">
-                                                <span class="text-sm font-bold text-amber-700 dark:text-amber-400">{{ status.np_users }}</span>
-                                                <span class="text-sm font-medium text-indigo-600 dark:text-indigo-400">{{ status.no_rim }}</span>
+                                            <!-- Existing status cards -->
+                                            <div v-if="status.finish != null"
+                                                 class="bg-emerald-50 dark:bg-emerald-900/30 border border-emerald-200 dark:border-emerald-700 rounded-xl p-3">
+                                                <div class="flex flex-col items-center gap-1">
+                                                    <span class="text-sm font-bold text-emerald-700 dark:text-emerald-400">{{ status.np_users }}</span>
+                                                    <span class="text-sm font-medium text-indigo-600 dark:text-indigo-400">{{ status.no_rim }}</span>
+                                                </div>
                                             </div>
-                                        </div>
-
-                                        <!-- Belum -->
-                                        <div v-else
-                                             @click="openEditModal(status)"
-                                             class="bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-xl p-3 transition-all duration-300 hover:shadow-md hover:scale-105 cursor-pointer">
-                                            <div class="flex flex-col items-center gap-1">
-                                                <span class="text-sm font-bold text-slate-400 dark:text-slate-500">-</span>
-                                                <span class="text-sm font-medium text-indigo-600 dark:text-indigo-400">{{ status.no_rim }}</span>
+                                            <div v-else-if="status.start != null && status.finish == null"
+                                                 class="bg-amber-50 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-700 rounded-xl p-3">
+                                                <div class="flex flex-col items-center gap-1">
+                                                    <span class="text-sm font-bold text-amber-700 dark:text-amber-400">{{ status.np_users }}</span>
+                                                    <span class="text-sm font-medium text-indigo-600 dark:text-indigo-400">{{ status.no_rim }}</span>
+                                                </div>
+                                            </div>
+                                            <div v-else
+                                                 class="bg-slate-50 dark:bg-slate-700/50 border border-slate-200 dark:border-slate-600 rounded-xl p-3">
+                                                <div class="flex flex-col items-center gap-1">
+                                                    <span class="text-sm font-bold text-slate-400 dark:text-slate-500">-</span>
+                                                    <span class="text-sm font-medium text-indigo-600 dark:text-indigo-400">{{ status.no_rim }}</span>
+                                                </div>
                                             </div>
                                         </div>
                                     </template>
                                 </template>
                             </div>
+                        </div>
+
+                        <div
+                            v-if="batchDeleteMode"
+                            class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50"
+                        >
+                            <button
+                            @click="confirmBatchDelete"
+                            :disabled="!hasSelectedLabels"
+                            class="flex items-center gap-2 px-6 py-3 text-white bg-red-500 rounded-xl shadow-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-red-600 transition-colors"
+                            >
+                            <Trash2 class="w-5 h-5" />
+                            Hapus {{ selectedLabels.size }} Label
+                            </button>
                         </div>
                     </div>
                 </div>

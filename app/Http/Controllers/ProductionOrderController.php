@@ -91,7 +91,7 @@ class ProductionOrderController extends Controller
 
         $inschiet   = DataInschiet::where('no_po', $po)->first()->inschiet ?? 0;
 
-        return Inertia::render('EditProductionOrder', [
+        return Inertia::render('EditProductionOrder/Index', [
             'dataPo'    => $dataPo,
             'specPo'    => $specPo,
             'dataLabel' => $dataLabel,
