@@ -184,6 +184,7 @@ const refreshLabelData = async () => {
                 <!-- Status Section -->
                 <StatusSection
                     :labels="labels"
+                    :no-po="dataPo.no_po"
                     @edit-label="openEditModal"
                     @add-rim="showAddRimModal = true"
                     @delete-labels="handleBatchDelete"

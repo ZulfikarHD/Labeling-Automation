@@ -8,6 +8,10 @@ const props = defineProps({
     labels: {
         type: Object,
         required: true
+    },
+    noPo: {
+        type: [String, Number],
+        required: true
     }
 });
 
@@ -37,9 +41,9 @@ const emit = defineEmits(['editLabel', 'addRim', 'deleteLabels', 'refreshData'])
 const confirmBatchDelete = async () => {
     try {
         const result = await Swal.fire({
-            title: 'Konfirmasi Penghapusan',
+            title: 'Konfirmasi Reset Label',
             html: `
-                <p class="mb-4">Anda akan menghapus ${selectedLabels.value.size} label. Tindakan ini tidak dapat dibatalkan.</p>
+                <p class="mb-4">Anda akan mereset ${selectedLabels.value.size} label. Data verifikasi akan dihapus.</p>
                 <input
                     type="password"
                     id="password"
@@ -49,7 +53,7 @@ const confirmBatchDelete = async () => {
             `,
             icon: 'warning',
             showCancelButton: true,
-            confirmButtonText: 'Ya, Hapus',
+            confirmButtonText: 'Ya, Reset',
             cancelButtonText: 'Batal',
             preConfirm: () => {
                 const password = document.getElementById('password').value;
@@ -61,14 +65,28 @@ const confirmBatchDelete = async () => {
         });
 
         if (result.isConfirmed) {
-            emit('deleteLabels', Array.from(selectedLabels.value));
+            const payload = {
+                ids: Array.from(selectedLabels.value),
+                no_po: props.noPo
+            };
+
+            await axios.post('/api/production-order/delete-labels', payload);
+            emit('refreshData');
             toggleBatchDeleteMode();
+
+            await Swal.fire({
+                title: 'Berhasil!',
+                text: 'Label berhasil direset',
+                icon: 'success',
+                timer: 2000,
+                showConfirmButton: false
+            });
         }
     } catch (error) {
-        console.error('Error in batch delete:', error);
+        console.error('Error in batch reset:', error);
         await Swal.fire({
             title: 'Gagal!',
-            text: 'Terjadi kesalahan saat menghapus label',
+            text: error.response?.data?.message || 'Terjadi kesalahan saat mereset label',
             icon: 'error'
         });
     }
@@ -119,10 +137,10 @@ const rightLabels = computed(() =>
                     <button
                         @click="toggleBatchDeleteMode"
                         class="flex items-center gap-2 px-4 py-2 text-white transition-all duration-200 rounded-xl"
-                        :class="batchDeleteMode ? 'bg-red-500 hover:bg-red-600' : 'bg-slate-500 hover:bg-slate-600'"
+                        :class="batchDeleteMode ? 'bg-amber-500 hover:bg-amber-600' : 'bg-slate-500 hover:bg-slate-600'"
                     >
                         <Trash2 class="w-5 h-5" />
-                        {{ batchDeleteMode ? 'Batal' : 'Hapus Batch' }}
+                        {{ batchDeleteMode ? 'Batal' : 'Reset Batch' }}
                     </button>
                 </div>
             </div>
@@ -224,10 +242,10 @@ const rightLabels = computed(() =>
             <button
                 @click="confirmBatchDelete"
                 :disabled="!hasSelectedLabels"
-                class="flex items-center gap-2 px-6 py-3 text-white bg-red-500 rounded-xl shadow-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-red-600 transition-colors"
+                class="flex items-center gap-2 px-6 py-3 text-white bg-amber-500 rounded-xl shadow-lg disabled:opacity-50 disabled:cursor-not-allowed hover:bg-amber-600 transition-colors"
             >
                 <Trash2 class="w-5 h-5" />
-                Hapus {{ selectedLabels.size }} Label
+                Reset {{ selectedLabels.size }} Label
             </button>
         </div>
     </div>

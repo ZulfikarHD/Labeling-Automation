@@ -291,20 +291,28 @@ class GeneratedLabelController extends Controller
         try {
             DB::beginTransaction();
 
-            GeneratedLabels::whereIn('id', $request->ids)->delete();
+            GeneratedLabels::whereIn('id', $request->ids)
+                ->update([
+                    'np_users' => null,
+                    'np_user_p2' => null,
+                    'start' => null,
+                    'finish' => null,
+                ]);
 
             DB::commit();
 
+            $this->resetProductionOrderStatus($request->no_po);
+
             return response()->json([
                 'status' => 'success',
-                'message' => 'Label berhasil dihapus'
+                'message' => 'Label berhasil direset'
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
 
             return response()->json([
                 'status' => 'error',
-                'message' => 'Terjadi kesalahan saat menghapus label',
+                'message' => 'Terjadi kesalahan saat mereset label',
                 'error' => $e->getMessage()
             ], 500);
         }
