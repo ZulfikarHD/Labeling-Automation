@@ -41,6 +41,7 @@ Route::post('/production-order/update-rim', [ProductionOrderController::class, '
 Route::get('/production-order/get-labels/{no_po}', [GeneratedLabelController::class, 'getLabels']);
 Route::post('/production-order/update-label', [GeneratedLabelController::class, 'update']);
 Route::post('/production-order/add-rim', [GeneratedLabelController::class, 'addRim']);
+Route::post('/production-order/delete-labels', [GeneratedLabelController::class, 'batchDelete']);
 
 /*
 |--------------------------------------------------------------------------

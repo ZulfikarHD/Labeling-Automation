@@ -20,6 +20,7 @@ class GeneratedLabelController extends Controller
      */
     public function update(Request $request)
     {
+        // dd($request->all());
         $validatedData = $this->validateUpdateRequest($request);
         if ($validatedData->fails()) {
             return $this->validationErrorResponse($validatedData->errors());
@@ -283,5 +284,29 @@ class GeneratedLabelController extends Controller
             'message' => 'Data validasi tidak valid',
             'errors' => $errors
         ], 422);
+    }
+
+    public function batchDelete(Request $request)
+    {
+        try {
+            DB::beginTransaction();
+
+            GeneratedLabels::whereIn('id', $request->ids)->delete();
+
+            DB::commit();
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Label berhasil dihapus'
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Terjadi kesalahan saat menghapus label',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 }
