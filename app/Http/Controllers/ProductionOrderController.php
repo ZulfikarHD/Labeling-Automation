@@ -43,8 +43,8 @@ class ProductionOrderController extends Controller
     public function data_products(String $team, Request $request)
     {
         $search = $request->search;
-        $sort_field = $request->sort_field ?? 'created_at';
-        $sort_direction = $request->sort_direction ?? 'desc';
+        $sort_field = $request->sort_field ?? 'status';
+        $sort_direction = $request->sort_direction ?? 'asc';
 
         // Validate allowed sort fields for security
         $allowed_sort_fields = ['no_po', 'no_obc', 'created_at', 'updated_at', 'status'];

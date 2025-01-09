@@ -28,8 +28,8 @@ const form = useForm({
     po: "",
     team: props.crntTeam,
     search: "",
-    sort_field: "created_at",
-    sort_direction: "desc",
+    sort_field: "status",
+    sort_direction: "asc",
 });
 
 const deleteModal = ref(false); // Menginisialisasi deleteModal sebagai Boolean
