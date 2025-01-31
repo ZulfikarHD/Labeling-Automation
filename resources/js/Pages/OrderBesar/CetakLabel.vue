@@ -494,7 +494,7 @@
 </template>
 
 <script setup>
-import { reactive, ref, watch, onMounted, nextTick } from "vue";
+import { reactive, ref, watch, onMounted, nextTick, onBeforeUnmount } from "vue";
 import Modal from "@/Components/Modal.vue";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import InputLabel from "@/Components/InputLabel.vue";
@@ -593,149 +593,176 @@ const pilihRim = (noRim, np) => {
 // Print frame reference
 const printFrame = ref(null);
 
-// Print functionality without dialog
-const printWithoutDialog = (content) => {
+// Add onBeforeUnmount for cleanup
+
+// Cleanup function for event listeners and references
+const cleanup = () => {
+  // Clear iframe content
+  if (printFrame.value) {
     const iframe = printFrame.value;
     const doc = iframe.contentWindow.document;
     doc.open();
-    doc.write(`
-        <style>
-            @media print {
-                @page { margin-left: 3rem; margin-right:3rem; margin-top:1rem; }
-                header, footer { display: none !important; }
-                * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-            }
-        </style>
-        ${content}
-    `);
+    doc.write('');
+    doc.close();
+  }
 
-    iframe.contentWindow.focus();
-    iframe.contentWindow.print();
-    // setTimeout(() => {
+  // Clear reactive data
+  dataPrintUlang.value = null;
+  currentData.value = null;
 
-    // }, 200);
+  // Reset forms
+  form.reset();
+  Object.assign(formPrintUlang, {
+    dataRim: "Kiri",
+    noRim: "",
+    npPetugas: "",
+    po: props.product.no_po,
+    obc: props.product.no_obc,
+    team: props.crntTeam,
+  });
+
+  Object.assign(formPrintManual, {
+    dataRim: "",
+    noRim: "",
+    npPetugas: "",
+    npPetugas2: "",
+    lembar: 500,
+    po: props.product.no_po,
+    obc: props.product.no_obc,
+    team: props.crntTeam,
+    jml_label: 1,
+  });
+
+  // Cancel any pending axios requests
+  const CancelToken = axios.CancelToken;
+  const source = CancelToken.source();
+  source.cancel('Component unmounted');
 };
 
-// Handle reprint label submission
-const printUlangLabel = async () => {
-    loading.value = true;
-    try {
-        const printLabel = singleLabel(
-            formPrintUlang.obc,
-            formPrintUlang.noRim !== 999 ? formPrintUlang.noRim : "INS",
-            colorObc,
-            formPrintUlang.dataRim == "Kiri" ? "(*)" : "(**)",
-            formPrintUlang.npPetugas,
-            undefined,
-            500,
-        );
-        printWithoutDialog(printLabel);
+// Improved print function with cleanup
+const printWithoutDialog = (content) => {
+  const iframe = printFrame.value;
+  if (!iframe) return;
 
-        await axios.post("/api/order-besar/cetak-label/update", formPrintUlang);
+  const doc = iframe.contentWindow.document;
+  doc.open();
+  doc.write(`
+    <style>
+      @media print {
+        @page { margin-left: 3rem; margin-right:3rem; margin-top:1rem; }
+        header, footer { display: none !important; }
+        * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      }
+    </style>
+    ${content}
+  `);
+  doc.close();
 
-        // Update local state without page refresh
-        await fetchUpdatedData();
-        printUlangModal.value = false;
+  iframe.contentWindow.focus();
+  iframe.contentWindow.print();
 
-        showNotification('Label berhasil diperbarui', 'success');
+  // Cleanup after printing
+  setTimeout(() => {
+    doc.open();
+    doc.write('');
+    doc.close();
+  }, 1000);
+};
 
-        // Focus on periksa1 input after modal closes
-        await nextTick(() => {
-            periksa1Input.value?.focus();
-        });
-    } catch (error) {
-        console.error('Error:', error);
-        showNotification('Gagal memperbarui label', 'error');
-    } finally {
-        loading.value = false;
+// Improved API calls with cancellation
+const fetchUpdatedData = async () => {
+  const CancelToken = axios.CancelToken;
+  const source = CancelToken.source();
+
+  try {
+    const { data } = await axios.get(
+      `/api/order-besar/cetak-label/data/${form.team}/${form.id}`,
+      { cancelToken: source.token }
+    );
+
+    if (data) {
+      currentData.value = data;
+      form.no_rim = data.noRim;
+      form.lbr_ptg = data.potongan;
+      dataPrintUlang.value = data.printData;
     }
+  } catch (error) {
+    if (!axios.isCancel(error)) {
+      console.error('Error fetching updated data:', error);
+      showNotification('Gagal memperbarui data', 'error');
+    }
+  }
+
+  return () => {
+    source.cancel('Operation canceled by cleanup');
+  };
 };
 
-// Handle main form submission
+// Add cleanup on component unmount
+onBeforeUnmount(() => {
+  cleanup();
+});
+
+// Improved submit handler with proper cleanup
 const submit = async () => {
-    loading.value = true;
-    try {
-        await fetchUpdatedData();
-        const { data } = await axios.post("/api/order-besar/cetak-label", form);
+  if (loading.value) return;
 
-        if (data.status === 'error') {
-            showNotification(data.message, 'error');
-            return;
-        }
+  loading.value = true;
+  const cancelTokenSource = axios.CancelToken.source();
 
-        // Print label first
-        const printLabel = singleLabel(
-            form.obc,
-            form.no_rim !== 999 ? form.no_rim : "INS",
-            colorObc,
-            form.lbr_ptg == "Kiri" ? "(*)" : "(**)",
-            form.periksa1,
-            undefined,
-            500,
-        );
-        printWithoutDialog(printLabel);
+  try {
+    await fetchUpdatedData();
+    const { data } = await axios.post("/api/order-besar/cetak-label", form, {
+      cancelToken: cancelTokenSource.token
+    });
 
-        // Update local state without page refresh
-        if (data.poStatus !== 2) {
-            // Reset form fields
-            form.periksa1 = null;
-
-            // Update form with new rim data if provided
-            if (data.data) {
-                form.no_rim = data.data.no_rim;
-                form.lbr_ptg = data.data.potongan;
-            }
-
-            // Fetch updated data
-            await fetchUpdatedData();
-            showNotification('Label berhasil dicetak', 'success');
-
-            // Focus on periksa1 input after successful submission
-            await nextTick(() => {
-                periksa1Input.value?.focus();
-            });
-        } else {
-            router.get("/order-besar/po-siap-verif", {}, { preserveState: true });
-        }
-    } catch (error) {
-        console.error('Error:', error);
-        showNotification('Gagal mencetak label', 'error');
-    } finally {
-        loading.value = false;
+    if (data.status === 'error') {
+      showNotification(data.message, 'error');
+      return;
     }
+
+    const printLabel = singleLabel(
+      form.obc,
+      form.no_rim !== 999 ? form.no_rim : "INS",
+      colorObc,
+      form.lbr_ptg == "Kiri" ? "(*)" : "(**)",
+      form.periksa1,
+      undefined,
+      500,
+    );
+
+    await printWithoutDialog(printLabel);
+
+    if (data.poStatus !== 2) {
+      form.periksa1 = null;
+
+      if (data.data) {
+        form.no_rim = data.data.no_rim;
+        form.lbr_ptg = data.data.potongan;
+      }
+
+      await fetchUpdatedData();
+      showNotification('Label berhasil dicetak', 'success');
+
+      await nextTick(() => {
+        periksa1Input.value?.focus();
+      });
+    } else {
+      router.get("/order-besar/po-siap-verif", {}, { preserveState: true });
+    }
+  } catch (error) {
+    if (!axios.isCancel(error)) {
+      console.error('Error:', error);
+      showNotification('Gagal mencetak label', 'error');
+    }
+  } finally {
+    loading.value = false;
+    cancelTokenSource.cancel();
+  }
 };
 
 // Add reactive refs for form data
 const currentData = ref(null);
-
-// Add method to fetch updated data
-const fetchUpdatedData = async () => {
-    try {
-        const { data } = await axios.get(`/api/order-besar/cetak-label/data/${form.team}/${form.id}`);
-        currentData.value = data;
-
-        // Update form with new data
-        form.no_rim = data.noRim;
-        form.lbr_ptg = data.potongan;
-        dataPrintUlang.value = data.printData;
-
-    } catch (error) {
-        console.error('Error fetching updated data:', error);
-        showNotification('Gagal memperbarui data', 'error');
-    }
-};
-
-// Add watch for data changes
-watch(currentData, (newData) => {
-    if (newData) {
-        // Update any additional reactive data here
-    }
-}, { deep: true });
-
-// Fetch initial data
-onMounted(async () => {
-    await fetchUpdatedData();
-});
 
 // Add notification system
 const showNotification = (message, type = 'info') => {
