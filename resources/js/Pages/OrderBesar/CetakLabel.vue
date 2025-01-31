@@ -2,6 +2,9 @@
     <!-- Page title -->
     <Head title="Cetak Label" />
 
+    <!-- Use the LoadingOverlay component -->
+    <LoadingOverlay :show="loading" />
+
     <!-- Modal for reprinting labels -->
     <Modal :show="printUlangModal" @close="() => (printUlangModal = !printUlangModal)">
         <form @submit.prevent="printUlangLabel" class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
@@ -490,21 +493,42 @@
         </div>
         <TableVerifikasiPegawai :team="form.team" :date="form.date"/>
     </AuthenticatedLayout>
-    <iframe ref="printFrame" style="display: none"></iframe>
+    <!-- Replace iframe with PrintFrame component -->
+    <PrintFrame ref="printFrameRef" />
 </template>
 
 <script setup>
-import { reactive, ref, watch, onMounted, nextTick, onBeforeUnmount } from "vue";
+import { reactive, ref, onMounted, nextTick } from "vue";
 import Modal from "@/Components/Modal.vue";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import InputLabel from "@/Components/InputLabel.vue";
 import InputError from "@/Components/InputError.vue";
 import TextInput from "@/Components/TextInput.vue";
 import TableVerifikasiPegawai from "@/Components/TableVerifikasiPegawai.vue";
+import LoadingOverlay from "@/Components/LoadingOverlay.vue";
+import PrintFrame from "@/Components/PrintPages/PrintFrame.vue";
 import { singleLabel, batchSingleLabel } from "@/Components/PrintPages/index";
 import { Link, useForm, router, Head } from "@inertiajs/vue3";
 import axios from "axios";
+import { useNotification } from '@/composables/useNotifications';
+import { usePrinting } from '@/composables/printing';
 import Swal from 'sweetalert2';
+
+// Initialize notifications with all functions
+const {
+    showSuccessNotification,
+    showErrorNotification,
+    showConfirmation
+} = useNotification();
+
+// Initialize printing utilities
+const {
+    cleanup,
+    setupPrintCleanup,
+    debounce,
+    calculateTimeoutDuration,
+    memoryManager
+} = usePrinting();
 
 // Props definition
 const props = defineProps({
@@ -590,344 +614,132 @@ const pilihRim = (noRim, np) => {
     formPrintUlang.npPetugas = np;
 };
 
-// Print frame reference
-const printFrame = ref(null);
+// Replace printFrame ref with PrintFrame component ref
+const printFrameRef = ref(null);
 
-// Add memory pooling for frequently used objects
-const objectPool = {
-  pool: new Map(),
+// First declare the function
+function fetchData() {
+    return async () => {
+        try {
+            if (dataPrintUlang.value) {
+                dataPrintUlang.value = null;
+            }
 
-  acquire(key) {
-    if (!this.pool.has(key)) {
-      this.pool.set(key, new Map());
-    }
-    return this.pool.get(key);
-  },
+            const { data } = await axios.get(
+                `/api/order-besar/cetak-label/data/${form.team}/${form.id}`,
+                {
+                    headers: {
+                        'Cache-Control': 'no-cache',
+                        'Pragma': 'no-cache'
+                    }
+                }
+            );
 
-  release(key) {
-    if (this.pool.has(key)) {
-      this.pool.get(key).clear();
-    }
-  },
-
-  clear() {
-    this.pool.clear();
-  }
-};
-
-// Improved memory manager with string interning
-const memoryManager = {
-  clearDOMRefs: () => {
-    // Clear DOM references
-    if (printFrame.value) {
-      printFrame.value.srcdoc = '';
-      printFrame.value = null;
-    }
-    if (periksa1Input.value) {
-      periksa1Input.value = null;
-    }
-  },
-
-  clearReactiveData: () => {
-    // Clear reactive data
-    dataPrintUlang.value = null;
-    loading.value = false;
-    printUlangModal.value = false;
-    printManualModal.value = false;
-  },
-
-  resetForms: () => {
-    // Reset form states
-    form.reset();
-    Object.assign(formPrintUlang, {
-      dataRim: "Kiri",
-      noRim: "",
-      npPetugas: "",
-      po: props.product.no_po,
-      obc: props.product.no_obc,
-      team: props.crntTeam,
-    });
-    Object.assign(formPrintManual, {
-      dataRim: "",
-      noRim: "",
-      npPetugas: "",
-      npPetugas2: "",
-      lembar: 500,
-      po: props.product.no_po,
-      obc: props.product.no_obc,
-      team: props.crntTeam,
-      jml_label: 1,
-    });
-  },
-
-  stringCache: new Map(),
-
-  internString(str) {
-    if (!this.stringCache.has(str)) {
-      this.stringCache.set(str, str);
-    }
-    return this.stringCache.get(str);
-  },
-
-  clearCache() {
-    this.stringCache.clear();
-    objectPool.clear();
-  },
-
-  optimizeDOM() {
-    // Remove unnecessary DOM elements
-    const unusedModals = document.querySelectorAll('.modal:not(:visible)');
-    unusedModals.forEach(modal => {
-      modal.innerHTML = '';
-    });
-
-    // Clear print frame
-    if (printFrame.value) {
-      const doc = printFrame.value.contentWindow.document;
-      doc.open();
-      doc.write('');
-      doc.close();
-    }
-  }
-};
-
-// Optimize print function to reduce DOM operations
-const printWithoutDialog = (content) => {
-  const iframe = printFrame.value;
-  if (!iframe) return;
-
-  // Reuse document reference
-  const doc = iframe.contentWindow.document;
-
-  // Use DocumentFragment for better performance
-  const fragment = doc.createDocumentFragment();
-  const container = doc.createElement('div');
-
-  // Add styles once
-  const style = doc.createElement('style');
-  style.textContent = `
-    @media print {
-      @page { margin-left: 3rem; margin-right:3rem; margin-top:1rem; }
-      * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-    }
-  `;
-
-  fragment.appendChild(style);
-  container.innerHTML = content;
-  fragment.appendChild(container);
-
-  // Clear existing content
-  doc.open();
-  doc.write('');
-  doc.close();
-
-  // Add new content
-  doc.body.appendChild(fragment);
-
-  const timeoutId = setTimeout(() => {
-    iframe.contentWindow.focus();
-    iframe.contentWindow.print();
-
-    // Clean up after printing
-    requestAnimationFrame(() => {
-      doc.body.innerHTML = '';
-    });
-  }, 100);
-
-  window._timeouts = window._timeouts || [];
-  window._timeouts.push(timeoutId);
-};
-
-// Optimize data fetching to reduce object creation
-const fetchUpdatedData = async () => {
-  const controller = new AbortController();
-  const cache = objectPool.acquire('fetchData');
-
-  try {
-    if (dataPrintUlang.value) {
-      dataPrintUlang.value = null;
-    }
-
-    const { data } = await axios.get(
-      `/api/order-besar/cetak-label/data/${form.team}/${form.id}`,
-      {
-        signal: controller.signal,
-        headers: {
-          'Cache-Control': 'no-cache',
-          'Pragma': 'no-cache'
+            if (data) {
+                form.no_rim = data.noRim;
+                form.lbr_ptg = data.potongan;
+                dataPrintUlang.value = data.printData;
+            }
+        } catch (error) {
+            console.error('Error fetching updated data:', error);
+            showErrorNotification('Gagal', 'Gagal memperbarui data');
         }
-      }
-    );
+    };
+}
 
-    if (data) {
-      // Reuse objects where possible
-      if (cache.has(data.noRim)) {
-        form.no_rim = cache.get(data.noRim);
-      } else {
-        cache.set(data.noRim, data.noRim);
-        form.no_rim = data.noRim;
-      }
+// Then create the debounced version
+const debouncedFetchData = debounce(fetchData(), 500);
 
-      form.lbr_ptg = memoryManager.internString(data.potongan);
-      dataPrintUlang.value = data.printData;
-    }
-  } catch (error) {
-    if (!axios.isCancel(error)) {
-      console.error('Error fetching updated data:', error);
-      showNotification('Gagal memperbarui data', 'error');
-    }
-  } finally {
-    controller.abort();
-  }
+// Use setupPrintCleanup in onMounted
+onMounted(() => {
+    setupPrintCleanup();
+});
+
+// Replace printWithoutDialog with new print method
+const printWithoutDialog = (content) => {
+    printFrameRef.value.print(content);
 };
 
-// Enhanced cleanup
-const cleanup = () => {
-  memoryManager.clearDOMRefs();
-  memoryManager.clearReactiveData();
-  memoryManager.resetForms();
-  memoryManager.optimizeDOM();
-  memoryManager.clearCache();
-
-  if (window._timeouts) {
-    window._timeouts.forEach(timeout => clearTimeout(timeout));
-    window._timeouts = [];
-  }
-
-  // Force garbage collection hint
-  if (window.gc) {
-    window.gc();
-  }
-};
-
-// Optimize component lifecycle
-onMounted(() => {
-  window._timeouts = [];
-  // Pre-allocate common strings
-  ['Kiri', 'Kanan', 'INS'].forEach(str =>
-    memoryManager.internString(str)
-  );
-});
-
-onBeforeUnmount(() => {
-  cleanup();
-});
-
-// Add periodic cleanup for long-running sessions
-let cleanupInterval;
-onMounted(() => {
-  cleanupInterval = setInterval(() => {
-    memoryManager.optimizeDOM();
-  }, 60000); // Run every minute
-});
-
-onBeforeUnmount(() => {
-  if (cleanupInterval) {
-    clearInterval(cleanupInterval);
-  }
-});
-
-// Optimize form submission
+// Modify submit function to use new notifications
 const submit = async (e) => {
-  e.preventDefault();
-  if (loading.value) return;
+    e.preventDefault();
+    if (loading.value) return;
 
-  loading.value = true;
-  const controller = new AbortController();
+    loading.value = true;
+    const controller = new AbortController();
 
-  try {
-    // Clear previous data
-    memoryManager.clearReactiveData();
+    try {
+        memoryManager.clearReactiveData();
 
-    const { data } = await axios.post("/api/order-besar/cetak-label", form, {
-      signal: controller.signal,
-      headers: {
-        'Cache-Control': 'no-cache',
-        'Pragma': 'no-cache'
-      }
-    });
+        const { data } = await axios.post("/api/order-besar/cetak-label", form, {
+            signal: controller.signal,
+            headers: {
+                'Cache-Control': 'no-cache',
+                'Pragma': 'no-cache'
+            }
+        });
 
-    if (data.status === 'error') {
-      showNotification(data.message, 'error');
-      return;
+        if (data.status === 'error') {
+            showErrorNotification('Error', data.message);
+            return;
+        }
+
+        const printLabel = singleLabel(
+            form.obc,
+            form.no_rim !== 999 ? form.no_rim : "INS",
+            colorObc,
+            form.lbr_ptg == "Kiri" ? "(*)" : "(**)",
+            form.periksa1,
+            undefined,
+            500,
+        );
+
+        await printWithoutDialog(printLabel);
+
+        if (data.poStatus !== 2) {
+            form.periksa1 = null;
+
+            if (data.data) {
+                form.no_rim = data.data.no_rim;
+                form.lbr_ptg = data.data.potongan;
+            }
+
+            await fetchData();
+            await showSuccessNotification('Berhasil', 'Label berhasil dicetak');
+
+            await nextTick(() => {
+                periksa1Input.value?.focus();
+            });
+        } else {
+            router.get("/order-besar/po-siap-verif", {}, { preserveState: true });
+        }
+    } catch (error) {
+        if (!axios.isCancel(error)) {
+            console.error('Error:', error);
+            showErrorNotification('Gagal', 'Gagal mencetak label');
+        }
+    } finally {
+        loading.value = false;
+        controller.abort();
     }
-
-    const printLabel = singleLabel(
-      form.obc,
-      form.no_rim !== 999 ? form.no_rim : "INS",
-      colorObc,
-      form.lbr_ptg == "Kiri" ? "(*)" : "(**)",
-      form.periksa1,
-      undefined,
-      500,
-    );
-
-    await printWithoutDialog(printLabel);
-
-    if (data.poStatus !== 2) {
-      form.periksa1 = null;
-
-      if (data.data) {
-        form.no_rim = data.data.no_rim;
-        form.lbr_ptg = data.data.potongan;
-      }
-
-      await fetchUpdatedData();
-      showNotification('Label berhasil dicetak', 'success');
-
-      await nextTick(() => {
-        periksa1Input.value?.focus();
-      });
-    } else {
-      router.get("/order-besar/po-siap-verif", {}, { preserveState: true });
-    }
-  } catch (error) {
-    if (!axios.isCancel(error)) {
-      console.error('Error:', error);
-      showNotification('Gagal mencetak label', 'error');
-    }
-  } finally {
-    loading.value = false;
-    controller.abort();
-  }
 };
 
-// Add notification system
-const showNotification = (message, type = 'info') => {
-    // You can use a toast library like vue-toastification
-    // or SweetAlert2 for notifications
-    Swal.fire({
-        title: message,
-        icon: type,
-        toast: true,
-        position: 'top-end',
-        showConfirmButton: false,
-        timer: 3000
-    });
-};
-
-// Handle order completion confirmation with SweetAlert2
+// Modify confirmFinishOrder to use new notifications
 const confirmFinishOrder = async () => {
     try {
-        const result = await Swal.fire({
-            title: 'Selesaikan Order',
-            text: 'Apakah Anda yakin ingin menyelesaikan order ini?',
-            icon: 'question',
-            showCancelButton: true,
-            confirmButtonText: 'Ya, Selesaikan',
-            cancelButtonText: 'Batal',
-            confirmButtonColor: '#0891b2',
-            cancelButtonColor: '#6b7280',
-        });
+        const result = await showConfirmation(
+            'Selesaikan Order',
+            'Apakah Anda yakin ingin menyelesaikan order ini?'
+        );
 
         if (result.isConfirmed) {
             await axios.put(`/api/production-order-finish/${form.po}`);
             router.get("/order-besar/po-siap-verif", {}, { preserveState: true });
-            showNotification('Order berhasil diselesaikan', 'success');
+            await showSuccessNotification('Berhasil', 'Order berhasil diselesaikan');
         }
     } catch (error) {
         console.error('Error:', error);
-        showNotification('Gagal menyelesaikan order', 'error');
+        showErrorNotification('Gagal', 'Gagal menyelesaikan order');
     }
 };
 
@@ -989,11 +801,15 @@ const printLabelManual = async () => {
         formPrintManual.lembar = 500;
         printManualModal.value = false;
 
-        showNotification('Label berhasil dicetak', 'success');
+        const timeoutDuration = calculateTimeoutDuration(formPrintManual.jml_label);
+        setTimeout(() => {
+            showSuccessNotification('Berhasil', 'Label berhasil dicetak');
+            loading.value = false;
+        }, timeoutDuration);
+
     } catch (error) {
         console.error('Error:', error);
-        showNotification('Gagal mencetak label', 'error');
-    } finally {
+        showErrorNotification('Gagal', 'Gagal mencetak label');
         loading.value = false;
     }
 };
@@ -1011,7 +827,7 @@ const printUlangLabel = async () => {
 
         // Validate required fields
         if (!formPrintUlang.noRim || !formPrintUlang.npPetugas) {
-            showNotification('Mohon lengkapi semua field', 'error');
+            showErrorNotification('Error', 'Mohon lengkapi semua field');
             return;
         }
 
@@ -1042,12 +858,12 @@ const printUlangLabel = async () => {
         printUlangModal.value = false;
 
         // Refresh data
-        await fetchUpdatedData();
-        showNotification('Label berhasil dicetak', 'success');
+        await fetchData();
+        showSuccessNotification('Berhasil', 'Label berhasil dicetak');
 
     } catch (error) {
         console.error('Error:', error);
-        showNotification('Gagal mencetak label', 'error');
+        showErrorNotification('Gagal', 'Gagal mencetak label');
     } finally {
         loading.value = false;
     }
