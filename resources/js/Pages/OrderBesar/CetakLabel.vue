@@ -593,97 +593,182 @@ const pilihRim = (noRim, np) => {
 // Print frame reference
 const printFrame = ref(null);
 
-// Add onBeforeUnmount for cleanup
+// Add memory pooling for frequently used objects
+const objectPool = {
+  pool: new Map(),
 
-// Cleanup function for event listeners and references
-const cleanup = () => {
-  // Clear iframe content
-  if (printFrame.value) {
-    const iframe = printFrame.value;
-    const doc = iframe.contentWindow.document;
-    doc.open();
-    doc.write('');
-    doc.close();
+  acquire(key) {
+    if (!this.pool.has(key)) {
+      this.pool.set(key, new Map());
+    }
+    return this.pool.get(key);
+  },
+
+  release(key) {
+    if (this.pool.has(key)) {
+      this.pool.get(key).clear();
+    }
+  },
+
+  clear() {
+    this.pool.clear();
   }
-
-  // Clear reactive data
-  dataPrintUlang.value = null;
-  currentData.value = null;
-
-  // Reset forms
-  form.reset();
-  Object.assign(formPrintUlang, {
-    dataRim: "Kiri",
-    noRim: "",
-    npPetugas: "",
-    po: props.product.no_po,
-    obc: props.product.no_obc,
-    team: props.crntTeam,
-  });
-
-  Object.assign(formPrintManual, {
-    dataRim: "",
-    noRim: "",
-    npPetugas: "",
-    npPetugas2: "",
-    lembar: 500,
-    po: props.product.no_po,
-    obc: props.product.no_obc,
-    team: props.crntTeam,
-    jml_label: 1,
-  });
-
-  // Cancel any pending axios requests
-  const CancelToken = axios.CancelToken;
-  const source = CancelToken.source();
-  source.cancel('Component unmounted');
 };
 
-// Improved print function with cleanup
+// Improved memory manager with string interning
+const memoryManager = {
+  clearDOMRefs: () => {
+    // Clear DOM references
+    if (printFrame.value) {
+      printFrame.value.srcdoc = '';
+      printFrame.value = null;
+    }
+    if (periksa1Input.value) {
+      periksa1Input.value = null;
+    }
+  },
+
+  clearReactiveData: () => {
+    // Clear reactive data
+    dataPrintUlang.value = null;
+    loading.value = false;
+    printUlangModal.value = false;
+    printManualModal.value = false;
+  },
+
+  resetForms: () => {
+    // Reset form states
+    form.reset();
+    Object.assign(formPrintUlang, {
+      dataRim: "Kiri",
+      noRim: "",
+      npPetugas: "",
+      po: props.product.no_po,
+      obc: props.product.no_obc,
+      team: props.crntTeam,
+    });
+    Object.assign(formPrintManual, {
+      dataRim: "",
+      noRim: "",
+      npPetugas: "",
+      npPetugas2: "",
+      lembar: 500,
+      po: props.product.no_po,
+      obc: props.product.no_obc,
+      team: props.crntTeam,
+      jml_label: 1,
+    });
+  },
+
+  stringCache: new Map(),
+
+  internString(str) {
+    if (!this.stringCache.has(str)) {
+      this.stringCache.set(str, str);
+    }
+    return this.stringCache.get(str);
+  },
+
+  clearCache() {
+    this.stringCache.clear();
+    objectPool.clear();
+  },
+
+  optimizeDOM() {
+    // Remove unnecessary DOM elements
+    const unusedModals = document.querySelectorAll('.modal:not(:visible)');
+    unusedModals.forEach(modal => {
+      modal.innerHTML = '';
+    });
+
+    // Clear print frame
+    if (printFrame.value) {
+      const doc = printFrame.value.contentWindow.document;
+      doc.open();
+      doc.write('');
+      doc.close();
+    }
+  }
+};
+
+// Optimize print function to reduce DOM operations
 const printWithoutDialog = (content) => {
   const iframe = printFrame.value;
   if (!iframe) return;
 
+  // Reuse document reference
   const doc = iframe.contentWindow.document;
+
+  // Use DocumentFragment for better performance
+  const fragment = doc.createDocumentFragment();
+  const container = doc.createElement('div');
+
+  // Add styles once
+  const style = doc.createElement('style');
+  style.textContent = `
+    @media print {
+      @page { margin-left: 3rem; margin-right:3rem; margin-top:1rem; }
+      * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    }
+  `;
+
+  fragment.appendChild(style);
+  container.innerHTML = content;
+  fragment.appendChild(container);
+
+  // Clear existing content
   doc.open();
-  doc.write(`
-    <style>
-      @media print {
-        @page { margin-left: 3rem; margin-right:3rem; margin-top:1rem; }
-        header, footer { display: none !important; }
-        * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-      }
-    </style>
-    ${content}
-  `);
+  doc.write('');
   doc.close();
 
-  iframe.contentWindow.focus();
-  iframe.contentWindow.print();
+  // Add new content
+  doc.body.appendChild(fragment);
 
-  // Cleanup after printing
-  setTimeout(() => {
-    doc.open();
-    doc.write('');
-    doc.close();
-  }, 1000);
+  const timeoutId = setTimeout(() => {
+    iframe.contentWindow.focus();
+    iframe.contentWindow.print();
+
+    // Clean up after printing
+    requestAnimationFrame(() => {
+      doc.body.innerHTML = '';
+    });
+  }, 100);
+
+  window._timeouts = window._timeouts || [];
+  window._timeouts.push(timeoutId);
 };
 
-// Improved API calls with cancellation
+// Optimize data fetching to reduce object creation
 const fetchUpdatedData = async () => {
-  const CancelToken = axios.CancelToken;
-  const source = CancelToken.source();
+  const controller = new AbortController();
+  const cache = objectPool.acquire('fetchData');
 
   try {
+    if (dataPrintUlang.value) {
+      dataPrintUlang.value = null;
+    }
+
     const { data } = await axios.get(
       `/api/order-besar/cetak-label/data/${form.team}/${form.id}`,
-      { cancelToken: source.token }
+      {
+        signal: controller.signal,
+        headers: {
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
+        }
+      }
     );
 
     if (data) {
-      currentData.value = data;
-      form.no_rim = data.noRim;
-      form.lbr_ptg = data.potongan;
+      // Reuse objects where possible
+      if (cache.has(data.noRim)) {
+        form.no_rim = cache.get(data.noRim);
+      } else {
+        cache.set(data.noRim, data.noRim);
+        form.no_rim = data.noRim;
+      }
+
+      form.lbr_ptg = memoryManager.internString(data.potongan);
       dataPrintUlang.value = data.printData;
     }
   } catch (error) {
@@ -691,29 +776,75 @@ const fetchUpdatedData = async () => {
       console.error('Error fetching updated data:', error);
       showNotification('Gagal memperbarui data', 'error');
     }
+  } finally {
+    controller.abort();
   }
-
-  return () => {
-    source.cancel('Operation canceled by cleanup');
-  };
 };
 
-// Add cleanup on component unmount
+// Enhanced cleanup
+const cleanup = () => {
+  memoryManager.clearDOMRefs();
+  memoryManager.clearReactiveData();
+  memoryManager.resetForms();
+  memoryManager.optimizeDOM();
+  memoryManager.clearCache();
+
+  if (window._timeouts) {
+    window._timeouts.forEach(timeout => clearTimeout(timeout));
+    window._timeouts = [];
+  }
+
+  // Force garbage collection hint
+  if (window.gc) {
+    window.gc();
+  }
+};
+
+// Optimize component lifecycle
+onMounted(() => {
+  window._timeouts = [];
+  // Pre-allocate common strings
+  ['Kiri', 'Kanan', 'INS'].forEach(str =>
+    memoryManager.internString(str)
+  );
+});
+
 onBeforeUnmount(() => {
   cleanup();
 });
 
-// Improved submit handler with proper cleanup
-const submit = async () => {
+// Add periodic cleanup for long-running sessions
+let cleanupInterval;
+onMounted(() => {
+  cleanupInterval = setInterval(() => {
+    memoryManager.optimizeDOM();
+  }, 60000); // Run every minute
+});
+
+onBeforeUnmount(() => {
+  if (cleanupInterval) {
+    clearInterval(cleanupInterval);
+  }
+});
+
+// Optimize form submission
+const submit = async (e) => {
+  e.preventDefault();
   if (loading.value) return;
 
   loading.value = true;
-  const cancelTokenSource = axios.CancelToken.source();
+  const controller = new AbortController();
 
   try {
-    await fetchUpdatedData();
+    // Clear previous data
+    memoryManager.clearReactiveData();
+
     const { data } = await axios.post("/api/order-besar/cetak-label", form, {
-      cancelToken: cancelTokenSource.token
+      signal: controller.signal,
+      headers: {
+        'Cache-Control': 'no-cache',
+        'Pragma': 'no-cache'
+      }
     });
 
     if (data.status === 'error') {
@@ -757,12 +888,9 @@ const submit = async () => {
     }
   } finally {
     loading.value = false;
-    cancelTokenSource.cancel();
+    controller.abort();
   }
 };
-
-// Add reactive refs for form data
-const currentData = ref(null);
 
 // Add notification system
 const showNotification = (message, type = 'info') => {
