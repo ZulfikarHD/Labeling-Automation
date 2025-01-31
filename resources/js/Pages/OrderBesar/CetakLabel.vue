@@ -1003,4 +1003,53 @@ const periksa1Input = ref(null);
 
 // Add this to the script setup section
 const printManualModal = ref(false);
+
+// Add this method in your script setup section
+const printUlangLabel = async () => {
+    try {
+        loading.value = true;
+
+        // Validate required fields
+        if (!formPrintUlang.noRim || !formPrintUlang.npPetugas) {
+            showNotification('Mohon lengkapi semua field', 'error');
+            return;
+        }
+
+        // Send update request
+        await axios.post('/api/order-besar/cetak-label/update', {
+            po: formPrintUlang.po,
+            dataRim: formPrintUlang.dataRim,
+            noRim: formPrintUlang.noRim,
+            npPetugas: formPrintUlang.npPetugas,
+            team: formPrintUlang.team
+        });
+
+        // Generate and print label
+        const printLabel = singleLabel(
+            formPrintUlang.obc,
+            formPrintUlang.noRim !== 999 ? formPrintUlang.noRim : "INS",
+            colorObc,
+            formPrintUlang.dataRim === "Kiri" ? "(*)" : "(**)",
+            formPrintUlang.npPetugas,
+            undefined,
+            500,
+        );
+
+        await printWithoutDialog(printLabel);
+
+        // Reset form and close modal
+        formPrintUlang.npPetugas = '';
+        printUlangModal.value = false;
+
+        // Refresh data
+        await fetchUpdatedData();
+        showNotification('Label berhasil dicetak', 'success');
+
+    } catch (error) {
+        console.error('Error:', error);
+        showNotification('Gagal mencetak label', 'error');
+    } finally {
+        loading.value = false;
+    }
+};
 </script>
