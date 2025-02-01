@@ -59,7 +59,7 @@ class CetakLabelController extends Controller
         $product = GeneratedProducts::findOrFail($id); // Fetch product by ID
         $noRimData = $this->fetchNoRim($product->no_po); // Fetch rim data
 
-        return Inertia::render('OrderBesar/CetakLabel', [
+        return Inertia::render('OrderBesar/CetakLabel/Index', [
             'product' => $product,
             'listTeam' => Workstations::select(['id', 'workstation'])->get(), // Get list of workstations
             'crntTeam' => $team,
