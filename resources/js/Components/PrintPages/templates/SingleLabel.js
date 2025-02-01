@@ -83,7 +83,7 @@ export function singleLabel(
     </style>
 </head>
 <body>
-    <div style='width: 100%; height: 100%; margin-top: 1.2rem;'>
+    <div style='width: 100%; height: 100%; margin-top: 1.1rem;'>
         <div class="wrapper">
             <div class="sectionWrapper" style="flex: 0 0 auto; padding: 0.25rem; padding-bottom: 0.25rem;">
             </div>
@@ -118,7 +118,7 @@ export function singleLabel(
                             <p class="p-content" style="font-size: 0.8rem; font-weight: 300;">${tgl}</p>
                         </td>
                         <td class="grid-wrapper" colspan="2">
-                            <p class="p-content" style="font-size: 1.5rem; font-weight: 600; color: ${color};">${obc}</p>
+                            <p class="p-content" style="font-size: 1.4rem; font-weight: 600; color: ${color};">${obc}</p>
                         </td>
                         <td class="grid-wrapper" style="font-size: 0.8rem; font-family: sans-serif; font-weight: 300;">${lembar} Lbr</td>
                     </tr>
