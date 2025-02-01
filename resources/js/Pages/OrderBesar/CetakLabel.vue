@@ -2,6 +2,9 @@
     <!-- Page title -->
     <Head title="Cetak Label" />
 
+    <!-- Use the LoadingOverlay component -->
+    <LoadingOverlay :show="loading" />
+
     <!-- Modal for reprinting labels -->
     <Modal :show="printUlangModal" @close="() => (printUlangModal = !printUlangModal)">
         <form @submit.prevent="printUlangLabel" class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
@@ -490,21 +493,42 @@
         </div>
         <TableVerifikasiPegawai :team="form.team" :date="form.date"/>
     </AuthenticatedLayout>
-    <iframe ref="printFrame" style="display: none"></iframe>
+    <!-- Replace iframe with PrintFrame component -->
+    <PrintFrame ref="printFrameRef" />
 </template>
 
 <script setup>
-import { reactive, ref, watch, onMounted, nextTick } from "vue";
+import { reactive, ref, onMounted, nextTick } from "vue";
 import Modal from "@/Components/Modal.vue";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import InputLabel from "@/Components/InputLabel.vue";
 import InputError from "@/Components/InputError.vue";
 import TextInput from "@/Components/TextInput.vue";
 import TableVerifikasiPegawai from "@/Components/TableVerifikasiPegawai.vue";
+import LoadingOverlay from "@/Components/LoadingOverlay.vue";
+import PrintFrame from "@/Components/PrintPages/PrintFrame.vue";
 import { singleLabel, batchSingleLabel } from "@/Components/PrintPages/index";
 import { Link, useForm, router, Head } from "@inertiajs/vue3";
 import axios from "axios";
+import { useNotification } from '@/composables/useNotifications';
+import { usePrinting } from '@/composables/printing';
 import Swal from 'sweetalert2';
+
+// Initialize notifications with all functions
+const {
+    showSuccessNotification,
+    showErrorNotification,
+    showConfirmation
+} = useNotification();
+
+// Initialize printing utilities
+const {
+    cleanup,
+    setupPrintCleanup,
+    debounce,
+    calculateTimeoutDuration,
+    memoryManager
+} = usePrinting();
 
 // Props definition
 const props = defineProps({
@@ -590,80 +614,76 @@ const pilihRim = (noRim, np) => {
     formPrintUlang.npPetugas = np;
 };
 
-// Print frame reference
-const printFrame = ref(null);
+// Replace printFrame ref with PrintFrame component ref
+const printFrameRef = ref(null);
 
-// Print functionality without dialog
-const printWithoutDialog = (content) => {
-    const iframe = printFrame.value;
-    const doc = iframe.contentWindow.document;
-    doc.open();
-    doc.write(`
-        <style>
-            @media print {
-                @page { margin-left: 3rem; margin-right:3rem; margin-top:1rem; }
-                header, footer { display: none !important; }
-                * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+// First declare the function
+function fetchData() {
+    return async () => {
+        try {
+            if (dataPrintUlang.value) {
+                dataPrintUlang.value = null;
             }
-        </style>
-        ${content}
-    `);
 
-    iframe.contentWindow.focus();
-    iframe.contentWindow.print();
-    // setTimeout(() => {
+            const { data } = await axios.get(
+                `/api/order-besar/cetak-label/data/${form.team}/${form.id}`,
+                {
+                    headers: {
+                        'Cache-Control': 'no-cache',
+                        'Pragma': 'no-cache'
+                    }
+                }
+            );
 
-    // }, 200);
+            if (data) {
+                form.no_rim = data.noRim;
+                form.lbr_ptg = data.potongan;
+                dataPrintUlang.value = data.printData;
+            }
+        } catch (error) {
+            console.error('Error fetching updated data:', error);
+            showErrorNotification('Gagal', 'Gagal memperbarui data');
+        }
+    };
+}
+
+// Then create the debounced version
+const debouncedFetchData = debounce(fetchData(), 500);
+
+// Use setupPrintCleanup in onMounted
+onMounted(() => {
+    setupPrintCleanup();
+});
+
+// Replace printWithoutDialog with new print method
+const printWithoutDialog = (content) => {
+    printFrameRef.value.print(content);
 };
 
-// Handle reprint label submission
-const printUlangLabel = async () => {
+// Modify submit function to use new notifications
+const submit = async (e) => {
+    e.preventDefault();
+    if (loading.value) return;
+
     loading.value = true;
+    const controller = new AbortController();
+
     try {
-        const printLabel = singleLabel(
-            formPrintUlang.obc,
-            formPrintUlang.noRim !== 999 ? formPrintUlang.noRim : "INS",
-            colorObc,
-            formPrintUlang.dataRim == "Kiri" ? "(*)" : "(**)",
-            formPrintUlang.npPetugas,
-            undefined,
-            500,
-        );
-        printWithoutDialog(printLabel);
+        memoryManager.clearReactiveData();
 
-        await axios.post("/api/order-besar/cetak-label/update", formPrintUlang);
-
-        // Update local state without page refresh
-        await fetchUpdatedData();
-        printUlangModal.value = false;
-
-        showNotification('Label berhasil diperbarui', 'success');
-
-        // Focus on periksa1 input after modal closes
-        await nextTick(() => {
-            periksa1Input.value?.focus();
+        const { data } = await axios.post("/api/order-besar/cetak-label", form, {
+            signal: controller.signal,
+            headers: {
+                'Cache-Control': 'no-cache',
+                'Pragma': 'no-cache'
+            }
         });
-    } catch (error) {
-        console.error('Error:', error);
-        showNotification('Gagal memperbarui label', 'error');
-    } finally {
-        loading.value = false;
-    }
-};
-
-// Handle main form submission
-const submit = async () => {
-    loading.value = true;
-    try {
-        await fetchUpdatedData();
-        const { data } = await axios.post("/api/order-besar/cetak-label", form);
 
         if (data.status === 'error') {
-            showNotification(data.message, 'error');
+            showErrorNotification('Error', data.message);
             return;
         }
 
-        // Print label first
         const printLabel = singleLabel(
             form.obc,
             form.no_rim !== 999 ? form.no_rim : "INS",
@@ -673,24 +693,20 @@ const submit = async () => {
             undefined,
             500,
         );
-        printWithoutDialog(printLabel);
 
-        // Update local state without page refresh
+        await printWithoutDialog(printLabel);
+
         if (data.poStatus !== 2) {
-            // Reset form fields
             form.periksa1 = null;
 
-            // Update form with new rim data if provided
             if (data.data) {
                 form.no_rim = data.data.no_rim;
                 form.lbr_ptg = data.data.potongan;
             }
 
-            // Fetch updated data
-            await fetchUpdatedData();
-            showNotification('Label berhasil dicetak', 'success');
+            await fetchData();
+            await showSuccessNotification('Berhasil', 'Label berhasil dicetak');
 
-            // Focus on periksa1 input after successful submission
             await nextTick(() => {
                 periksa1Input.value?.focus();
             });
@@ -698,81 +714,32 @@ const submit = async () => {
             router.get("/order-besar/po-siap-verif", {}, { preserveState: true });
         }
     } catch (error) {
-        console.error('Error:', error);
-        showNotification('Gagal mencetak label', 'error');
+        if (!axios.isCancel(error)) {
+            console.error('Error:', error);
+            showErrorNotification('Gagal', 'Gagal mencetak label');
+        }
     } finally {
         loading.value = false;
+        controller.abort();
     }
 };
 
-// Add reactive refs for form data
-const currentData = ref(null);
-
-// Add method to fetch updated data
-const fetchUpdatedData = async () => {
-    try {
-        const { data } = await axios.get(`/api/order-besar/cetak-label/data/${form.team}/${form.id}`);
-        currentData.value = data;
-
-        // Update form with new data
-        form.no_rim = data.noRim;
-        form.lbr_ptg = data.potongan;
-        dataPrintUlang.value = data.printData;
-
-    } catch (error) {
-        console.error('Error fetching updated data:', error);
-        showNotification('Gagal memperbarui data', 'error');
-    }
-};
-
-// Add watch for data changes
-watch(currentData, (newData) => {
-    if (newData) {
-        // Update any additional reactive data here
-    }
-}, { deep: true });
-
-// Fetch initial data
-onMounted(async () => {
-    await fetchUpdatedData();
-});
-
-// Add notification system
-const showNotification = (message, type = 'info') => {
-    // You can use a toast library like vue-toastification
-    // or SweetAlert2 for notifications
-    Swal.fire({
-        title: message,
-        icon: type,
-        toast: true,
-        position: 'top-end',
-        showConfirmButton: false,
-        timer: 3000
-    });
-};
-
-// Handle order completion confirmation with SweetAlert2
+// Modify confirmFinishOrder to use new notifications
 const confirmFinishOrder = async () => {
     try {
-        const result = await Swal.fire({
-            title: 'Selesaikan Order',
-            text: 'Apakah Anda yakin ingin menyelesaikan order ini?',
-            icon: 'question',
-            showCancelButton: true,
-            confirmButtonText: 'Ya, Selesaikan',
-            cancelButtonText: 'Batal',
-            confirmButtonColor: '#0891b2',
-            cancelButtonColor: '#6b7280',
-        });
+        const result = await showConfirmation(
+            'Selesaikan Order',
+            'Apakah Anda yakin ingin menyelesaikan order ini?'
+        );
 
         if (result.isConfirmed) {
             await axios.put(`/api/production-order-finish/${form.po}`);
             router.get("/order-besar/po-siap-verif", {}, { preserveState: true });
-            showNotification('Order berhasil diselesaikan', 'success');
+            await showSuccessNotification('Berhasil', 'Order berhasil diselesaikan');
         }
     } catch (error) {
         console.error('Error:', error);
-        showNotification('Gagal menyelesaikan order', 'error');
+        showErrorNotification('Gagal', 'Gagal menyelesaikan order');
     }
 };
 
@@ -834,11 +801,15 @@ const printLabelManual = async () => {
         formPrintManual.lembar = 500;
         printManualModal.value = false;
 
-        showNotification('Label berhasil dicetak', 'success');
+        const timeoutDuration = calculateTimeoutDuration(formPrintManual.jml_label);
+        setTimeout(() => {
+            showSuccessNotification('Berhasil', 'Label berhasil dicetak');
+            loading.value = false;
+        }, timeoutDuration);
+
     } catch (error) {
         console.error('Error:', error);
-        showNotification('Gagal mencetak label', 'error');
-    } finally {
+        showErrorNotification('Gagal', 'Gagal mencetak label');
         loading.value = false;
     }
 };
@@ -848,4 +819,53 @@ const periksa1Input = ref(null);
 
 // Add this to the script setup section
 const printManualModal = ref(false);
+
+// Add this method in your script setup section
+const printUlangLabel = async () => {
+    try {
+        loading.value = true;
+
+        // Validate required fields
+        if (!formPrintUlang.noRim || !formPrintUlang.npPetugas) {
+            showErrorNotification('Error', 'Mohon lengkapi semua field');
+            return;
+        }
+
+        // Send update request
+        await axios.post('/api/order-besar/cetak-label/update', {
+            po: formPrintUlang.po,
+            dataRim: formPrintUlang.dataRim,
+            noRim: formPrintUlang.noRim,
+            npPetugas: formPrintUlang.npPetugas,
+            team: formPrintUlang.team
+        });
+
+        // Generate and print label
+        const printLabel = singleLabel(
+            formPrintUlang.obc,
+            formPrintUlang.noRim !== 999 ? formPrintUlang.noRim : "INS",
+            colorObc,
+            formPrintUlang.dataRim === "Kiri" ? "(*)" : "(**)",
+            formPrintUlang.npPetugas,
+            undefined,
+            500,
+        );
+
+        await printWithoutDialog(printLabel);
+
+        // Reset form and close modal
+        formPrintUlang.npPetugas = '';
+        printUlangModal.value = false;
+
+        // Refresh data
+        await fetchData();
+        showSuccessNotification('Berhasil', 'Label berhasil dicetak');
+
+    } catch (error) {
+        console.error('Error:', error);
+        showErrorNotification('Gagal', 'Gagal mencetak label');
+    } finally {
+        loading.value = false;
+    }
+};
 </script>

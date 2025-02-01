@@ -1,6 +1,4 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
 
 @media print and (width: 10cm) and (height: 13cm) {
     @page {

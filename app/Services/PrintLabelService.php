@@ -215,6 +215,10 @@ class PrintLabelService
             ]
         );
 
+        DB::table('generated_products')
+                ->where('no_po', $noPo)
+                ->update(['assigned_team' => $team]);
+
         return [
             'status' => 'success',
             'message' => 'Label berhasil dibuat',
