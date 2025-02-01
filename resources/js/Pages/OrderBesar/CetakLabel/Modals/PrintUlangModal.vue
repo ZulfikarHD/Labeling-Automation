@@ -2,12 +2,12 @@
     <Modal :show="show" @close="$emit('close')">
         <form @submit.prevent="printUlangLabel" class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
             <div class="flex flex-col gap-4">
-                <!-- Modal header -->
+                <!-- Header modal -->
                 <h1 class="text-xl font-bold text-center text-gray-800 dark:text-gray-200">
                     Print Ulang / Ganti Data Rim
                 </h1>
 
-                <!-- Input for rim data -->
+                <!-- Input untuk data rim -->
                 <TextInput
                     id="dataRim"
                     name="dataRim"
@@ -18,7 +18,7 @@
                     disabled
                 />
 
-                <!-- Left/Right rim selection buttons -->
+                <!-- Tombol pemilihan rim kiri/kanan -->
                 <div class="flex justify-center gap-3">
                     <button
                         type="button"
@@ -42,10 +42,10 @@
                     </button>
                 </div>
 
-                <!-- Grid of rim selection buttons -->
+                <!-- Grid tombol pemilihan rim -->
                 <div class="grid grid-cols-5 gap-2">
                     <template v-for="n in dataPrintUlang" :key="n.no_rim">
-                        <!-- ... existing rim selection buttons ... -->
+                        <!-- ... tombol pemilihan rim yang ada ... -->
                         <RimButton
                             :rim-data="n"
                             @select-rim="pilihRim"
@@ -53,7 +53,7 @@
                     </template>
                 </div>
 
-                <!-- Rim number and operator inputs -->
+                <!-- Input nomor rim dan NP petugas -->
                 <div class="grid grid-cols-2 gap-4">
                     <div>
                         <InputLabel for="noRimPU" value="Nomor Rim" class="mb-1 text-sm dark:text-gray-300" />
@@ -96,7 +96,7 @@
                     </div>
                 </div>
 
-                <!-- Action buttons -->
+                <!-- Tombol aksi -->
                 <div class="flex justify-between mt-4">
                     <button
                         type="button"
@@ -121,6 +121,7 @@
 </template>
 
 <script setup>
+// Mengimpor library dan komponen yang diperlukan
 import { ref, reactive, watch } from 'vue';
 import Modal from "@/Components/Modal.vue";
 import TextInput from "@/Components/TextInput.vue";
@@ -129,6 +130,7 @@ import RimButton from './RimButton.vue';
 import axios from 'axios';
 import { singleLabel } from "@/Components/PrintPages/index";
 
+// Mendefinisikan props yang diterima
 const props = defineProps({
     show: Boolean,
     productData: Object,
@@ -136,11 +138,14 @@ const props = defineProps({
     team: Number,
 });
 
+// Mendefinisikan emit untuk event
 const emit = defineEmits(['close', 'success']);
 
+// Mendefinisikan state loading dan data rim
 const loading = ref(false);
 const dataPrintUlang = ref([]);
 
+// Mendefinisikan form untuk print ulang
 const formPrintUlang = reactive({
     dataRim: "Kiri",
     noRim: "",
@@ -150,16 +155,19 @@ const formPrintUlang = reactive({
     team: props.team,
 });
 
+// Fungsi untuk mengubah data rim ke kanan
 const dataRimKanan = async () => {
     formPrintUlang.dataRim = "Kanan";
     getDataRim();
 };
 
+// Fungsi untuk mengubah data rim ke kiri
 const dataRimKiri = async () => {
     formPrintUlang.dataRim = "Kiri";
     getDataRim();
 };
 
+// Fungsi untuk mengambil data rim
 const getDataRim = async () => {
     try {
         const { data } = await axios.post("/api/order-besar/cetak-label/edit", formPrintUlang);
@@ -169,11 +177,13 @@ const getDataRim = async () => {
     }
 };
 
+// Fungsi untuk memilih rim
 const pilihRim = (noRim, np) => {
     formPrintUlang.noRim = noRim;
     formPrintUlang.npPetugas = np;
 };
 
+// Fungsi untuk mencetak ulang label
 const printUlangLabel = async () => {
     try {
         loading.value = true;
@@ -213,7 +223,7 @@ const printUlangLabel = async () => {
     }
 };
 
-// Initialize data when modal is shown
+// Menginisialisasi data saat modal ditampilkan
 watch(() => props.show, (newVal) => {
     if (newVal) {
         getDataRim();

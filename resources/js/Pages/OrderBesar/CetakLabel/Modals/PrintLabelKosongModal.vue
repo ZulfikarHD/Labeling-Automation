@@ -2,7 +2,7 @@
     <Modal :show="show" @close="$emit('close')">
         <form @submit.prevent="printLabel" class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
             <div class="flex flex-col gap-4">
-                <!-- Modal header -->
+                <!-- Header modal -->
                 <h1 class="text-xl font-bold text-center text-gray-800 dark:text-gray-200">
                     Print Label Manual
                 </h1>
@@ -12,7 +12,7 @@
 
                 <!-- Input fields -->
                 <div class="grid grid-cols-2 gap-4">
-                    <!-- Left side inputs -->
+                    <!-- Input sisi kiri -->
                     <div class="space-y-4">
                         <div>
                             <InputLabel for="npPetugas" value="NP Petugas 1" class="mb-1 text-sm dark:text-gray-300" />
@@ -37,7 +37,7 @@
                         </div>
                     </div>
 
-                    <!-- Right side inputs -->
+                    <!-- Input sisi kanan -->
                     <div class="space-y-4">
                         <div>
                             <InputLabel for="jmlLabel" value="Jumlah Label" class="mb-1 text-sm dark:text-gray-300" />
@@ -78,7 +78,7 @@
                     </div>
                 </div>
 
-                <!-- Action buttons -->
+                <!-- Tombol aksi -->
                 <div class="flex justify-end gap-3 mt-4">
                     <button
                         type="button"
@@ -110,6 +110,7 @@ import InputLabel from '@/Components/InputLabel.vue';
 import TextInput from '@/Components/TextInput.vue';
 import { batchSingleLabel } from '@/Components/PrintPages/index';
 
+// Mendefinisikan props yang diterima oleh komponen
 const props = defineProps({
     show: Boolean,
     obc: String,
@@ -117,10 +118,12 @@ const props = defineProps({
     team: Number,
 });
 
+// Mendefinisikan emit untuk event yang akan dikirimkan
 const emit = defineEmits(['close', 'success', 'error']);
 
 const loading = ref(false);
 
+// Menginisialisasi form dengan reactive
 const form = reactive({
     dataRim: '',
     npPetugas: '',
@@ -129,6 +132,7 @@ const form = reactive({
     jml_label: 1,
 });
 
+// Fungsi untuk mencetak label
 const printLabel = async () => {
     try {
         loading.value = true;
@@ -155,6 +159,7 @@ const printLabel = async () => {
     }
 };
 
+// Fungsi untuk mereset form
 const resetForm = () => {
     form.npPetugas = '';
     form.npPetugas2 = '';
