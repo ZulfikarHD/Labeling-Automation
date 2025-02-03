@@ -63,7 +63,8 @@ produksiPegawai();
 </script>
 
 <template>
-    <div class="w-full max-w-5xl mx-auto p-4 sm:p-6 bg-white/90 rounded-2xl shadow-lg dark:bg-gray-800/95 backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50">
+    <!-- <div class="w-full max-w-5xl mx-auto p-4 sm:p-6 bg-white/90 rounded-2xl shadow-lg dark:bg-gray-800/95 backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50"> -->
+    <!-- <div class="w-full max-w-5xl mx-auto p-4 sm:p-6 bg-white/90 rounded-2xl shadow-lg dark:bg-gray-800/95 backdrop-blur-sm border border-gray-200/50 dark:border-gray-700/50"> -->
         <div class="relative overflow-x-auto rounded-xl">
             <LoadingOverlay :is-loading="isLoading" />
 
@@ -164,5 +165,5 @@ produksiPegawai();
                 <ChevronRight class="w-4 h-4" />
             </button>
         </div>
-    </div>
+    <!-- </div> -->
 </template>
