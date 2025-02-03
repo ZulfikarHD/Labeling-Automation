@@ -11,6 +11,8 @@ import TextInput from "@/Components/TextInput.vue";
 import InputError from "@/Components/InputError.vue";
 import { Head, router, useForm } from "@inertiajs/vue3";
 import axios from "axios";
+import LoadingOverlay from "@/Components/LoadingOverlay.vue";
+import BaseCard from "@/Components/BaseCard.vue";
 
 const swal = inject('$swal'); // Injecting SweetAlert for notifications
 const isLoading = ref(false); // Loading state for API calls
@@ -217,25 +219,10 @@ function submit() {
 
 <template>
     <Head title="Register No Po" />
-    <!-- Loading Indicator -->
-    <div class="bg-black bg-opacity-40 w-screen h-screen absolute z-50 flex justify-center items-center" v-if="isLoading">
-        <div class="rounded-lg p-4 flex flex-col gap-2 justify-center items-center">
-            <svg class="animate-spin h-10 w-10 brightness-110" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle class="opacity-25 drop-shadow-md shadow-md text-blue-50" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75 shadow-md text-blue-500" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-            </svg>
-            <span class="text-white font-semibold animate-pulse">Sedang Memproses...</span>
-        </div>
-    </div>
+    <LoadingOverlay :is-loading="isLoading" />
 
-    <!-- Content -->
     <AuthenticatedLayout>
-        <div
-            class="w-full max-w-5xl bg-white dark:bg-gray-800 rounded-lg shadow-md py-12 px-6 mx-auto mt-10 flex flex-col gap-3"
-        >
-        <!-- Title -->
-            <h1 class="text-3xl font-bold text-gray-700 dark:text-gray-200 my-auto text-center mb-4 pb-4 border-b border-sky-600 dark:border-sky-500">Register Nomor Production Order</h1>
-
+        <BaseCard title="Register Nomor Production Order">
             <form @submit.prevent="submit" class="flex flex-col text-lg">
                 <div class="flex flex-col">
                     <InputLabel for="teamVerif" value="Team Periksa" class="dark:text-gray-300" />
@@ -370,6 +357,6 @@ function submit() {
                      </button>
                  </div>
             </form>
-        </div>
+        </BaseCard>
     </AuthenticatedLayout>
 </template>

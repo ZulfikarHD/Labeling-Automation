@@ -28,34 +28,29 @@
 
     <!-- Tata letak utama -->
     <AuthenticatedLayout>
-        <div class="w-full max-w-5xl bg-white dark:bg-gray-800 rounded-lg py-4 shadow-md px-6 mx-auto mt-8 flex flex-col gap-3 mb-8">
-        <!-- Judul -->
-            <h1 class="text-3xl font-bold text-[#4B5563] dark:text-gray-200 my-auto text-center mb-4 pb-4 border-b border-sky-600">
-                <span class="text-red-600 dark:text-red-400" v-if="form.seri == 3">
-                    {{ form.obc }}
-                </span>
-                <span class="text-blue-600 dark:text-blue-400" v-else>
+        <BaseCard :title="form.obc + ' - ' + form.noPlat">
+            <template #title>
+                <span :class="form.seri == 3 ? 'text-red-600 dark:text-red-400' : 'text-blue-600 dark:text-blue-400'">
                     {{ form.obc }}
                 </span>
                 -
                 <span class="text-blue-600 dark:text-blue-400">
                     {{ form.noPlat }}
                 </span>
-            </h1>
+            </template>
+
             <form @submit.prevent="submit" class="space-y-8">
                 <!-- Pemilihan tim -->
                 <div>
                     <InputLabel for="team" value="Tim" class="text-xl font-bold mb-3 dark:text-gray-300" />
-                    <select
-                        id="team"
-                        ref="team"
+                    <Select
                         v-model="form.team"
-                        class="w-full rounded-lg border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-300"
+                        size="base"
                     >
                         <option v-for="team in props.listTeam" :key="team.id" :value="team.id">
                             {{ team.workstation }}
                         </option>
-                    </select>
+                    </Select>
                 </div>
 
                 <!-- Detail pesanan grid -->
@@ -217,30 +212,7 @@
                     Selesaikan Order
                 </button>
             </form>
-
-            <!-- Navigasi -->
-            <div class="flex justify-center gap-4 mt-4">
-                <a
-                    href="#"
-                    onclick="history.back()"
-                    class="inline-flex items-center px-6 py-3 text-white bg-blue-600 dark:bg-blue-700 hover:bg-blue-700 dark:hover:bg-blue-800 rounded-lg transition-colors"
-                >
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-                    </svg>
-                    Back
-                </a>
-                <Link
-                    :href="route('dashboard')"
-                    class="inline-flex items-center px-6 py-3 text-white bg-blue-600 dark:bg-blue-700 hover:bg-blue-700 dark:hover:bg-blue-800 rounded-lg transition-colors"
-                >
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-                    </svg>
-                    Home
-                </Link>
-            </div>
-        </div>
+        </BaseCard>
         <TableVerifikasiPegawai :team="form.team" :date="form.date"/>
     </AuthenticatedLayout>
     <iframe ref="printFrame" style="display: none"></iframe>
@@ -259,6 +231,8 @@ import axios from "axios";
 import Swal from 'sweetalert2';
 import PrintUlangModal from './Modals/PrintUlangModal.vue';
 import PrintLabelKosongModal from './Modals/PrintLabelKosongModal.vue';
+import BaseCard from "@/Components/BaseCard.vue";
+import Select from '@/Components/Select.vue';
 
 // Definisikan props
 const props = defineProps({

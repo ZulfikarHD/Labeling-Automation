@@ -18,7 +18,7 @@ defineProps({
 <template>
     <label class="block mb-2 transition-all duration-200 ease-in-out
                   text-gray-900 dark:text-gray-100
-                  font-medium tracking-wide
+                  font-medium tracking-wide text-center
                   group-focus-within:text-sky-600 dark:group-focus-within:text-sky-400"
            :class="{
                'text-sm': size === 'sm',

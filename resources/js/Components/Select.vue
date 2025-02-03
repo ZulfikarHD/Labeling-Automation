@@ -1,9 +1,9 @@
 <script setup>
 import { onMounted, ref } from 'vue';
 
-defineProps({
+const props = defineProps({
     modelValue: {
-        type: String,
+        type: [String, Number],
         required: true,
     },
     disabled: {
@@ -17,22 +17,26 @@ defineProps({
     }
 });
 
-defineEmits(['update:modelValue']);
+const emit = defineEmits(['update:modelValue']);
 
-const input = ref(null);
+const select = ref(null);
 
 onMounted(() => {
-    if (input.value.hasAttribute('autofocus')) {
-        input.value.focus();
+    if (select.value.hasAttribute('autofocus')) {
+        select.value.focus();
     }
 });
 
-defineExpose({ focus: () => input.value.focus() });
+defineExpose({ focus: () => select.value.focus() });
 </script>
 
 <template>
-    <input
-        class="w-full px-4 py-3 mb-2 transition-all duration-200 ease-in-out
+    <select
+        :value="modelValue"
+        @input="$emit('update:modelValue', $event.target.value)"
+        ref="select"
+        :disabled="disabled"
+        class="w-full px-4 mb-2 transition-all duration-200 ease-in-out
         bg-white dark:bg-gray-900
         text-gray-900 dark:text-gray-100
         border border-gray-300 dark:border-gray-600
@@ -52,15 +56,19 @@ defineExpose({ focus: () => input.value.focus() });
         enabled:hover:border-gray-500 dark:enabled:hover:border-gray-400
 
         text-base leading-normal
-        sm:text-sm md:text-base"
+        sm:text-sm md:text-base
+
+        appearance-none
+        bg-no-repeat
+        bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2212%22%20height%3D%2212%22%20viewBox%3D%220%200%2012%2012%22%3E%3Cpath%20fill%3D%22%23666%22%20d%3D%22M6%208L1%203h10z%22%2F%3E%3C%2Fsvg%3E')]
+        bg-[center_right_1rem]
+        pr-10"
         :class="{
             'text-sm py-2': size === 'sm',
             'text-base py-3': size === 'base',
             'text-lg py-4': size === 'lg'
         }"
-        :value="modelValue"
-        :disabled="disabled"
-        @input="$emit('update:modelValue', $event.target.value)"
-        ref="input"
-    />
+    >
+        <slot></slot>
+    </select>
 </template>
