@@ -1,5 +1,5 @@
 <template>
-    <!-- In Progress -->
+    <!-- Dalam Proses -->
     <button
         v-if="rimData.np_users && rimData.start && !rimData.finish"
         type="button"
@@ -12,7 +12,7 @@
         </div>
     </button>
 
-    <!-- Completed -->
+    <!-- Selesai -->
     <button
         v-else-if="rimData.np_users && rimData.start && rimData.finish"
         type="button"
@@ -38,7 +38,7 @@
         </div>
     </button>
 
-    <!-- Unavailable -->
+    <!-- Tidak Tersedia -->
     <button
         v-else
         type="button"

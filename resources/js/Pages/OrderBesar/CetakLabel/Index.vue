@@ -1,8 +1,8 @@
 <template>
-    <!-- Page title -->
+    <!-- Judul halaman -->
     <Head title="Cetak Label" />
 
-    <!-- Modal for reprinting labels -->
+    <!-- Modal untuk mencetak ulang label -->
     <PrintUlangModal
         :show="printUlangModal"
         :product-data="props.product"
@@ -14,114 +14,22 @@
         @print="printWithoutDialog"
     />
 
-    <!-- Add this modal component after the existing Modal component -->
-    <Modal :show="printManualModal" @close="() => (printManualModal = false)">
-        <form @submit.prevent="printLabelManual" class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
-            <div class="flex flex-col gap-4">
-                <!-- Modal header -->
-                <h1 class="text-xl font-bold text-center text-gray-800 dark:text-gray-200">
-                    Print Label Manual
-                </h1>
-                <p class="text-red-600 dark:text-red-400 text-center">
-                    Label yang dibuat disini tidak tersimpan di database.
-                </p>
+    <!-- Tambahkan baris ini setelah PrintUlangModal -->
+    <PrintLabelKosongModal
+        :show="printManualModal"
+        :obc="form.obc"
+        :color-obc="colorObc"
+        :team="form.team"
+        @close="printManualModal = false"
+        @success="showNotification('Label berhasil dicetak', 'success')"
+        @error="showNotification"
+        @print="printWithoutDialog"
+    />
 
-                <!-- Input fields -->
-                <div class="grid grid-cols-2 gap-4">
-                    <!-- Left side inputs -->
-                    <div class="space-y-4">
-                        <div>
-                            <InputLabel for="npPetugas" value="NP Petugas 1" class="mb-1 text-sm dark:text-gray-300" />
-                            <TextInput
-                                id="npPetugas"
-                                type="text"
-                                v-model="formPrintManual.npPetugas"
-                                class="w-full uppercase text-sm dark:bg-gray-700 dark:text-gray-300"
-                                maxlength="4"
-                                required
-                            />
-                        </div>
-                        <div>
-                            <InputLabel for="npPetugas2" value="NP Petugas 2" class="mb-1 text-sm dark:text-gray-300" />
-                            <TextInput
-                                id="npPetugas2"
-                                type="text"
-                                v-model="formPrintManual.npPetugas2"
-                                class="w-full uppercase text-sm dark:bg-gray-700 dark:text-gray-300"
-                                maxlength="4"
-                            />
-                        </div>
-                    </div>
-
-                    <!-- Right side inputs -->
-                    <div class="space-y-4">
-                        <div>
-                            <InputLabel for="jmlLabel" value="Jumlah Label" class="mb-1 text-sm dark:text-gray-300" />
-                            <TextInput
-                                id="jmlLabel"
-                                type="number"
-                                v-model="formPrintManual.jml_label"
-                                class="w-full text-sm dark:bg-gray-700 dark:text-gray-300"
-                                min="1"
-                                max="100"
-                                required
-                            />
-                        </div>
-                        <div>
-                            <InputLabel for="dataRimManual" value="Potongan" class="mb-1 text-sm dark:text-gray-300" />
-                            <select
-                                id="dataRimManual"
-                                v-model="formPrintManual.dataRim"
-                                class="w-full rounded-lg border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:text-gray-300"
-                            >
-                                <option value="">-</option>
-                                <option value="Kiri">Kiri (*)</option>
-                                <option value="Kanan">Kanan (**)</option>
-                            </select>
-                        </div>
-                        <div>
-                            <InputLabel for="lembarManual" value="Lembar" class="mb-1 text-sm dark:text-gray-300" />
-                            <TextInput
-                                id="lembarManual"
-                                type="number"
-                                v-model="formPrintManual.lembar"
-                                class="w-full text-sm dark:bg-gray-700 dark:text-gray-300"
-                                min="1"
-                                max="500"
-                                required
-                            />
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Action buttons -->
-                <div class="flex justify-end gap-3 mt-4">
-                    <button
-                        type="button"
-                        @click="printManualModal = false"
-                        class="px-4 py-2 text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-colors"
-                    >
-                        Batal
-                    </button>
-                    <button
-                        type="submit"
-                        :disabled="loading"
-                        :class="[
-                            'px-4 py-2 text-white bg-blue-600 dark:bg-blue-700 hover:bg-blue-700 dark:hover:bg-blue-800 rounded-lg transition-colors',
-                            loading ? 'opacity-50 cursor-not-allowed' : ''
-                        ]"
-                    >
-                        {{ loading ? 'Memproses...' : 'Print' }}
-                    </button>
-                </div>
-            </div>
-        </form>
-    </Modal>
-
-    <!-- Main layout -->
+    <!-- Tata letak utama -->
     <AuthenticatedLayout>
         <div class="w-full max-w-5xl bg-white dark:bg-gray-800 rounded-lg py-4 shadow-md px-6 mx-auto mt-8 flex flex-col gap-3 mb-8">
-        <!-- Title -->
+        <!-- Judul -->
             <h1 class="text-3xl font-bold text-[#4B5563] dark:text-gray-200 my-auto text-center mb-4 pb-4 border-b border-sky-600">
                 <span class="text-red-600 dark:text-red-400" v-if="form.seri == 3">
                     {{ form.obc }}
@@ -135,9 +43,9 @@
                 </span>
             </h1>
             <form @submit.prevent="submit" class="space-y-8">
-                <!-- Team selection -->
+                <!-- Pemilihan tim -->
                 <div>
-                    <InputLabel for="team" value="Team" class="text-xl font-bold mb-3 dark:text-gray-300" />
+                    <InputLabel for="team" value="Tim" class="text-xl font-bold mb-3 dark:text-gray-300" />
                     <select
                         id="team"
                         ref="team"
@@ -150,9 +58,9 @@
                     </select>
                 </div>
 
-                <!-- Order details grid -->
+                <!-- Detail pesanan grid -->
                 <div class="grid grid-cols-3 gap-6">
-                    <!-- PO Number -->
+                    <!-- Nomor PO -->
                     <div>
                         <InputLabel for="po" value="Nomor PO" class="text-xl font-bold mb-3 dark:text-gray-300" />
                         <TextInput
@@ -165,7 +73,7 @@
                         />
                     </div>
 
-                    <!-- OBC Number -->
+                    <!-- Nomor OBC -->
                     <div>
                         <InputLabel for="obc" value="Nomor OBC" class="text-xl font-bold mb-3 dark:text-gray-300" />
                         <TextInput
@@ -178,7 +86,7 @@
                         />
                     </div>
 
-                    <!-- Series -->
+                    <!-- Seri -->
                     <div>
                         <InputLabel for="seri" value="Seri" class="text-xl font-bold mb-3 dark:text-gray-300" />
                         <TextInput
@@ -192,9 +100,9 @@
                     </div>
                 </div>
 
-                <!-- Additional details grid -->
+                <!-- Detail tambahan grid -->
                 <div class="grid grid-cols-3 gap-6">
-                    <!-- Rim Number -->
+                    <!-- Nomor Rim -->
                     <div>
                         <InputLabel for="no_rim" value="Nomor Rim" class="text-xl font-bold mb-3 dark:text-gray-300" />
                         <template v-if="form.no_rim !== 999">
@@ -230,7 +138,7 @@
                         />
                     </div>
 
-                    <!-- Plate Code -->
+                    <!-- Kode Plat -->
                     <div>
                         <InputLabel for="noPlat" value="Kode Plat" class="text-xl font-bold mb-3 dark:text-gray-300" />
                         <TextInput
@@ -259,9 +167,9 @@
                     <InputError class="mt-2" />
                 </div>
 
-                <!-- Action buttons -->
+                <!-- Tombol aksi -->
                 <div class="flex justify-center gap-4">
-                    <!-- clear -->
+                    <!-- hapus -->
                     <button
                         type="button"
                         @click="form.periksa1 = null"
@@ -282,7 +190,7 @@
                         {{ loading ? 'Memproses...' : 'Generate' }}
                     </button>
 
-                    <!-- Add Print Ulang button here -->
+                    <!-- Tambahkan tombol Print Ulang di sini -->
                     <button
                         type="button"
                         @click="printUlangModal = true"
@@ -310,7 +218,7 @@
                 </button>
             </form>
 
-            <!-- Navigation -->
+            <!-- Navigasi -->
             <div class="flex justify-center gap-4 mt-4">
                 <a
                     href="#"
@@ -337,7 +245,6 @@
     </AuthenticatedLayout>
     <iframe ref="printFrame" style="display: none"></iframe>
 </template>
-
 <script setup>
 import { reactive, ref, onMounted, nextTick, onBeforeUnmount } from "vue";
 import Modal from "@/Components/Modal.vue";
@@ -346,38 +253,37 @@ import InputLabel from "@/Components/InputLabel.vue";
 import InputError from "@/Components/InputError.vue";
 import TextInput from "@/Components/TextInput.vue";
 import TableVerifikasiPegawai from "@/Components/TableVerifikasiPegawai.vue";
-import { singleLabel, batchSingleLabel } from "@/Components/PrintPages/index";
+import { singleLabel } from "@/Components/PrintPages/index";
 import { Link, useForm, router, Head } from "@inertiajs/vue3";
 import axios from "axios";
 import Swal from 'sweetalert2';
 import PrintUlangModal from './Modals/PrintUlangModal.vue';
+import PrintLabelKosongModal from './Modals/PrintLabelKosongModal.vue';
 
-// Props definition
+// Definisikan props
 const props = defineProps({
-    product: Object,        // Product details
-    listTeam: Object,      // List of available teams
-    crntTeam: Number,      // Current team ID
-    noRim: Number,         // Rim number
-    potongan: String,      // Cut sheet info
-    date: String,          // Current date
+    product: Object,        // Detail produk
+    listTeam: Object,      // Daftar tim yang tersedia
+    crntTeam: Number,      // ID tim saat ini
+    noRim: Number,         // Nomor rim
+    potongan: String,      // Informasi lembar potong
+    date: String,          // Tanggal saat ini
 });
 
-// Reactive refs for modal states
-const showModal = ref(false);
+// Inisialisasi variabel yang tidak digunakan
 const printUlangModal = ref(false);
-const dataPrintUlang = ref();
-
-// Add loading state ref
 const loading = ref(false);
+const printManualModal = ref(false);
+const printFrame = ref(null);
+const periksa1Input = ref(null);
 
-// Form for main data entry
+// Inisialisasi form dengan data produk
 const form = useForm({
     id: props.product.id,
     po: props.product.no_po,
     obc: props.product.no_obc,
     team: props.crntTeam,
     seri: props.product.no_obc.substr(4, 1) > 3 ? 1 : props.product.no_obc.substr(4, 1),
-    jml_rim: 1,
     lbr_ptg: props.potongan,
     no_rim: props.noRim,
     periksa1: "",
@@ -385,363 +291,99 @@ const form = useForm({
     noPlat: "",
 });
 
-// Form for reprint functionality
-const formPrintUlang = reactive({
-    dataRim: "Kiri",
-    noRim: "",
-    npPetugas: "",
-    po: props.product.no_po,
-    obc: props.product.no_obc,
-    team: props.crntTeam,
-});
-
-const formPrintManual = reactive({
-    dataRim: "",
-    noRim: "",
-    npPetugas: "",
-    npPetugas2: "",
-    lembar: 500,
-    po: props.product.no_po,
-    obc: props.product.no_obc,
-    team: props.crntTeam,
-    jml_label: 1,
-});
-
-// Color coding for OBC series
+// Tentukan warna berdasarkan seri produk
 const colorObc = form.seri == 3 ? "#b91c1c" : "#1d4ed8";
 
-// Functions for handling rim data
-const dataRimKanan = async () => {
-    formPrintUlang.dataRim = "Kanan";
-    getDataRim();
-};
-
-const dataRimKiri = async () => {
-    formPrintUlang.dataRim = "Kiri";
-    getDataRim();
-};
-
-// Fetch rim data from API
-const getDataRim = () => {
-    axios
-        .post("/api/order-besar/cetak-label/edit", formPrintUlang)
-        .then((res) => {
-            dataPrintUlang.value = res.data;
-        });
-};
-
-// Handle rim selection
-const pilihRim = (noRim, np) => {
-    formPrintUlang.noRim = noRim;
-    formPrintUlang.npPetugas = np;
-};
-
-// Print frame reference
-const printFrame = ref(null);
-
-// Add memory pooling for frequently used objects
-const objectPool = {
-  pool: new Map(),
-
-  acquire(key) {
-    if (!this.pool.has(key)) {
-      this.pool.set(key, new Map());
-    }
-    return this.pool.get(key);
-  },
-
-  release(key) {
-    if (this.pool.has(key)) {
-      this.pool.get(key).clear();
-    }
-  },
-
-  clear() {
-    this.pool.clear();
-  }
-};
-
-// Improved memory manager with string interning
-const memoryManager = {
-  clearDOMRefs: () => {
-    // Clear DOM references
-    if (printFrame.value) {
-      printFrame.value.srcdoc = '';
-      printFrame.value = null;
-    }
-    if (periksa1Input.value) {
-      periksa1Input.value = null;
-    }
-  },
-
-  clearReactiveData: () => {
-    // Clear reactive data
-    dataPrintUlang.value = null;
-    loading.value = false;
-    printUlangModal.value = false;
-    printManualModal.value = false;
-  },
-
-  resetForms: () => {
-    // Reset form states
-    form.reset();
-    Object.assign(formPrintUlang, {
-      dataRim: "Kiri",
-      noRim: "",
-      npPetugas: "",
-      po: props.product.no_po,
-      obc: props.product.no_obc,
-      team: props.crntTeam,
-    });
-    Object.assign(formPrintManual, {
-      dataRim: "",
-      noRim: "",
-      npPetugas: "",
-      npPetugas2: "",
-      lembar: 500,
-      po: props.product.no_po,
-      obc: props.product.no_obc,
-      team: props.crntTeam,
-      jml_label: 1,
-    });
-  },
-
-  stringCache: new Map(),
-
-  internString(str) {
-    if (!this.stringCache.has(str)) {
-      this.stringCache.set(str, str);
-    }
-    return this.stringCache.get(str);
-  },
-
-  clearCache() {
-    this.stringCache.clear();
-    objectPool.clear();
-  },
-
-  optimizeDOM() {
-    // Remove unnecessary DOM elements
-    const unusedModals = document.querySelectorAll('.modal:not(:visible)');
-    unusedModals.forEach(modal => {
-      modal.innerHTML = '';
-    });
-
-    // Clear print frame
-    if (printFrame.value) {
-      const doc = printFrame.value.contentWindow.document;
-      doc.open();
-      doc.write('');
-      doc.close();
-    }
-  }
-};
-
-// Optimize print function to reduce DOM operations
+// Fungsi untuk mencetak tanpa dialog
 const printWithoutDialog = (content) => {
-  const iframe = printFrame.value;
-  if (!iframe) return;
+    const iframe = printFrame.value;
+    if (!iframe) return;
 
-  // Reuse document reference
-  const doc = iframe.contentWindow.document;
+    const doc = iframe.contentWindow.document;
+    doc.open();
+    doc.write(`
+        <style>
+            @media print {
+                @page { margin-left: 3rem; margin-right:3rem; margin-top:1rem; }
+                * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            }
+        </style>
+        ${content}
+    `);
+    doc.close();
 
-  // Use DocumentFragment for better performance
-  const fragment = doc.createDocumentFragment();
-  const container = doc.createElement('div');
-
-  // Add styles once
-  const style = doc.createElement('style');
-  style.textContent = `
-    @media print {
-      @page { margin-left: 3rem; margin-right:3rem; margin-top:1rem; }
-      * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-    }
-  `;
-
-  fragment.appendChild(style);
-  container.innerHTML = content;
-  fragment.appendChild(container);
-
-  // Clear existing content
-  doc.open();
-  doc.write('');
-  doc.close();
-
-  // Add new content
-  doc.body.appendChild(fragment);
-
-  const timeoutId = setTimeout(() => {
-    iframe.contentWindow.focus();
-    iframe.contentWindow.print();
-
-    // Clean up after printing
-    requestAnimationFrame(() => {
-      doc.body.innerHTML = '';
-    });
-  }, 100);
-
-  window._timeouts = window._timeouts || [];
-  window._timeouts.push(timeoutId);
+    setTimeout(() => {
+        iframe.contentWindow.focus();
+        iframe.contentWindow.print();
+    }, 100);
 };
 
-// Optimize data fetching to reduce object creation
+// Fungsi untuk mengambil data terbaru
 const fetchUpdatedData = async () => {
-  const controller = new AbortController();
-  const cache = objectPool.acquire('fetchData');
+    try {
+        const { data } = await axios.get(
+            `/api/order-besar/cetak-label/data/${form.team}/${form.id}`
+        );
 
-  try {
-    if (dataPrintUlang.value) {
-      dataPrintUlang.value = null;
-    }
-
-    const { data } = await axios.get(
-      `/api/order-besar/cetak-label/data/${form.team}/${form.id}`,
-      {
-        signal: controller.signal,
-        headers: {
-          'Cache-Control': 'no-cache',
-          'Pragma': 'no-cache'
+        if (data) {
+            form.no_rim = data.noRim;
+            form.lbr_ptg = data.potongan;
         }
-      }
-    );
-
-    if (data) {
-      // Reuse objects where possible
-      if (cache.has(data.noRim)) {
-        form.no_rim = cache.get(data.noRim);
-      } else {
-        cache.set(data.noRim, data.noRim);
-        form.no_rim = data.noRim;
-      }
-
-      form.lbr_ptg = memoryManager.internString(data.potongan);
-      dataPrintUlang.value = data.printData;
+    } catch (error) {
+        console.error('Error fetching updated data:', error);
+        showNotification('Gagal memperbarui data', 'error');
     }
-  } catch (error) {
-    if (!axios.isCancel(error)) {
-      console.error('Error fetching updated data:', error);
-      showNotification('Gagal memperbarui data', 'error');
-    }
-  } finally {
-    controller.abort();
-  }
 };
 
-// Enhanced cleanup
-const cleanup = () => {
-  memoryManager.clearDOMRefs();
-  memoryManager.clearReactiveData();
-  memoryManager.resetForms();
-  memoryManager.optimizeDOM();
-  memoryManager.clearCache();
-
-  if (window._timeouts) {
-    window._timeouts.forEach(timeout => clearTimeout(timeout));
-    window._timeouts = [];
-  }
-
-  // Force garbage collection hint
-  if (window.gc) {
-    window.gc();
-  }
-};
-
-// Optimize component lifecycle
-onMounted(() => {
-  window._timeouts = [];
-  // Pre-allocate common strings
-  ['Kiri', 'Kanan', 'INS'].forEach(str =>
-    memoryManager.internString(str)
-  );
-});
-
-onBeforeUnmount(() => {
-  cleanup();
-});
-
-// Add periodic cleanup for long-running sessions
-let cleanupInterval;
-onMounted(() => {
-  cleanupInterval = setInterval(() => {
-    memoryManager.optimizeDOM();
-  }, 60000); // Run every minute
-});
-
-onBeforeUnmount(() => {
-  if (cleanupInterval) {
-    clearInterval(cleanupInterval);
-  }
-});
-
-// Optimize form submission
+// Fungsi untuk mengirimkan form
 const submit = async (e) => {
-  e.preventDefault();
-  if (loading.value) return;
+    e.preventDefault();
+    if (loading.value) return;
 
-  loading.value = true;
-  const controller = new AbortController();
+    loading.value = true;
 
-  try {
-    // Clear previous data
-    memoryManager.clearReactiveData();
+    try {
+        const { data } = await axios.post("/api/order-besar/cetak-label", form);
 
-    const { data } = await axios.post("/api/order-besar/cetak-label", form, {
-      signal: controller.signal,
-      headers: {
-        'Cache-Control': 'no-cache',
-        'Pragma': 'no-cache'
-      }
-    });
+        if (data.status === 'error') {
+            showNotification(data.message, 'error');
+            return;
+        }
 
-    if (data.status === 'error') {
-      showNotification(data.message, 'error');
-      return;
+        const printLabel = singleLabel(
+            form.obc,
+            form.no_rim !== 999 ? form.no_rim : "INS",
+            colorObc,
+            form.lbr_ptg == "Kiri" ? "(*)" : "(**)",
+            form.periksa1,
+            undefined,
+            500,
+        );
+
+        await printWithoutDialog(printLabel);
+
+        if (data.poStatus !== 2) {
+            form.periksa1 = null;
+            if (data.data) {
+                form.no_rim = data.data.no_rim;
+                form.lbr_ptg = data.data.potongan;
+            }
+            await fetchUpdatedData();
+            showNotification('Label berhasil dicetak', 'success');
+            periksa1Input.value?.focus();
+        } else {
+            router.get("/order-besar/po-siap-verif", {}, { preserveState: true });
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        showNotification('Gagal mencetak label', 'error');
+    } finally {
+        loading.value = false;
     }
-
-    const printLabel = singleLabel(
-      form.obc,
-      form.no_rim !== 999 ? form.no_rim : "INS",
-      colorObc,
-      form.lbr_ptg == "Kiri" ? "(*)" : "(**)",
-      form.periksa1,
-      undefined,
-      500,
-    );
-
-    await printWithoutDialog(printLabel);
-
-    if (data.poStatus !== 2) {
-      form.periksa1 = null;
-
-      if (data.data) {
-        form.no_rim = data.data.no_rim;
-        form.lbr_ptg = data.data.potongan;
-      }
-
-      await fetchUpdatedData();
-      showNotification('Label berhasil dicetak', 'success');
-
-      await nextTick(() => {
-        periksa1Input.value?.focus();
-      });
-    } else {
-      router.get("/order-besar/po-siap-verif", {}, { preserveState: true });
-    }
-  } catch (error) {
-    if (!axios.isCancel(error)) {
-      console.error('Error:', error);
-      showNotification('Gagal mencetak label', 'error');
-    }
-  } finally {
-    loading.value = false;
-    controller.abort();
-  }
 };
 
-// Add notification system
+// Fungsi untuk menampilkan notifikasi
 const showNotification = (message, type = 'info') => {
-    // You can use a toast library like vue-toastification
-    // or SweetAlert2 for notifications
     Swal.fire({
         title: message,
         icon: type,
@@ -752,7 +394,7 @@ const showNotification = (message, type = 'info') => {
     });
 };
 
-// Handle order completion confirmation with SweetAlert2
+// Fungsi untuk menyelesaikan order
 const confirmFinishOrder = async () => {
     try {
         const result = await Swal.fire({
@@ -777,7 +419,7 @@ const confirmFinishOrder = async () => {
     }
 };
 
-// Fetch plate number from external API
+// Fungsi untuk mengambil nomor plat
 const fetchNoPlat = async () => {
     try {
         const response = await axios.get(
@@ -789,68 +431,12 @@ const fetchNoPlat = async () => {
     }
 };
 
-// Initial plate number fetch
-fetchNoPlat();
+// Inisialisasi awal
+onMounted(() => {
+    fetchNoPlat();
+});
 
-// Add a new method to handle order completion status
-const checkOrderCompletion = (message) => {
-    if (message === 'Order sudah selesai') {
-        Swal.fire({
-            title: 'Order Selesai',
-            text: 'Semua label telah selesai diproses',
-            icon: 'success',
-            confirmButtonText: 'OK',
-            confirmButtonColor: '#0891b2'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                router.get("/order-besar/po-siap-verif", {}, { preserveState: true });
-            }
-        });
-        return true;
-    }
-    return false;
-};
-
-// Print label manual
-const printLabelManual = async () => {
-    try {
-        loading.value = true;
-        const printLabel = batchSingleLabel(
-            formPrintManual.obc,
-            "",
-            colorObc,
-            formPrintManual.dataRim,
-            formPrintManual.npPetugas,
-            formPrintManual.npPetugas2,
-            formPrintManual.jml_label,
-            formPrintManual.lembar,
-        );
-        printWithoutDialog(printLabel);
-
-        // Reset form and close modal
-        formPrintManual.npPetugas = '';
-        formPrintManual.npPetugas2 = '';
-        formPrintManual.jml_label = 1;
-        formPrintManual.dataRim = 'Kiri';
-        formPrintManual.lembar = 500;
-        printManualModal.value = false;
-
-        showNotification('Label berhasil dicetak', 'success');
-    } catch (error) {
-        console.error('Error:', error);
-        showNotification('Gagal mencetak label', 'error');
-    } finally {
-        loading.value = false;
-    }
-};
-
-// Add ref for input focus
-const periksa1Input = ref(null);
-
-// Add this to the script setup section
-const printManualModal = ref(false);
-
-// Add success handler
+// Handler untuk keberhasilan mencetak
 const handlePrintSuccess = async () => {
     await fetchUpdatedData();
     showNotification('Label berhasil dicetak', 'success');
