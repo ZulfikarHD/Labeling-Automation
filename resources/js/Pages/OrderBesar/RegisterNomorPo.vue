@@ -13,6 +13,8 @@ import { Head, router, useForm } from "@inertiajs/vue3";
 import axios from "axios";
 import LoadingOverlay from "@/Components/LoadingOverlay.vue";
 import BaseCard from "@/Components/BaseCard.vue";
+import Button from "@/Components/Button.vue";
+import Select from "@/Components/Select.vue";
 
 const swal = inject('$swal'); // Injecting SweetAlert for notifications
 const isLoading = ref(false); // Loading state for API calls
@@ -226,14 +228,19 @@ function submit() {
             <form @submit.prevent="submit" class="flex flex-col text-lg">
                 <div class="flex flex-col">
                     <InputLabel for="teamVerif" value="Team Periksa" class="dark:text-gray-300" />
-                    <select
+                    <Select
                         id="teamVerif"
                         v-model="form.team"
-                        class="mb-2 text-center bg-gray-50 dark:bg-gray-700 text-indigo-600 dark:text-indigo-400 border dark:border-gray-600 focus:border-transparent border-gray-300 sm:text-sm rounded-lg ring ring-transparent focus:ring-1 focus:outline-none focus:ring-sky-400 block w-full p-2.5 rounded-l-lg py-3 px-4 font-semibold">
-                        <option v-for="workstation in props.workstation"
+                        class="text-center text-fuchsia-600 dark:text-fuchsia-400 font-semibold"
+                    >
+                        <option
+                            v-for="workstation in props.workstation"
                             :value="workstation.id"
-                            :key="workstation.id">{{ workstation.workstation }}</option>
-                    </select>
+                            :key="workstation.id"
+                        >
+                            {{ workstation.workstation }}
+                        </option>
+                    </Select>
                 </div>
 
                 <!-- Input Nomor Po -->
@@ -341,21 +348,24 @@ function submit() {
                 </div>
 
                 <!-- Submit Button -->
-                 <div class="flex gap-4 mt-8">
-                     <button
-                         type="submit"
-                         class="bg-green-500 dark:bg-green-600 text-white font-bold py-2 px-4 rounded-md mt-4 hover:bg-green-600 dark:hover:bg-green-700 transition ease-in-out duration-150 flex-auto"
-                     >
-                         Buat Label
-                     </button>
-                     <button
-                        @click="resetForm()"
-                         type="button"
-                         class="bg-violet-500 dark:bg-violet-600 text-white font-bold py-2 px-4 rounded-md mt-4 hover:bg-violet-600 dark:hover:bg-violet-700 transition ease-in-out duration-150 flex-auto"
-                     >
-                         Clear
-                     </button>
-                 </div>
+                <div class="flex gap-4 mt-8">
+                    <Button
+                        type="submit"
+                        variant="success"
+                        :loading="isLoading"
+                        :full-width="true"
+                    >
+                        Buat Label
+                    </Button>
+                    <Button
+                        type="button"
+                        variant="secondary"
+                        :full-width="true"
+                        @click="resetForm"
+                    >
+                        Clear
+                    </Button>
+                </div>
             </form>
         </BaseCard>
     </AuthenticatedLayout>
