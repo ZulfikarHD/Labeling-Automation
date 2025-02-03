@@ -1,4 +1,5 @@
 @import 'tailwindcss';
+@custom-variant dark (&:where(.dark, .dark *));
 
 @media print and (width: 10cm) and (height: 13cm) {
     @page {
