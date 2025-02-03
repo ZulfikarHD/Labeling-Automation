@@ -19,4 +19,9 @@ class Workstations extends Model
     {
         return self::select('id','workstation')->orderBy('workstation')->get();
     }
+
+    public static function getTeamName($id)
+    {
+        return self::select('workstation')->where('id', $id)->first();
+    }
 }

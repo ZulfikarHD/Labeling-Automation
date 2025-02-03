@@ -15,15 +15,28 @@ const dateFilter = ref(props.date);
 const currentPage = ref(1);
 const itemsPerPage = 10;
 const isLoading = ref(false);
+const teamName = ref('');
+
+const fetchTeamName = async () => {
+    try {
+        const res = await axios.get(`/api/team-name/${props.team}`);
+        teamName.value = res.data.workstation;
+    } catch (error) {
+        console.error("Error fetching team name:", error);
+    }
+}
+
+fetchTeamName();
 
 // Add new props for card title and subtitle
-const cardTitle = "Data Verifikasi" + ` Tim ${props.team}`
-const cardSubtitle = computed(() => `Tim ${props.team} - ${dateFilter.value}`)
+const cardTitle = "Data Verifikasi Team" + teamName.value
+const cardSubtitle = computed(() => `Tim ${teamName.value} - ${dateFilter.value}`)
 
 watch(
     () => props.date,
     () => {
         dateFilter.value = props.date;
+        fetchTeamName();
         produksiPegawai();
     }
 );
@@ -35,7 +48,6 @@ const produksiPegawai = async () => {
             `/api/pendapatan-harian?date=${dateFilter.value}&team=${props.team}`
         );
         verifPegawai.value = res.data;
-        console.log(res.data);
     } catch (error) {
         console.error("Error fetching data:", error);
     } finally {
