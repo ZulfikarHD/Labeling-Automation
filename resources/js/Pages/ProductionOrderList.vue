@@ -7,6 +7,7 @@ import TextInput from "@/Components/TextInput.vue";
 import Modal from "@/Components/Modal.vue";
 import PaginateLink from "@/Components/PaginateLink.vue";
 import { Search, Printer, Home, Trash2, Eye, Filter, Edit } from 'lucide-vue-next';
+import StatusProduksiBadge from "@/Components/StatusProduksiBadge.vue";
 
 // Menginisialisasi variabel dan fungsi yang diperlukan
 const swal = inject("$swal"); // Menggunakan inject untuk mengakses swal dari parent component
@@ -146,52 +147,53 @@ const sort = (field) => {
                 </div>
 
                 <!-- Filters & Search -->
-                <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                    <div class="w-full md:w-64">
-                        <div class="relative">
-                            <Filter class="absolute left-3 top-2.5 w-5 h-5 text-slate-400" />
-                            <select
-                                id="team"
-                                ref="team"
-                                v-model="form.team"
-                                @change="filterTeam"
-                                class="w-full pl-10 pr-4 py-2 text-sm bg-white dark:bg-slate-800 border rounded-xl border-slate-200 dark:border-slate-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900 transition-all duration-200 dark:text-white"
-                            >
-                                <option value="0">Semua Tim</option>
-                                <option
-                                    v-for="teams in props.listTeam"
-                                    :value="teams.id"
-                                >
-                                    {{ teams.workstation }}
-                                </option>
-                            </select>
+                <div class="overflow-hidden bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700">
+                    <!-- Table Header with Search and Filter -->
+                    <div class="p-4 border-b border-slate-200 dark:border-slate-700">
+                        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                            <!-- Filter Dropdown -->
+                            <div class="w-full md:w-64">
+                                <div class="relative">
+                                    <Filter class="absolute left-3 top-2.5 w-5 h-5 text-slate-400" />
+                                    <select
+                                        v-model="form.team"
+                                        @change="filterTeam"
+                                        class="w-full pl-10 pr-4 py-2 text-sm bg-white dark:bg-slate-800 border rounded-xl border-slate-200 dark:border-slate-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900 transition-all duration-200 dark:text-white"
+                                    >
+                                        <option value="0">Semua Tim</option>
+                                        <option v-for="teams in listTeam" :key="teams.id" :value="teams.id">
+                                            {{ teams.workstation }}
+                                        </option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Search Input -->
+                            <div class="relative w-full md:w-64">
+                                <Search class="absolute left-3 top-2.5 w-5 h-5 text-slate-400" />
+                                <input
+                                    v-model="form.search"
+                                    @input="search"
+                                    type="search"
+                                    placeholder="Cari order..."
+                                    class="w-full pl-10 pr-4 py-2 text-sm bg-white dark:bg-slate-800 border rounded-xl border-slate-200 dark:border-slate-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900 transition-all duration-200 dark:text-white"
+                                />
+                            </div>
                         </div>
                     </div>
 
-                    <div class="relative w-full md:w-64">
-                        <Search class="absolute left-3 top-2.5 w-5 h-5 text-slate-400" />
-                        <TextInput
-                            id="search"
-                            @input="search"
-                            v-model="form.search"
-                            type="search"
-                            placeholder="Cari order..."
-                            class="w-full pl-10 rounded-xl border-slate-200 dark:border-slate-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900 dark:bg-slate-800 dark:text-white"
-                        />
-                    </div>
-                </div>
-
-                <!-- Table Card -->
-                <div class="overflow-hidden bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700">
+                    <!-- Table Content -->
                     <div class="overflow-x-auto">
-                        <table class="min-w-full divide-y divide-slate-200 dark:divide-slate-700">
+                        <table class="w-full">
+                            <!-- Table Headers -->
                             <thead class="bg-slate-50 dark:bg-slate-700/50">
                                 <tr>
-                                    <th scope="col" class="px-4 py-4 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase text-center">No</th>
+                                    <th class="px-4 py-3 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase text-center whitespace-nowrap">
+                                        No
+                                    </th>
                                     <th
-                                        scope="col"
                                         @click="sort('no_po')"
-                                        class="px-4 py-4 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase text-left cursor-pointer hover:text-slate-700 dark:hover:text-slate-300 group"
+                                        class="px-4 py-3 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase text-left cursor-pointer group whitespace-nowrap"
                                     >
                                         <div class="flex items-center gap-1">
                                             Nomor PO
@@ -202,9 +204,8 @@ const sort = (field) => {
                                         </div>
                                     </th>
                                     <th
-                                        scope="col"
                                         @click="sort('no_obc')"
-                                        class="px-4 py-4 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase text-left cursor-pointer hover:text-slate-700 dark:hover:text-slate-300 group"
+                                        class="px-4 py-3 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase text-left cursor-pointer group whitespace-nowrap"
                                     >
                                         <div class="flex items-center gap-1">
                                             OBC
@@ -214,11 +215,10 @@ const sort = (field) => {
                                             <span v-else class="opacity-0 group-hover:opacity-50">↑</span>
                                         </div>
                                     </th>
-                                    <th scope="col" class="px-4 py-4 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase text-center">Tim</th>
+                                    <th scope="col" class="px-4 py-3 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase text-center whitespace-nowrap">Tim</th>
                                     <th
-                                        scope="col"
                                         @click="sort('created_at')"
-                                        class="px-4 py-4 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase text-center cursor-pointer hover:text-slate-700 dark:hover:text-slate-300 group"
+                                        class="px-4 py-3 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase text-center cursor-pointer group whitespace-nowrap"
                                     >
                                         <div class="flex items-center justify-center gap-1">
                                             Tanggal Dibuat
@@ -229,9 +229,8 @@ const sort = (field) => {
                                         </div>
                                     </th>
                                     <th
-                                        scope="col"
                                         @click="sort('status')"
-                                        class="px-4 py-4 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase text-center cursor-pointer hover:text-slate-700 dark:hover:text-slate-300 group"
+                                        class="px-4 py-3 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase text-center cursor-pointer group whitespace-nowrap"
                                     >
                                         <div class="flex items-center justify-center gap-1">
                                             Status
@@ -241,85 +240,92 @@ const sort = (field) => {
                                             <span v-else class="opacity-0 group-hover:opacity-50">↑</span>
                                         </div>
                                     </th>
-                                    <th scope="col" class="px-4 py-4 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase text-center">Selesai</th>
-                                    <th scope="col" class="px-4 py-4 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase text-center">Aksi</th>
+                                    <th scope="col" class="px-4 py-3 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase text-center whitespace-nowrap">Selesai</th>
+                                    <th scope="col" class="px-4 py-3 text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase text-center whitespace-nowrap">Aksi</th>
                                 </tr>
                             </thead>
+
+                            <!-- Table Body -->
                             <tbody class="divide-y divide-slate-200 dark:divide-slate-700">
                                 <tr
                                     v-for="(product, index) in listProduct.data"
                                     :key="index"
-                                    class="hover:bg-slate-100 dark:hover:bg-slate-700/50 transition-colors duration-150"
+                                    class="hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors duration-150"
                                 >
-                                    <td class="px-4 py-4 text-sm text-center text-slate-500 dark:text-slate-400">
-                                        {{ listProduct.current_page == 1 ? index + 1 : index + 1 + listProduct.current_page * 10 }}
+                                    <td class="px-4 py-3 text-sm text-center text-slate-500 dark:text-slate-400 whitespace-nowrap">
+                                        {{ listProduct.current_page == 1 ? index + 1 : index + 1 + (listProduct.current_page - 1) * 10 }}
                                     </td>
-                                    <td class="px-4 py-4 text-sm font-medium text-slate-900 dark:text-white">
+                                    <td class="px-4 py-3 text-sm font-medium text-slate-900 dark:text-white whitespace-nowrap">
                                         {{ product.no_po }}
                                     </td>
-                                    <td class="px-4 py-4">
-                                        <span :class="product.no_obc.substr(4, 1) == 3 ? ' text-red-700 dark:text-red-400' : ' text-blue-700 dark:text-blue-400'"
-                                              class="px-2.5 py-1 text-xs font-medium">
+                                    <td class="px-4 py-3">
+                                        <span
+                                            :class="[
+                                                product.no_obc.substr(4, 1) == 3
+                                                    ? 'text-red-700 dark:text-red-400'
+                                                    : 'text-blue-700 dark:text-blue-400'
+                                            ]"
+                                            class="px-2.5 py-1 text-xs font-medium"
+                                        >
                                             {{ product.no_obc }}
                                         </span>
                                     </td>
-                                    <td class="px-4 py-4 text-sm text-center text-slate-500 dark:text-slate-400">
+                                    <td class="px-4 py-3 text-sm text-center text-slate-500 dark:text-slate-400 whitespace-nowrap">
                                         {{ product.workstation }}
                                     </td>
-                                    <td class="px-4 py-4 text-sm text-center text-slate-500 dark:text-slate-400">
+                                    <td class="px-4 py-3 text-sm text-center text-slate-500 dark:text-slate-400 whitespace-nowrap">
                                         {{ formatDate(product.created_at) }}
                                     </td>
-                                    <td class="px-4 py-4 text-sm text-center">
-                                        <span
-                                            :class="{
-                                                'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/50 dark:text-yellow-400': product.status == 1,
-                                                'bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-300': product.status == 0,
-                                                'bg-green-100 text-green-700 dark:bg-green-900/50 dark:text-green-400': product.status == 2
-                                            }"
-                                            class="inline-flex px-2.5 py-1 text-xs font-medium rounded-full"
-                                        >
-                                            {{ product.status == 1 ? 'Sedang Diperiksa' : product.status == 0 ? 'Siap Diperiksa' : 'Selesai' }}
-                                        </span>
+                                    <td class="px-4 py-3 text-sm text-center">
+                                        <StatusProduksiBadge :status="product.status" />
                                     </td>
-                                    <td class="px-4 py-4 text-sm text-center text-slate-500 dark:text-slate-400">
+                                    <td class="px-4 py-3 text-sm text-center text-slate-500 dark:text-slate-400 whitespace-nowrap">
                                         {{ product.status == 2 ? formatDate(product.updated_at) : '-' }}
                                     </td>
-                                    <td class="px-4 py-4 text-sm text-center">
-                                        <div class="flex items-center justify-center">
-                                            <Link
-                                                :href="route('dataPo.show', { team: form.team, no_po: product.no_po })"
-                                                class="p-1.5 text-blue-600 dark:text-blue-400 transition-colors duration-200 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/50"
-                                                title="Lihat Detail"
+                                    <td class="px-4 py-3 text-sm text-center whitespace-nowrap">
+                                        <div class="flex items-center justify-center gap-1">
+                                            <button
+                                                @click="$inertia.visit(route('dataPo.show', { team: form.team, no_po: product.no_po }))"
+                                                class="group relative p-2 text-blue-600 dark:text-blue-400 transition-colors duration-200 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/50"
                                             >
                                                 <Eye class="w-5 h-5" />
-                                            </Link>
-
-                                            <Link
-                                                :href="route('orderBesar.cetakLabel', { team: product.assigned_team, id: product.id })"
-                                                class="p-1.5 text-indigo-600 dark:text-indigo-400 transition-colors duration-200 rounded-lg hover:bg-indigo-50 dark:hover:bg-indigo-900/50"
-                                                title="Cetak Label"
-                                            >
-                                                <Printer class="w-5 h-5" />
-                                            </Link>
-
-                                            <Link
-                                                :href="route('dataPo.edit', { no_po: product.no_po })"
-                                                class="p-1.5 text-amber-600 dark:text-amber-400 transition-colors duration-200 rounded-lg hover:bg-amber-50 dark:hover:bg-amber-900/50"
-                                                title="Edit"
-                                            >
-                                                <Edit class="w-5 h-5" />
-                                            </Link>
+                                                <span class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1.5 text-xs text-white bg-slate-900 dark:bg-slate-800 rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
+                                                    Lihat Detail
+                                                </span>
+                                            </button>
 
                                             <button
-                                                @click.prevent="
+                                                @click="$inertia.visit(route('orderBesar.cetakLabel', { team: product.assigned_team, id: product.id }))"
+                                                class="group relative p-2 text-cyan-600 dark:text-cyan-400 transition-colors duration-200 rounded-lg hover:bg-cyan-50 dark:hover:bg-cyan-900/50"
+                                            >
+                                                <Printer class="w-5 h-5" />
+                                                <span class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1.5 text-xs text-white bg-slate-900 dark:bg-slate-800 rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
+                                                    Cetak Label
+                                                </span>
+                                            </button>
+
+                                            <button
+                                                @click="$inertia.visit(route('dataPo.edit', { no_po: product.no_po }))"
+                                                class="group relative p-2 text-amber-600 dark:text-amber-400 transition-colors duration-200 rounded-lg hover:bg-amber-50 dark:hover:bg-amber-900/50"
+                                            >
+                                                <Edit class="w-5 h-5" />
+                                                <span class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1.5 text-xs text-white bg-slate-900 dark:bg-slate-800 rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
+                                                    Edit Order
+                                                </span>
+                                            </button>
+
+                                            <button
+                                                @click="
                                                     deleteModal = !deleteModal;
                                                     form.id = product.id;
                                                     form.po = product.no_po;
                                                 "
-                                                class="p-1.5 text-red-600 dark:text-red-400 transition-colors duration-200 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/50"
-                                                title="Hapus Order"
+                                                class="group relative p-2 text-red-600 dark:text-red-400 transition-colors duration-200 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/50"
                                             >
                                                 <Trash2 class="w-5 h-5" />
+                                                <span class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1.5 text-xs text-white bg-slate-900 dark:bg-slate-800 rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
+                                                    Hapus Order
+                                                </span>
                                             </button>
                                         </div>
                                     </td>
@@ -328,6 +334,7 @@ const sort = (field) => {
                         </table>
                     </div>
 
+                    <!-- Pagination -->
                     <div class="px-4 py-4 border-t border-slate-200 dark:border-slate-700">
                         <PaginateLink :links="listProduct.links" />
                     </div>
