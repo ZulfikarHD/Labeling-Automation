@@ -1,12 +1,12 @@
 <script setup>
 import { usePage } from "@inertiajs/vue3"
 import NavigationManager from "@/Layouts/Navigation/NavigationManager.vue"
-import DarkModeToggle from "@/Layouts/Navigation/DarkModeToogle.vue"
+import AppTheme from "@/Layouts/Navigation/AppTheme.vue"
 import MainNavigation from "@/Layouts/Navigation/MainNavigation.vue"
 import NavDropdown from "@/Components/Navigation/NavDropdown.vue"
 import DropdownMenu from "@/Components/Navigation/DropdownMenu.vue"
 import NavLink from "@/Components/Navigation/NavLink.vue"
-import { Settings, KeyRound, LogOut } from "lucide-vue-next"
+import { Settings, KeyRound, LogOut, Sun, Moon } from "lucide-vue-next"
 
 // Get user role from auth props
 const { props } = usePage()
@@ -14,7 +14,7 @@ const role = props.auth.user.role
 </script>
 
 <template>
-    <DarkModeToggle v-slot="{ isDark, toggleDarkMode }">
+    <AppTheme v-slot="{ isDark, toggleDarkMode }">
         <NavigationManager v-slot="{ dropdowns, toggleDropdown, logout }">
             <div
                 class="min-h-screen bg-gradient-to-br from-slate-50 via-sky-50 to-slate-100 dark:from-slate-900 dark:via-slate-800 dark:to-slate-800"
@@ -45,40 +45,14 @@ const role = props.auth.user.role
                                 class="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
                                 :aria-label="isDark ? 'Switch to light mode' : 'Switch to dark mode'"
                             >
-                                <svg
+                                <Moon
                                     v-if="isDark"
-                                    xmlns="http://www.w3.org/2000/svg"
                                     class="w-5 h-5 text-amber-400"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    stroke-width="2"
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                >
-                                    <circle cx="12" cy="12" r="4" />
-                                    <path d="M12 2v2" />
-                                    <path d="M12 20v2" />
-                                    <path d="m4.93 4.93 1.41 1.41" />
-                                    <path d="m17.66 17.66 1.41 1.41" />
-                                    <path d="M2 12h2" />
-                                    <path d="M20 12h2" />
-                                    <path d="m6.34 17.66-1.41 1.41" />
-                                    <path d="m19.07 4.93-1.41 1.41" />
-                                </svg>
-                                <svg
+                                />
+                                <Sun
                                     v-else
-                                    xmlns="http://www.w3.org/2000/svg"
                                     class="w-5 h-5 text-slate-600"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    stroke-width="2"
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                >
-                                    <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
-                                </svg>
+                                />
                             </button>
 
                             <!-- Options Dropdown -->
@@ -128,5 +102,5 @@ const role = props.auth.user.role
                 </main>
             </div>
         </NavigationManager>
-    </DarkModeToggle>
+    </AppTheme>
 </template>

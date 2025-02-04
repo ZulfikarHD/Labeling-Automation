@@ -2,6 +2,7 @@
 import NavLink from "@/Components/Navigation/NavLink.vue"
 import NavDropdown from "@/Components/Navigation/NavDropdown.vue"
 import DropdownMenu from "@/Components/Navigation/DropdownMenu.vue"
+import DropdownLink from "@/Components/DropdownLink.vue"
 import {
     FileText,
     FileCheck,
@@ -26,7 +27,7 @@ const emit = defineEmits(['toggleDropdown'])
 </script>
 
 <template>
-    <div class="flex items-center gap-6">
+    <div class="flex flex-wrap items-center gap-4 md:gap-6">
         <!-- Order Besar Dropdown -->
         <div class="relative">
             <NavDropdown
@@ -39,28 +40,24 @@ const emit = defineEmits(['toggleDropdown'])
                 :show="dropdowns.orderBesar"
                 class="w-56"
             >
-                <NavLink
+                <DropdownLink
                     :href="route('orderBesar.poSiapVerif')"
-                    class="flex items-center gap-3 px-4 py-3 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors w-full"
+                    class="flex items-center gap-2 hover:text-blue-600 dark:hover:text-blue-400"
                 >
                     <FileCheck
                         class="w-4 h-4 text-slate-500 dark:text-slate-400"
                     />
-                    <span class="text-sm text-slate-600 dark:text-slate-300">
-                        Order Siap Periksa
-                    </span>
-                </NavLink>
-                <NavLink
+                    <span>Order Siap Periksa</span>
+                </DropdownLink>
+                <DropdownLink
                     :href="route('orderBesar.registerNomorPo')"
-                    class="flex items-center gap-3 px-4 py-3 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors w-full"
+                    class="flex items-center gap-2 hover:text-blue-600 dark:hover:text-blue-400"
                 >
                     <ClipboardList
                         class="w-4 h-4 text-slate-500 dark:text-slate-400"
                     />
-                    <span class="text-sm text-slate-600 dark:text-slate-300">
-                        Register Nomor PO
-                    </span>
-                </NavLink>
+                    <span>Register Nomor PO</span>
+                </DropdownLink>
             </DropdownMenu>
         </div>
 
@@ -76,24 +73,21 @@ const emit = defineEmits(['toggleDropdown'])
                 :show="dropdowns.orderKecil"
                 class="w-48"
             >
-                <NavLink
+                <DropdownLink
                     :href="route('orderKecil.cetakLabel')"
-                    class="flex items-center gap-3 px-4 py-3 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors w-full"
+                    class="flex items-center gap-2 hover:text-blue-600 dark:hover:text-blue-400"
                 >
                     <FileText
                         class="w-4 h-4 text-slate-500 dark:text-slate-400"
                     />
-                    <span class="text-sm text-slate-600 dark:text-slate-300">
-                        Cetak Label
-                    </span>
-                </NavLink>
+                    <span>Cetak Label</span>
+                </DropdownLink>
             </DropdownMenu>
         </div>
 
         <!-- Regular Navigation Links -->
         <NavLink
             :href="route('monitoringProduksi.statusVerif.index')"
-            class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition-all group"
         >
             <Activity class="w-4 h-4 group-hover:text-blue-600" />
             <span class="text-sm font-medium text-slate-700 dark:text-slate-200 group-hover:text-blue-600">
@@ -103,7 +97,6 @@ const emit = defineEmits(['toggleDropdown'])
 
         <NavLink
             :href="route('dataPo.index', 0)"
-            class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition-all group"
         >
             <FileSpreadsheet class="w-4 h-4 group-hover:text-blue-600" />
             <span class="text-sm font-medium text-slate-700 dark:text-slate-200 group-hover:text-blue-600">
@@ -113,7 +106,6 @@ const emit = defineEmits(['toggleDropdown'])
 
         <NavLink
             :href="route('monitoringProduksi.produksiPegawai')"
-            class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition-all group"
         >
             <Users class="w-4 h-4 group-hover:text-blue-600" />
             <span class="text-sm font-medium text-slate-700 dark:text-slate-200 group-hover:text-blue-600">
@@ -125,7 +117,6 @@ const emit = defineEmits(['toggleDropdown'])
         <NavLink
             v-if="role === 1"
             :href="route('createUser.index')"
-            class="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition-all group"
         >
             <Users class="w-4 h-4 group-hover:text-blue-600" />
             <span class="text-sm font-medium text-slate-700 dark:text-slate-200 group-hover:text-blue-600">

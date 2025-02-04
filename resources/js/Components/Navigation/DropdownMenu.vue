@@ -15,10 +15,12 @@ defineProps({
   >
     <div
       v-show="show"
-      class="absolute mt-2 bg-white dark:bg-slate-800 rounded-lg shadow-lg border border-slate-100 dark:border-slate-700 overflow-hidden"
+      class="absolute z-50 mt-2 w-64 bg-white dark:bg-slate-800 rounded-xl shadow-lg ring-1 ring-slate-200 dark:ring-slate-700 border border-slate-100 dark:border-slate-700 overflow-hidden backdrop-blur-sm"
       :class="$attrs.class"
     >
-      <slot />
+      <div class="py-1">
+        <slot />
+      </div>
     </div>
   </transition>
 </template>
