@@ -119,7 +119,7 @@ const formatDate = (dateString) => {
                         </thead>
                         <tbody class="divide-y divide-slate-200 dark:divide-slate-700">
                             <tr v-for="product in listProduct"
-                                class="hover:bg-slate-50 dark:hover:bg-gray-700/50 transition-colors">
+                                class="hover:bg-slate-100 dark:hover:bg-gray-700/50 transition-colors">
                                 <td class="px-6 py-4 text-sm text-slate-600 dark:text-slate-300">{{ product.no_po }}</td>
                                 <td class="px-6 py-4 text-sm font-medium" :class="{'text-red-600 dark:text-red-400': product.no_obc.substr(4,1) == 3, 'text-blue-600 dark:text-blue-400': product.no_obc.substr(4,1) != 3}">
                                     {{ product.no_obc }}
