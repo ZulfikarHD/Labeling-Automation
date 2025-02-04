@@ -27,7 +27,7 @@ const emit = defineEmits(['toggleDropdown'])
 </script>
 
 <template>
-    <div class="flex flex-wrap items-center gap-4 md:gap-6">
+    <div class="flex flex-col md:flex-row md:items-center gap-4 md:gap-6">
         <!-- Order Besar Dropdown -->
         <div class="relative">
             <NavDropdown
@@ -38,7 +38,7 @@ const emit = defineEmits(['toggleDropdown'])
             />
             <DropdownMenu
                 :show="dropdowns.orderBesar"
-                class="w-56"
+                class="w-56 md:absolute md:top-full md:left-0"
             >
                 <DropdownLink
                     :href="route('orderBesar.poSiapVerif')"

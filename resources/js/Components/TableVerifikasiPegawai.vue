@@ -90,10 +90,10 @@ produksiPegawai();
 </script>
 
 <template>
-    <BaseCard :title="cardTitle" :subtitle="cardSubtitle" no-padding>
+    <BaseCard :title="cardTitle" no-padding>
         <!-- Tambahkan label tanggal yang lebih jelas -->
         <div class="px-6 py-3 border-b border-gray-200 dark:border-gray-700">
-            <span class="text-sm text-gray-600 dark:text-gray-400">Data untuk: </span>
+            <span class="text-sm text-gray-600 dark:text-gray-400">Data Periode : </span>
             <span class="font-medium text-blue-600 dark:text-blue-400">{{ cardSubtitle }}</span>
         </div>
 
