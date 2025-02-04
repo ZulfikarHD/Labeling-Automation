@@ -1,5 +1,7 @@
 <template>
-    <!-- Dalam Proses -->
+    <!-- Status: Dalam Proses
+         Menampilkan rim yang sedang dikerjakan (start=true, finish=false)
+         dengan warna amber sebagai indikator -->
     <button
         v-if="rimData.np_users && rimData.start && !rimData.finish"
         type="button"
@@ -12,7 +14,9 @@
         </div>
     </button>
 
-    <!-- Selesai -->
+    <!-- Status: Selesai
+         Menampilkan rim yang sudah selesai dikerjakan (start=true, finish=true)
+         dengan warna emerald sebagai indikator -->
     <button
         v-else-if="rimData.np_users && rimData.start && rimData.finish"
         type="button"
@@ -25,7 +29,9 @@
         </div>
     </button>
 
-    <!-- Inschiet -->
+    <!-- Status: Inschiet
+         Menampilkan rim khusus untuk inschiet (no_rim=999)
+         dengan warna violet sebagai indikator -->
     <button
         v-else-if="rimData.no_rim === 999"
         type="button"
@@ -38,7 +44,9 @@
         </div>
     </button>
 
-    <!-- Tidak Tersedia -->
+    <!-- Status: Tidak Tersedia
+         Menampilkan rim yang belum memiliki petugas atau belum dimulai
+         dengan warna abu-abu dan disabled -->
     <button
         v-else
         type="button"
@@ -53,6 +61,26 @@
 </template>
 
 <script setup>
+/**
+ * Komponen RimButton
+ *
+ * Komponen ini digunakan untuk menampilkan status rim dalam bentuk button.
+ * Setiap button memiliki warna yang berbeda sesuai dengan statusnya:
+ * - Amber: Dalam proses pengerjaan
+ * - Emerald: Selesai dikerjakan
+ * - Violet: Rim Inschiet
+ * - Abu-abu: Belum tersedia/belum dimulai
+ *
+ * Props:
+ * @property {Object} rimData - Data rim yang akan ditampilkan
+ * @property {number} rimData.no_rim - Nomor rim
+ * @property {string} rimData.np_users - NP petugas yang mengerjakan
+ * @property {boolean} rimData.start - Status mulai pengerjaan
+ * @property {boolean} rimData.finish - Status selesai pengerjaan
+ *
+ * Events:
+ * @emits select-rim - Event yang dipancarkan saat button diklik, membawa no_rim dan np_users
+ */
 defineProps({
     rimData: {
         type: Object,

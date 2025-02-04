@@ -1,24 +1,30 @@
 <script setup>
+// Import komponen dan library yang dibutuhkan
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import InputLabel from '@/Components/InputLabel.vue';
-import TextInput from '@/Components/TextInput.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
-import NavigateBackButton from '@/Components/NavigateBackButton.vue';
 import { ref } from 'vue';
-import { Home, Check, Clock, ArrowRight } from 'lucide-vue-next';
+import { ArrowRight } from 'lucide-vue-next';
 
+// Props untuk menerima data dari parent component
 const props = defineProps({
-    products: Object,
-    teamList: Object,
-    crntTeam: Object,
+    products: Object, // Data produk yang akan ditampilkan
+    teamList: Object, // Daftar tim yang tersedia
+    crntTeam: Object, // Tim yang sedang aktif/dipilih
 });
 
+// Reactive reference untuk menyimpan daftar produk
 const listProduct = ref(props.products);
 
+// Form state untuk menyimpan tim yang dipilih
 const form = useForm({
     team: props.crntTeam,
 });
 
+/**
+ * Handler untuk perubahan tim yang dipilih
+ * Mengambil data produk baru berdasarkan tim yang dipilih
+ */
 const changeTeam = () => {
     axios.get('/api/order-besar/verif/'+form.team).then((res) => {
         listProduct.value = res.data;
@@ -30,9 +36,13 @@ const changeTeam = () => {
     <Head title="Siap Periksa" />
     <AuthenticatedLayout>
         <div class="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8">
-            <!-- Team Selection -->
+            <!-- Bagian Pemilihan Tim -->
             <div class="max-w-md mx-auto mb-12">
-                <InputLabel for="team" value="Pilih Tim" class="text-2xl font-bold text-slate-800 dark:text-slate-200 mb-3" />
+                <InputLabel
+                    for="team"
+                    value="Pilih Tim"
+                    class="text-2xl font-bold text-slate-800 dark:text-slate-200 mb-3"
+                />
                 <select
                     id="team"
                     v-model="form.team"
@@ -45,14 +55,15 @@ const changeTeam = () => {
                 </select>
             </div>
 
-            <!-- Table Card -->
+            <!-- Card Tabel -->
             <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
-                <!-- Table Header -->
+                <!-- Header Tabel -->
                 <div class="p-6 border-b border-slate-200 dark:border-slate-700">
                     <h1 class="text-2xl font-bold text-slate-800 dark:text-slate-200">Daftar Produk Siap Periksa</h1>
                     <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">Daftar produk yang siap untuk diperiksa oleh tim</p>
                 </div>
 
+                <!-- Tabel Data Produk -->
                 <div class="overflow-x-auto">
                     <table class="w-full">
                         <thead>

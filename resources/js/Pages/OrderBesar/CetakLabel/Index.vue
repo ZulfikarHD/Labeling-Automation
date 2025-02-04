@@ -14,7 +14,7 @@
         @print="printWithoutDialog"
     />
 
-    <!-- Tambahkan baris ini setelah PrintUlangModal -->
+    <!-- Modal untuk mencetak label kosong -->
     <PrintLabelKosongModal
         :show="printManualModal"
         :obc="form.obc"
@@ -26,10 +26,12 @@
         @print="printWithoutDialog"
     />
 
-    <!-- Tata letak utama -->
+    <!-- Layout utama -->
     <AuthenticatedLayout>
+        <!-- Card utama dengan judul OBC dan nomor plat -->
         <BaseCard :title="form.obc + ' - ' + form.noPlat">
             <template #title>
+                <!-- Menampilkan OBC dengan warna berbeda berdasarkan seri -->
                 <span :class="form.seri == 3 ? 'text-red-600 dark:text-red-400' : 'text-blue-600 dark:text-blue-400'">
                     {{ form.obc }}
                 </span>
@@ -39,6 +41,7 @@
                 </span>
             </template>
 
+            <!-- Form utama -->
             <form @submit.prevent="submit" class="space-y-8">
                 <!-- Pemilihan tim -->
                 <div>
@@ -53,9 +56,9 @@
                     </Select>
                 </div>
 
-                <!-- Detail pesanan grid -->
+                <!-- Grid informasi pesanan -->
                 <div class="grid grid-cols-3 gap-6">
-                    <!-- Nomor PO -->
+                    <!-- Input nomor PO (disabled) -->
                     <div>
                         <InputLabel for="po" value="Nomor PO" class="text-xl font-bold mb-3 dark:text-gray-300" />
                         <TextInput
@@ -68,7 +71,7 @@
                         />
                     </div>
 
-                    <!-- Nomor OBC -->
+                    <!-- Input nomor OBC (disabled) -->
                     <div>
                         <InputLabel for="obc" value="Nomor OBC" class="text-xl font-bold mb-3 dark:text-gray-300" />
                         <TextInput
@@ -81,7 +84,7 @@
                         />
                     </div>
 
-                    <!-- Seri -->
+                    <!-- Input seri (disabled) -->
                     <div>
                         <InputLabel for="seri" value="Seri" class="text-xl font-bold mb-3 dark:text-gray-300" />
                         <TextInput
@@ -95,9 +98,9 @@
                     </div>
                 </div>
 
-                <!-- Detail tambahan grid -->
+                <!-- Grid informasi tambahan -->
                 <div class="grid grid-cols-3 gap-6">
-                    <!-- Nomor Rim -->
+                    <!-- Nomor rim dengan kondisional tampilan -->
                     <div>
                         <InputLabel for="no_rim" value="Nomor Rim" class="text-xl font-bold mb-3 dark:text-gray-300" />
                         <template v-if="form.no_rim !== 999">
@@ -120,7 +123,7 @@
                         </template>
                     </div>
 
-                    <!-- Cut Sheet -->
+                    <!-- Input lembar potong (disabled) -->
                     <div>
                         <InputLabel for="lbr_ptg" value="Lembar Potong" class="text-xl font-bold mb-3 dark:text-gray-300" />
                         <TextInput
@@ -133,7 +136,7 @@
                         />
                     </div>
 
-                    <!-- Kode Plat -->
+                    <!-- Input kode plat (disabled) -->
                     <div>
                         <InputLabel for="noPlat" value="Kode Plat" class="text-xl font-bold mb-3 dark:text-gray-300" />
                         <TextInput
@@ -147,7 +150,7 @@
                     </div>
                 </div>
 
-                <!-- Operator ID -->
+                <!-- Input nomor pegawai -->
                 <div>
                     <InputLabel for="periksa1" value="Silahkan Scan NP mu" class="text-xl font-bold mb-3 dark:text-gray-300" />
                     <TextInput
@@ -162,9 +165,9 @@
                     <InputError class="mt-2" />
                 </div>
 
-                <!-- Tombol aksi -->
+                <!-- Grup tombol aksi -->
                 <div class="flex justify-center gap-4">
-                    <!-- hapus -->
+                    <!-- Tombol hapus input -->
                     <button
                         type="button"
                         @click="form.periksa1 = null"
@@ -173,7 +176,7 @@
                         Clear
                     </button>
 
-                    <!-- generate label -->
+                    <!-- Tombol generate label -->
                     <button
                         type="submit"
                         :disabled="loading"
@@ -185,7 +188,7 @@
                         {{ loading ? 'Memproses...' : 'Generate' }}
                     </button>
 
-                    <!-- Tambahkan tombol Print Ulang di sini -->
+                    <!-- Tombol cetak ulang -->
                     <button
                         type="button"
                         @click="printUlangModal = true"
@@ -194,7 +197,7 @@
                         Print Ulang
                     </button>
 
-                    <!-- print label manual -->
+                    <!-- Tombol cetak manual -->
                     <button
                         type="button"
                         @click="printManualModal = true"
@@ -204,6 +207,7 @@
                     </button>
                 </div>
 
+                <!-- Tombol selesaikan order -->
                 <button
                     type="button"
                     @click="confirmFinishOrder"
@@ -213,11 +217,21 @@
                 </button>
             </form>
         </BaseCard>
+        <!-- Tabel verifikasi pegawai -->
         <TableVerifikasiPegawai :team="form.team" :date="form.date"/>
     </AuthenticatedLayout>
+    <!-- Frame tersembunyi untuk keperluan print -->
     <iframe ref="printFrame" style="display: none"></iframe>
 </template>
+
 <script setup>
+/**
+ * Halaman Cetak Label
+ *
+ * Komponen ini menangani proses pencetakan label untuk order produksi.
+ * Mendukung pencetakan label baru, pencetakan ulang, dan pencetakan manual.
+ */
+
 import { reactive, ref, onMounted, nextTick, onBeforeUnmount } from "vue";
 import Modal from "@/Components/Modal.vue";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
@@ -234,22 +248,22 @@ import PrintLabelKosongModal from './Modals/PrintLabelKosongModal.vue';
 import BaseCard from "@/Components/BaseCard.vue";
 import Select from '@/Components/Select.vue';
 
-// Definisikan props
+// Props yang diterima dari parent
 const props = defineProps({
-    product: Object,        // Detail produk
+    product: Object,        // Data produk
     listTeam: Object,      // Daftar tim yang tersedia
-    crntTeam: Number,      // ID tim saat ini
-    noRim: Number,         // Nomor rim
-    potongan: String,      // Informasi lembar potong
+    crntTeam: Number,      // ID tim aktif
+    noRim: Number,         // Nomor rim saat ini
+    potongan: String,      // Info potongan lembar
     date: String,          // Tanggal saat ini
 });
 
-// Inisialisasi variabel yang tidak digunakan
-const printUlangModal = ref(false);
-const loading = ref(false);
-const printManualModal = ref(false);
-const printFrame = ref(null);
-const periksa1Input = ref(null);
+// State management
+const printUlangModal = ref(false);    // Kontrol modal cetak ulang
+const loading = ref(false);            // State loading
+const printManualModal = ref(false);   // Kontrol modal cetak manual
+const printFrame = ref(null);          // Referensi frame cetak
+const periksa1Input = ref(null);       // Referensi input NP
 
 // Inisialisasi form dengan data produk
 const form = useForm({
@@ -265,10 +279,13 @@ const form = useForm({
     noPlat: "",
 });
 
-// Tentukan warna berdasarkan seri produk
+// Warna OBC berdasarkan seri
 const colorObc = form.seri == 3 ? "#b91c1c" : "#1d4ed8";
 
-// Fungsi untuk mencetak tanpa dialog
+/**
+ * Mencetak konten tanpa dialog print browser
+ * @param {string} content - HTML konten yang akan dicetak
+ */
 const printWithoutDialog = (content) => {
     const iframe = printFrame.value;
     if (!iframe) return;
@@ -292,7 +309,9 @@ const printWithoutDialog = (content) => {
     }, 100);
 };
 
-// Fungsi untuk mengambil data terbaru
+/**
+ * Mengambil data terbaru dari server
+ */
 const fetchUpdatedData = async () => {
     try {
         const { data } = await axios.get(
@@ -309,7 +328,9 @@ const fetchUpdatedData = async () => {
     }
 };
 
-// Fungsi untuk mengirimkan form
+/**
+ * Menangani submit form cetak label
+ */
 const submit = async (e) => {
     e.preventDefault();
     if (loading.value) return;
@@ -356,7 +377,11 @@ const submit = async (e) => {
     }
 };
 
-// Fungsi untuk menampilkan notifikasi
+/**
+ * Menampilkan notifikasi ke user
+ * @param {string} message - Pesan notifikasi
+ * @param {string} type - Tipe notifikasi (success/error/info)
+ */
 const showNotification = (message, type = 'info') => {
     Swal.fire({
         title: message,
@@ -368,7 +393,9 @@ const showNotification = (message, type = 'info') => {
     });
 };
 
-// Fungsi untuk menyelesaikan order
+/**
+ * Konfirmasi dan proses penyelesaian order
+ */
 const confirmFinishOrder = async () => {
     try {
         const result = await Swal.fire({
@@ -393,7 +420,9 @@ const confirmFinishOrder = async () => {
     }
 };
 
-// Fungsi untuk mengambil nomor plat
+/**
+ * Mengambil nomor plat dari API eksternal
+ */
 const fetchNoPlat = async () => {
     try {
         const response = await axios.get(
@@ -405,12 +434,14 @@ const fetchNoPlat = async () => {
     }
 };
 
-// Inisialisasi awal
+// Lifecycle hooks
 onMounted(() => {
     fetchNoPlat();
 });
 
-// Handler untuk keberhasilan mencetak
+/**
+ * Handler untuk keberhasilan cetak
+ */
 const handlePrintSuccess = async () => {
     await fetchUpdatedData();
     showNotification('Label berhasil dicetak', 'success');

@@ -1,7 +1,17 @@
 <script setup>
 /**
- * This script handles the registration of Nomor PO (Production Order Number).
- * It utilizes Vue's Composition API and Inertia.js for form handling and API requests.
+ * Komponen untuk registrasi dan manajemen Nomor Production Order (PO)
+ *
+ * Fitur utama:
+ * - Input dan validasi nomor PO
+ * - Kalkulasi otomatis jumlah rim dan inschiet
+ * - Validasi format OBC
+ * - Konfirmasi submit dengan SweetAlert
+ * - Handling error dengan pesan yang informatif
+ *
+ * @requires vue
+ * @requires @inertiajs/vue3
+ * @requires axios
  */
 
 import { inject, ref } from "vue";
@@ -16,64 +26,82 @@ import BaseCard from "@/Components/BaseCard.vue";
 import Button from "@/Components/Button.vue";
 import Select from "@/Components/Select.vue";
 
-const swal = inject('$swal'); // Injecting SweetAlert for notifications
-const isLoading = ref(false); // Loading state for API calls
-const errorPo = ref(""); // Error message for PO input
-const errorObc = ref(""); // Error message for OBC input
-const confirmationMessage = ref("tests"); // Confirmation message for submission
+// Injeksi dependency
+const swal = inject('$swal');
 
+// State management
+const isLoading = ref(false);
+const errorPo = ref("");
+const errorObc = ref("");
+const confirmationMessage = ref("tests");
+
+// Props definition dengan validasi
 const props = defineProps({
-    workstation: Object, // Workstation data passed as props
-    currentTeam: Number, // Current team ID passed as props
+    workstation: {
+        type: Object,
+        required: true
+    },
+    currentTeam: {
+        type: Number,
+        required: true
+    }
 });
 
-const seri = ref(""); // Serial number state
-const seriColor = ref(""); // Serial color state
+// State untuk informasi seri
+const seri = ref("");
+const seriColor = ref("");
 
-// Form state using Inertia's useForm
+/**
+ * Form state menggunakan Inertia useForm
+ * Menyimpan semua input yang diperlukan untuk registrasi PO
+ */
 const form = useForm({
-    po: null,
-    obc: "",
-    jml_rim: 0,
-    jml_lembar: 0,
-    seri: 1,
-    start_rim: 1,
-    produk: "PCHT",
-    end_rim: 40,
-    inschiet: 0,
-    team: props.currentTeam,
+    po: null, // Nomor PO
+    obc: "", // Nomor OBC
+    jml_rim: 0, // Total rim
+    jml_lembar: 0, // Total lembar
+    seri: 1, // Nomor seri
+    start_rim: 1, // Rim awal
+    produk: "PCHT", // Jenis produk
+    end_rim: 40, // Rim akhir
+    inschiet: 0, // Jumlah inschiet
+    team: props.currentTeam, // ID tim
 });
 
 /**
- * Fetch data based on the PO number.
- * Updates form fields and handles errors.
+ * Mengambil data PO dari server
+ * Mengupdate form fields berdasarkan response
  */
 const fetchData = () => {
     isLoading.value = true;
     errorPo.value = "";
 
-    axios.get(`/api/order-besar/register-no-po/${form.po}`).then((response) => {
-        const data = response.data;
-        form.obc = data.no_obc;
-        form.jml_lembar = data.rencet;
-        form.jml_rim = Math.ceil(data.rencet / 500);
-        form.end_rim = Math.max(1, Math.floor(data.rencet / 500 / 2));
-        form.inschiet = (data.rencet % 1000 === 0) ? data.rencet % 500 : data.rencet % 1000;
+    axios.get(`/api/order-besar/register-no-po/${form.po}`)
+        .then((response) => {
+            const data = response.data;
+            // Update form dengan data dari server
+            form.obc = data.no_obc;
+            form.jml_lembar = data.rencet;
+            form.jml_rim = Math.ceil(data.rencet / 500);
+            form.end_rim = Math.max(1, Math.floor(data.rencet / 500 / 2));
+            form.inschiet = (data.rencet % 1000 === 0) ? data.rencet % 500 : data.rencet % 1000;
 
-        updateConfirmationMessage();
-    }).catch(() => {
-        errorPo.value = "Nomor PO Tidak Ditemukan";
-        resetForm();
-    }).finally(() => {
-        isLoading.value = false;
-    });
+            updateConfirmationMessage();
+        })
+        .catch(() => {
+            errorPo.value = "Nomor PO Tidak Ditemukan";
+            resetForm();
+        })
+        .finally(() => {
+            isLoading.value = false;
+        });
 };
 
 /**
- * Debounce function to limit the rate of API calls.
- * @param {Function} func - The function to debounce.
- * @param {number} delay - The delay in milliseconds.
- * @returns {Function} - The debounced function.
+ * Fungsi debounce untuk membatasi request API
+ * @param {Function} func - Fungsi yang akan di-debounce
+ * @param {number} delay - Delay dalam millisecond
+ * @returns {Function} Fungsi yang sudah di-debounce
  */
 const debounce = (func, delay) => {
     let timeout;
@@ -83,10 +111,11 @@ const debounce = (func, delay) => {
     };
 };
 
-const debouncedFetchData = debounce(fetchData, 500); // Debounced fetch function
+const debouncedFetchData = debounce(fetchData, 500);
 
 /**
- * Calculate the end rim based on the number of sheets.
+ * Menghitung jumlah rim akhir berdasarkan jumlah lembar
+ * Mengupdate form.end_rim, form.jml_rim, dan form.inschiet
  */
 const calcEndRim = () => {
     form.end_rim = form.jml_lembar > 500
@@ -99,7 +128,8 @@ const calcEndRim = () => {
 };
 
 /**
- * Validate the OBC input and update the confirmation message.
+ * Validasi format OBC
+ * Format yang valid: 3 huruf pertama harus alphabet
  */
 const cekSpec = () => {
     if (typeof form.obc === 'string' && form.obc.length >= 3) {
@@ -113,17 +143,21 @@ const cekSpec = () => {
 };
 
 /**
- * Update the confirmation message based on the OBC input.
+ * Update pesan konfirmasi berdasarkan input OBC
+ * Menentukan daerah order dan seri berdasarkan format OBC
  */
 const updateConfirmationMessage = () => {
     const firstThreeLetters = form.obc.substring(0, 3);
     let daerahOrder;
+
+    // Tentukan daerah order
     if (firstThreeLetters === "PST") {
         daerahOrder = "<span class='text-blue-500 dark:text-blue-400 font-semibold'>Pusat</span>";
     } else {
         daerahOrder = "<span class='text-red-500 dark:text-red-400 font-semibold'>Daerah</span>";
     }
 
+    // Tentukan seri dan warnanya
     const seriValue = form.obc.substring(5, 4);
     if (seriValue == 3) {
         seri.value = `<span class='text-blue-500 dark:text-blue-400 font-semibold'>${seriValue}</span>`;
@@ -137,7 +171,7 @@ const updateConfirmationMessage = () => {
 };
 
 /**
- * Reset the form fields to their initial state.
+ * Reset semua field form ke nilai default
  */
 const resetForm = () => {
     form.obc = null;
@@ -149,7 +183,8 @@ const resetForm = () => {
 };
 
 /**
- * Submit the form after confirmation.
+ * Handle submit form dengan konfirmasi
+ * Menampilkan SweetAlert untuk konfirmasi dan feedback
  */
 function submit() {
     swal.fire({
@@ -164,9 +199,9 @@ function submit() {
         if (result.isConfirmed) {
             isLoading.value = true;
 
-            // Use axios instead of router for better error handling
-            axios.post("/api/order-besar/register-no-po", form) // change to router from axios when debug error
+            axios.post("/api/order-besar/register-no-po", form)
                 .then(response => {
+                    // Tampilkan pesan sukses
                     swal.fire({
                         icon: 'success',
                         title: 'Berhasil',
@@ -182,6 +217,7 @@ function submit() {
                     form.reset();
                 })
                 .catch(error => {
+                    // Handle berbagai jenis error
                     let errorMessage = 'Terjadi kesalahan';
 
                     if (error.response) {
@@ -193,6 +229,7 @@ function submit() {
                         }
                     }
 
+                    // Tampilkan pesan error
                     swal.fire({
                         icon: 'error',
                         title: 'Gagal',

@@ -4,10 +4,10 @@
             <div class="flex flex-col gap-4">
                 <!-- Header modal -->
                 <h1 class="text-xl font-bold text-center text-gray-800 dark:text-gray-200">
-                    Print Ulang / Ganti Data Rim
+                    Cetak Ulang / Ganti Data Rim
                 </h1>
 
-                <!-- Input untuk data rim -->
+                <!-- Input untuk data rim (Kiri/Kanan) -->
                 <TextInput
                     id="dataRim"
                     name="dataRim"
@@ -18,7 +18,7 @@
                     disabled
                 />
 
-                <!-- Tombol pemilihan rim kiri/kanan -->
+                <!-- Tombol pemilihan posisi rim -->
                 <div class="flex justify-center gap-3">
                     <button
                         type="button"
@@ -42,10 +42,9 @@
                     </button>
                 </div>
 
-                <!-- Grid tombol pemilihan rim -->
+                <!-- Grid daftar rim yang tersedia -->
                 <div class="grid grid-cols-5 gap-2">
                     <template v-for="n in dataPrintUlang" :key="n.no_rim">
-                        <!-- ... tombol pemilihan rim yang ada ... -->
                         <RimButton
                             :rim-data="n"
                             @select-rim="pilihRim"
@@ -53,7 +52,7 @@
                     </template>
                 </div>
 
-                <!-- Input nomor rim dan NP petugas -->
+                <!-- Form input nomor rim dan NP petugas -->
                 <div class="grid grid-cols-2 gap-4">
                     <div>
                         <InputLabel for="noRimPU" value="Nomor Rim" class="mb-1 text-sm dark:text-gray-300" />
@@ -112,7 +111,7 @@
                             loading ? 'opacity-50 cursor-not-allowed' : ''
                         ]"
                     >
-                        {{ loading ? 'Memproses...' : 'Print' }}
+                        {{ loading ? 'Memproses...' : 'Cetak' }}
                     </button>
                 </div>
             </div>
@@ -121,7 +120,18 @@
 </template>
 
 <script setup>
-// Mengimpor library dan komponen yang diperlukan
+/**
+ * Modal untuk mencetak ulang label atau mengubah data rim
+ *
+ * Fitur:
+ * - Pemilihan posisi rim (kiri/kanan)
+ * - Pemilihan nomor rim dari daftar yang tersedia
+ * - Input NP petugas
+ * - Cetak ulang label dengan data yang diperbarui
+ *
+ * @component PrintUlangModal
+ */
+
 import { ref, reactive, watch } from 'vue';
 import Modal from "@/Components/Modal.vue";
 import TextInput from "@/Components/TextInput.vue";
@@ -130,60 +140,75 @@ import RimButton from './RimButton.vue';
 import axios from 'axios';
 import { singleLabel } from "@/Components/PrintPages/index";
 
-// Mendefinisikan props yang diterima
+// Props yang diterima komponen
 const props = defineProps({
-    show: Boolean,
-    productData: Object,
-    colorObc: String,
-    team: Number,
+    show: Boolean, // Status tampilan modal
+    productData: Object, // Data produk (PO, OBC)
+    colorObc: String, // Warna OBC untuk styling
+    team: Number, // ID tim
 });
 
-// Mendefinisikan emit untuk event
+// Event yang dapat dipancarkan
 const emit = defineEmits(['close', 'success']);
 
-// Mendefinisikan state loading dan data rim
+// State untuk loading dan data rim
 const loading = ref(false);
-const dataPrintUlang = ref([]);
+const dataPrintUlang = ref([]); // Menyimpan daftar rim yang tersedia
 
-// Mendefinisikan form untuk print ulang
+// State form dengan reactive untuk two-way binding
 const formPrintUlang = reactive({
-    dataRim: "Kiri",
-    noRim: "",
-    npPetugas: "",
-    po: props.productData?.no_po,
-    obc: props.productData?.no_obc,
-    team: props.team,
+    dataRim: "Kiri", // Posisi rim (Kiri/Kanan)
+    noRim: "", // Nomor rim yang dipilih
+    npPetugas: "", // NP petugas yang mengerjakan
+    po: props.productData?.no_po, // Nomor PO
+    obc: props.productData?.no_obc, // Nomor OBC
+    team: props.team, // ID tim
 });
 
-// Fungsi untuk mengubah data rim ke kanan
+/**
+ * Mengubah posisi rim ke kanan dan memperbarui data
+ */
 const dataRimKanan = async () => {
     formPrintUlang.dataRim = "Kanan";
     getDataRim();
 };
 
-// Fungsi untuk mengubah data rim ke kiri
+/**
+ * Mengubah posisi rim ke kiri dan memperbarui data
+ */
 const dataRimKiri = async () => {
     formPrintUlang.dataRim = "Kiri";
     getDataRim();
 };
 
-// Fungsi untuk mengambil data rim
+/**
+ * Mengambil data rim dari server berdasarkan posisi yang dipilih
+ */
 const getDataRim = async () => {
     try {
         const { data } = await axios.post("/api/order-besar/cetak-label/edit", formPrintUlang);
         dataPrintUlang.value = data;
     } catch (error) {
-        console.error('Error fetching rim data:', error);
+        console.error('Error saat mengambil data rim:', error);
     }
 };
 
-// Fungsi untuk memilih rim
+/**
+ * Menangani pemilihan rim dan mengisi form
+ * @param {number} noRim - Nomor rim yang dipilih
+ * @param {string} np - NP petugas dari rim yang dipilih
+ */
 const pilihRim = (noRim, np) => {
     formPrintUlang.noRim = noRim;
     formPrintUlang.npPetugas = np;
 };
 
-// Fungsi untuk mencetak ulang label
+/**
+ * Menangani proses cetak ulang label
+ * - Memvalidasi input
+ * - Memperbarui data di server
+ * - Mencetak label baru
+ */
 const printUlangLabel = async () => {
     try {
         loading.value = true;
@@ -193,6 +218,7 @@ const printUlangLabel = async () => {
             return;
         }
 
+        // Update data di server
         await axios.post('/api/order-besar/cetak-label/update', {
             po: formPrintUlang.po,
             dataRim: formPrintUlang.dataRim,
@@ -201,6 +227,7 @@ const printUlangLabel = async () => {
             team: formPrintUlang.team
         });
 
+        // Generate dan cetak label
         const printLabel = singleLabel(
             formPrintUlang.obc,
             formPrintUlang.noRim !== 999 ? formPrintUlang.noRim : "INS",
@@ -223,7 +250,7 @@ const printUlangLabel = async () => {
     }
 };
 
-// Menginisialisasi data saat modal ditampilkan
+// Memuat data rim saat modal ditampilkan
 watch(() => props.show, (newVal) => {
     if (newVal) {
         getDataRim();

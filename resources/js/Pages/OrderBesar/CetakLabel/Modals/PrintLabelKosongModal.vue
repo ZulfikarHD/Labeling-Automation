@@ -4,15 +4,15 @@
             <div class="flex flex-col gap-4">
                 <!-- Header modal -->
                 <h1 class="text-xl font-bold text-center text-gray-800 dark:text-gray-200">
-                    Print Label Manual
+                    Cetak Label Manual
                 </h1>
                 <p class="text-red-600 dark:text-red-400 text-center">
                     Label yang dibuat disini tidak tersimpan di database.
                 </p>
 
-                <!-- Input fields -->
+                <!-- Form input fields -->
                 <div class="grid grid-cols-2 gap-4">
-                    <!-- Input sisi kiri -->
+                    <!-- Input fields bagian kiri -->
                     <div class="space-y-4">
                         <div>
                             <InputLabel for="npPetugas" value="NP Petugas 1" class="mb-1 text-sm dark:text-gray-300" />
@@ -37,7 +37,7 @@
                         </div>
                     </div>
 
-                    <!-- Input sisi kanan -->
+                    <!-- Input fields bagian kanan -->
                     <div class="space-y-4">
                         <div>
                             <InputLabel for="jmlLabel" value="Jumlah Label" class="mb-1 text-sm dark:text-gray-300" />
@@ -95,7 +95,7 @@
                             loading ? 'opacity-50 cursor-not-allowed' : ''
                         ]"
                     >
-                        {{ loading ? 'Memproses...' : 'Print' }}
+                        {{ loading ? 'Memproses...' : 'Cetak' }}
                     </button>
                 </div>
             </div>
@@ -104,35 +104,51 @@
 </template>
 
 <script setup>
+/**
+ * Komponen Modal untuk mencetak label kosong secara manual
+ *
+ * Fitur:
+ * - Input data petugas (NP)
+ * - Pengaturan jumlah label dan lembar
+ * - Pilihan potongan (kiri/kanan)
+ * - Pencetakan label tanpa menyimpan ke database
+ *
+ * @component PrintLabelKosongModal
+ */
+
 import { reactive, ref } from 'vue';
 import Modal from '@/Components/Modal.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import TextInput from '@/Components/TextInput.vue';
 import { batchSingleLabel } from '@/Components/PrintPages/index';
 
-// Mendefinisikan props yang diterima oleh komponen
+// Props yang diterima komponen
 const props = defineProps({
-    show: Boolean,
-    obc: String,
-    colorObc: String,
-    team: Number,
+    show: Boolean, // Status tampilan modal
+    obc: String, // Nomor OBC
+    colorObc: String, // Warna OBC untuk styling
+    team: Number, // ID tim
 });
 
-// Mendefinisikan emit untuk event yang akan dikirimkan
+// Event yang dapat dipancarkan
 const emit = defineEmits(['close', 'success', 'error']);
 
+// State loading untuk handling proses cetak
 const loading = ref(false);
 
-// Menginisialisasi form dengan reactive
+// State form dengan reactive untuk two-way binding
 const form = reactive({
-    dataRim: '',
-    npPetugas: '',
-    npPetugas2: '',
-    lembar: 500,
-    jml_label: 1,
+    dataRim: '', // Posisi potongan (Kiri/Kanan)
+    npPetugas: '', // NP Petugas pertama
+    npPetugas2: '', // NP Petugas kedua (opsional)
+    lembar: 500, // Jumlah lembar per label
+    jml_label: 1, // Jumlah label yang akan dicetak
 });
 
-// Fungsi untuk mencetak label
+/**
+ * Menangani proses pencetakan label
+ * Menggunakan fungsi batchSingleLabel untuk generate label
+ */
 const printLabel = async () => {
     try {
         loading.value = true;
@@ -159,7 +175,9 @@ const printLabel = async () => {
     }
 };
 
-// Fungsi untuk mereset form
+/**
+ * Mereset form ke nilai default
+ */
 const resetForm = () => {
     form.npPetugas = '';
     form.npPetugas2 = '';
