@@ -11,18 +11,34 @@ use Inertia\Response;
 
 /**
  * Controller untuk menangani monitoring produksi pegawai
+ *
+ * Controller ini menggunakan TeamActivityService untuk:
+ * - Mengambil data aktivitas tim berdasarkan tanggal
+ * - Mengecek status aktivitas tim tertentu
+ * - Menampilkan data workstation yang aktif
+ *
+ * Lihat TeamActivityService.php untuk detail implementasi service
  */
 class ProduksiPegawaiController extends Controller
 {
     /**
-     * Service untuk mengelola aktivitas tim
+     * Instance dari TeamActivityService
+     *
+     * Service ini menyediakan method untuk:
+     * - getActiveTeams() - Mengambil daftar tim yang aktif pada tanggal tertentu
+     * - hasActivity() - Mengecek apakah tim memiliki aktivitas di tanggal tertentu
+     *
+     * @var TeamActivityService
      */
     protected TeamActivityService $teamActivityService;
 
     /**
-     * Constructor untuk menginisialisasi service yang dibutuhkan
+     * Constructor untuk dependency injection
      *
-     * @param TeamActivityService $teamActivityService Service untuk aktivitas tim
+     * Menerima instance TeamActivityService yang akan digunakan
+     * di seluruh method dalam controller
+     *
+     * @param TeamActivityService $teamActivityService Service untuk query data aktivitas tim
      */
     public function __construct(TeamActivityService $teamActivityService)
     {
@@ -32,8 +48,15 @@ class ProduksiPegawaiController extends Controller
     /**
      * Menampilkan halaman monitoring produksi
      *
-     * @param Workstations $workstations Model untuk data workstation
-     * @return Response Response Inertia yang berisi data untuk view
+     * Flow:
+     * 1. Mengambil data workstation dari model Workstations
+     * 2. Merender view Inertia dengan data workstation
+     * 3. View akan menampilkan data dalam format tabel
+     *
+     * Path view: 'MonitoringProduksi/ProduksiPegawai'
+     *
+     * @param Workstations $workstations Model untuk akses data workstation
+     * @return Response Response Inertia dengan data workstation
      */
     public function index(Workstations $workstations): Response
     {
