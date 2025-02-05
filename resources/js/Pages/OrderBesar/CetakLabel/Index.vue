@@ -216,6 +216,7 @@
             ref="tableVerifikasiRef"
             :team="form.team"
             :date="form.date"
+            :disable-loading="true"
         />
     </AuthenticatedLayout>
     <!-- Frame tersembunyi untuk keperluan print -->
