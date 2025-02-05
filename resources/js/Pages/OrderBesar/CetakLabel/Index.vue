@@ -303,8 +303,16 @@ const printWithoutDialog = (content) => {
     doc.write(`
         <style>
             @media print {
-                @page { margin-left: 3rem; margin-right:3rem; margin-top:1rem; }
-                * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+                @page {
+                    margin-left: 3rem;
+                    margin-right: 3rem;
+                    margin-top: 0rem;  /* Changed to match CetakLabel.vue */
+                }
+                body { margin: 0; }
+                * {
+                    -webkit-print-color-adjust: exact;
+                    print-color-adjust: exact;
+                }
             }
         </style>
         ${content}
