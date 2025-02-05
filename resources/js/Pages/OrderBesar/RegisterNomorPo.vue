@@ -1,7 +1,17 @@
 <script setup>
 /**
- * This script handles the registration of Nomor PO (Production Order Number).
- * It utilizes Vue's Composition API and Inertia.js for form handling and API requests.
+ * Komponen untuk registrasi dan manajemen Nomor Production Order (PO)
+ *
+ * Fitur utama:
+ * - Input dan validasi nomor PO
+ * - Kalkulasi otomatis jumlah rim dan inschiet
+ * - Validasi format OBC
+ * - Konfirmasi submit dengan SweetAlert
+ * - Handling error dengan pesan yang informatif
+ *
+ * @requires vue
+ * @requires @inertiajs/vue3
+ * @requires axios
  */
 
 import { inject, ref } from "vue";
@@ -11,65 +21,87 @@ import TextInput from "@/Components/TextInput.vue";
 import InputError from "@/Components/InputError.vue";
 import { Head, router, useForm } from "@inertiajs/vue3";
 import axios from "axios";
+import LoadingOverlay from "@/Components/LoadingOverlay.vue";
+import BaseCard from "@/Components/BaseCard.vue";
+import Button from "@/Components/Button.vue";
+import Select from "@/Components/Select.vue";
 
-const swal = inject('$swal'); // Injecting SweetAlert for notifications
-const isLoading = ref(false); // Loading state for API calls
-const errorPo = ref(""); // Error message for PO input
-const errorObc = ref(""); // Error message for OBC input
-const confirmationMessage = ref("tests"); // Confirmation message for submission
+// Injeksi dependency
+const swal = inject('$swal');
 
+// State management
+const isLoading = ref(false);
+const errorPo = ref("");
+const errorObc = ref("");
+const confirmationMessage = ref("tests");
+
+// Props definition dengan validasi
 const props = defineProps({
-    workstation: Object, // Workstation data passed as props
-    currentTeam: Number, // Current team ID passed as props
+    workstation: {
+        type: Object,
+        required: true
+    },
+    currentTeam: {
+        type: Number,
+        required: true
+    }
 });
 
-const seri = ref(""); // Serial number state
-const seriColor = ref(""); // Serial color state
+// State untuk informasi seri
+const seri = ref("");
+const seriColor = ref("");
 
-// Form state using Inertia's useForm
+/**
+ * Form state menggunakan Inertia useForm
+ * Menyimpan semua input yang diperlukan untuk registrasi PO
+ */
 const form = useForm({
-    po: null,
-    obc: "",
-    jml_rim: 0,
-    jml_lembar: 0,
-    seri: 1,
-    start_rim: 1,
-    produk: "PCHT",
-    end_rim: 40,
-    inschiet: 0,
-    team: props.currentTeam,
+    po: null, // Nomor PO
+    obc: "", // Nomor OBC
+    jml_rim: 0, // Total rim
+    jml_lembar: 0, // Total lembar
+    seri: 1, // Nomor seri
+    start_rim: 1, // Rim awal
+    produk: "PCHT", // Jenis produk
+    end_rim: 40, // Rim akhir
+    inschiet: 0, // Jumlah inschiet
+    team: props.currentTeam, // ID tim
 });
 
 /**
- * Fetch data based on the PO number.
- * Updates form fields and handles errors.
+ * Mengambil data PO dari server
+ * Mengupdate form fields berdasarkan response
  */
 const fetchData = () => {
     isLoading.value = true;
     errorPo.value = "";
 
-    axios.get(`/api/order-besar/register-no-po/${form.po}`).then((response) => {
-        const data = response.data;
-        form.obc = data.no_obc;
-        form.jml_lembar = data.rencet;
-        form.jml_rim = Math.ceil(data.rencet / 500);
-        form.end_rim = Math.max(1, Math.floor(data.rencet / 500 / 2));
-        form.inschiet = (data.rencet % 1000 === 0) ? data.rencet % 500 : data.rencet % 1000;
+    axios.get(`/api/order-besar/register-no-po/${form.po}`)
+        .then((response) => {
+            const data = response.data;
+            // Update form dengan data dari server
+            form.obc = data.no_obc;
+            form.jml_lembar = data.rencet;
+            form.jml_rim = Math.ceil(data.rencet / 500);
+            form.end_rim = Math.max(1, Math.floor(data.rencet / 500 / 2));
+            form.inschiet = (data.rencet % 1000 === 0) ? data.rencet % 500 : data.rencet % 1000;
 
-        updateConfirmationMessage();
-    }).catch(() => {
-        errorPo.value = "Nomor PO Tidak Ditemukan";
-        resetForm();
-    }).finally(() => {
-        isLoading.value = false;
-    });
+            updateConfirmationMessage();
+        })
+        .catch(() => {
+            errorPo.value = "Nomor PO Tidak Ditemukan";
+            resetForm();
+        })
+        .finally(() => {
+            isLoading.value = false;
+        });
 };
 
 /**
- * Debounce function to limit the rate of API calls.
- * @param {Function} func - The function to debounce.
- * @param {number} delay - The delay in milliseconds.
- * @returns {Function} - The debounced function.
+ * Fungsi debounce untuk membatasi request API
+ * @param {Function} func - Fungsi yang akan di-debounce
+ * @param {number} delay - Delay dalam millisecond
+ * @returns {Function} Fungsi yang sudah di-debounce
  */
 const debounce = (func, delay) => {
     let timeout;
@@ -79,10 +111,11 @@ const debounce = (func, delay) => {
     };
 };
 
-const debouncedFetchData = debounce(fetchData, 500); // Debounced fetch function
+const debouncedFetchData = debounce(fetchData, 500);
 
 /**
- * Calculate the end rim based on the number of sheets.
+ * Menghitung jumlah rim akhir berdasarkan jumlah lembar
+ * Mengupdate form.end_rim, form.jml_rim, dan form.inschiet
  */
 const calcEndRim = () => {
     form.end_rim = form.jml_lembar > 500
@@ -95,7 +128,8 @@ const calcEndRim = () => {
 };
 
 /**
- * Validate the OBC input and update the confirmation message.
+ * Validasi format OBC
+ * Format yang valid: 3 huruf pertama harus alphabet
  */
 const cekSpec = () => {
     if (typeof form.obc === 'string' && form.obc.length >= 3) {
@@ -109,17 +143,21 @@ const cekSpec = () => {
 };
 
 /**
- * Update the confirmation message based on the OBC input.
+ * Update pesan konfirmasi berdasarkan input OBC
+ * Menentukan daerah order dan seri berdasarkan format OBC
  */
 const updateConfirmationMessage = () => {
     const firstThreeLetters = form.obc.substring(0, 3);
     let daerahOrder;
+
+    // Tentukan daerah order
     if (firstThreeLetters === "PST") {
         daerahOrder = "<span class='text-blue-500 dark:text-blue-400 font-semibold'>Pusat</span>";
     } else {
         daerahOrder = "<span class='text-red-500 dark:text-red-400 font-semibold'>Daerah</span>";
     }
 
+    // Tentukan seri dan warnanya
     const seriValue = form.obc.substring(5, 4);
     if (seriValue == 3) {
         seri.value = `<span class='text-blue-500 dark:text-blue-400 font-semibold'>${seriValue}</span>`;
@@ -133,7 +171,7 @@ const updateConfirmationMessage = () => {
 };
 
 /**
- * Reset the form fields to their initial state.
+ * Reset semua field form ke nilai default
  */
 const resetForm = () => {
     form.obc = null;
@@ -145,7 +183,8 @@ const resetForm = () => {
 };
 
 /**
- * Submit the form after confirmation.
+ * Handle submit form dengan konfirmasi
+ * Menampilkan SweetAlert untuk konfirmasi dan feedback
  */
 function submit() {
     swal.fire({
@@ -160,9 +199,9 @@ function submit() {
         if (result.isConfirmed) {
             isLoading.value = true;
 
-            // Use axios instead of router for better error handling
-            axios.post("/api/order-besar/register-no-po", form) // change to router from axios when debug error
+            axios.post("/api/order-besar/register-no-po", form)
                 .then(response => {
+                    // Tampilkan pesan sukses
                     swal.fire({
                         icon: 'success',
                         title: 'Berhasil',
@@ -178,6 +217,7 @@ function submit() {
                     form.reset();
                 })
                 .catch(error => {
+                    // Handle berbagai jenis error
                     let errorMessage = 'Terjadi kesalahan';
 
                     if (error.response) {
@@ -189,6 +229,7 @@ function submit() {
                         }
                     }
 
+                    // Tampilkan pesan error
                     swal.fire({
                         icon: 'error',
                         title: 'Gagal',
@@ -217,36 +258,26 @@ function submit() {
 
 <template>
     <Head title="Register No Po" />
-    <!-- Loading Indicator -->
-    <div class="bg-black bg-opacity-40 w-screen h-screen absolute z-50 flex justify-center items-center" v-if="isLoading">
-        <div class="rounded-lg p-4 flex flex-col gap-2 justify-center items-center">
-            <svg class="animate-spin h-10 w-10 brightness-110" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle class="opacity-25 drop-shadow-md shadow-md text-blue-50" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75 shadow-md text-blue-500" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-            </svg>
-            <span class="text-white font-semibold animate-pulse">Sedang Memproses...</span>
-        </div>
-    </div>
+    <LoadingOverlay :is-loading="isLoading" />
 
-    <!-- Content -->
     <AuthenticatedLayout>
-        <div
-            class="w-full max-w-5xl bg-white dark:bg-gray-800 rounded-lg shadow-md py-12 px-6 mx-auto mt-10 flex flex-col gap-3"
-        >
-        <!-- Title -->
-            <h1 class="text-3xl font-bold text-gray-700 dark:text-gray-200 my-auto text-center mb-4 pb-4 border-b border-sky-600 dark:border-sky-500">Register Nomor Production Order</h1>
-
+        <BaseCard title="Register Nomor Production Order">
             <form @submit.prevent="submit" class="flex flex-col text-lg">
                 <div class="flex flex-col">
                     <InputLabel for="teamVerif" value="Team Periksa" class="dark:text-gray-300" />
-                    <select
+                    <Select
                         id="teamVerif"
                         v-model="form.team"
-                        class="mb-2 text-center bg-gray-50 dark:bg-gray-700 text-indigo-600 dark:text-indigo-400 border dark:border-gray-600 focus:border-transparent border-gray-300 sm:text-sm rounded-lg ring ring-transparent focus:ring-1 focus:outline-none focus:ring-sky-400 block w-full p-2.5 rounded-l-lg py-3 px-4 font-semibold">
-                        <option v-for="workstation in props.workstation"
+                        class="text-center text-fuchsia-600 dark:text-fuchsia-400 font-semibold"
+                    >
+                        <option
+                            v-for="workstation in props.workstation"
                             :value="workstation.id"
-                            :key="workstation.id">{{ workstation.workstation }}</option>
-                    </select>
+                            :key="workstation.id"
+                        >
+                            {{ workstation.workstation }}
+                        </option>
+                    </Select>
                 </div>
 
                 <!-- Input Nomor Po -->
@@ -354,22 +385,25 @@ function submit() {
                 </div>
 
                 <!-- Submit Button -->
-                 <div class="flex gap-4 mt-8">
-                     <button
-                         type="submit"
-                         class="bg-green-500 dark:bg-green-600 text-white font-bold py-2 px-4 rounded-md mt-4 hover:bg-green-600 dark:hover:bg-green-700 transition ease-in-out duration-150 flex-auto"
-                     >
-                         Buat Label
-                     </button>
-                     <button
-                        @click="resetForm()"
-                         type="button"
-                         class="bg-violet-500 dark:bg-violet-600 text-white font-bold py-2 px-4 rounded-md mt-4 hover:bg-violet-600 dark:hover:bg-violet-700 transition ease-in-out duration-150 flex-auto"
-                     >
-                         Clear
-                     </button>
-                 </div>
+                <div class="flex gap-4 mt-8">
+                    <Button
+                        type="submit"
+                        variant="success"
+                        :loading="isLoading"
+                        :full-width="true"
+                    >
+                        Buat Label
+                    </Button>
+                    <Button
+                        type="button"
+                        variant="secondary"
+                        :full-width="true"
+                        @click="resetForm"
+                    >
+                        Clear
+                    </Button>
+                </div>
             </form>
-        </div>
+        </BaseCard>
     </AuthenticatedLayout>
 </template>

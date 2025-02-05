@@ -83,4 +83,6 @@ Route::post('/order-kecil/cetak-label', [App\Http\Controllers\OrderKecil\CetakLa
 |--------------------------------------------------------------------------
 */
 Route::get('/pendapatan-harian', [PendapatanHarianController::class, 'gradeHarian']);
+Route::get('/team-name/{id}', [App\Models\Workstations::class, 'getTeamName']);
 Route::post('/update-spec', [UpdateSpecController::class, 'updateSpec']);
+Route::get('/active-teams', [PendapatanHarianController::class, 'getActiveTeams']);

@@ -13,6 +13,7 @@
     "lucide-vue-next": "^0.474.0",
     "vue-sweetalert2": "^5.0.11",
     "vue3-dropdown-navbar": "^0.1.4",
+    "yarn": "^1.22.22",
     "yarn-audit-fix": "^10.1.1"
   },
   "devDependencies": {

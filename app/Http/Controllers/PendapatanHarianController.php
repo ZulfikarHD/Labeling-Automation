@@ -4,74 +4,81 @@ namespace App\Http\Controllers;
 
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use App\Models\GeneratedLabels;
-use App\Models\DataInschiet;
+use Illuminate\Http\JsonResponse;
+use App\Services\VerificationService;
+use App\Services\TeamActivityService;
 
+/**
+ * Controller untuk mengelola data pendapatan harian
+ */
 class PendapatanHarianController extends Controller
 {
-    public function gradeHarian(Request $request)
-    {
-        $date = $request->date !== null ? carbon::parse($request->date)->startOfDay() : today();
+    /**
+     * Service untuk verifikasi data
+     */
+    protected VerificationService $verificationService;
 
-        $verifPegawai = $this->verifHarian($date,$request->team);
+    /**
+     * Service untuk aktivitas tim
+     */
+    protected TeamActivityService $teamActivityService;
 
-        return $verifPegawai;
+    /**
+     * Constructor untuk menginisialisasi service yang dibutuhkan
+     *
+     * @param VerificationService $verificationService Service untuk verifikasi
+     * @param TeamActivityService $teamActivityService Service untuk aktivitas tim
+     */
+    public function __construct(
+        VerificationService $verificationService,
+        TeamActivityService $teamActivityService
+    ) {
+        $this->verificationService = $verificationService;
+        $this->teamActivityService = $teamActivityService;
     }
 
     /**
-     * Kalkulasi hasil verifikasi harian pegawai
-     */
-    /**
-     * Fungsi ini digunakan untuk melakukan verifikasi harian pegawai berdasarkan tanggal dan tim.
+     * Mendapatkan grade harian untuk pegawai
      *
-     * @param String $date Tanggal yang digunakan untuk verifikasi.
-     * @param String $team ID tim yang digunakan untuk filter.
-     * @return Collection Hasil verifikasi pegawai yang sudah dihitung.
+     * @param Request $request Request dari client yang berisi tanggal dan tim
+     * @return JsonResponse Response berupa data verifikasi dalam format JSON
      */
-    public function verifHarian(String $date, String $team)
+    public function gradeHarian(Request $request): JsonResponse
     {
-        // Menentukan filter tim, jika tim adalah 0 maka filter menggunakan '!=' (tidak sama dengan),
-        // jika tidak, menggunakan '=' (sama dengan).
-        $teamFilter = $team == 0 ? '!=' : '=';
+        $date = $request->date ? Carbon::parse($request->date)->startOfDay() : today();
 
-        // Mengambil data dari tabel GeneratedLabels berdasarkan rentang tanggal dan filter tim,
-        // kemudian mengelompokkan hasil berdasarkan np_users.
-        return GeneratedLabels::whereDate('start', $date)
-                        ->where('workstation', $teamFilter, $team)
-                        ->where('np_users', 'not like', '%mesin%')
-                        ->get()
-                        ->groupBy('np_users')
-                        ->map(function($q, $key) {
-                            // Menghitung rentang tanggal untuk inschiet berdasarkan data yang diambil.
-                            $ins_date = [
-                                carbon::parse($q->value('start'))->startOfDay(),
-                                carbon::parse($q->value('start'))->endOfDay()
-                            ];
+        $verificationData = $this->verificationService->getDailyVerification($date, $request->team);
 
-                            // Menghitung total inschiet untuk sisi kiri berdasarkan np_kiri.
-                            $sum_ins_kiri = DataInschiet::where('np_kiri', $key)
-                                                    ->whereBetween('updated_at', $ins_date)
-                                                    ->sum('inschiet');
+        return response()->json($verificationData);
+    }
 
-                            // Menghitung total inschiet untuk sisi kanan berdasarkan np_kanan.
-                            $sum_ins_kanan = DataInschiet::where('np_kanan', $key)
-                                                    ->whereBetween('updated_at', $ins_date)
-                                                    ->sum('inschiet');
+    /**
+     * Mendapatkan daftar tim yang aktif pada tanggal tertentu
+     *
+     * @param Request $request Request dari client yang berisi tanggal
+     * @return JsonResponse Response berupa daftar tim aktif dalam format JSON
+     */
+    public function getActiveTeams(Request $request): JsonResponse
+    {
+        $date = $request->date ? Carbon::parse($request->date)->startOfDay() : today();
 
-                            // Menghitung verifikasi berdasarkan jumlah rim yang tidak sama dengan 999.
-                            $calculate_verif = count($q->whereNotIn('no_rim', 999)) * 500;
+        $activeTeams = $this->teamActivityService->getActiveTeams($date);
 
-                            // Menghitung total inschiet dengan membagi dan membulatkan hasilnya.
-                            $sum_inschiet = round(divnum($sum_ins_kiri, 2)) + round(divnum($sum_ins_kanan, 2));
+        return response()->json($activeTeams);
+    }
 
-                            $count_po   = count($q->unique('no_po_generated_products'));
+    /**
+     * Mendapatkan workstation yang memiliki data pada tanggal tertentu
+     *
+     * @param Request $request Request dari client yang berisi tanggal
+     * @return JsonResponse Response berupa daftar workstation dalam format JSON
+     */
+    public function verifWorkstationNotEmpty(Request $request): JsonResponse
+    {
+        $date = $request->date ? Carbon::parse($request->date)->startOfDay() : today();
 
-                            // Mengembalikan data pegawai dan total verifikasi.
-                            return [
-                                'pegawai'    => $key,
-                                'verifikasi' => $calculate_verif + $sum_inschiet,
-                                'jumlah_po'  => $count_po,
-                            ];
-                        })->sortByDesc('verifikasi')->values(); // Mengurutkan hasil berdasarkan verifikasi secara menurun.
+        $activeTeams = $this->teamActivityService->getActiveTeams($date);
+
+        return response()->json($activeTeams);
     }
 }
