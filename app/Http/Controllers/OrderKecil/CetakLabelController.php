@@ -16,8 +16,21 @@ use Inertia\Inertia;
 /**
  * Controller untuk menangani pencetakan label order kecil
  *
- * Class ini bertanggung jawab untuk mengelola pencetakan label untuk order produksi kecil,
- * termasuk registrasi order baru, menampilkan data, dan memproses pencetakan label.
+ * Flow utama:
+ * 1. User memilih workstation
+ * 2. Input nomor PO dan data label
+ * 3. System generate label untuk setiap rim
+ * 4. Update status progress PO
+ *
+ * Dependencies:
+ * - PrintLabelService: Service untuk generate dan manage label
+ * - ProductionOrderService: Service untuk manage PO dan status
+ * - SpecificationService: Service untuk get spec produk
+ * - UpdateStatusProgress: Trait untuk update status PO
+ *
+ * @see PrintLabelService
+ * @see ProductionOrderService
+ * @see SpecificationService
  */
 class CetakLabelController extends Controller
 {
@@ -30,10 +43,10 @@ class CetakLabelController extends Controller
     protected $printLabelService;
 
     /**
-     * Constructor untuk CetakLabelController
+     * Constructor untuk inject dependencies
      *
-     * @param ProductionOrderService $productionOrderService Service untuk mengelola order produksi
-     * @param PrintLabelService $printLabelService Service untuk mengelola pencetakan label
+     * @param ProductionOrderService $productionOrderService Service untuk manage PO
+     * @param PrintLabelService $printLabelService Service untuk manage label
      */
     public function __construct(
         ProductionOrderService $productionOrderService,
@@ -44,10 +57,15 @@ class CetakLabelController extends Controller
     }
 
     /**
-     * Menampilkan halaman utama pencetakan label
+     * Menampilkan halaman utama cetak label
+     *
+     * Flow:
+     * 1. Get list workstation
+     * 2. Get current user workstation
+     * 3. Render view dengan data
      *
      * @param Workstations $workstations Model workstation
-     * @return \Inertia\Response
+     * @return \Inertia\Response Response Inertia dengan data workstation
      */
     public function index(Workstations $workstations)
     {
@@ -60,11 +78,15 @@ class CetakLabelController extends Controller
     }
 
     /**
-     * Menampilkan detail spesifikasi berdasarkan nomor PO
+     * Get detail spesifikasi produk
      *
-     * @param int $no_po Nomor PO yang akan ditampilkan
-     * @param SpecificationService $specificationService Service untuk mengelola spesifikasi
-     * @return mixed
+     * Flow:
+     * 1. Get spec dari service berdasar nomor PO
+     * 2. Return data spec ke frontend
+     *
+     * @param int $no_po Nomor PO yang dicari
+     * @param SpecificationService $specificationService Service untuk get spec
+     * @return mixed Data spesifikasi produk
      */
     public function show(int $no_po, SpecificationService $specificationService)
     {
@@ -72,10 +94,19 @@ class CetakLabelController extends Controller
     }
 
     /**
-     * Memproses pencetakan label berdasarkan request yang divalidasi
+     * Handle request cetak label baru
      *
-     * @param StoreGeneratedProductsRequest $request Request tervalidasi untuk pencetakan label
-     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Http\JsonResponse
+     * Flow:
+     * 1. Validate request
+     * 2. Start transaction
+     * 3. Register PO baru
+     * 4. Generate label untuk PO
+     * 5. Update status user sebelumnya
+     * 6. Update progress PO
+     * 7. Commit atau rollback transaction
+     *
+     * @param StoreGeneratedProductsRequest $request Request tervalidasi
+     * @return \Illuminate\Http\JsonResponse Response status operasi
      */
     public function cetakLabel(StoreGeneratedProductsRequest $request)
     {
@@ -100,10 +131,14 @@ class CetakLabelController extends Controller
     }
 
     /**
-     * Menghitung jumlah label yang belum memiliki NP user
+     * Helper untuk hitung label yang belum diproses
      *
-     * @param string $noPo Nomor PO yang akan dihitung
-     * @return int Jumlah label tanpa NP user
+     * Menghitung jumlah label yang:
+     * - Belum memiliki NP user (np_users = null)
+     * - Untuk PO tertentu
+     *
+     * @param string $noPo Nomor PO yang dihitung
+     * @return int Jumlah label yang belum diproses
      */
     private function countNullNp(string $noPo): int
     {

@@ -15,6 +15,18 @@ use App\Services\ProductionOrderService;
 use App\Traits\UpdateStatusProgress;
 use Illuminate\Support\Facades\DB;
 
+/**
+ * Controller untuk mengelola Production Order (PO)
+ *
+ * Bertanggung jawab untuk:
+ * - Menampilkan daftar PO
+ * - Membuat PO baru
+ * - Mengedit PO
+ * - Menghapus PO
+ * - Mengupdate status PO
+ *
+ * @package App\Http\Controllers
+ */
 class ProductionOrderController extends Controller
 {
     use UpdateStatusProgress;
@@ -29,7 +41,10 @@ class ProductionOrderController extends Controller
     }
 
     /**
-     * Display a listing of the resource.
+     * Menampilkan daftar Production Order berdasarkan tim
+     *
+     * @param string $team ID tim
+     * @return \Inertia\Response
      */
     public function index(String $team)
     {
@@ -40,13 +55,20 @@ class ProductionOrderController extends Controller
         ]);
     }
 
+    /**
+     * Mengambil data PO dengan filter dan pagination
+     *
+     * @param string $team ID tim
+     * @param Request $request Request dengan parameter search, sort_field, sort_direction
+     * @return mixed Data PO yang sudah difilter dan dipaginasi
+     */
     public function data_products(String $team, Request $request)
     {
         $search = $request->search;
         $sort_field = $request->sort_field ?? 'status';
         $sort_direction = $request->sort_direction ?? 'asc';
 
-        // Validate allowed sort fields for security
+        // Validasi field sorting yang diizinkan
         $allowed_sort_fields = ['no_po', 'no_obc', 'created_at', 'updated_at', 'status'];
         if (!in_array($sort_field, $allowed_sort_fields)) {
             $sort_field = 'created_at';
@@ -78,6 +100,12 @@ class ProductionOrderController extends Controller
         return $data_product == null ? '' : $data_product;
     }
 
+    /**
+     * Menampilkan form edit PO
+     *
+     * @param int $po Nomor PO
+     * @return \Inertia\Response
+     */
     public function edit(Int $po)
     {
         $dataPo = GeneratedProducts::where('no_po', $po)->firstOrFail();
@@ -101,7 +129,11 @@ class ProductionOrderController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * Menampilkan detail status verifikasi PO
+     *
+     * @param string $team ID tim
+     * @param string $po Nomor PO
+     * @return \Inertia\Response
      */
     public function show(String $team, string $po)
     {
@@ -113,6 +145,12 @@ class ProductionOrderController extends Controller
         ]);
     }
 
+    /**
+     * Menyimpan PO baru
+     *
+     * @param Request $request Data PO baru
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function store(Request $request)
     {
         try {
@@ -125,22 +163,32 @@ class ProductionOrderController extends Controller
         return redirect()->back();
     }
 
+    /**
+     * Mengupdate data PO yang sudah ada
+     *
+     * @param Request $request Data PO yang diupdate
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function update(Request $request)
     {
         DB::beginTransaction();
         try {
+            // Ambil semua label untuk PO ini
             $labels = GeneratedLabels::where('no_po_generated_products', $request->no_po)
                         ->orderBy('no_rim')
                         ->get();
 
+            // Update nomor rim untuk setiap label
             $newRimNumber = $request->start_rim;
             $previousRim = null;
 
             foreach ($labels as $label) {
+                // Increment rim number jika berbeda dengan sebelumnya
                 if ($previousRim !== null && $label->no_rim != $previousRim) {
                     $newRimNumber++;
                 }
 
+                // Skip update untuk rim inschiet (999)
                 GeneratedLabels::where('id', $label->id)
                     ->update([
                         'no_rim' => $label->no_rim == 999 ? 999 : $newRimNumber
@@ -149,6 +197,7 @@ class ProductionOrderController extends Controller
                 $previousRim = $label->no_rim;
             }
 
+            // Update data PO
             GeneratedProducts::where('no_po', $request->no_po)->update([
                 'type'  => $request->type,
                 'sum_rim'   => $request->sum_rim,
@@ -160,7 +209,7 @@ class ProductionOrderController extends Controller
 
             DB::commit();
 
-            // Get fresh label data
+            // Ambil data label yang sudah diupdate
             $updatedLabels = GeneratedLabels::where('no_po_generated_products', $request->no_po)
                 ->select('id', 'no_po_generated_products', 'no_rim', 'np_users', 'np_user_p2', 'potongan', 'start', 'finish')
                 ->get();
@@ -183,7 +232,9 @@ class ProductionOrderController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Menghapus PO beserta data terkait
+     *
+     * @param string $po Nomor PO yang akan dihapus
      */
     public function destroy(string $po)
     {
@@ -192,6 +243,11 @@ class ProductionOrderController extends Controller
         DataInschiet::where('no_po', $po)->delete();
     }
 
+    /**
+     * Mengupdate status PO menjadi selesai
+     *
+     * @param string $po Nomor PO
+     */
     public function updateStatusFinish(String $po)
     {
         $this->updateProgress($po, 2);

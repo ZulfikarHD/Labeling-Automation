@@ -10,17 +10,43 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Inertia\Inertia;
 
+/**
+ * Controller untuk mengelola label yang digenerate
+ *
+ * Controller ini bertanggung jawab untuk:
+ * - Update data label
+ * - Mengambil data label berdasarkan nomor PO
+ * - Menambah rim baru ke PO yang sudah ada
+ * - Batch delete/reset label
+ *
+ * Tech Stack:
+ * - Laravel 10 untuk backend
+ * - Database transaction untuk data consistency
+ * - Logging untuk error tracking
+ * - Request validation
+ *
+ * Flow Aplikasi:
+ * 1. User dapat update status label (np_users, start/finish time)
+ * 2. User dapat menambah rim baru ke PO
+ * 3. User dapat mereset status label secara batch
+ * 4. System menjaga konsistensi data dengan transaction
+ */
 class GeneratedLabelController extends Controller
 {
     /**
-     * Update a generated label record
+     * Update data label yang sudah ada
      *
-     * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
+     * Flow:
+     * 1. Validasi request data
+     * 2. Jalankan dalam transaction
+     * 3. Reset status PO jika diperlukan
+     * 4. Update data label
+     *
+     * @param Request $request Data update label
+     * @return \Illuminate\Http\JsonResponse Response status operasi
      */
     public function update(Request $request)
     {
-        // dd($request->all());
         $validatedData = $this->validateUpdateRequest($request);
         if ($validatedData->fails()) {
             return $this->validationErrorResponse($validatedData->errors());
@@ -45,10 +71,15 @@ class GeneratedLabelController extends Controller
     }
 
     /**
-     * Get labels for a production order with optimized query
+     * Mengambil data label untuk suatu PO dengan query yang dioptimasi
      *
-     * @param string $po
-     * @return \Illuminate\Http\JsonResponse
+     * Optimasi:
+     * - Select kolom spesifik yang dibutuhkan
+     * - Ordering by no_rim untuk display
+     * - Array response untuk performa
+     *
+     * @param string $po Nomor PO yang dicari
+     * @return \Illuminate\Http\JsonResponse Data label dalam format JSON
      */
     public function getLabels(string $po)
     {
@@ -77,10 +108,16 @@ class GeneratedLabelController extends Controller
     }
 
     /**
-     * Add new rim(s) to a production order
+     * Menambahkan rim baru ke PO yang sudah ada
      *
-     * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
+     * Flow:
+     * 1. Validasi request data
+     * 2. Reset status PO
+     * 3. Cek duplikasi rim
+     * 4. Create label baru dalam transaction
+     *
+     * @param Request $request Data rim baru
+     * @return \Illuminate\Http\JsonResponse Response status operasi
      */
     public function addRim(Request $request)
     {
@@ -91,7 +128,6 @@ class GeneratedLabelController extends Controller
         }
 
         $this->resetProductionOrderStatus($request->no_po);
-
 
         return DB::transaction(function () use ($request) {
             try {
@@ -111,6 +147,11 @@ class GeneratedLabelController extends Controller
         });
     }
 
+    /**
+     * Reset status PO ke status awal
+     *
+     * @param string $noPo Nomor PO yang akan direset
+     */
     private function resetProductionOrderStatus(string $noPo)
     {
         $productionOrder = GeneratedProducts::where('no_po', $noPo)->firstOrFail();
@@ -118,13 +159,11 @@ class GeneratedLabelController extends Controller
             $productionOrder->update([
                 'status' => 1
             ]);
-        } else {
-        // do nothing
         }
     }
 
     /**
-     * Validate update request data
+     * Validasi data untuk update label
      */
     private function validateUpdateRequest(Request $request)
     {
@@ -139,7 +178,7 @@ class GeneratedLabelController extends Controller
     }
 
     /**
-     * Validate add rim request data
+     * Validasi data untuk penambahan rim
      */
     private function validateAddRimRequest(Request $request)
     {
@@ -152,7 +191,7 @@ class GeneratedLabelController extends Controller
     }
 
     /**
-     * Prepare data for update
+     * Menyiapkan data untuk update
      */
     private function prepareUpdateData(Request $request): array
     {
@@ -166,7 +205,7 @@ class GeneratedLabelController extends Controller
     }
 
     /**
-     * Get production order by PO number
+     * Mengambil data PO berdasarkan nomor
      */
     private function getProductionOrder(int $noPo)
     {
@@ -174,7 +213,7 @@ class GeneratedLabelController extends Controller
     }
 
     /**
-     * Check if rim already exists
+     * Cek apakah rim sudah ada di database
      */
     private function rimExists(Request $request): bool
     {
@@ -189,7 +228,7 @@ class GeneratedLabelController extends Controller
     }
 
     /**
-     * Create rim labels
+     * Membuat label untuk rim
      */
     private function createRimLabels(Request $request, GeneratedProducts $productionOrder)
     {
@@ -203,7 +242,7 @@ class GeneratedLabelController extends Controller
     }
 
     /**
-     * Create labels for both sides
+     * Membuat label untuk kedua sisi
      */
     private function createBothSideLabels(Request $request)
     {
@@ -229,7 +268,7 @@ class GeneratedLabelController extends Controller
     }
 
     /**
-     * Create single side label
+     * Membuat label untuk satu sisi
      */
     private function createSingleLabel(Request $request)
     {
@@ -242,7 +281,7 @@ class GeneratedLabelController extends Controller
     }
 
     /**
-     * Update production order rim counts
+     * Update jumlah rim pada PO
      */
     private function updateProductionOrder(GeneratedProducts $productionOrder, int $increment)
     {
@@ -253,7 +292,7 @@ class GeneratedLabelController extends Controller
     }
 
     /**
-     * Return success response
+     * Response untuk operasi sukses
      */
     private function successResponse(string $message)
     {
@@ -264,7 +303,7 @@ class GeneratedLabelController extends Controller
     }
 
     /**
-     * Return error response
+     * Response untuk operasi error
      */
     private function errorResponse(string $message, int $code = 500)
     {
@@ -275,7 +314,7 @@ class GeneratedLabelController extends Controller
     }
 
     /**
-     * Return validation error response
+     * Response untuk error validasi
      */
     private function validationErrorResponse($errors)
     {
@@ -286,6 +325,17 @@ class GeneratedLabelController extends Controller
         ], 422);
     }
 
+    /**
+     * Batch delete/reset status label
+     *
+     * Flow:
+     * 1. Reset data label dalam transaction
+     * 2. Reset status PO
+     * 3. Return response sukses/error
+     *
+     * @param Request $request Data label yang akan direset
+     * @return \Illuminate\Http\JsonResponse Response status operasi
+     */
     public function batchDelete(Request $request)
     {
         try {

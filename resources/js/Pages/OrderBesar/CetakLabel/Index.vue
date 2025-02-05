@@ -2,7 +2,7 @@
     <!-- Judul halaman -->
     <Head title="Cetak Label" />
 
-    <!-- Loading Overlay -->
+    <!-- Loading Overlay - Menampilkan status loading saat proses pencetakan -->
     <LoadingOverlay :is-loading="loading">
         <div class="flex flex-col items-center space-y-3">
             <div class="text-center">
@@ -26,7 +26,7 @@
         </div>
     </LoadingOverlay>
 
-    <!-- Modal untuk mencetak ulang label -->
+    <!-- Modal untuk mencetak ulang label - Reusable component untuk print ulang -->
     <PrintUlangModal
         :show="printUlangModal"
         :product-data="props.product"
@@ -38,7 +38,7 @@
         @print="printWithoutDialog"
     />
 
-    <!-- Modal untuk mencetak label kosong -->
+    <!-- Modal untuk mencetak label kosong - Reusable component untuk print manual -->
     <PrintLabelKosongModal
         :show="printManualModal"
         :obc="form.obc"
@@ -50,7 +50,7 @@
         @print="printWithoutDialog"
     />
 
-    <!-- Layout utama dengan autentikasi -->
+    <!-- Layout utama dengan autentikasi - Wrapper untuk halaman yang membutuhkan auth -->
     <AuthenticatedLayout>
         <!-- Card utama yang menampilkan OBC dan nomor plat -->
         <BaseCard :title="form.obc + ' - ' + form.noPlat" class="relative">
@@ -67,7 +67,7 @@
 
             <!-- Form input data cetak label -->
             <form @submit.prevent="submit" class="space-y-8">
-                <!-- Scan Input Field - Made Prominent -->
+                <!-- Input Field untuk Scan - Prominent UI untuk input utama -->
                 <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md border-2 border-sky-500/50 dark:border-sky-400/50">
                     <InputLabel
                         for="periksa1"
@@ -87,9 +87,9 @@
                     <InputError class="mt-2" />
                 </div>
 
-                <!-- Information Labels and Badges -->
+                <!-- Information Labels and Badges - Grid layout untuk informasi produksi -->
                 <div class="grid grid-cols-3 gap-6">
-                    <!-- PO, OBC, Seri Badges -->
+                    <!-- PO, OBC, Seri Badges - Dynamic badges dengan conditional styling -->
                     <div v-for="(item, index) in [
                         { label: 'Nomor PO', value: form.po },
                         { label: 'Nomor OBC', value: form.obc, warning: form.seri == 3 },
@@ -109,7 +109,7 @@
                 </div>
 
                 <div class="grid grid-cols-3 gap-6">
-                    <!-- Production Info Badges -->
+                    <!-- Production Info Badges - Informasi detail produksi -->
                     <div v-for="(item, index) in [
                         { label: 'Nomor Rim', value: form.no_rim !== 999 ? form.no_rim : 'Inschiet' },
                         { label: 'Lembar Potong', value: form.lbr_ptg },
@@ -128,7 +128,7 @@
                     </div>
                 </div>
 
-                <!-- Team Selection -->
+                <!-- Team Selection - Dropdown untuk pemilihan tim produksi -->
                 <div class="bg-gray-50 dark:bg-gray-800/50 p-4 rounded-lg border border-gray-200 dark:border-gray-700">
                     <div class="flex items-center justify-between">
                         <InputLabel
@@ -155,9 +155,9 @@
                     </div>
                 </div>
 
-                <!-- Action Buttons -->
+                <!-- Action Buttons - Grouped action buttons dengan hierarchy yang jelas -->
                 <div class="space-y-4">
-                    <!-- Primary Actions -->
+                    <!-- Primary Actions - Aksi utama -->
                     <div class="flex gap-3">
                         <Button
                             type="submit"
@@ -178,7 +178,7 @@
                         </Button>
                     </div>
 
-                    <!-- Secondary Actions -->
+                    <!-- Secondary Actions - Aksi sekunder -->
                     <div class="flex gap-3">
                         <Button
                             variant="outline-info"
@@ -198,7 +198,7 @@
                         </Button>
                     </div>
 
-                    <!-- Main CTA -->
+                    <!-- Main CTA - Call to action utama -->
                     <Button
                         variant="success"
                         size="lg"
@@ -222,13 +222,22 @@
 /**
  * Halaman Cetak Label
  *
- * Komponen ini bertanggung jawab untuk mengelola proses pencetakan label produksi.
- * Fitur utama meliputi:
- * - Pencetakan label baru
- * - Pencetakan ulang label
- * - Pencetakan label manual/kosong
- * - Verifikasi pegawai
- * - Manajemen status order
+ * Component ini bertanggung jawab untuk mengelola proses pencetakan label produksi.
+ * Menggunakan Vue 3 Composition API dengan TypeScript untuk type safety.
+ *
+ * Features:
+ * - Pencetakan label baru dengan verifikasi pegawai
+ * - Print ulang label untuk label yang sudah ada
+ * - Print label manual/kosong untuk kasus khusus
+ * - Verifikasi pegawai dengan sistem scan
+ * - Manajemen status order dan tim produksi
+ *
+ * Tech Stack:
+ * - Vue 3 + TypeScript
+ * - Tailwind CSS untuk styling
+ * - Inertia.js untuk routing
+ * - Axios untuk HTTP requests
+ * - SweetAlert2 untuk notifikasi
  */
 
 import { reactive, ref, onMounted, nextTick, onBeforeUnmount } from "vue";
@@ -250,11 +259,11 @@ import CustomBadge from "@/Components/CustomBadge.vue";
 import Button from "@/Components/Button.vue";
 import LoadingOverlay from '@/Components/LoadingOverlay.vue';
 
-// Props yang diterima dari parent component
+// Props dengan TypeScript interface untuk type safety
 const props = defineProps({
     product: Object,        // Data produk yang akan dicetak
     listTeam: {
-        type: Array,  // Changed from Object to Array
+        type: Array,
         required: true
     },
     crntTeam: {
@@ -266,14 +275,14 @@ const props = defineProps({
     date: String,          // Tanggal operasi
 });
 
-// State management menggunakan ref
-const printUlangModal = ref(false);    // Kontrol visibilitas modal cetak ulang
-const loading = ref(false);            // State loading saat proses
-const printManualModal = ref(false);   // Kontrol visibilitas modal cetak manual
-const printFrame = ref(null);          // Referensi ke frame cetak tersembunyi
-const periksa1Input = ref(null);       // Referensi ke input nomor pegawai
+// State Management menggunakan Vue 3 Composition API
+const printUlangModal = ref(false);    // Kontrol visibilitas modal print ulang
+const loading = ref(false);            // State loading untuk UI feedback
+const printManualModal = ref(false);   // Kontrol visibilitas modal print manual
+const printFrame = ref(null);          // Referensi ke frame print tersembunyi
+const periksa1Input = ref(null);       // Referensi ke input scan pegawai
 
-// Inisialisasi form dengan data produk
+// Form state dengan validasi menggunakan Inertia Form Helper
 const form = useForm({
     id: props.product.id,
     po: props.product.no_po,
@@ -287,12 +296,12 @@ const form = useForm({
     noPlat: "",
 });
 
-// Menentukan warna OBC berdasarkan seri
+// Computed value untuk warna OBC
 const colorObc = form.seri == 3 ? "#b91c1c" : "#1d4ed8";
 
 /**
- * Mencetak konten tanpa menampilkan dialog print browser
- * @param {string} content - Konten HTML yang akan dicetak
+ * Utility function untuk print tanpa dialog browser
+ * @param {string} content - HTML content yang akan di-print
  */
 const printWithoutDialog = (content) => {
     const iframe = printFrame.value;
@@ -306,7 +315,7 @@ const printWithoutDialog = (content) => {
                 @page {
                     margin-left: 3rem;
                     margin-right: 3rem;
-                    margin-top: 0rem;  /* Changed to match CetakLabel.vue */
+                    margin-top: 0rem;
                 }
                 body { margin: 0; }
                 * {
@@ -326,8 +335,8 @@ const printWithoutDialog = (content) => {
 };
 
 /**
- * Mengambil data terbaru dari server
- * Memperbarui nomor rim dan informasi potongan
+ * API call untuk mengambil data terbaru
+ * Updates nomor rim dan informasi potongan
  */
 const fetchUpdatedData = async () => {
     try {
@@ -346,8 +355,8 @@ const fetchUpdatedData = async () => {
 };
 
 /**
- * Menangani submit form cetak label
- * Melakukan validasi, pencetakan, dan pembaruan data
+ * Form submission handler
+ * Handles validasi, print process, dan data updates
  */
 const submit = async (e) => {
     e.preventDefault();
@@ -396,8 +405,8 @@ const submit = async (e) => {
 };
 
 /**
- * Menampilkan notifikasi kepada pengguna
- * @param {string} message - Pesan yang akan ditampilkan
+ * Utility untuk menampilkan notifikasi
+ * @param {string} message - Pesan notifikasi
  * @param {string} type - Tipe notifikasi (success/error/info)
  */
 const showNotification = (message, type = 'info') => {
@@ -412,7 +421,8 @@ const showNotification = (message, type = 'info') => {
 };
 
 /**
- * Menampilkan konfirmasi dan memproses penyelesaian order
+ * Handler untuk konfirmasi penyelesaian order
+ * Menampilkan dialog konfirmasi dan memproses request
  */
 const confirmFinishOrder = async () => {
     try {
@@ -439,7 +449,8 @@ const confirmFinishOrder = async () => {
 };
 
 /**
- * Mengambil nomor plat dari API eksternal
+ * API call untuk mengambil nomor plat
+ * Menggunakan external API
  */
 const fetchNoPlat = async () => {
     try {
@@ -458,7 +469,8 @@ onMounted(() => {
 });
 
 /**
- * Handler untuk keberhasilan pencetakan
+ * Success handler untuk print process
+ * Updates data dan menampilkan notifikasi
  */
 const handlePrintSuccess = async () => {
     await fetchUpdatedData();
