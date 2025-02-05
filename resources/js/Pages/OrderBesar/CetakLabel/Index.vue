@@ -9,7 +9,7 @@
                 <p class="text-6xl font-semibold text-gray-700 dark:text-gray-300">
                     Mencetak Label
                 </p>
-                <div class="flex items-center justify-center space-x-2 mt-1">
+                <div class="flex flex-wrap gap-2 items-center justify-center space-x-2 mt-1">
                     <span class="text-6xl text-gray-600 dark:text-gray-400">
                         Rim Nomor : <span class="font-medium text-blue-600 dark:text-blue-400">
                             {{ form.no_rim !== 999 ? form.no_rim : 'INS' }}
@@ -147,7 +147,7 @@
                                 v-for="team in props.listTeam"
                                 :key="team.id"
                                 :value="team.id"
-                                :selected="team.id === form.team"
+                                :selected="form.team"
                             >
                                 {{ team.workstation }}
                             </option>
@@ -296,6 +296,7 @@ const form = useForm({
     noPlat: "",
 });
 
+
 // Computed value untuk warna OBC
 const colorObc = form.seri == 3 ? "#b91c1c" : "#1d4ed8";
 
@@ -393,6 +394,13 @@ const submit = async (e) => {
             await fetchUpdatedData();
             showNotification('Label berhasil dicetak', 'success');
             periksa1Input.value?.focus();
+
+            // Check if team has changed from initial value
+            if (form.team !== props.crntTeam) {
+                // Redirect to new team's cetak label page
+                router.get(`/order-besar/cetak-label/${form.team}/${props.product.id}`);
+                return;
+            }
         } else {
             router.get("/order-besar/po-siap-verif", {}, { preserveState: true });
         }

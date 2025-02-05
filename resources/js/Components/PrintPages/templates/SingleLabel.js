@@ -24,6 +24,7 @@ export function singleLabel(
             margin: 0 auto;
             font-size: 12px;
             overflow: hidden;
+            padding-top: 0.9cm;
         }
 
         .wrapper {
@@ -83,7 +84,7 @@ export function singleLabel(
     </style>
 </head>
 <body>
-    <div style='width: 100%; height: 100%; margin-top: 1.1rem;'>
+    <div style='width: 100%; height: 100%;'>
         <div class="wrapper">
             <div class="sectionWrapper" style="flex: 0 0 auto; padding: 0.25rem; padding-bottom: 0.25rem;">
             </div>
