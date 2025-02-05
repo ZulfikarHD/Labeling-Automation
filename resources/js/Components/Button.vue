@@ -65,13 +65,13 @@ const variantStyles = computed(() => ({
   secondary: 'bg-fuchsia-500 dark:bg-fuchsia-600 text-white hover:bg-fuchsia-600 dark:hover:bg-fuchsia-700 focus:ring-fuchsia-500/30 dark:focus:ring-fuchsia-400/30',
   danger: 'bg-red-500 dark:bg-red-600 text-white hover:bg-red-600 dark:hover:bg-red-700 focus:ring-red-500/30 dark:focus:ring-red-400/30',
   warning: 'bg-amber-500 dark:bg-amber-600 text-white hover:bg-amber-600 dark:hover:bg-amber-700 focus:ring-amber-500/30 dark:focus:ring-amber-400/30',
-  success: 'bg-cyan-500 dark:bg-cyan-600 text-white hover:bg-cyan-600 dark:hover:bg-cyan-700 focus:ring-cyan-500/30 dark:focus:ring-cyan-400/30',
+  success: 'bg-green-500 dark:bg-green-600 text-white hover:bg-green-600 dark:hover:bg-green-700 focus:ring-green-500/30 dark:focus:ring-green-400/30',
   info: 'bg-blue-500 dark:bg-blue-600 text-white hover:bg-blue-600 dark:hover:bg-blue-700 focus:ring-blue-500/30 dark:focus:ring-blue-400/30',
   'outline-primary': 'border-2 border-sky-500 dark:border-sky-400 text-sky-600 dark:text-sky-400 hover:bg-sky-50 dark:hover:bg-sky-950 focus:ring-sky-500/30 dark:focus:ring-sky-400/30',
   'outline-secondary': 'border-2 border-fuchsia-500 dark:border-fuchsia-400 text-fuchsia-600 dark:text-fuchsia-400 hover:bg-fuchsia-50 dark:hover:bg-fuchsia-950 focus:ring-fuchsia-500/30 dark:focus:ring-fuchsia-400/30',
   'outline-danger': 'border-2 border-red-500 dark:border-red-400 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950 focus:ring-red-500/30 dark:focus:ring-red-400/30',
   'outline-warning': 'border-2 border-amber-500 dark:border-amber-400 text-amber-600 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-950 focus:ring-amber-500/30 dark:focus:ring-amber-400/30',
-  'outline-success': 'border-2 border-cyan-500 dark:border-cyan-400 text-cyan-600 dark:text-cyan-400 hover:bg-cyan-50 dark:hover:bg-cyan-950 focus:ring-cyan-500/30 dark:focus:ring-cyan-400/30',
+  'outline-success': 'border-2 border-green-500 dark:border-green-400 text-green-600 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-950 focus:ring-green-500/30 dark:focus:ring-green-400/30',
   'outline-info': 'border-2 border-blue-500 dark:border-blue-400 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950 focus:ring-blue-500/30 dark:focus:ring-blue-400/30',
   ghost: 'text-sky-600 dark:text-sky-400 hover:bg-sky-50 dark:hover:bg-sky-950 focus:ring-sky-500/30 dark:focus:ring-sky-400/30',
   link: 'text-sky-600 dark:text-sky-400 hover:underline focus:ring-sky-500/30 dark:focus:ring-sky-400/30',
@@ -98,7 +98,7 @@ const iconSizes = {
   <button
     :type="type"
     :disabled="disabled || loading"
-    class="inline-flex items-center justify-center font-medium rounded-lg transition-all duration-200 ease-in-out
+    class="inline-flex items-center justify-center font-semibold rounded-lg transition-all duration-200 ease-in-out
     shadow-sm
     focus:outline-none focus:ring-4
     disabled:opacity-70 disabled:cursor-not-allowed"
