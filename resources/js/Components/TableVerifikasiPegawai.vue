@@ -119,7 +119,7 @@ fetchData();
                                 <Badge
                                     variant="success"
                                     size="md"
-                                    contrast="normal"
+                                    contrast="low"
                                     :rounded="'lg'"
                                     class="flex items-center gap-2"
                                 >

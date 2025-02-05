@@ -3,7 +3,28 @@
     <Head title="Cetak Label" />
 
     <!-- Loading Overlay -->
-    <LoadingOverlay :is-loading="loading" />
+    <LoadingOverlay :is-loading="loading">
+        <div class="flex flex-col items-center space-y-3">
+            <div class="text-center">
+                <p class="text-6xl font-semibold text-gray-700 dark:text-gray-300">
+                    Mencetak Label
+                </p>
+                <div class="flex items-center justify-center space-x-2 mt-1">
+                    <span class="text-6xl text-gray-600 dark:text-gray-400">
+                        Rim Nomor : <span class="font-medium text-blue-600 dark:text-blue-400">
+                            {{ form.no_rim !== 999 ? form.no_rim : 'INS' }}
+                        </span>
+                    </span>
+                    <span class="text-gray-400 dark:text-gray-600">|</span>
+                    <span class="text-6xl text-gray-600 dark:text-gray-400">
+                        Potongan : <span class="font-medium text-blue-600 dark:text-blue-400">
+                            {{ form.lbr_ptg }}
+                        </span>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </LoadingOverlay>
 
     <!-- Modal untuk mencetak ulang label -->
     <PrintUlangModal
@@ -57,9 +78,10 @@
                         id="periksa1"
                         type="text"
                         v-model="form.periksa1"
-                        class="w-full text-xl py-4 uppercase dark:bg-gray-700 dark:text-gray-300"
+                        class="w-full text-xl py-4 uppercase dark:bg-gray-700 dark:text-gray-300 text-center"
                         required
                         ref="periksa1Input"
+                        maxlength="4"
                         autofocus
                     />
                     <InputError class="mt-2" />
@@ -75,7 +97,7 @@
                     ]" :key="index">
                         <InputLabel :for="item.label" :value="item.label" class="text-base font-medium mb-2 dark:text-gray-400" />
                         <CustomBadge
-                            :variant="item.warning ? 'danger' : 'default'"
+                            :variant="item.warning ? 'danger' : 'primary'"
                             size="base"
                             contrast="normal"
                             :rounded="'lg'"
@@ -132,7 +154,7 @@
                     <!-- Secondary Actions -->
                     <div class="flex gap-3">
                         <Button
-                            variant="outline"
+                            variant="outline-info"
                             size="base"
                             @click="printUlangModal = true"
                             class="flex-1"
@@ -140,7 +162,7 @@
                             Print Ulang
                         </Button>
                         <Button
-                            variant="outline"
+                            variant="outline-primary"
                             size="base"
                             @click="printManualModal = true"
                             class="flex-1"
