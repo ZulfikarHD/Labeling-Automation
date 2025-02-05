@@ -18,7 +18,7 @@
                     <span class="text-gray-400 dark:text-gray-600">|</span>
                     <span class="text-6xl text-gray-600 dark:text-gray-400">
                         Potongan : <span class="font-medium text-blue-600 dark:text-blue-400">
-                            {{ form.lbr_ptg }}
+                            {{ form.lbr_ptg == 'Kiri' ? 'Kiri ( * )' : 'Kanan ( ** ) ' }}
                         </span>
                     </span>
                 </div>
@@ -87,7 +87,7 @@
                     <InputError class="mt-2" />
                 </div>
 
-                <!-- Information Labels - Reduced Visual Weight -->
+                <!-- Information Labels and Badges -->
                 <div class="grid grid-cols-3 gap-6">
                     <!-- PO, OBC, Seri Badges -->
                     <div v-for="(item, index) in [
@@ -128,7 +128,34 @@
                     </div>
                 </div>
 
-                <!-- Action Buttons - Reorganized -->
+                <!-- Team Selection -->
+                <div class="bg-gray-50 dark:bg-gray-800/50 p-4 rounded-lg border border-gray-200 dark:border-gray-700">
+                    <div class="flex items-center justify-between">
+                        <InputLabel
+                            for="team"
+                            value="Pilih Tim Produksi"
+                            class="text-base font-medium dark:text-gray-400"
+                        />
+                        <Select
+                            id="team"
+                            v-model="form.team"
+                            class="w-64 bg-white dark:bg-gray-800"
+                            required
+                        >
+                            <option value="" disabled>Pilih Tim</option>
+                            <option
+                                v-for="team in props.listTeam"
+                                :key="team.id"
+                                :value="team.id"
+                                :selected="team.id === form.team"
+                            >
+                                {{ team.workstation }}
+                            </option>
+                        </Select>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
                 <div class="space-y-4">
                     <!-- Primary Actions -->
                     <div class="flex gap-3">
@@ -226,8 +253,14 @@ import LoadingOverlay from '@/Components/LoadingOverlay.vue';
 // Props yang diterima dari parent component
 const props = defineProps({
     product: Object,        // Data produk yang akan dicetak
-    listTeam: Object,      // Daftar tim yang tersedia
-    crntTeam: Number,      // ID tim yang aktif
+    listTeam: {
+        type: Array,  // Changed from Object to Array
+        required: true
+    },
+    crntTeam: {
+        type: Number,
+        required: true
+    },
     noRim: Number,         // Nomor rim saat ini
     potongan: String,      // Informasi potongan lembar
     date: String,          // Tanggal operasi
