@@ -1,3 +1,19 @@
+/**
+ * Komponen untuk mencetak label Order Kecil
+ *
+ * Fitur utama:
+ * - Input dan validasi nomor PO
+ * - Kalkulasi otomatis jumlah rim
+ * - Validasi format OBC
+ * - Konfirmasi submit dengan SweetAlert
+ * - Handling error dengan pesan yang informatif
+ * - Print label functionality
+ *
+ * @requires vue
+ * @requires @inertiajs/vue3
+ * @requires axios
+ */
+
 <script setup>
 import { inject, ref } from "vue";
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
@@ -13,25 +29,41 @@ import Select from "@/Components/Select.vue";
 import LoadingOverlay from "@/Components/LoadingOverlay.vue";
 import Button from "@/Components/Button.vue";
 
+// Injeksi dependency
 const swal = inject('$swal');
+
+// State management
 const isLoading = ref(false);
 const errorPo = ref("");
 const timeoutDuration = ref(1000);
+const printFrame = ref(null);
+const isDataFetched = ref(false);
 
+// Props definition dengan validasi
 const props = defineProps({
-    listTeam: Object,
-    currentTeam: Number,
+    listTeam: {
+        type: Object,
+        required: true
+    },
+    currentTeam: {
+        type: Number,
+        required: true
+    }
 });
 
 const obc_color = ref();
 
+/**
+ * Form state menggunakan Inertia useForm
+ * Menyimpan semua input yang diperlukan untuk cetak label
+ */
 const form = useForm({
     team: props.currentTeam,
     po: "",
     obc: "",
-    start_rim:1,
-    end_rim:1,
-    produk:"PCHT",
+    start_rim: 1,
+    end_rim: 1,
+    produk: "PCHT",
     jml_lembar: "",
     jml_label: "",
     seri: "",
@@ -54,8 +86,10 @@ const fetchData = () => {
         form.end_rim = Math.max(1, Math.floor(res.data.rencet / 500 / 2));
         form.seri = res.data.no_obc.substr(4, 1) > 3 ? 1 : res.data.no_obc.substr(4, 1);
         obc_color.value = form.seri == 3 ? "#b91c1c" : "#1d4ed8";
+        isDataFetched.value = true;
     }).catch(() => {
-           errorPo.value = "Nomor PO Tidak Ditemukan";
+        errorPo.value = "Nomor PO Tidak Ditemukan";
+        isDataFetched.value = false;
     }).finally(() => {
         isLoading.value = false;
     });
@@ -76,8 +110,6 @@ const fetchData = () => {
 };
 
 const debouncedFetchData = debounce(fetchData, 500); // Debounced fetch function
-
-const printFrame = ref(null);
 
 const printWithoutDialog = (content) => {
     const iframe = printFrame.value;
@@ -195,27 +227,32 @@ const submit = () => {
         }
     });
 };
+
+const resetForm = () => {
+    form.reset();
+    isDataFetched.value = false;
+};
 </script>
 
 <template>
     <Head title="Cetak Label" />
-
-    <!-- Replace loading indicator with LoadingOverlay component -->
     <LoadingOverlay :is-loading="isLoading" />
 
     <AuthenticatedLayout>
-        <BaseCard
-            title="Cetak Label Order Kecil"
-            class="mb-10"
-        >
+        <BaseCard title="Cetak Label Order Kecil">
             <form @submit.prevent="submit" class="flex flex-col space-y-6">
                 <!-- Team Selection -->
                 <div class="flex flex-col">
-                    <InputLabel for="team" value="Team Periksa" class="dark:text-gray-200" />
+                    <InputLabel
+                        for="team"
+                        value="Team Periksa"
+                        required
+                        class="dark:text-gray-200"
+                    />
                     <Select
                         id="team"
                         v-model="form.team"
-                        class="text-center font-semibold"
+                        class="text-center text-fuchsia-600 dark:text-fuchsia-400 font-semibold"
                     >
                         <option v-for="team in props.listTeam" :key="team.id" :value="team.id">
                             {{ team.workstation }}
@@ -225,7 +262,12 @@ const submit = () => {
 
                 <!-- Production Order -->
                 <div class="flex flex-col">
-                    <InputLabel for="po" value="Nomor Production Order" class="dark:text-gray-200" />
+                    <InputLabel
+                        for="po"
+                        value="Nomor Production Order"
+                        required
+                        class="dark:text-gray-200"
+                    />
                     <TextInput
                         id="po"
                         v-model="form.po"
@@ -242,18 +284,28 @@ const submit = () => {
                 <!-- Order Details -->
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div class="flex flex-col">
-                        <InputLabel for="obc" value="Nomor OBC" class="dark:text-gray-200" />
+                        <InputLabel
+                            for="obc"
+                            value="Nomor OBC"
+                            required
+                            class="dark:text-gray-200"
+                        />
                         <TextInput
                             id="obc"
                             v-model="form.obc"
                             type="text"
                             placeholder="Order Bea Cukai"
                             required
+                            :disabled="isDataFetched"
                         />
                     </div>
 
                     <div class="flex flex-col">
-                        <InputLabel for="jml_rim" value="Lembar / Rim" class="dark:text-gray-200" />
+                        <InputLabel
+                            for="jml_rim"
+                            value="Lembar / Rim"
+                            class="dark:text-gray-200"
+                        />
                         <TextInput
                             id="jml_rim"
                             v-model="form.jml_rim"
@@ -263,13 +315,19 @@ const submit = () => {
                     </div>
 
                     <div class="flex flex-col">
-                        <InputLabel for="jml_label" value="Jumlah Label" class="dark:text-gray-200" />
+                        <InputLabel
+                            for="jml_label"
+                            value="Jumlah Label"
+                            required
+                            class="dark:text-gray-200"
+                        />
                         <TextInput
                             id="jml_label"
                             v-model="form.jml_label"
                             type="number"
                             placeholder="Jumlah Label"
                             required
+                            :disabled="isDataFetched"
                         />
                     </div>
                 </div>
@@ -277,7 +335,12 @@ const submit = () => {
                 <!-- Inspector Details -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div class="flex flex-col">
-                        <InputLabel for="periksa1" value="NP Periksa 1" class="dark:text-gray-200" />
+                        <InputLabel
+                            for="periksa1"
+                            value="NP Periksa 1"
+                            required
+                            class="dark:text-gray-200"
+                        />
                         <TextInput
                             id="periksa1"
                             v-model="form.periksa1"
@@ -289,7 +352,11 @@ const submit = () => {
                     </div>
 
                     <div class="flex flex-col">
-                        <InputLabel for="periksa2" value="NP Periksa 2" class="dark:text-gray-200" />
+                        <InputLabel
+                            for="periksa2"
+                            value="NP Periksa 2"
+                            class="dark:text-gray-200"
+                        />
                         <TextInput
                             id="periksa2"
                             v-model="form.periksa2"
@@ -301,12 +368,12 @@ const submit = () => {
                 </div>
 
                 <!-- Action Buttons -->
-                <div class="flex gap-4 pt-4">
+                <div class="flex gap-4 mt-8">
                     <Button
                         type="submit"
                         variant="primary"
                         size="lg"
-                        full-width
+                        :full-width="true"
                         :loading="isLoading"
                         :disabled="isLoading"
                     >
@@ -315,10 +382,10 @@ const submit = () => {
 
                     <Button
                         type="button"
-                        variant="secondary"
+                        variant="outline-primary"
                         size="lg"
-                        full-width
-                        @click="form.reset()"
+                        :full-width="true"
+                        @click="resetForm"
                     >
                         Clear
                     </Button>
@@ -326,7 +393,10 @@ const submit = () => {
             </form>
         </BaseCard>
 
-        <TableVerifikasiPegawai :team="form.team" :date="new Date().toISOString().split('T')[0]"/>
+        <TableVerifikasiPegawai
+            :team="form.team"
+            :date="new Date().toISOString().split('T')[0]"
+        />
     </AuthenticatedLayout>
     <iframe ref="printFrame" class="hidden"></iframe>
 </template>

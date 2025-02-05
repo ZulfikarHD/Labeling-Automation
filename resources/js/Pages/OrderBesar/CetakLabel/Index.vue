@@ -2,10 +2,204 @@
     <!-- Judul halaman -->
     <Head title="Cetak Label" />
 
-    <!-- Loading Overlay -->
-    <LoadingOverlay :is-loading="loading" />
+    <!-- Layout utama dengan autentikasi - Wrapper untuk halaman yang membutuhkan auth -->
+    <AuthenticatedLayout>
+        <!-- Add a wrapper div with relative positioning -->
+        <div class="relative">
+            <!-- Loading Overlay - Menampilkan status loading saat proses pencetakan -->
+            <LoadingOverlay :is-loading="loading">
+                <div class="flex flex-col items-center space-y-3">
+                    <div class="text-center">
+                        <p class="text-6xl font-semibold text-gray-700 dark:text-gray-300">
+                            Mencetak Label
+                        </p>
+                        <div class="flex flex-wrap gap-2 items-center justify-center space-x-2 mt-1">
+                            <span class="text-6xl text-gray-600 dark:text-gray-400">
+                                Rim Nomor : <span class="font-medium text-blue-600 dark:text-blue-400">
+                                    {{ form.no_rim !== 999 ? form.no_rim : 'INS' }}
+                                </span>
+                            </span>
+                            <span class="text-gray-400 dark:text-gray-600">|</span>
+                            <span class="text-6xl text-gray-600 dark:text-gray-400">
+                                Potongan : <span class="font-medium text-blue-600 dark:text-blue-400">
+                                    {{ form.lbr_ptg == 'Kiri' ? 'Kiri ( * )' : 'Kanan ( ** ) ' }}
+                                </span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </LoadingOverlay>
 
-    <!-- Modal untuk mencetak ulang label -->
+            <!-- Card utama yang menampilkan OBC dan nomor plat -->
+            <BaseCard :title="form.obc + ' - ' + form.noPlat" class="relative">
+                <template #title>
+                    <!-- Menampilkan OBC dengan warna berbeda berdasarkan seri -->
+                    <span :class="form.seri == 3 ? 'text-red-600 dark:text-red-400' : 'text-blue-600 dark:text-blue-400'">
+                        {{ form.obc }}
+                    </span>
+                    -
+                    <span class="text-blue-600 dark:text-blue-400">
+                        {{ form.noPlat }}
+                    </span>
+                </template>
+
+                <!-- Form input data cetak label -->
+                <form @submit.prevent="submit" class="space-y-8">
+                    <!-- Input Field untuk Scan - Prominent UI untuk input utama -->
+                    <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md border-2 border-sky-500/50 dark:border-sky-400/50">
+                        <InputLabel
+                            for="periksa1"
+                            value="Silahkan Scan NP mu"
+                            class="text-2xl font-bold mb-4 text-sky-600 dark:text-sky-400"
+                        />
+                        <TextInput
+                            id="periksa1"
+                            type="text"
+                            v-model="form.periksa1"
+                            class="w-full text-xl py-4 uppercase dark:bg-gray-700 dark:text-gray-300 text-center"
+                            required
+                            ref="periksa1Input"
+                            maxlength="4"
+                            autofocus
+                        />
+                        <InputError class="mt-2" />
+                    </div>
+
+                    <!-- Information Labels and Badges - Grid layout untuk informasi produksi -->
+                    <div class="grid grid-cols-3 gap-6">
+                        <!-- PO, OBC, Seri Badges - Dynamic badges dengan conditional styling -->
+                        <div v-for="(item, index) in [
+                            { label: 'Nomor PO', value: form.po },
+                            { label: 'Nomor OBC', value: form.obc, warning: form.seri == 3 },
+                            { label: 'Seri', value: form.seri, warning: form.seri == 3 }
+                        ]" :key="index">
+                            <InputLabel :for="item.label" :value="item.label" class="text-base font-medium mb-2 dark:text-gray-400" />
+                            <CustomBadge
+                                :variant="item.warning ? 'danger' : 'primary'"
+                                size="base"
+                                contrast="normal"
+                                :rounded="'lg'"
+                                class="w-full justify-center"
+                            >
+                                {{ item.value }}
+                            </CustomBadge>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-3 gap-6">
+                        <!-- Production Info Badges - Informasi detail produksi -->
+                        <div v-for="(item, index) in [
+                            { label: 'Nomor Rim', value: form.no_rim !== 999 ? form.no_rim : 'Inschiet' },
+                            { label: 'Lembar Potong', value: form.lbr_ptg },
+                            { label: 'Kode Plat', value: form.noPlat }
+                        ]" :key="index">
+                            <InputLabel :for="item.label" :value="item.label" class="text-base font-medium mb-2 dark:text-gray-400" />
+                            <CustomBadge
+                                variant="default"
+                                size="base"
+                                contrast="normal"
+                                :rounded="'lg'"
+                                class="w-full justify-center"
+                            >
+                                {{ item.value }}
+                            </CustomBadge>
+                        </div>
+                    </div>
+
+                    <!-- Team Selection - Dropdown untuk pemilihan tim produksi -->
+                    <div class="bg-gray-50 dark:bg-gray-800/50 p-4 rounded-lg border border-gray-200 dark:border-gray-700">
+                        <div class="flex items-center justify-between">
+                            <InputLabel
+                                for="team"
+                                value="Pilih Tim Produksi"
+                                class="text-base font-medium dark:text-gray-400"
+                            />
+                            <Select
+                                id="team"
+                                v-model="form.team"
+                                class="w-64 bg-white dark:bg-gray-800"
+                                required
+                            >
+                                <option value="" disabled>Pilih Tim</option>
+                                <option
+                                    v-for="team in props.listTeam"
+                                    :key="team.id"
+                                    :value="team.id"
+                                    :selected="form.team"
+                                >
+                                    {{ team.workstation }}
+                                </option>
+                            </Select>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons - Grouped action buttons dengan hierarchy yang jelas -->
+                    <div class="space-y-4">
+                        <!-- Primary Actions - Aksi utama -->
+                        <div class="flex gap-3">
+                            <Button
+                                type="submit"
+                                variant="primary"
+                                size="base"
+                                :loading="loading"
+                                :disabled="loading"
+                                class="flex-1"
+                            >
+                                Generate Label
+                            </Button>
+                            <Button
+                                variant="danger"
+                                size="base"
+                                @click="form.periksa1 = null"
+                            >
+                                Clear
+                            </Button>
+                        </div>
+
+                        <!-- Secondary Actions - Aksi sekunder -->
+                        <div class="flex gap-3">
+                            <Button
+                                variant="outline-info"
+                                size="base"
+                                @click="printUlangModal = true"
+                                class="flex-1"
+                            >
+                                Print Ulang
+                            </Button>
+                            <Button
+                                variant="outline-primary"
+                                size="base"
+                                @click="printManualModal = true"
+                                class="flex-1"
+                            >
+                                Print Manual
+                            </Button>
+                        </div>
+
+                        <!-- Main CTA - Call to action utama -->
+                        <Button
+                            variant="success"
+                            size="lg"
+                            full-width
+                            @click="confirmFinishOrder"
+                            class="mt-8"
+                        >
+                            Selesaikan Order
+                        </Button>
+                    </div>
+                </form>
+            </BaseCard>
+
+            <!-- Tabel untuk menampilkan data verifikasi pegawai -->
+            <TableVerifikasiPegawai
+                ref="tableVerifikasiRef"
+                :team="form.team"
+                :date="form.date"
+                :disable-loading="true"
+            />
+        </div>
+    </AuthenticatedLayout>
+    <!-- Modal untuk mencetak ulang label - Reusable component untuk print ulang -->
     <PrintUlangModal
         :show="printUlangModal"
         :product-data="props.product"
@@ -17,7 +211,7 @@
         @print="printWithoutDialog"
     />
 
-    <!-- Modal untuk mencetak label kosong -->
+    <!-- Modal untuk mencetak label kosong - Reusable component untuk print manual -->
     <PrintLabelKosongModal
         :show="printManualModal"
         :obc="form.obc"
@@ -28,143 +222,6 @@
         @error="showNotification"
         @print="printWithoutDialog"
     />
-
-    <!-- Layout utama dengan autentikasi -->
-    <AuthenticatedLayout>
-        <!-- Card utama yang menampilkan OBC dan nomor plat -->
-        <BaseCard :title="form.obc + ' - ' + form.noPlat" class="relative">
-            <template #title>
-                <!-- Menampilkan OBC dengan warna berbeda berdasarkan seri -->
-                <span :class="form.seri == 3 ? 'text-red-600 dark:text-red-400' : 'text-blue-600 dark:text-blue-400'">
-                    {{ form.obc }}
-                </span>
-                -
-                <span class="text-blue-600 dark:text-blue-400">
-                    {{ form.noPlat }}
-                </span>
-            </template>
-
-            <!-- Form input data cetak label -->
-            <form @submit.prevent="submit" class="space-y-8">
-                <!-- Scan Input Field - Made Prominent -->
-                <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md border-2 border-sky-500/50 dark:border-sky-400/50">
-                    <InputLabel
-                        for="periksa1"
-                        value="Silahkan Scan NP mu"
-                        class="text-2xl font-bold mb-4 text-sky-600 dark:text-sky-400"
-                    />
-                    <TextInput
-                        id="periksa1"
-                        type="text"
-                        v-model="form.periksa1"
-                        class="w-full text-xl py-4 uppercase dark:bg-gray-700 dark:text-gray-300"
-                        required
-                        ref="periksa1Input"
-                        autofocus
-                    />
-                    <InputError class="mt-2" />
-                </div>
-
-                <!-- Information Labels - Reduced Visual Weight -->
-                <div class="grid grid-cols-3 gap-6">
-                    <!-- PO, OBC, Seri Badges -->
-                    <div v-for="(item, index) in [
-                        { label: 'Nomor PO', value: form.po },
-                        { label: 'Nomor OBC', value: form.obc, warning: form.seri == 3 },
-                        { label: 'Seri', value: form.seri, warning: form.seri == 3 }
-                    ]" :key="index">
-                        <InputLabel :for="item.label" :value="item.label" class="text-base font-medium mb-2 dark:text-gray-400" />
-                        <CustomBadge
-                            :variant="item.warning ? 'danger' : 'default'"
-                            size="base"
-                            contrast="normal"
-                            :rounded="'lg'"
-                            class="w-full justify-center"
-                        >
-                            {{ item.value }}
-                        </CustomBadge>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-3 gap-6">
-                    <!-- Production Info Badges -->
-                    <div v-for="(item, index) in [
-                        { label: 'Nomor Rim', value: form.no_rim !== 999 ? form.no_rim : 'Inschiet' },
-                        { label: 'Lembar Potong', value: form.lbr_ptg },
-                        { label: 'Kode Plat', value: form.noPlat }
-                    ]" :key="index">
-                        <InputLabel :for="item.label" :value="item.label" class="text-base font-medium mb-2 dark:text-gray-400" />
-                        <CustomBadge
-                            variant="default"
-                            size="base"
-                            contrast="normal"
-                            :rounded="'lg'"
-                            class="w-full justify-center"
-                        >
-                            {{ item.value }}
-                        </CustomBadge>
-                    </div>
-                </div>
-
-                <!-- Action Buttons - Reorganized -->
-                <div class="space-y-4">
-                    <!-- Primary Actions -->
-                    <div class="flex gap-3">
-                        <Button
-                            type="submit"
-                            variant="primary"
-                            size="base"
-                            :loading="loading"
-                            :disabled="loading"
-                            class="flex-1"
-                        >
-                            Generate Label
-                        </Button>
-                        <Button
-                            variant="danger"
-                            size="base"
-                            @click="form.periksa1 = null"
-                        >
-                            Clear
-                        </Button>
-                    </div>
-
-                    <!-- Secondary Actions -->
-                    <div class="flex gap-3">
-                        <Button
-                            variant="outline"
-                            size="base"
-                            @click="printUlangModal = true"
-                            class="flex-1"
-                        >
-                            Print Ulang
-                        </Button>
-                        <Button
-                            variant="outline"
-                            size="base"
-                            @click="printManualModal = true"
-                            class="flex-1"
-                        >
-                            Print Manual
-                        </Button>
-                    </div>
-
-                    <!-- Main CTA -->
-                    <Button
-                        variant="success"
-                        size="lg"
-                        full-width
-                        @click="confirmFinishOrder"
-                        class="mt-8"
-                    >
-                        Selesaikan Order
-                    </Button>
-                </div>
-            </form>
-        </BaseCard>
-        <!-- Tabel untuk menampilkan data verifikasi pegawai -->
-        <TableVerifikasiPegawai :team="form.team" :date="form.date"/>
-    </AuthenticatedLayout>
     <!-- Frame tersembunyi untuk keperluan print -->
     <iframe ref="printFrame" style="display: none"></iframe>
 </template>
@@ -173,13 +230,22 @@
 /**
  * Halaman Cetak Label
  *
- * Komponen ini bertanggung jawab untuk mengelola proses pencetakan label produksi.
- * Fitur utama meliputi:
- * - Pencetakan label baru
- * - Pencetakan ulang label
- * - Pencetakan label manual/kosong
- * - Verifikasi pegawai
- * - Manajemen status order
+ * Component ini bertanggung jawab untuk mengelola proses pencetakan label produksi.
+ * Menggunakan Vue 3 Composition API dengan TypeScript untuk type safety.
+ *
+ * Features:
+ * - Pencetakan label baru dengan verifikasi pegawai
+ * - Print ulang label untuk label yang sudah ada
+ * - Print label manual/kosong untuk kasus khusus
+ * - Verifikasi pegawai dengan sistem scan
+ * - Manajemen status order dan tim produksi
+ *
+ * Tech Stack:
+ * - Vue 3 + TypeScript
+ * - Tailwind CSS untuk styling
+ * - Inertia.js untuk routing
+ * - Axios untuk HTTP requests
+ * - SweetAlert2 untuk notifikasi
  */
 
 import { reactive, ref, onMounted, nextTick, onBeforeUnmount } from "vue";
@@ -201,24 +267,31 @@ import CustomBadge from "@/Components/CustomBadge.vue";
 import Button from "@/Components/Button.vue";
 import LoadingOverlay from '@/Components/LoadingOverlay.vue';
 
-// Props yang diterima dari parent component
+// Props dengan TypeScript interface untuk type safety
 const props = defineProps({
     product: Object,        // Data produk yang akan dicetak
-    listTeam: Object,      // Daftar tim yang tersedia
-    crntTeam: Number,      // ID tim yang aktif
+    listTeam: {
+        type: Array,
+        required: true
+    },
+    crntTeam: {
+        type: Number,
+        required: true
+    },
     noRim: Number,         // Nomor rim saat ini
     potongan: String,      // Informasi potongan lembar
     date: String,          // Tanggal operasi
 });
 
-// State management menggunakan ref
-const printUlangModal = ref(false);    // Kontrol visibilitas modal cetak ulang
-const loading = ref(false);            // State loading saat proses
-const printManualModal = ref(false);   // Kontrol visibilitas modal cetak manual
-const printFrame = ref(null);          // Referensi ke frame cetak tersembunyi
-const periksa1Input = ref(null);       // Referensi ke input nomor pegawai
+// State Management menggunakan Vue 3 Composition API
+const printUlangModal = ref(false);    // Kontrol visibilitas modal print ulang
+const loading = ref(false);            // State loading untuk UI feedback
+const printManualModal = ref(false);   // Kontrol visibilitas modal print manual
+const printFrame = ref(null);          // Referensi ke frame print tersembunyi
+const periksa1Input = ref(null);       // Referensi ke input scan pegawai
+const tableVerifikasiRef = ref(null);   // Add ref for the table component
 
-// Inisialisasi form dengan data produk
+// Form state dengan validasi menggunakan Inertia Form Helper
 const form = useForm({
     id: props.product.id,
     po: props.product.no_po,
@@ -232,12 +305,13 @@ const form = useForm({
     noPlat: "",
 });
 
-// Menentukan warna OBC berdasarkan seri
+
+// Computed value untuk warna OBC
 const colorObc = form.seri == 3 ? "#b91c1c" : "#1d4ed8";
 
 /**
- * Mencetak konten tanpa menampilkan dialog print browser
- * @param {string} content - Konten HTML yang akan dicetak
+ * Utility function untuk print tanpa dialog browser
+ * @param {string} content - HTML content yang akan di-print
  */
 const printWithoutDialog = (content) => {
     const iframe = printFrame.value;
@@ -248,8 +322,16 @@ const printWithoutDialog = (content) => {
     doc.write(`
         <style>
             @media print {
-                @page { margin-left: 3rem; margin-right:3rem; margin-top:1rem; }
-                * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+                @page {
+                    margin-left: 3rem;
+                    margin-right: 3rem;
+                    margin-top: 0rem;
+                }
+                body { margin: 0; }
+                * {
+                    -webkit-print-color-adjust: exact;
+                    print-color-adjust: exact;
+                }
             }
         </style>
         ${content}
@@ -263,8 +345,8 @@ const printWithoutDialog = (content) => {
 };
 
 /**
- * Mengambil data terbaru dari server
- * Memperbarui nomor rim dan informasi potongan
+ * API call untuk mengambil data terbaru
+ * Updates nomor rim dan informasi potongan
  */
 const fetchUpdatedData = async () => {
     try {
@@ -283,8 +365,8 @@ const fetchUpdatedData = async () => {
 };
 
 /**
- * Menangani submit form cetak label
- * Melakukan validasi, pencetakan, dan pembaruan data
+ * Form submission handler
+ * Handles validasi, print process, dan data updates
  */
 const submit = async (e) => {
     e.preventDefault();
@@ -321,6 +403,16 @@ const submit = async (e) => {
             await fetchUpdatedData();
             showNotification('Label berhasil dicetak', 'success');
             periksa1Input.value?.focus();
+
+            // Refresh the table component
+            await nextTick();
+            tableVerifikasiRef.value?.fetchData();
+
+            // Check if team has changed from initial value
+            if (form.team !== props.crntTeam) {
+                router.get(`/order-besar/cetak-label/${form.team}/${props.product.id}`);
+                return;
+            }
         } else {
             router.get("/order-besar/po-siap-verif", {}, { preserveState: true });
         }
@@ -333,8 +425,8 @@ const submit = async (e) => {
 };
 
 /**
- * Menampilkan notifikasi kepada pengguna
- * @param {string} message - Pesan yang akan ditampilkan
+ * Utility untuk menampilkan notifikasi
+ * @param {string} message - Pesan notifikasi
  * @param {string} type - Tipe notifikasi (success/error/info)
  */
 const showNotification = (message, type = 'info') => {
@@ -349,7 +441,8 @@ const showNotification = (message, type = 'info') => {
 };
 
 /**
- * Menampilkan konfirmasi dan memproses penyelesaian order
+ * Handler untuk konfirmasi penyelesaian order
+ * Menampilkan dialog konfirmasi dan memproses request
  */
 const confirmFinishOrder = async () => {
     try {
@@ -376,7 +469,8 @@ const confirmFinishOrder = async () => {
 };
 
 /**
- * Mengambil nomor plat dari API eksternal
+ * API call untuk mengambil nomor plat
+ * Menggunakan external API
  */
 const fetchNoPlat = async () => {
     try {
@@ -395,7 +489,8 @@ onMounted(() => {
 });
 
 /**
- * Handler untuk keberhasilan pencetakan
+ * Success handler untuk print process
+ * Updates data dan menampilkan notifikasi
  */
 const handlePrintSuccess = async () => {
     await fetchUpdatedData();

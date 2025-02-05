@@ -10,35 +10,51 @@ use Inertia\Inertia;
 use Inertia\Response;
 
 /**
- * Controller untuk menangani monitoring produksi pegawai
+ * Controller untuk monitoring aktivitas produksi pegawai
  *
- * Controller ini menggunakan TeamActivityService untuk:
- * - Mengambil data aktivitas tim berdasarkan tanggal
- * - Mengecek status aktivitas tim tertentu
- * - Menampilkan data workstation yang aktif
+ * Controller ini menggunakan pattern Service Layer dengan TeamActivityService untuk:
+ * - Memisahkan business logic dari controller
+ * - Memudahkan unit testing
+ * - Meningkatkan reusability code
  *
- * Lihat TeamActivityService.php untuk detail implementasi service
+ * Flow Aplikasi:
+ * 1. Request masuk ke controller
+ * 2. Controller memanggil service layer
+ * 3. Service menghandle business logic
+ * 4. Controller merender view dengan data
+ *
+ * Tech Stack:
+ * - Laravel 10
+ * - Inertia.js untuk SSR
+ * - Vue 3 untuk frontend
  */
 class ProduksiPegawaiController extends Controller
 {
     /**
-     * Instance dari TeamActivityService
+     * Instance TeamActivityService untuk handle business logic
      *
      * Service ini menyediakan method untuk:
-     * - getActiveTeams() - Mengambil daftar tim yang aktif pada tanggal tertentu
-     * - hasActivity() - Mengecek apakah tim memiliki aktivitas di tanggal tertentu
+     * - getActiveTeams(): Mengambil data tim aktif per tanggal
+     * - hasActivity(): Cek status aktivitas tim
+     *
+     * Best Practice:
+     * - Menggunakan dependency injection via constructor
+     * - Type hinting untuk IDE support
+     * - Single Responsibility Principle
      *
      * @var TeamActivityService
      */
     protected TeamActivityService $teamActivityService;
 
     /**
-     * Constructor untuk dependency injection
+     * Constructor dengan dependency injection
      *
-     * Menerima instance TeamActivityService yang akan digunakan
-     * di seluruh method dalam controller
+     * Dependency injection memudahkan:
+     * - Unit testing dengan mock object
+     * - Swap implementasi service
+     * - Decoupling components
      *
-     * @param TeamActivityService $teamActivityService Service untuk query data aktivitas tim
+     * @param TeamActivityService $teamActivityService Service untuk query aktivitas tim
      */
     public function __construct(TeamActivityService $teamActivityService)
     {
@@ -48,12 +64,15 @@ class ProduksiPegawaiController extends Controller
     /**
      * Menampilkan halaman monitoring produksi
      *
-     * Flow:
-     * 1. Mengambil data workstation dari model Workstations
-     * 2. Merender view Inertia dengan data workstation
-     * 3. View akan menampilkan data dalam format tabel
+     * Method ini:
+     * 1. Mengambil data workstation
+     * 2. Merender view dengan Inertia
+     * 3. Meneruskan data ke frontend Vue
      *
-     * Path view: 'MonitoringProduksi/ProduksiPegawai'
+     * Tips Development:
+     * - Gunakan type hinting untuk autocomplete
+     * - Response type untuk type safety
+     * - Dokumentasi path view untuk navigasi
      *
      * @param Workstations $workstations Model untuk akses data workstation
      * @return Response Response Inertia dengan data workstation

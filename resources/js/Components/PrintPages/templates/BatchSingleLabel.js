@@ -84,7 +84,7 @@ export function batchSingleLabel(
     </style>
 </head>
 <body>
-    <div style='width: 100%; height: 100%; margin-top: 0.5rem;'>
+    <div style='width: 100%; height: 100%; margin-top: 1.3rem;'>
         <div class="wrapper">
             <div class="sectionWrapper" style="flex: 0 0 auto; padding: 0.25rem; padding-bottom: 0.25rem;">
             </div>

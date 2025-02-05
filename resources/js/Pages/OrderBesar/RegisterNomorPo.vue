@@ -34,6 +34,7 @@ const isLoading = ref(false);
 const errorPo = ref("");
 const errorObc = ref("");
 const confirmationMessage = ref("tests");
+const isDataFetched = ref(false);
 
 // Props definition dengan validasi
 const props = defineProps({
@@ -85,11 +86,13 @@ const fetchData = () => {
             form.jml_rim = Math.ceil(data.rencet / 500);
             form.end_rim = Math.max(1, Math.floor(data.rencet / 500 / 2));
             form.inschiet = (data.rencet % 1000 === 0) ? data.rencet % 500 : data.rencet % 1000;
+            isDataFetched.value = true; // Set to true when data is fetched
 
             updateConfirmationMessage();
         })
         .catch(() => {
             errorPo.value = "Nomor PO Tidak Ditemukan";
+            isDataFetched.value = false; // Set to false on error
             resetForm();
         })
         .finally(() => {
@@ -175,11 +178,13 @@ const updateConfirmationMessage = () => {
  */
 const resetForm = () => {
     form.obc = null;
+    form.po = null;
     form.jml_lembar = 0;
     form.jml_rim = 0;
     form.end_rim = 1;
     form.inschiet = 0;
     form.team = props.currentTeam;
+    isDataFetched.value = false;
 };
 
 /**
@@ -309,6 +314,7 @@ function submit() {
                             placeholder="Masukan Nomor OBC"
                             required
                             class="dark:bg-gray-700 dark:text-gray-300"
+                            :disabled="isDataFetched"
                         />
                     </div>
 
@@ -322,6 +328,7 @@ function submit() {
                             type="text"
                             placeholder="Masukan Jumlah Lembar"
                             class="placeholder:text-center text-center text-base font-medium dark:bg-gray-700 dark:text-gray-300"
+                            :disabled="isDataFetched"
                         />
                     </div>
 
@@ -336,6 +343,7 @@ function submit() {
                             min="0"
                             placeholder="Masukan Inschiet"
                             class="placeholder:text-center text-center text-base font-medium dark:bg-gray-700 dark:text-gray-300"
+                            :disabled="isDataFetched"
                         />
                     </div>
 
@@ -380,6 +388,7 @@ function submit() {
                             min="0"
                             placeholder="Masukan Nomor Rim Terakhir"
                             class="placeholder:text-center text-center text-base dark:bg-gray-700 dark:text-gray-300"
+                            :disabled="isDataFetched"
                         />
                     </div>
                 </div>
@@ -388,7 +397,7 @@ function submit() {
                 <div class="flex gap-4 mt-8">
                     <Button
                         type="submit"
-                        variant="success"
+                        variant="primary"
                         :loading="isLoading"
                         :full-width="true"
                     >
@@ -396,7 +405,7 @@ function submit() {
                     </Button>
                     <Button
                         type="button"
-                        variant="secondary"
+                        variant="outline-primary"
                         :full-width="true"
                         @click="resetForm"
                     >

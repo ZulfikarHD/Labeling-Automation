@@ -11,6 +11,10 @@ import TableVerifikasiPegawaiSkeleton from "./TableVerifikasiPegawaiSkeleton.vue
 const props = defineProps({
     team: Number, // ID tim
     date: String, // Tanggal untuk filter data
+    disableLoading: {
+        type: Boolean,
+        default: false
+    }, // Option to disable loading state
 });
 
 // State management menggunakan ref
@@ -26,7 +30,9 @@ const teamName = ref(''); // Nama tim
  */
 const fetchData = async () => {
     try {
-        isLoading.value = true;
+        if (!props.disableLoading) {
+            isLoading.value = true;
+        }
         const [teamResponse, produksiResponse] = await Promise.all([
             props.team === 0
                 ? Promise.resolve({ data: { workstation: "Keseluruhan" } })
@@ -39,7 +45,9 @@ const fetchData = async () => {
     } catch (error) {
         console.error("Error fetching data:", error);
     } finally {
-        isLoading.value = false;
+        if (!props.disableLoading) {
+            isLoading.value = false;
+        }
     }
 };
 
@@ -89,6 +97,11 @@ const prevPage = () => currentPage.value > 1 && currentPage.value--;
 
 // Inisialisasi data saat komponen dimuat
 fetchData();
+
+// Make fetchData function available to parent component
+defineExpose({
+    fetchData
+});
 </script>
 
 <template>
@@ -119,7 +132,7 @@ fetchData();
                                 <Badge
                                     variant="success"
                                     size="md"
-                                    contrast="normal"
+                                    contrast="low"
                                     :rounded="'lg'"
                                     class="flex items-center gap-2"
                                 >

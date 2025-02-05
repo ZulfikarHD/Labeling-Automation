@@ -21,26 +21,40 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 
 /**
- * Class CetakLabelController
- * Handles the printing of labels for large orders.
+ * Controller untuk menangani pencetakan label order besar
+ *
+ * Flow utama:
+ * 1. User memilih PO dan workstation
+ * 2. System generate label untuk setiap rim dan potongan
+ * 3. User dapat mencetak, mengedit dan menghapus label
+ * 4. System update status progress PO
+ *
+ * Dependencies:
+ * - PrintLabelService: Service untuk generate dan manage label
+ * - ProductionOrderService: Service untuk manage PO dan status
+ * - UpdateStatusProgress: Trait untuk update status PO
+ *
+ * @see PrintLabelService
+ * @see ProductionOrderService
  */
 class CetakLabelController extends Controller
 {
     use UpdateStatusProgress;
 
-    private const INSCHIET_RIM = 999; // Constant for inschiet rim identifier
-    private const POTONGAN_KIRI = 'Kiri'; // Constant for left cut
-    private const POTONGAN_KANAN = 'Kanan'; // Constant for right cut
-    private const ERROR_PROCESS = 'Terjadi kesalahan saat memproses label'; // Error message for processing
-    private const ERROR_UPDATE = 'Terjadi kesalahan saat memperbarui label'; // Error message for updating
-    private const ERROR_DELETE = 'Terjadi kesalahan saat menghapus label'; // Error message for deleting
-    private const SUCCESS_DELETE = 'Label berhasil dihapus'; // Success message for deletion
+    // Constants untuk identifikasi dan pesan
+    private const INSCHIET_RIM = 999; // Rim khusus untuk inschiet
+    private const POTONGAN_KIRI = 'Kiri'; // Identifier potongan kiri
+    private const POTONGAN_KANAN = 'Kanan'; // Identifier potongan kanan
+    private const ERROR_PROCESS = 'Terjadi kesalahan saat memproses label';
+    private const ERROR_UPDATE = 'Terjadi kesalahan saat memperbarui label';
+    private const ERROR_DELETE = 'Terjadi kesalahan saat menghapus label';
+    private const SUCCESS_DELETE = 'Label berhasil dihapus';
 
     /**
-     * CetakLabelController constructor.
+     * Constructor untuk inject dependencies
      *
-     * @param ProductionOrderService $productionOrderService
-     * @param PrintLabelService $printLabelService
+     * @param ProductionOrderService $productionOrderService Service untuk manage PO
+     * @param PrintLabelService $printLabelService Service untuk manage label
      */
     public function __construct(
         protected ProductionOrderService $productionOrderService,
@@ -48,20 +62,25 @@ class CetakLabelController extends Controller
     ) {}
 
     /**
-     * Display the label printing page.
+     * Menampilkan halaman cetak label
      *
-     * @param string $team
-     * @param string $id
+     * Flow:
+     * 1. Fetch product berdasarkan ID
+     * 2. Fetch data rim dan potongan
+     * 3. Render view dengan data yang diperlukan
+     *
+     * @param string $team ID workstation
+     * @param string $id ID product
      * @return \Inertia\Response
      */
     public function index(string $team, string $id)
     {
-        $product = GeneratedProducts::findOrFail($id); // Fetch product by ID
-        $noRimData = $this->fetchNoRim($product->no_po); // Fetch rim data
+        $product = GeneratedProducts::findOrFail($id);
+        $noRimData = $this->fetchNoRim($product->no_po);
 
         return Inertia::render('OrderBesar/CetakLabel/Index', [
             'product' => $product,
-            'listTeam' => Workstations::select(['id', 'workstation'])->get(), // Get list of workstations
+            'listTeam' => Workstations::select(['id', 'workstation'])->get(),
             'crntTeam' => $team,
             'noRim' => $noRimData['noRim'],
             'potongan' => $noRimData['potongan'],
@@ -70,9 +89,16 @@ class CetakLabelController extends Controller
     }
 
     /**
-     * Store a newly created label.
+     * Menyimpan label baru
      *
-     * @param Request $request
+     * Flow:
+     * 1. Start transaction
+     * 2. Selesaikan sesi user sebelumnya
+     * 3. Create label baru
+     * 4. Update status PO jika semua label selesai
+     * 5. Commit transaction
+     *
+     * @param Request $request Data label baru
      * @return JsonResponse|RedirectResponse
      */
     public function store(Request $request): JsonResponse|RedirectResponse
@@ -91,7 +117,6 @@ class CetakLabelController extends Controller
                 $request->team
             );
 
-            // Check if label creation was successful
             if ($result['status'] === 'error') {
                 DB::rollback();
                 return response()->json($result, 422);
@@ -115,9 +140,9 @@ class CetakLabelController extends Controller
     }
 
     /**
-     * Edit the specified label.
+     * Mengambil data label untuk diedit
      *
-     * @param Request $request
+     * @param Request $request Query params untuk filter
      * @return \Illuminate\Database\Eloquent\Collection
      */
     public function edit(Request $request)
@@ -126,91 +151,100 @@ class CetakLabelController extends Controller
             ->where('no_po_generated_products', $request->po)
             ->where('potongan', $request->dataRim)
             ->select(['no_rim', 'np_users', 'potongan', 'start', 'finish'])
-            ->get(); // Fetch labels based on PO and rim data
+            ->get();
     }
 
     /**
-     * Update the specified label.
+     * Update label yang sudah ada
      *
-     * @param Request $request
+     * Flow:
+     * 1. Start transaction
+     * 2. Update data label
+     * 3. Update data inschiet jika rim adalah inschiet
+     * 4. Commit transaction
+     *
+     * @param Request $request Data update label
      * @return JsonResponse|RedirectResponse
      */
     public function update(Request $request): JsonResponse|RedirectResponse
     {
         try {
-            DB::beginTransaction(); // Start database transaction
+            DB::beginTransaction();
 
-            $npPetugas = strtoupper($request->npPetugas); // Convert user name to uppercase
-            $this->updateGeneratedLabel($request, $npPetugas); // Update label data
+            $npPetugas = strtoupper($request->npPetugas);
+            $this->updateGeneratedLabel($request, $npPetugas);
 
             if ($request->noRim === self::INSCHIET_RIM) {
-                $this->updateInschietData($request, $npPetugas); // Update inschiet data if applicable
+                $this->updateInschietData($request, $npPetugas);
             }
 
-            DB::commit(); // Commit transaction
-            return response()->json(['status' => 'success']); // Return success response
+            DB::commit();
+            return response()->json(['status' => 'success']);
 
         } catch (\Exception $e) {
-            DB::rollback(); // Rollback transaction on error
-            return redirect()->back()->withErrors(['error' => self::ERROR_UPDATE]); // Return error response
+            DB::rollback();
+            return redirect()->back()->withErrors(['error' => self::ERROR_UPDATE]);
         }
     }
 
     /**
-     * Remove the specified label.
+     * Menghapus label
      *
-     * @param string $id
+     * @param string $id ID label yang akan dihapus
      * @return RedirectResponse
      */
     public function delete(string $id): RedirectResponse
     {
         try {
-            GeneratedLabels::findOrFail($id)->delete(); // Find and delete the label
-            return redirect()->back()->with('success', self::SUCCESS_DELETE); // Return success response
+            GeneratedLabels::findOrFail($id)->delete();
+            return redirect()->back()->with('success', self::SUCCESS_DELETE);
         } catch (\Exception $e) {
-            return redirect()->back()->withErrors(['error' => self::ERROR_DELETE]); // Return error response
+            return redirect()->back()->withErrors(['error' => self::ERROR_DELETE]);
         }
     }
 
     /**
-     * Fetch the next available rim based on the PO.
+     * Mengambil rim berikutnya yang tersedia
      *
-     * @param string $po
-     * @return array
+     * Flow:
+     * 1. Cek rim inschiet terlebih dahulu
+     * 2. Jika tidak ada, cek rim reguler
+     * 3. Return rim yang tersedia berikutnya
+     *
+     * @param string $po Nomor PO
+     * @return array Data rim dan potongan
      */
     private function fetchNoRim(string $po): array
     {
-        $baseQuery = $this->getBaseQuery($po); // Get base query for rims
+        $baseQuery = $this->getBaseQuery($po);
 
-        // Check inschiet rims first
         $inschietResult = $this->checkInschietRims($baseQuery);
-        if ($inschietResult) return $inschietResult; // Return inschiet result if found
+        if ($inschietResult) return $inschietResult;
 
-        // Get next available regular rims
         $nextKiri = $this->getNextRim($baseQuery, self::POTONGAN_KIRI);
         $nextKanan = $this->getNextRim($baseQuery, self::POTONGAN_KANAN);
 
-        return $this->determineNextRim($nextKiri, $nextKanan); // Determine and return the next rim
+        return $this->determineNextRim($nextKiri, $nextKanan);
     }
 
     /**
-     * Get the base query for fetching rims.
+     * Membuat base query untuk fetch rim
      *
-     * @param string $po
+     * @param string $po Nomor PO
      * @return \Illuminate\Database\Eloquent\Builder
      */
     private function getBaseQuery(string $po)
     {
         return GeneratedLabels::where('no_po_generated_products', $po)
             ->where(fn($query) => $query->whereNull('np_users')->orWhere('np_users', ''))
-            ->orderBy('no_rim'); // Build base query for rims
+            ->orderBy('no_rim');
     }
 
     /**
-     * Check for available inschiet rims.
+     * Cek ketersediaan rim inschiet
      *
-     * @param $baseQuery
-     * @return array|null
+     * @param $baseQuery Query builder
+     * @return array|null Data rim inschiet atau null
      */
     private function checkInschietRims($baseQuery): ?array
     {
@@ -219,60 +253,60 @@ class CetakLabelController extends Controller
                 ->where('potongan', $potongan)
                 ->where('no_rim', self::INSCHIET_RIM)
                 ->whereNull('start')
-                ->first(); // Check for inschiet rims
+                ->first();
 
             if ($inschiet) {
-                return ['noRim' => self::INSCHIET_RIM, 'potongan' => $potongan]; // Return inschiet rim data if found
+                return ['noRim' => self::INSCHIET_RIM, 'potongan' => $potongan];
             }
         }
-        return null; // Return null if no inschiet rims found
+        return null;
     }
 
     /**
-     * Get the next available rim based on the potongan.
+     * Mengambil rim berikutnya berdasarkan potongan
      *
-     * @param $baseQuery
-     * @param string $potongan
+     * @param $baseQuery Query builder
+     * @param string $potongan Tipe potongan
      * @return mixed
      */
     private function getNextRim($baseQuery, string $potongan)
     {
         return (clone $baseQuery)
             ->where('potongan', $potongan)
-            ->first(); // Fetch the next rim based on potongan
+            ->first();
     }
 
     /**
-     * Determine the next available rim based on the left and right rims.
+     * Menentukan rim berikutnya berdasarkan data kiri dan kanan
      *
-     * @param $nextKiri
-     * @param $nextKanan
-     * @return array
+     * @param $nextKiri Data rim kiri
+     * @param $nextKanan Data rim kanan
+     * @return array Data rim terpilih
      */
     private function determineNextRim($nextKiri, $nextKanan): array
     {
         if (!$nextKiri && !$nextKanan) {
-            return ['noRim' => 0, 'potongan' => 'Finished']; // Return finished if no rims available
+            return ['noRim' => 0, 'potongan' => 'Finished'];
         }
 
         if (!$nextKiri) {
-            return ['noRim' => $nextKanan->no_rim, 'potongan' => self::POTONGAN_KANAN]; // Return right rim if left is not available
+            return ['noRim' => $nextKanan->no_rim, 'potongan' => self::POTONGAN_KANAN];
         }
 
         if (!$nextKanan) {
-            return ['noRim' => $nextKiri->no_rim, 'potongan' => self::POTONGAN_KIRI]; // Return left rim if right is not available
+            return ['noRim' => $nextKiri->no_rim, 'potongan' => self::POTONGAN_KIRI];
         }
 
         return $nextKiri->no_rim <= $nextKanan->no_rim
-            ? ['noRim' => $nextKiri->no_rim, 'potongan' => self::POTONGAN_KIRI] // Return the next available rim
+            ? ['noRim' => $nextKiri->no_rim, 'potongan' => self::POTONGAN_KIRI]
             : ['noRim' => $nextKanan->no_rim, 'potongan' => self::POTONGAN_KANAN];
     }
 
     /**
-     * Update the generated label with new data.
+     * Update data label yang di-generate
      *
-     * @param Request $request
-     * @param string $npPetugas
+     * @param Request $request Data update
+     * @param string $npPetugas NIP petugas
      */
     private function updateGeneratedLabel(Request $request, string $npPetugas): void
     {
@@ -283,22 +317,29 @@ class CetakLabelController extends Controller
                 'np_users' => $npPetugas,
                 'workstation' => $request->team,
                 'start' => now()
-            ]); // Update label data
+            ]);
     }
 
     /**
-     * Update the inschiet data based on the rim type.
+     * Update data inschiet
      *
-     * @param Request $request
-     * @param string $npPetugas
+     * @param Request $request Data update
+     * @param string $npPetugas NIP petugas
      */
     private function updateInschietData(Request $request, string $npPetugas): void
     {
-        $field = $request->dataRim === self::POTONGAN_KIRI ? 'np_kiri' : 'np_kanan'; // Determine field based on rim type
+        $field = $request->dataRim === self::POTONGAN_KIRI ? 'np_kiri' : 'np_kanan';
         DataInschiet::where('no_po', $request->po)
-            ->update([$field => $npPetugas]); // Update inschiet data
+            ->update([$field => $npPetugas]);
     }
 
+    /**
+     * Mengambil data untuk API endpoint
+     *
+     * @param string $team ID workstation
+     * @param string $id ID product
+     * @return JsonResponse
+     */
     public function getData(string $team, string $id)
     {
         try {
@@ -319,11 +360,4 @@ class CetakLabelController extends Controller
             return response()->json(['error' => 'Failed to fetch data'], 500);
         }
     }
-
-    // public function getVerificationStatus(string $team)
-    // {
-    //     return response()->json([
-    //         'verificationData' => // Your verification data query here
-    //     ]);
-    // }
 }
