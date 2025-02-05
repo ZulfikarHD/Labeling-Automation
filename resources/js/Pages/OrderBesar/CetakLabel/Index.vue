@@ -212,7 +212,11 @@
             </form>
         </BaseCard>
         <!-- Tabel untuk menampilkan data verifikasi pegawai -->
-        <TableVerifikasiPegawai :team="form.team" :date="form.date"/>
+        <TableVerifikasiPegawai
+            ref="tableVerifikasiRef"
+            :team="form.team"
+            :date="form.date"
+        />
     </AuthenticatedLayout>
     <!-- Frame tersembunyi untuk keperluan print -->
     <iframe ref="printFrame" style="display: none"></iframe>
@@ -281,6 +285,7 @@ const loading = ref(false);            // State loading untuk UI feedback
 const printManualModal = ref(false);   // Kontrol visibilitas modal print manual
 const printFrame = ref(null);          // Referensi ke frame print tersembunyi
 const periksa1Input = ref(null);       // Referensi ke input scan pegawai
+const tableVerifikasiRef = ref(null);   // Add ref for the table component
 
 // Form state dengan validasi menggunakan Inertia Form Helper
 const form = useForm({
@@ -395,9 +400,12 @@ const submit = async (e) => {
             showNotification('Label berhasil dicetak', 'success');
             periksa1Input.value?.focus();
 
+            // Refresh the table component
+            await nextTick();
+            tableVerifikasiRef.value?.fetchData();
+
             // Check if team has changed from initial value
             if (form.team !== props.crntTeam) {
-                // Redirect to new team's cetak label page
                 router.get(`/order-besar/cetak-label/${form.team}/${props.product.id}`);
                 return;
             }

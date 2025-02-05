@@ -89,6 +89,11 @@ const prevPage = () => currentPage.value > 1 && currentPage.value--;
 
 // Inisialisasi data saat komponen dimuat
 fetchData();
+
+// Make fetchData function available to parent component
+defineExpose({
+    fetchData
+});
 </script>
 
 <template>
