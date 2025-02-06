@@ -145,7 +145,7 @@ class CetakLabelController extends Controller
      * @param Request $request Query params untuk filter
      * @return \Illuminate\Database\Eloquent\Collection
      */
-    public function edit(Request $request)
+    public function show(Request $request)
     {
         return GeneratedLabels::query()
             ->where('no_po_generated_products', $request->po)

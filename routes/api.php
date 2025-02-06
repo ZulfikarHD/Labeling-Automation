@@ -9,6 +9,8 @@ use App\Http\Controllers\PrintLabelPersonalController;
 use App\Http\Controllers\PendapatanHarianController;
 use App\Http\Controllers\ProductionOrderController;
 use App\Http\Controllers\UpdateSpecController;
+use App\Http\Controllers\OrderBesar\RegisterNomorPoController;
+use App\Http\Controllers\OrderBesar\CetakLabelController;
 
 /*
 |--------------------------------------------------------------------------
@@ -30,44 +32,27 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-/*
-|--------------------------------------------------------------------------
-| Production Order Routes
-|--------------------------------------------------------------------------
-*/
-Route::post('/register-production-order', [ProductionOrderController::class, 'store']);
-Route::put('/production-order-finish/{noPo}', [ProductionOrderController::class, 'updateStatusFinish']);
-Route::post('/production-order/update-rim', [ProductionOrderController::class, 'update']);
-Route::get('/production-order/get-labels/{no_po}', [GeneratedLabelController::class, 'getLabels']);
-Route::post('/production-order/update-label', [GeneratedLabelController::class, 'update']);
-Route::post('/production-order/add-rim', [GeneratedLabelController::class, 'addRim']);
-Route::post('/production-order/delete-labels', [GeneratedLabelController::class, 'batchDelete']);
-
-/*
-|--------------------------------------------------------------------------
-| Order Besar Routes
-|--------------------------------------------------------------------------
-*/
-Route::prefix('order-besar')->group(function () {
-    Route::get('/register-no-po/{noPo}', [App\Http\Controllers\OrderBesar\RegisterNomorPoController::class, 'show']);
-    Route::post('/register-no-po', [App\Http\Controllers\OrderBesar\RegisterNomorPoController::class, 'store']);
-
-    Route::prefix('cetak-label')->group(function () {
-        Route::get('/data/{team}/{id}', [App\Http\Controllers\OrderBesar\CetakLabelController::class, 'getData']);
-
-        Route::post('/', [App\Http\Controllers\OrderBesar\CetakLabelController::class, 'store']);
-
-        Route::post('/edit', [App\Http\Controllers\OrderBesar\CetakLabelController::class, 'edit']);
-
-        Route::post('/update', [App\Http\Controllers\OrderBesar\CetakLabelController::class, 'update']);
-
-        Route::delete('/{id}', [App\Http\Controllers\OrderBesar\CetakLabelController::class, 'delete']);
-
-        Route::get('/verification-status/{team}', [App\Http\Controllers\OrderBesar\CetakLabelController::class, 'getVerificationStatus']);
+// Route::middleware('auth:sanctum')->group(function () {
+    // Production Order Routes
+    Route::prefix('production-order')->group(function () {
+        // Route::post('register', [ProductionOrderController::class, 'store']);
+        Route::put('{noPo}/finish', [ProductionOrderController::class, 'updateStatusFinish']);
+        Route::put('update-rim', [ProductionOrderController::class, 'update']);
+        // Route::get('{no_po}/labels', [GeneratedLabelController::class, 'getLabels']);
+        Route::put('labels', [GeneratedLabelController::class, 'update']);
+        Route::post('labels/rim', [GeneratedLabelController::class, 'addRim']);
+        Route::delete('labels', [GeneratedLabelController::class, 'batchDelete']);
     });
 
-    Route::get('/verif/{team}', [PoSiapVerifController::class, 'fetchWorkPo']);
-});
+    // Order Besar Routes
+    Route::prefix('order-besar')->group(function () {
+        Route::apiResource('register-no-po', RegisterNomorPoController::class);
+        Route::apiResource('cetak-label', CetakLabelController::class);
+        Route::put('cetak-label', [CetakLabelController::class, 'update']);
+        Route::get('cetak-label/show/{dataPO}', [CetakLabelController::class, 'show']);
+        Route::get('verif/{team}', [PoSiapVerifController::class, 'fetchWorkPo']);
+    });
+// });
 
 /*
 |--------------------------------------------------------------------------

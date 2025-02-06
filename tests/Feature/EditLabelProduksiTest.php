@@ -31,7 +31,7 @@ use Illuminate\Foundation\Testing\DatabaseTransactions;
  * - API Routes:
  *   - GET /api/production-order/get-labels/{po}
  *   - POST /api/production-order/update-rim
- *   - POST /api/production-order/update-label
+ *   - PUT /api/production-order/labels
  *   - POST /api/production-order/add-rim
  */
 class EditLabelProduksiTest extends TestCase
@@ -185,7 +185,7 @@ class EditLabelProduksiTest extends TestCase
      *
      * @see App\Http\Controllers\ProductionOrderController::updateLabel()
      * @see App\Services\PrintLabelService::updateLabel()
-     * @see POST /api/production-order/update-label
+     * @see PUT /api/production-order/labels
      */
     public function test_can_update_label(): void
     {
@@ -205,7 +205,7 @@ class EditLabelProduksiTest extends TestCase
         ];
 
         $response = $this->actingAs($this->user)
-            ->postJson('/api/production-order/update-label', $updateData);
+            ->putJson('/api/production-order/labels', $updateData);
 
         $response->assertStatus(200)
             ->assertJson([
@@ -291,12 +291,12 @@ class EditLabelProduksiTest extends TestCase
      * Test validasi input saat update label
      *
      * @see App\Http\Controllers\ProductionOrderController::updateLabel()
-     * @see POST /api/production-order/update-label
+     * @see PUT /api/production-order/labels
      */
     public function test_validation_errors_on_update_label(): void
     {
         $response = $this->actingAs($this->user)
-            ->postJson('/api/production-order/update-label', []);
+            ->putJson('/api/production-order/labels', []);
 
         $response->assertStatus(422)
             ->assertJsonValidationErrors(['id', 'team']);

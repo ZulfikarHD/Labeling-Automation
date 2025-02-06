@@ -459,7 +459,7 @@ const confirmFinishOrder = async () => {
         });
 
         if (result.isConfirmed) {
-            await axios.put(`/api/production-order-finish/${form.po}`);
+            await axios.put(`/api/production-order/${form.po}/finish`);
             router.get("/order-besar/po-siap-verif", {}, { preserveState: true });
             showNotification('Order berhasil diselesaikan', 'success');
         }

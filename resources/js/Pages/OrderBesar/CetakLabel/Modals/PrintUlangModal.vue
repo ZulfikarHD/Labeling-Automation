@@ -185,8 +185,14 @@ const dataRimKiri = async () => {
  * Mengambil data rim dari server berdasarkan posisi yang dipilih
  */
 const getDataRim = async () => {
+    const dataRimParams = {
+        po: formPrintUlang.po,
+        dataRim: formPrintUlang.dataRim
+    };
+    const dataForm = new URLSearchParams(dataRimParams).toString();
+
     try {
-        const { data } = await axios.post("/api/order-besar/cetak-label/edit", formPrintUlang);
+        const { data } = await axios.get(`/api/order-besar/cetak-label/show?${dataForm}`);
         dataPrintUlang.value = data;
     } catch (error) {
         console.error('Error saat mengambil data rim:', error);
@@ -218,14 +224,8 @@ const printUlangLabel = async () => {
             return;
         }
 
-        // Update data di server
-        await axios.post('/api/order-besar/cetak-label/update', {
-            po: formPrintUlang.po,
-            dataRim: formPrintUlang.dataRim,
-            noRim: formPrintUlang.noRim,
-            npPetugas: formPrintUlang.npPetugas,
-            team: formPrintUlang.team
-        });
+        // Update data di server - sending formPrintUlang as request body
+        await axios.put('/api/order-besar/cetak-label', formPrintUlang);
 
         // Generate dan cetak label
         const printLabel = singleLabel(

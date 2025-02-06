@@ -20,7 +20,7 @@ use Illuminate\Foundation\Testing\DatabaseTransactions;
  * - Services:
  *   - App\Services\ProductionOrderService
  * - API Routes:
- *   - PUT /api/production-order-finish/{po}
+ *   - PUT /api/production-order/{noPo}/finish
  */
 class ProductionOrderFinishTest extends TestCase
 {
@@ -85,7 +85,7 @@ class ProductionOrderFinishTest extends TestCase
         $noPo = 4000000001;
         $this->createTestData($noPo);
 
-        $response = $this->put("/api/production-order-finish/{$noPo}");
+        $response = $this->put("/api/production-order/{$noPo}/finish");
 
         $response->assertStatus(200);
 
@@ -111,7 +111,7 @@ class ProductionOrderFinishTest extends TestCase
     {
         $nonexistentPo = 9999999999;
 
-        $response = $this->put("/api/production-order-finish/{$nonexistentPo}");
+        $response = $this->put("/api/production-order/{$nonexistentPo}/finish");
 
         $response->assertStatus(404);
     }
