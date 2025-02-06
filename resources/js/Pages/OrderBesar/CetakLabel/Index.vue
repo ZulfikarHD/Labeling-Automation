@@ -141,9 +141,9 @@
                                 type="submit"
                                 variant="primary"
                                 size="base"
+                                class="flex-1"
                                 :loading="loading"
                                 :disabled="loading"
-                                class="flex-1"
                             >
                                 Generate Label
                             </Button>
@@ -404,15 +404,6 @@ const submit = async (e) => {
             showNotification('Label berhasil dicetak', 'success');
             periksa1Input.value?.focus();
 
-            // Refresh the table component
-            await nextTick();
-            tableVerifikasiRef.value?.fetchData();
-
-            // Check if team has changed from initial value
-            if (form.team !== props.crntTeam) {
-                router.get(`/order-besar/cetak-label/${form.team}/${props.product.id}`);
-                return;
-            }
         } else {
             router.get("/order-besar/po-siap-verif", {}, { preserveState: true });
         }
@@ -421,6 +412,16 @@ const submit = async (e) => {
         showNotification('Gagal mencetak label', 'error');
     } finally {
         loading.value = false;
+
+        // Refresh the table component
+        await nextTick();
+        tableVerifikasiRef.value?.fetchData();
+
+        // Check if team has changed from initial value
+        if (form.team !== props.crntTeam) {
+            router.get(`/order-besar/cetak-label/${form.team}/${props.product.id}`);
+            return;
+        }
     }
 };
 
