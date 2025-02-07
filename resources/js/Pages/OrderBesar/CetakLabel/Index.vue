@@ -400,19 +400,20 @@ const submit = async (e) => {
                 form.no_rim = data.data.no_rim;
                 form.lbr_ptg = data.data.potongan;
             }
+            loading.value = false;
             await fetchUpdatedData();
             showNotification('Label berhasil dicetak', 'success');
             periksa1Input.value?.focus();
 
         } else {
             router.get("/order-besar/po-siap-verif", {}, { preserveState: true });
+            loading.value = false;
         }
     } catch (error) {
         console.error('Error:', error);
+        loading.value = false;
         showNotification('Gagal mencetak label', 'error');
     } finally {
-        loading.value = false;
-
         // Refresh the table component
         await nextTick();
         tableVerifikasiRef.value?.fetchData();
