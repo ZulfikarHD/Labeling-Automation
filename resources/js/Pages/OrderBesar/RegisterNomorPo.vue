@@ -1,3 +1,160 @@
+
+
+<template>
+    <Head title="Register No Po" />
+    <LoadingOverlay :is-loading="isLoading" />
+
+    <AuthenticatedLayout>
+        <BaseCard title="Register Nomor Production Order">
+            <form @submit.prevent="submit" class="flex flex-col text-lg">
+                <div class="flex flex-col">
+                    <InputLabel for="teamVerif" value="Team Periksa" class="dark:text-gray-300" />
+                    <Select
+                        id="teamVerif"
+                        v-model="form.team"
+                        class="text-center text-fuchsia-600 dark:text-fuchsia-400 font-semibold"
+                    >
+                        <option
+                            v-for="workstation in props.workstation"
+                            :value="workstation.id"
+                            :key="workstation.id"
+                        >
+                            {{ workstation.workstation }}
+                        </option>
+                    </Select>
+                </div>
+
+                <!-- Input Nomor Po -->
+                <div class="flex flex-col">
+                    <InputLabel for="nomorPo" value="Nomor Po" class="dark:text-gray-300" />
+                    <TextInput
+                        @keyup="debouncedFetchData"
+                        autofocus
+                        id="nomorPo"
+                        v-model="form.po"
+                        type="number"
+                        placeholder="Masukan Nomor PO"
+                        class="placeholder:text-center text-center text-xl font-bold dark:bg-gray-700 dark:text-gray-300"
+                    />
+
+                    <InputError :message="errorPo" />
+                </div>
+
+                <!-- Keterangan Barang -->
+                <div class="flex gap-3 mt-4">
+                    <!-- Nomor Obc -->
+                    <div class="flex flex-col flex-grow">
+                        <InputLabel for="nomorObc" value="Nomor OBC" class="dark:text-gray-300" />
+                        <TextInput
+                            id="nomorObc"
+                            @input="cekSpec()"
+                            v-model="form.obc"
+                            type="text"
+                            placeholder="Masukan Nomor OBC"
+                            required
+                            class="dark:bg-gray-700 dark:text-gray-300"
+                            :disabled="isDataFetched"
+                        />
+                    </div>
+
+                    <!-- Jml Cetak -->
+                    <div class="flex flex-col flex-grow">
+                        <InputLabel for="jmlLembar" value="Jumlah Cetak" class="dark:text-gray-300" />
+                        <TextInput
+                            @input="calcEndRim()"
+                            id="jmlLembar"
+                            v-model="form.jml_lembar"
+                            type="text"
+                            placeholder="Masukan Jumlah Lembar"
+                            class="placeholder:text-center text-center text-base font-medium dark:bg-gray-700 dark:text-gray-300"
+                            :disabled="isDataFetched"
+                        />
+                    </div>
+
+                    <!-- Inschiet -->
+                    <div class="flex flex-col flex-grow">
+                        <InputLabel for="inschiet" value="Inschiet" class="dark:text-gray-300" />
+                        <TextInput
+                            @input="calcEndRim()"
+                            id="inschiet"
+                            v-model="form.inschiet"
+                            type="number"
+                            min="0"
+                            placeholder="Masukan Inschiet"
+                            class="placeholder:text-center text-center text-base font-medium dark:bg-gray-700 dark:text-gray-300"
+                            :disabled="isDataFetched"
+                        />
+                    </div>
+
+                    <!-- Jml Rim -->
+                    <div class="flex flex-col flex-grow">
+                        <InputLabel for="jmlRim" value="Jumlah RIM" class="dark:text-gray-300" />
+                        <TextInput
+                            id="jmlRim"
+                            v-model="form.jml_rim"
+                            type="number"
+                            min="0"
+                            placeholder="Jumlah RIM"
+                            class="bg-gray-200 dark:bg-gray-600 text-center dark:text-gray-300"
+                            disabled
+                        />
+                    </div>
+                </div>
+
+                <!-- Nomor RIm -->
+                <div class="flex gap-3 mt-4">
+                    <!-- Start Rim -->
+                    <div class="flex flex-col flex-grow">
+                        <InputLabel for="rimStart" value="Nomor Rim Awal" class="dark:text-gray-300" />
+                        <TextInput
+                            @input="calcEndRim()"
+                            id="rimStart"
+                            v-model="form.start_rim"
+                            type="number"
+                            min="0"
+                            placeholder="Masukan Nomor RIM Pertama"
+                            class="placeholder:text-center text-center text-base dark:bg-gray-700 dark:text-gray-300"
+                        />
+                    </div>
+
+                    <!-- End Rim -->
+                    <div class="flex flex-col flex-grow">
+                        <InputLabel for="rimEnd" value="Nomor Rim Terakhir" class="dark:text-gray-300" />
+                        <TextInput
+                            id="rimEnd"
+                            v-model="form.end_rim"
+                            type="number"
+                            min="0"
+                            placeholder="Masukan Nomor Rim Terakhir"
+                            class="placeholder:text-center text-center text-base dark:bg-gray-700 dark:text-gray-300"
+                            :disabled="isDataFetched"
+                        />
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="flex gap-4 mt-8">
+                    <Button
+                        type="submit"
+                        variant="primary"
+                        :loading="isLoading"
+                        :full-width="true"
+                    >
+                        Buat Label
+                    </Button>
+                    <Button
+                        type="button"
+                        variant="outline-primary"
+                        :full-width="true"
+                        @click="resetForm"
+                    >
+                        Clear
+                    </Button>
+                </div>
+            </form>
+        </BaseCard>
+    </AuthenticatedLayout>
+</template>
 <script setup>
 /**
  * Komponen untuk registrasi dan manajemen Nomor Production Order (PO)
@@ -93,7 +250,9 @@ const fetchData = () => {
         .catch(() => {
             errorPo.value = "Nomor PO Tidak Ditemukan";
             isDataFetched.value = false; // Set to false on error
+            const tempPo = form.po;
             resetForm();
+            form.po = tempPo;
         })
         .finally(() => {
             isLoading.value = false;
@@ -260,159 +419,3 @@ function submit() {
     });
 }
 </script>
-
-<template>
-    <Head title="Register No Po" />
-    <LoadingOverlay :is-loading="isLoading" />
-
-    <AuthenticatedLayout>
-        <BaseCard title="Register Nomor Production Order">
-            <form @submit.prevent="submit" class="flex flex-col text-lg">
-                <div class="flex flex-col">
-                    <InputLabel for="teamVerif" value="Team Periksa" class="dark:text-gray-300" />
-                    <Select
-                        id="teamVerif"
-                        v-model="form.team"
-                        class="text-center text-fuchsia-600 dark:text-fuchsia-400 font-semibold"
-                    >
-                        <option
-                            v-for="workstation in props.workstation"
-                            :value="workstation.id"
-                            :key="workstation.id"
-                        >
-                            {{ workstation.workstation }}
-                        </option>
-                    </Select>
-                </div>
-
-                <!-- Input Nomor Po -->
-                <div class="flex flex-col">
-                    <InputLabel for="nomorPo" value="Nomor Po" class="dark:text-gray-300" />
-                    <TextInput
-                        @keyup="debouncedFetchData"
-                        autofocus
-                        id="nomorPo"
-                        v-model="form.po"
-                        type="number"
-                        placeholder="Masukan Nomor PO"
-                        class="placeholder:text-center text-center text-xl font-bold dark:bg-gray-700 dark:text-gray-300"
-                    />
-
-                    <InputError :message="errorPo" />
-                </div>
-
-                <!-- Keterangan Barang -->
-                <div class="flex gap-3 mt-4">
-                    <!-- Nomor Obc -->
-                    <div class="flex flex-col flex-grow">
-                        <InputLabel for="nomorObc" value="Nomor OBC" class="dark:text-gray-300" />
-                        <TextInput
-                            id="nomorObc"
-                            @input="cekSpec()"
-                            v-model="form.obc"
-                            type="text"
-                            placeholder="Masukan Nomor OBC"
-                            required
-                            class="dark:bg-gray-700 dark:text-gray-300"
-                            :disabled="isDataFetched"
-                        />
-                    </div>
-
-                    <!-- Jml Cetak -->
-                    <div class="flex flex-col flex-grow">
-                        <InputLabel for="jmlLembar" value="Jumlah Cetak" class="dark:text-gray-300" />
-                        <TextInput
-                            @input="calcEndRim()"
-                            id="jmlLembar"
-                            v-model="form.jml_lembar"
-                            type="text"
-                            placeholder="Masukan Jumlah Lembar"
-                            class="placeholder:text-center text-center text-base font-medium dark:bg-gray-700 dark:text-gray-300"
-                            :disabled="isDataFetched"
-                        />
-                    </div>
-
-                    <!-- Inschiet -->
-                    <div class="flex flex-col flex-grow">
-                        <InputLabel for="inschiet" value="Inschiet" class="dark:text-gray-300" />
-                        <TextInput
-                            @input="calcEndRim()"
-                            id="inschiet"
-                            v-model="form.inschiet"
-                            type="number"
-                            min="0"
-                            placeholder="Masukan Inschiet"
-                            class="placeholder:text-center text-center text-base font-medium dark:bg-gray-700 dark:text-gray-300"
-                            :disabled="isDataFetched"
-                        />
-                    </div>
-
-                    <!-- Jml Rim -->
-                    <div class="flex flex-col flex-grow">
-                        <InputLabel for="jmlRim" value="Jumlah RIM" class="dark:text-gray-300" />
-                        <TextInput
-                            id="jmlRim"
-                            v-model="form.jml_rim"
-                            type="number"
-                            min="0"
-                            placeholder="Jumlah RIM"
-                            class="bg-gray-200 dark:bg-gray-600 text-center dark:text-gray-300"
-                            disabled
-                        />
-                    </div>
-                </div>
-
-                <!-- Nomor RIm -->
-                <div class="flex gap-3 mt-4">
-                    <!-- Start Rim -->
-                    <div class="flex flex-col flex-grow">
-                        <InputLabel for="rimStart" value="Nomor Rim Awal" class="dark:text-gray-300" />
-                        <TextInput
-                            @input="calcEndRim()"
-                            id="rimStart"
-                            v-model="form.start_rim"
-                            type="number"
-                            min="0"
-                            placeholder="Masukan Nomor RIM Pertama"
-                            class="placeholder:text-center text-center text-base dark:bg-gray-700 dark:text-gray-300"
-                        />
-                    </div>
-
-                    <!-- End Rim -->
-                    <div class="flex flex-col flex-grow">
-                        <InputLabel for="rimEnd" value="Nomor Rim Terakhir" class="dark:text-gray-300" />
-                        <TextInput
-                            id="rimEnd"
-                            v-model="form.end_rim"
-                            type="number"
-                            min="0"
-                            placeholder="Masukan Nomor Rim Terakhir"
-                            class="placeholder:text-center text-center text-base dark:bg-gray-700 dark:text-gray-300"
-                            :disabled="isDataFetched"
-                        />
-                    </div>
-                </div>
-
-                <!-- Submit Button -->
-                <div class="flex gap-4 mt-8">
-                    <Button
-                        type="submit"
-                        variant="primary"
-                        :loading="isLoading"
-                        :full-width="true"
-                    >
-                        Buat Label
-                    </Button>
-                    <Button
-                        type="button"
-                        variant="outline-primary"
-                        :full-width="true"
-                        @click="resetForm"
-                    >
-                        Clear
-                    </Button>
-                </div>
-            </form>
-        </BaseCard>
-    </AuthenticatedLayout>
-</template>
