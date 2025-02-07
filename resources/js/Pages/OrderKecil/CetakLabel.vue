@@ -14,6 +14,173 @@
  * @requires axios
  */
 
+
+<template>
+    <Head title="Cetak Label" />
+    <LoadingOverlay :is-loading="isLoading" />
+
+    <AuthenticatedLayout>
+        <BaseCard title="Cetak Label Order Kecil">
+            <form @submit.prevent="submit" class="flex flex-col space-y-6">
+                <!-- Team Selection -->
+                <div class="flex flex-col">
+                    <InputLabel
+                        for="team"
+                        value="Team Periksa"
+                        required
+                        class="dark:text-gray-200"
+                    />
+                    <Select
+                        id="team"
+                        v-model="form.team"
+                        class="text-center text-fuchsia-600 dark:text-fuchsia-400 font-semibold"
+                    >
+                        <option v-for="team in props.listTeam" :key="team.id" :value="team.id">
+                            {{ team.workstation }}
+                        </option>
+                    </Select>
+                </div>
+
+                <!-- Production Order -->
+                <div class="flex flex-col">
+                    <InputLabel
+                        for="po"
+                        value="Nomor Production Order"
+                        required
+                        class="dark:text-gray-200"
+                    />
+                    <TextInput
+                        id="po"
+                        v-model="form.po"
+                        @input="debouncedFetchData"
+                        type="number"
+                        placeholder="Masukkan Nomor PO"
+                        class="text-center text-xl font-bold"
+                        required
+                        autofocus
+                    />
+                    <InputError :message="errorPo"/>
+                </div>
+
+                <!-- Order Details -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="flex flex-col">
+                        <InputLabel
+                            for="obc"
+                            value="Nomor OBC"
+                            required
+                            class="dark:text-gray-200"
+                        />
+                        <TextInput
+                            id="obc"
+                            v-model="form.obc"
+                            type="text"
+                            placeholder="Order Bea Cukai"
+                            required
+                            :disabled="isDataFetched"
+                        />
+                    </div>
+
+                    <div class="flex flex-col">
+                        <InputLabel
+                            for="jml_rim"
+                            value="Lembar / Rim"
+                            class="dark:text-gray-200"
+                        />
+                        <TextInput
+                            id="jml_rim"
+                            v-model="form.jml_rim"
+                            type="text"
+                            disabled
+                        />
+                    </div>
+
+                    <div class="flex flex-col">
+                        <InputLabel
+                            for="jml_label"
+                            value="Jumlah Label"
+                            required
+                            class="dark:text-gray-200"
+                        />
+                        <TextInput
+                            id="jml_label"
+                            v-model="form.jml_label"
+                            type="number"
+                            placeholder="Jumlah Label"
+                            required
+                        />
+                    </div>
+                </div>
+
+                <!-- Inspector Details -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="flex flex-col">
+                        <InputLabel
+                            for="periksa1"
+                            value="NP Periksa 1"
+                            required
+                            class="dark:text-gray-200"
+                        />
+                        <TextInput
+                            id="periksa1"
+                            v-model="form.periksa1"
+                            type="text"
+                            placeholder="Nomor Pegawai"
+                            maxlength="4"
+                            required
+                        />
+                    </div>
+
+                    <div class="flex flex-col">
+                        <InputLabel
+                            for="periksa2"
+                            value="NP Periksa 2"
+                            class="dark:text-gray-200"
+                        />
+                        <TextInput
+                            id="periksa2"
+                            v-model="form.periksa2"
+                            type="text"
+                            placeholder="Nomor Pegawai"
+                            maxlength="4"
+                        />
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex gap-4 mt-8">
+                    <Button
+                        type="submit"
+                        variant="primary"
+                        size="lg"
+                        :full-width="true"
+                        :loading="isLoading"
+                        :disabled="isLoading"
+                    >
+                        Buat Label
+                    </Button>
+
+                    <Button
+                        type="button"
+                        variant="outline-primary"
+                        size="lg"
+                        :full-width="true"
+                        @click="resetForm"
+                    >
+                        Clear
+                    </Button>
+                </div>
+            </form>
+        </BaseCard>
+
+        <TableVerifikasiPegawai
+            :team="form.team"
+            :date="new Date().toISOString().split('T')[0]"
+        />
+    </AuthenticatedLayout>
+    <iframe ref="printFrame" class="hidden"></iframe>
+</template>
+
 <script setup>
 import { inject, ref } from "vue";
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
@@ -233,170 +400,3 @@ const resetForm = () => {
     isDataFetched.value = false;
 };
 </script>
-
-<template>
-    <Head title="Cetak Label" />
-    <LoadingOverlay :is-loading="isLoading" />
-
-    <AuthenticatedLayout>
-        <BaseCard title="Cetak Label Order Kecil">
-            <form @submit.prevent="submit" class="flex flex-col space-y-6">
-                <!-- Team Selection -->
-                <div class="flex flex-col">
-                    <InputLabel
-                        for="team"
-                        value="Team Periksa"
-                        required
-                        class="dark:text-gray-200"
-                    />
-                    <Select
-                        id="team"
-                        v-model="form.team"
-                        class="text-center text-fuchsia-600 dark:text-fuchsia-400 font-semibold"
-                    >
-                        <option v-for="team in props.listTeam" :key="team.id" :value="team.id">
-                            {{ team.workstation }}
-                        </option>
-                    </Select>
-                </div>
-
-                <!-- Production Order -->
-                <div class="flex flex-col">
-                    <InputLabel
-                        for="po"
-                        value="Nomor Production Order"
-                        required
-                        class="dark:text-gray-200"
-                    />
-                    <TextInput
-                        id="po"
-                        v-model="form.po"
-                        @input="debouncedFetchData"
-                        type="number"
-                        placeholder="Masukkan Nomor PO"
-                        class="text-center text-xl font-bold"
-                        required
-                        autofocus
-                    />
-                    <InputError :message="errorPo"/>
-                </div>
-
-                <!-- Order Details -->
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div class="flex flex-col">
-                        <InputLabel
-                            for="obc"
-                            value="Nomor OBC"
-                            required
-                            class="dark:text-gray-200"
-                        />
-                        <TextInput
-                            id="obc"
-                            v-model="form.obc"
-                            type="text"
-                            placeholder="Order Bea Cukai"
-                            required
-                            :disabled="isDataFetched"
-                        />
-                    </div>
-
-                    <div class="flex flex-col">
-                        <InputLabel
-                            for="jml_rim"
-                            value="Lembar / Rim"
-                            class="dark:text-gray-200"
-                        />
-                        <TextInput
-                            id="jml_rim"
-                            v-model="form.jml_rim"
-                            type="text"
-                            disabled
-                        />
-                    </div>
-
-                    <div class="flex flex-col">
-                        <InputLabel
-                            for="jml_label"
-                            value="Jumlah Label"
-                            required
-                            class="dark:text-gray-200"
-                        />
-                        <TextInput
-                            id="jml_label"
-                            v-model="form.jml_label"
-                            type="number"
-                            placeholder="Jumlah Label"
-                            required
-                            :disabled="isDataFetched"
-                        />
-                    </div>
-                </div>
-
-                <!-- Inspector Details -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="flex flex-col">
-                        <InputLabel
-                            for="periksa1"
-                            value="NP Periksa 1"
-                            required
-                            class="dark:text-gray-200"
-                        />
-                        <TextInput
-                            id="periksa1"
-                            v-model="form.periksa1"
-                            type="text"
-                            placeholder="Nomor Pegawai"
-                            maxlength="4"
-                            required
-                        />
-                    </div>
-
-                    <div class="flex flex-col">
-                        <InputLabel
-                            for="periksa2"
-                            value="NP Periksa 2"
-                            class="dark:text-gray-200"
-                        />
-                        <TextInput
-                            id="periksa2"
-                            v-model="form.periksa2"
-                            type="text"
-                            placeholder="Nomor Pegawai"
-                            maxlength="4"
-                        />
-                    </div>
-                </div>
-
-                <!-- Action Buttons -->
-                <div class="flex gap-4 mt-8">
-                    <Button
-                        type="submit"
-                        variant="primary"
-                        size="lg"
-                        :full-width="true"
-                        :loading="isLoading"
-                        :disabled="isLoading"
-                    >
-                        Buat Label
-                    </Button>
-
-                    <Button
-                        type="button"
-                        variant="outline-primary"
-                        size="lg"
-                        :full-width="true"
-                        @click="resetForm"
-                    >
-                        Clear
-                    </Button>
-                </div>
-            </form>
-        </BaseCard>
-
-        <TableVerifikasiPegawai
-            :team="form.team"
-            :date="new Date().toISOString().split('T')[0]"
-        />
-    </AuthenticatedLayout>
-    <iframe ref="printFrame" class="hidden"></iframe>
-</template>
