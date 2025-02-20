@@ -477,7 +477,7 @@ const confirmFinishOrder = async () => {
 const fetchNoPlat = async () => {
     try {
         const response = await axios.get(
-            `http://10.18.30.233:8300/api/nomor-plat-pcht/${form.po}`
+            `http://10.16.7.46:8300/api/nomor-plat-pcht/${form.po}`
         );
         form.noPlat = response.data;
     } catch (error) {
