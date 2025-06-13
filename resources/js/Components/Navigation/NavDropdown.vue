@@ -17,41 +17,41 @@ defineEmits(['toggle']);
 <template>
   <button
     @click.stop="$emit('toggle')"
-    class="dropdown-trigger group flex items-center gap-2.5 px-4 py-2.5 rounded-lg transition-all duration-200"
+    class="dropdown-trigger group inline-flex items-center gap-3 px-4 py-2.5 text-sm font-medium rounded-xl transition-all duration-200 hover:shadow-sm"
     :class="[
       active
-        ? 'bg-blue-50 dark:bg-blue-900/20'
-        : 'hover:bg-blue-50 dark:hover:bg-slate-700/50',
+        ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800 shadow-sm'
+        : 'text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/10',
       isOpen
-        ? 'ring-2 ring-blue-100 dark:ring-blue-900/30'
-        : ''
+        ? 'ring-2 ring-blue-500/20 dark:ring-blue-400/20 bg-blue-50 dark:bg-blue-900/20'
+        : '',
     ]"
   >
     <component
       :is="icon"
-      class="w-4.5 h-4.5 transition-colors"
+      class="h-4 w-4 flex-shrink-0 transition-colors duration-200"
       :class="[
-        active
+        active || isOpen
           ? 'text-blue-600 dark:text-blue-400'
-          : 'text-slate-600 dark:text-slate-300 group-hover:text-blue-600 dark:group-hover:text-blue-400'
+          : 'text-slate-500 dark:text-slate-400 group-hover:text-blue-600 dark:group-hover:text-blue-400',
       ]"
     />
     <span
-      class="text-sm font-medium transition-colors"
+      class="font-medium transition-colors duration-200"
       :class="[
-        active
+        active || isOpen
           ? 'text-blue-600 dark:text-blue-400'
-          : 'text-slate-700 dark:text-slate-200 group-hover:text-blue-600 dark:group-hover:text-blue-400'
+          : 'text-slate-700 dark:text-slate-300 group-hover:text-blue-600 dark:group-hover:text-blue-400',
       ]"
     >{{ label }}</span>
-    <ChevronDown
-      class="w-4 h-4 transition-all duration-200"
-      :class="[
-        isOpen ? 'rotate-180' : '',
-        active
-          ? 'text-blue-600 dark:text-blue-400'
-          : 'text-slate-400 group-hover:text-blue-600 dark:group-hover:text-blue-400'
-      ]"
-    />
+            <ChevronDown
+            class="h-5 w-5 transition-all duration-200"
+            :class="[
+                isOpen ? 'rotate-180' : '',
+                active || isOpen
+                    ? 'text-blue-600 dark:text-blue-400'
+                    : 'text-slate-400 dark:text-slate-500 group-hover:text-blue-600 dark:group-hover:text-blue-400',
+            ]"
+        />
   </button>
 </template>

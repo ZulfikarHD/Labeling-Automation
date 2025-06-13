@@ -22,5 +22,13 @@ export default defineConfig({
     build: {
         assetsDir: 'assets',
         base: '/labeling/'
-    }
+    },
+
+    // Dev
+    server: {
+    hmr: {
+            host: 'localhost',
+        },
+        cors: true,
+    },
 });
