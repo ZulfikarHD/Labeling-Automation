@@ -105,7 +105,7 @@ class PrintLabelService
      */
     private function shouldGenerateLabels(int $totalSheets): bool
     {
-        return divnum($totalSheets, self::SHEETS_PER_RIM) > 1;
+        return self::SHEETS_PER_RIM > 0 ? ($totalSheets / self::SHEETS_PER_RIM) > 1 : false;
     }
 
     /**

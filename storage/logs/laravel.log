@@ -1,0 +1,858 @@
+[2025-03-20 13:50:24] production.ERROR: Class "DOMDocument" not found {"exception":"[object] (Error(code: 0): Class \"DOMDocument\" not found at /home/sirinedev/docker/labeling-app/vendor/nunomaduro/termwind/src/HtmlRenderer.php:32)
+[stacktrace]
+#0 /home/sirinedev/docker/labeling-app/vendor/nunomaduro/termwind/src/HtmlRenderer.php(24): Termwind\\HtmlRenderer->parse()
+#1 /home/sirinedev/docker/labeling-app/vendor/nunomaduro/termwind/src/Functions.php(41): Termwind\\HtmlRenderer->render()
+#2 /home/sirinedev/docker/labeling-app/vendor/laravel/framework/src/Illuminate/Console/View/Components/Component.php(52): Termwind\\render()
+#3 /home/sirinedev/docker/labeling-app/vendor/laravel/framework/src/Illuminate/Console/View/Components/Line.php(49): Illuminate\\Console\\View\\Components\\Component->renderView()
+#4 /home/sirinedev/docker/labeling-app/vendor/laravel/framework/src/Illuminate/Console/View/Components/Info.php(18): Illuminate\\Console\\View\\Components\\Line->render()
+#5 /home/sirinedev/docker/labeling-app/vendor/laravel/framework/src/Illuminate/Console/View/Components/Factory.php(58): Illuminate\\Console\\View\\Components\\Info->render()
+#6 /home/sirinedev/docker/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Console/PackageDiscoverCommand.php(34): Illuminate\\Console\\View\\Components\\Factory->__call()
+#7 /home/sirinedev/docker/labeling-app/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(36): Illuminate\\Foundation\\Console\\PackageDiscoverCommand->handle()
+#8 /home/sirinedev/docker/labeling-app/vendor/laravel/framework/src/Illuminate/Container/Util.php(41): Illuminate\\Container\\BoundMethod::Illuminate\\Container\\{closure}()
+#9 /home/sirinedev/docker/labeling-app/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(93): Illuminate\\Container\\Util::unwrapIfClosure()
+#10 /home/sirinedev/docker/labeling-app/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(35): Illuminate\\Container\\BoundMethod::callBoundMethod()
+#11 /home/sirinedev/docker/labeling-app/vendor/laravel/framework/src/Illuminate/Container/Container.php(662): Illuminate\\Container\\BoundMethod::call()
+#12 /home/sirinedev/docker/labeling-app/vendor/laravel/framework/src/Illuminate/Console/Command.php(211): Illuminate\\Container\\Container->call()
+#13 /home/sirinedev/docker/labeling-app/vendor/symfony/console/Command/Command.php(326): Illuminate\\Console\\Command->execute()
+#14 /home/sirinedev/docker/labeling-app/vendor/laravel/framework/src/Illuminate/Console/Command.php(180): Symfony\\Component\\Console\\Command\\Command->run()
+#15 /home/sirinedev/docker/labeling-app/vendor/symfony/console/Application.php(1096): Illuminate\\Console\\Command->run()
+#16 /home/sirinedev/docker/labeling-app/vendor/symfony/console/Application.php(324): Symfony\\Component\\Console\\Application->doRunCommand()
+#17 /home/sirinedev/docker/labeling-app/vendor/symfony/console/Application.php(175): Symfony\\Component\\Console\\Application->doRun()
+#18 /home/sirinedev/docker/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(201): Symfony\\Component\\Console\\Application->run()
+#19 /home/sirinedev/docker/labeling-app/artisan(35): Illuminate\\Foundation\\Console\\Kernel->handle()
+#20 {main}
+"} 
+[2025-03-20 13:50:55] production.ERROR: Class "DOMDocument" not found {"exception":"[object] (Error(code: 0): Class \"DOMDocument\" not found at /home/sirinedev/docker/labeling-app/vendor/nunomaduro/termwind/src/HtmlRenderer.php:32)
+[stacktrace]
+#0 /home/sirinedev/docker/labeling-app/vendor/nunomaduro/termwind/src/HtmlRenderer.php(24): Termwind\\HtmlRenderer->parse()
+#1 /home/sirinedev/docker/labeling-app/vendor/nunomaduro/termwind/src/Functions.php(41): Termwind\\HtmlRenderer->render()
+#2 /home/sirinedev/docker/labeling-app/vendor/laravel/framework/src/Illuminate/Console/View/Components/Component.php(52): Termwind\\render()
+#3 /home/sirinedev/docker/labeling-app/vendor/laravel/framework/src/Illuminate/Console/View/Components/Line.php(49): Illuminate\\Console\\View\\Components\\Component->renderView()
+#4 /home/sirinedev/docker/labeling-app/vendor/laravel/framework/src/Illuminate/Console/View/Components/Info.php(18): Illuminate\\Console\\View\\Components\\Line->render()
+#5 /home/sirinedev/docker/labeling-app/vendor/laravel/framework/src/Illuminate/Console/View/Components/Factory.php(58): Illuminate\\Console\\View\\Components\\Info->render()
+#6 /home/sirinedev/docker/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Console/PackageDiscoverCommand.php(34): Illuminate\\Console\\View\\Components\\Factory->__call()
+#7 /home/sirinedev/docker/labeling-app/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(36): Illuminate\\Foundation\\Console\\PackageDiscoverCommand->handle()
+#8 /home/sirinedev/docker/labeling-app/vendor/laravel/framework/src/Illuminate/Container/Util.php(41): Illuminate\\Container\\BoundMethod::Illuminate\\Container\\{closure}()
+#9 /home/sirinedev/docker/labeling-app/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(93): Illuminate\\Container\\Util::unwrapIfClosure()
+#10 /home/sirinedev/docker/labeling-app/vendor/laravel/framework/src/Illuminate/Container/BoundMethod.php(35): Illuminate\\Container\\BoundMethod::callBoundMethod()
+#11 /home/sirinedev/docker/labeling-app/vendor/laravel/framework/src/Illuminate/Container/Container.php(662): Illuminate\\Container\\BoundMethod::call()
+#12 /home/sirinedev/docker/labeling-app/vendor/laravel/framework/src/Illuminate/Console/Command.php(211): Illuminate\\Container\\Container->call()
+#13 /home/sirinedev/docker/labeling-app/vendor/symfony/console/Command/Command.php(326): Illuminate\\Console\\Command->execute()
+#14 /home/sirinedev/docker/labeling-app/vendor/laravel/framework/src/Illuminate/Console/Command.php(180): Symfony\\Component\\Console\\Command\\Command->run()
+#15 /home/sirinedev/docker/labeling-app/vendor/symfony/console/Application.php(1096): Illuminate\\Console\\Command->run()
+#16 /home/sirinedev/docker/labeling-app/vendor/symfony/console/Application.php(324): Symfony\\Component\\Console\\Application->doRunCommand()
+#17 /home/sirinedev/docker/labeling-app/vendor/symfony/console/Application.php(175): Symfony\\Component\\Console\\Application->doRun()
+#18 /home/sirinedev/docker/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(201): Symfony\\Component\\Console\\Application->run()
+#19 /home/sirinedev/docker/labeling-app/artisan(35): Illuminate\\Foundation\\Console\\Kernel->handle()
+#20 {main}
+"} 
+[2025-05-22 12:51:47] production.ERROR: Command "views" is not defined.
+
+Did you mean one of these?
+    view:cache
+    view:clear {"exception":"[object] (Symfony\\Component\\Console\\Exception\\CommandNotFoundException(code: 0): Command \"views\" is not defined.
+
+Did you mean one of these?
+    view:cache
+    view:clear at /var/www/labeling-app/vendor/symfony/console/Application.php:737)
+[stacktrace]
+#0 /var/www/labeling-app/vendor/symfony/console/Application.php(266): Symfony\\Component\\Console\\Application->find()
+#1 /var/www/labeling-app/vendor/symfony/console/Application.php(175): Symfony\\Component\\Console\\Application->doRun()
+#2 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(201): Symfony\\Component\\Console\\Application->run()
+#3 /var/www/labeling-app/artisan(35): Illuminate\\Foundation\\Console\\Kernel->handle()
+#4 {main}
+"} 
+[2025-05-22 12:51:51] production.ERROR: There are no commands defined in the "views" namespace.
+
+Did you mean this?
+    view {"exception":"[object] (Symfony\\Component\\Console\\Exception\\NamespaceNotFoundException(code: 0): There are no commands defined in the \"views\" namespace.
+
+Did you mean this?
+    view at /var/www/labeling-app/vendor/symfony/console/Application.php:669)
+[stacktrace]
+#0 /var/www/labeling-app/vendor/symfony/console/Application.php(720): Symfony\\Component\\Console\\Application->findNamespace()
+#1 /var/www/labeling-app/vendor/symfony/console/Application.php(266): Symfony\\Component\\Console\\Application->find()
+#2 /var/www/labeling-app/vendor/symfony/console/Application.php(175): Symfony\\Component\\Console\\Application->doRun()
+#3 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(201): Symfony\\Component\\Console\\Application->run()
+#4 /var/www/labeling-app/artisan(35): Illuminate\\Foundation\\Console\\Kernel->handle()
+#5 {main}
+"} 
+[2025-05-22 12:52:09] production.ERROR: There are no commands defined in the "log" namespace. {"exception":"[object] (Symfony\\Component\\Console\\Exception\\NamespaceNotFoundException(code: 0): There are no commands defined in the \"log\" namespace. at /var/www/labeling-app/vendor/symfony/console/Application.php:669)
+[stacktrace]
+#0 /var/www/labeling-app/vendor/symfony/console/Application.php(720): Symfony\\Component\\Console\\Application->findNamespace()
+#1 /var/www/labeling-app/vendor/symfony/console/Application.php(266): Symfony\\Component\\Console\\Application->find()
+#2 /var/www/labeling-app/vendor/symfony/console/Application.php(175): Symfony\\Component\\Console\\Application->doRun()
+#3 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(201): Symfony\\Component\\Console\\Application->run()
+#4 /var/www/labeling-app/artisan(35): Illuminate\\Foundation\\Console\\Kernel->handle()
+#5 {main}
+"} 
+[2025-05-22 12:52:15] production.ERROR: There are no commands defined in the "sessions" namespace.
+
+Did you mean this?
+    session {"exception":"[object] (Symfony\\Component\\Console\\Exception\\NamespaceNotFoundException(code: 0): There are no commands defined in the \"sessions\" namespace.
+
+Did you mean this?
+    session at /var/www/labeling-app/vendor/symfony/console/Application.php:669)
+[stacktrace]
+#0 /var/www/labeling-app/vendor/symfony/console/Application.php(720): Symfony\\Component\\Console\\Application->findNamespace()
+#1 /var/www/labeling-app/vendor/symfony/console/Application.php(266): Symfony\\Component\\Console\\Application->find()
+#2 /var/www/labeling-app/vendor/symfony/console/Application.php(175): Symfony\\Component\\Console\\Application->doRun()
+#3 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(201): Symfony\\Component\\Console\\Application->run()
+#4 /var/www/labeling-app/artisan(35): Illuminate\\Foundation\\Console\\Kernel->handle()
+#5 {main}
+"} 
+[2025-05-22 12:52:19] production.ERROR: Command "session:clear" is not defined.
+
+Did you mean one of these?
+    auth:clear-resets
+    cache:clear
+    config:clear
+    event:clear
+    optimize:clear
+    queue:clear
+    route:clear
+    schedule:clear-cache
+    session:table
+    view:clear {"exception":"[object] (Symfony\\Component\\Console\\Exception\\CommandNotFoundException(code: 0): Command \"session:clear\" is not defined.
+
+Did you mean one of these?
+    auth:clear-resets
+    cache:clear
+    config:clear
+    event:clear
+    optimize:clear
+    queue:clear
+    route:clear
+    schedule:clear-cache
+    session:table
+    view:clear at /var/www/labeling-app/vendor/symfony/console/Application.php:737)
+[stacktrace]
+#0 /var/www/labeling-app/vendor/symfony/console/Application.php(266): Symfony\\Component\\Console\\Application->find()
+#1 /var/www/labeling-app/vendor/symfony/console/Application.php(175): Symfony\\Component\\Console\\Application->doRun()
+#2 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(201): Symfony\\Component\\Console\\Application->run()
+#3 /var/www/labeling-app/artisan(35): Illuminate\\Foundation\\Console\\Kernel->handle()
+#4 {main}
+"} 
+[2025-05-22 14:22:08] production.ERROR: file_put_contents(/var/www/labeling-app/storage/framework/sessions/1LLHsUfnR1oTGrigTcoS8zjroTrnMndvIbHrZnIk): Failed to open stream: Permission denied {"exception":"[object] (ErrorException(code: 0): file_put_contents(/var/www/labeling-app/storage/framework/sessions/1LLHsUfnR1oTGrigTcoS8zjroTrnMndvIbHrZnIk): Failed to open stream: Permission denied at /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Filesystem/Filesystem.php:204)
+[stacktrace]
+#0 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(255): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->handleError()
+#1 [internal function]: Illuminate\\Foundation\\Bootstrap\\HandleExceptions->Illuminate\\Foundation\\Bootstrap\\{closure}()
+#2 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Filesystem/Filesystem.php(204): file_put_contents()
+#3 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Session/FileSessionHandler.php(90): Illuminate\\Filesystem\\Filesystem->put()
+#4 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Session/Store.php(172): Illuminate\\Session\\FileSessionHandler->write()
+#5 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Session/Middleware/StartSession.php(245): Illuminate\\Session\\Store->save()
+#6 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Session/Middleware/StartSession.php(130): Illuminate\\Session\\Middleware\\StartSession->saveSession()
+#7 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Session/Middleware/StartSession.php(64): Illuminate\\Session\\Middleware\\StartSession->handleStatefulRequest()
+#8 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\Session\\Middleware\\StartSession->handle()
+#9 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Cookie/Middleware/AddQueuedCookiesToResponse.php(37): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#10 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\Cookie\\Middleware\\AddQueuedCookiesToResponse->handle()
+#11 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Cookie/Middleware/EncryptCookies.php(67): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#12 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\Cookie\\Middleware\\EncryptCookies->handle()
+#13 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(119): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#14 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Routing/Router.php(805): Illuminate\\Pipeline\\Pipeline->then()
+#15 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Routing/Router.php(784): Illuminate\\Routing\\Router->runRouteWithinStack()
+#16 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Routing/Router.php(748): Illuminate\\Routing\\Router->runRoute()
+#17 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Routing/Router.php(737): Illuminate\\Routing\\Router->dispatchToRoute()
+#18 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(200): Illuminate\\Routing\\Router->dispatch()
+#19 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(144): Illuminate\\Foundation\\Http\\Kernel->Illuminate\\Foundation\\Http\\{closure}()
+#20 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/TransformsRequest.php(21): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#21 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/ConvertEmptyStringsToNull.php(31): Illuminate\\Foundation\\Http\\Middleware\\TransformsRequest->handle()
+#22 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\Foundation\\Http\\Middleware\\ConvertEmptyStringsToNull->handle()
+#23 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/TransformsRequest.php(21): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#24 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/TrimStrings.php(40): Illuminate\\Foundation\\Http\\Middleware\\TransformsRequest->handle()
+#25 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\Foundation\\Http\\Middleware\\TrimStrings->handle()
+#26 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/ValidatePostSize.php(27): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#27 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\Foundation\\Http\\Middleware\\ValidatePostSize->handle()
+#28 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/PreventRequestsDuringMaintenance.php(99): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#29 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\Foundation\\Http\\Middleware\\PreventRequestsDuringMaintenance->handle()
+#30 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Http/Middleware/HandleCors.php(49): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#31 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\Http\\Middleware\\HandleCors->handle()
+#32 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Http/Middleware/TrustProxies.php(39): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#33 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\Http\\Middleware\\TrustProxies->handle()
+#34 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(119): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#35 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(175): Illuminate\\Pipeline\\Pipeline->then()
+#36 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(144): Illuminate\\Foundation\\Http\\Kernel->sendRequestThroughRouter()
+#37 /var/www/labeling-app/public/index.php(53): Illuminate\\Foundation\\Http\\Kernel->handle()
+#38 {main}
+"} 
+[2025-05-22 14:22:08] production.ERROR: file_put_contents(/var/www/labeling-app/storage/framework/views/31187f5ef68cade055013ae10803db4b.php): Failed to open stream: Permission denied {"exception":"[object] (ErrorException(code: 0): file_put_contents(/var/www/labeling-app/storage/framework/views/31187f5ef68cade055013ae10803db4b.php): Failed to open stream: Permission denied at /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Filesystem/Filesystem.php:204)
+[stacktrace]
+#0 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(255): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->handleError()
+#1 [internal function]: Illuminate\\Foundation\\Bootstrap\\HandleExceptions->Illuminate\\Foundation\\Bootstrap\\{closure}()
+#2 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Filesystem/Filesystem.php(204): file_put_contents()
+#3 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/View/Compilers/BladeCompiler.php(194): Illuminate\\Filesystem\\Filesystem->put()
+#4 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/View/Engines/CompilerEngine.php(64): Illuminate\\View\\Compilers\\BladeCompiler->compile()
+#5 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/View/View.php(207): Illuminate\\View\\Engines\\CompilerEngine->get()
+#6 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/View/View.php(190): Illuminate\\View\\View->getContents()
+#7 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/View/View.php(159): Illuminate\\View\\View->renderContents()
+#8 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Http/Response.php(69): Illuminate\\View\\View->render()
+#9 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Http/Response.php(35): Illuminate\\Http\\Response->setContent()
+#10 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Routing/ResponseFactory.php(58): Illuminate\\Http\\Response->__construct()
+#11 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Routing/ResponseFactory.php(88): Illuminate\\Routing\\ResponseFactory->make()
+#12 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(723): Illuminate\\Routing\\ResponseFactory->view()
+#13 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(650): Illuminate\\Foundation\\Exceptions\\Handler->renderHttpException()
+#14 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(556): Illuminate\\Foundation\\Exceptions\\Handler->prepareResponse()
+#15 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Exceptions/Handler.php(473): Illuminate\\Foundation\\Exceptions\\Handler->renderExceptionResponse()
+#16 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Routing/Pipeline.php(51): Illuminate\\Foundation\\Exceptions\\Handler->render()
+#17 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(188): Illuminate\\Routing\\Pipeline->handleException()
+#18 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Cookie/Middleware/AddQueuedCookiesToResponse.php(37): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#19 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\Cookie\\Middleware\\AddQueuedCookiesToResponse->handle()
+#20 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Cookie/Middleware/EncryptCookies.php(67): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#21 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\Cookie\\Middleware\\EncryptCookies->handle()
+#22 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(119): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#23 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Routing/Router.php(805): Illuminate\\Pipeline\\Pipeline->then()
+#24 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Routing/Router.php(784): Illuminate\\Routing\\Router->runRouteWithinStack()
+#25 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Routing/Router.php(748): Illuminate\\Routing\\Router->runRoute()
+#26 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Routing/Router.php(737): Illuminate\\Routing\\Router->dispatchToRoute()
+#27 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(200): Illuminate\\Routing\\Router->dispatch()
+#28 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(144): Illuminate\\Foundation\\Http\\Kernel->Illuminate\\Foundation\\Http\\{closure}()
+#29 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/TransformsRequest.php(21): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#30 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/ConvertEmptyStringsToNull.php(31): Illuminate\\Foundation\\Http\\Middleware\\TransformsRequest->handle()
+#31 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\Foundation\\Http\\Middleware\\ConvertEmptyStringsToNull->handle()
+#32 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/TransformsRequest.php(21): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#33 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/TrimStrings.php(40): Illuminate\\Foundation\\Http\\Middleware\\TransformsRequest->handle()
+#34 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\Foundation\\Http\\Middleware\\TrimStrings->handle()
+#35 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/ValidatePostSize.php(27): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#36 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\Foundation\\Http\\Middleware\\ValidatePostSize->handle()
+#37 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/PreventRequestsDuringMaintenance.php(99): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#38 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\Foundation\\Http\\Middleware\\PreventRequestsDuringMaintenance->handle()
+#39 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Http/Middleware/HandleCors.php(49): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#40 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\Http\\Middleware\\HandleCors->handle()
+#41 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Http/Middleware/TrustProxies.php(39): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#42 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\Http\\Middleware\\TrustProxies->handle()
+#43 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(119): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#44 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(175): Illuminate\\Pipeline\\Pipeline->then()
+#45 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(144): Illuminate\\Foundation\\Http\\Kernel->sendRequestThroughRouter()
+#46 /var/www/labeling-app/public/index.php(53): Illuminate\\Foundation\\Http\\Kernel->handle()
+#47 {main}
+"} 
+[2025-05-22 14:22:53] production.ERROR: file_put_contents(/var/www/labeling-app/storage/framework/sessions/1LLHsUfnR1oTGrigTcoS8zjroTrnMndvIbHrZnIk): Failed to open stream: Permission denied {"exception":"[object] (ErrorException(code: 0): file_put_contents(/var/www/labeling-app/storage/framework/sessions/1LLHsUfnR1oTGrigTcoS8zjroTrnMndvIbHrZnIk): Failed to open stream: Permission denied at /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Filesystem/Filesystem.php:204)
+[stacktrace]
+#0 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(255): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->handleError()
+#1 [internal function]: Illuminate\\Foundation\\Bootstrap\\HandleExceptions->Illuminate\\Foundation\\Bootstrap\\{closure}()
+#2 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Filesystem/Filesystem.php(204): file_put_contents()
+#3 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Session/FileSessionHandler.php(90): Illuminate\\Filesystem\\Filesystem->put()
+#4 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Session/Store.php(172): Illuminate\\Session\\FileSessionHandler->write()
+#5 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Session/Middleware/StartSession.php(245): Illuminate\\Session\\Store->save()
+#6 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Session/Middleware/StartSession.php(130): Illuminate\\Session\\Middleware\\StartSession->saveSession()
+#7 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Session/Middleware/StartSession.php(64): Illuminate\\Session\\Middleware\\StartSession->handleStatefulRequest()
+#8 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\Session\\Middleware\\StartSession->handle()
+#9 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Cookie/Middleware/AddQueuedCookiesToResponse.php(37): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#10 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\Cookie\\Middleware\\AddQueuedCookiesToResponse->handle()
+#11 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Cookie/Middleware/EncryptCookies.php(67): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#12 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\Cookie\\Middleware\\EncryptCookies->handle()
+#13 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(119): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#14 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Routing/Router.php(805): Illuminate\\Pipeline\\Pipeline->then()
+#15 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Routing/Router.php(784): Illuminate\\Routing\\Router->runRouteWithinStack()
+#16 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Routing/Router.php(748): Illuminate\\Routing\\Router->runRoute()
+#17 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Routing/Router.php(737): Illuminate\\Routing\\Router->dispatchToRoute()
+#18 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(200): Illuminate\\Routing\\Router->dispatch()
+#19 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(144): Illuminate\\Foundation\\Http\\Kernel->Illuminate\\Foundation\\Http\\{closure}()
+#20 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/TransformsRequest.php(21): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#21 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/ConvertEmptyStringsToNull.php(31): Illuminate\\Foundation\\Http\\Middleware\\TransformsRequest->handle()
+#22 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\Foundation\\Http\\Middleware\\ConvertEmptyStringsToNull->handle()
+#23 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/TransformsRequest.php(21): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#24 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/TrimStrings.php(40): Illuminate\\Foundation\\Http\\Middleware\\TransformsRequest->handle()
+#25 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\Foundation\\Http\\Middleware\\TrimStrings->handle()
+#26 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/ValidatePostSize.php(27): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#27 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\Foundation\\Http\\Middleware\\ValidatePostSize->handle()
+#28 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/PreventRequestsDuringMaintenance.php(99): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#29 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\Foundation\\Http\\Middleware\\PreventRequestsDuringMaintenance->handle()
+#30 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Http/Middleware/HandleCors.php(49): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#31 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\Http\\Middleware\\HandleCors->handle()
+#32 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Http/Middleware/TrustProxies.php(39): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#33 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\Http\\Middleware\\TrustProxies->handle()
+#34 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(119): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#35 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(175): Illuminate\\Pipeline\\Pipeline->then()
+#36 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(144): Illuminate\\Foundation\\Http\\Kernel->sendRequestThroughRouter()
+#37 /var/www/labeling-app/public/index.php(53): Illuminate\\Foundation\\Http\\Kernel->handle()
+#38 {main}
+"} 
+[2025-05-22 16:32:31] production.ERROR: Attempt to read property "GET /labeling/ HTTP/2.0
+Accept:                    text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7
+Accept-Encoding:           gzip, deflate, br, zstd
+Accept-Language:           en-US,en;q=0.9,id;q=0.8
+Cookie:                    sirine_app_session=eyJpdiI6Iloyd1FKMHZTcjM3Z0p2WHUwYm9SdGc9PSIsInZhbHVlIjoiaDBnN3VFZFpOcUpjMkR4cXFQNnArYmU1aXc0d3REc1gzV2s5RmxBcXNkYVE3dE5IZWNxTzZ4K0VhOWpjRStUUWE5TkVPbDlYNWtMM1habnlvcUJ0eE5kQmRvaU56SUJIR1lFVmxlMndEdTYwQ2ZOV2NxS1NTcm55K0xvNzg0M3oiLCJtYWMiOiIwMGE0YmNkNTZhMTllMzY1MTFhOGYxM2UyMjVkNTE0YzVmZDcyMDMzNTNlZDEzNTgwNGRhMTYzNTkxZDJmNGVkIiwidGFnIjoiIn0%3D; XSRF-TOKEN=eyJpdiI6IjA0TENPU0RmK3RTSi9IL2ZvUVA2cWc9PSIsInZhbHVlIjoiMUVoczdLdnloaW9KY0NobWUwMEV0czVscVJCYjZUblVXK2tCODdWTUJqRGxmRUlYRmpIblp0Q0dXQytCTzhmakZBTVNNU25HMzlsQWpCNXUzVmN2UWt6WWRQbmk0UE9yWnVVbmI0WUhld3UrdnVFNGdVRTlzbm9hVHRKZmNXTnQiLCJtYWMiOiIzYmZjMTcxYmRhNGI0Yjc3NDNkNDM2MjViOWYxNDdkNTg2MGE5NzZjZDE1MDJmOWJhOTE4NWJmOWI1NzFhYTgxIiwidGFnIjoiIn0%3D; labeling_app_session=eyJpdiI6IjRrWHZ3bEJ5ekpYbDlKWUtCVExFbXc9PSIsInZhbHVlIjoiUlZ5RDhCOWhvbDJuQTVFS3IxdkRrQzZzaU1reVQxYm5XL2h1WTRSR09DVXFsR1VnUU1Ibkpqem0zRitoNndOK3h6QlVzT1psZUpGcnYxditSZTFBMWFwMUNoZk9yWWlwckFFMWNKN3JmSHdTWmVwVkxWQlFwUG5TMHFkdkNwYUkiLCJtYWMiOiJlNWMxYTg0ZTY2ZjA2YzcxZThhYTYwMjFiNGYyYTJiZjY2Y2MxNzM1ZDM4ODg2YjI1ZDMxYTJjOTc2NzdjYWE3IiwidGFnIjoiIn0%3D
+Dnt:                       1
+Host:                      sirine.peruri.co.id
+Priority:                  u=0, i
+Sec-Ch-Ua:                 "Chromium";v="136", "Microsoft Edge";v="136", "Not.A/Brand";v="99"
+Sec-Ch-Ua-Mobile:          ?0
+Sec-Ch-Ua-Platform:        "Windows"
+Sec-Fetch-Dest:            document
+Sec-Fetch-Mode:            navigate
+Sec-Fetch-Site:            none
+Sec-Fetch-User:            ?1
+Upgrade-Insecure-Requests: 1
+User-Agent:                Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36 Edg/136.0.0.0
+Cookie: sirine_app_session=; XSRF-TOKEN=9CqILh26WabKma2spCBlUI5CSfguzllnRYZpSYyF; labeling_app_session=cwlMnqXguGOFW3bnvPecUKIH3iBzuYP1PMDheNiZ
+
+" on string {"userId":1,"exception":"[object] (ErrorException(code: 0): Attempt to read property \"GET /labeling/ HTTP/2.0
+
+Accept:                    text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7
+
+Accept-Encoding:           gzip, deflate, br, zstd
+
+Accept-Language:           en-US,en;q=0.9,id;q=0.8
+
+Cookie:                    sirine_app_session=eyJpdiI6Iloyd1FKMHZTcjM3Z0p2WHUwYm9SdGc9PSIsInZhbHVlIjoiaDBnN3VFZFpOcUpjMkR4cXFQNnArYmU1aXc0d3REc1gzV2s5RmxBcXNkYVE3dE5IZWNxTzZ4K0VhOWpjRStUUWE5TkVPbDlYNWtMM1habnlvcUJ0eE5kQmRvaU56SUJIR1lFVmxlMndEdTYwQ2ZOV2NxS1NTcm55K0xvNzg0M3oiLCJtYWMiOiIwMGE0YmNkNTZhMTllMzY1MTFhOGYxM2UyMjVkNTE0YzVmZDcyMDMzNTNlZDEzNTgwNGRhMTYzNTkxZDJmNGVkIiwidGFnIjoiIn0%3D; XSRF-TOKEN=eyJpdiI6IjA0TENPU0RmK3RTSi9IL2ZvUVA2cWc9PSIsInZhbHVlIjoiMUVoczdLdnloaW9KY0NobWUwMEV0czVscVJCYjZUblVXK2tCODdWTUJqRGxmRUlYRmpIblp0Q0dXQytCTzhmakZBTVNNU25HMzlsQWpCNXUzVmN2UWt6WWRQbmk0UE9yWnVVbmI0WUhld3UrdnVFNGdVRTlzbm9hVHRKZmNXTnQiLCJtYWMiOiIzYmZjMTcxYmRhNGI0Yjc3NDNkNDM2MjViOWYxNDdkNTg2MGE5NzZjZDE1MDJmOWJhOTE4NWJmOWI1NzFhYTgxIiwidGFnIjoiIn0%3D; labeling_app_session=eyJpdiI6IjRrWHZ3bEJ5ekpYbDlKWUtCVExFbXc9PSIsInZhbHVlIjoiUlZ5RDhCOWhvbDJuQTVFS3IxdkRrQzZzaU1reVQxYm5XL2h1WTRSR09DVXFsR1VnUU1Ibkpqem0zRitoNndOK3h6QlVzT1psZUpGcnYxditSZTFBMWFwMUNoZk9yWWlwckFFMWNKN3JmSHdTWmVwVkxWQlFwUG5TMHFkdkNwYUkiLCJtYWMiOiJlNWMxYTg0ZTY2ZjA2YzcxZThhYTYwMjFiNGYyYTJiZjY2Y2MxNzM1ZDM4ODg2YjI1ZDMxYTJjOTc2NzdjYWE3IiwidGFnIjoiIn0%3D
+
+Dnt:                       1
+
+Host:                      sirine.peruri.co.id
+
+Priority:                  u=0, i
+
+Sec-Ch-Ua:                 \"Chromium\";v=\"136\", \"Microsoft Edge\";v=\"136\", \"Not.A/Brand\";v=\"99\"
+
+Sec-Ch-Ua-Mobile:          ?0
+
+Sec-Ch-Ua-Platform:        \"Windows\"
+
+Sec-Fetch-Dest:            document
+
+Sec-Fetch-Mode:            navigate
+
+Sec-Fetch-Site:            none
+
+Sec-Fetch-User:            ?1
+
+Upgrade-Insecure-Requests: 1
+
+User-Agent:                Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36 Edg/136.0.0.0
+
+Cookie: sirine_app_session=; XSRF-TOKEN=9CqILh26WabKma2spCBlUI5CSfguzllnRYZpSYyF; labeling_app_session=cwlMnqXguGOFW3bnvPecUKIH3iBzuYP1PMDheNiZ
+
+
+
+\" on string at /var/www/labeling-app/vendor/inertiajs/inertia-laravel/src/Response.php:104)
+[stacktrace]
+#0 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(255): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->handleError()
+#1 /var/www/labeling-app/vendor/inertiajs/inertia-laravel/src/Response.php(104): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->Illuminate\\Foundation\\Bootstrap\\{closure}()
+#2 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Routing/Router.php(900): Inertia\\Response->toResponse()
+#3 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Routing/Router.php(885): Illuminate\\Routing\\Router::toResponse()
+#4 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Routing/Router.php(805): Illuminate\\Routing\\Router->prepareResponse()
+#5 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(144): Illuminate\\Routing\\Router->Illuminate\\Routing\\{closure}()
+#6 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Http/Middleware/AddLinkHeadersForPreloadedAssets.php(20): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#7 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\Http\\Middleware\\AddLinkHeadersForPreloadedAssets->handle()
+#8 /var/www/labeling-app/vendor/inertiajs/inertia-laravel/src/Middleware.php(87): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#9 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Inertia\\Middleware->handle()
+#10 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Routing/Middleware/SubstituteBindings.php(50): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#11 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\Routing\\Middleware\\SubstituteBindings->handle()
+#12 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Auth/Middleware/Authenticate.php(57): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#13 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\Auth\\Middleware\\Authenticate->handle()
+#14 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/VerifyCsrfToken.php(78): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#15 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\Foundation\\Http\\Middleware\\VerifyCsrfToken->handle()
+#16 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/View/Middleware/ShareErrorsFromSession.php(49): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#17 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\View\\Middleware\\ShareErrorsFromSession->handle()
+#18 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Session/Middleware/StartSession.php(121): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#19 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Session/Middleware/StartSession.php(64): Illuminate\\Session\\Middleware\\StartSession->handleStatefulRequest()
+#20 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\Session\\Middleware\\StartSession->handle()
+#21 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Cookie/Middleware/AddQueuedCookiesToResponse.php(37): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#22 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\Cookie\\Middleware\\AddQueuedCookiesToResponse->handle()
+#23 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Cookie/Middleware/EncryptCookies.php(67): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#24 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\Cookie\\Middleware\\EncryptCookies->handle()
+#25 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(119): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#26 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Routing/Router.php(805): Illuminate\\Pipeline\\Pipeline->then()
+#27 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Routing/Router.php(784): Illuminate\\Routing\\Router->runRouteWithinStack()
+#28 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Routing/Router.php(748): Illuminate\\Routing\\Router->runRoute()
+#29 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Routing/Router.php(737): Illuminate\\Routing\\Router->dispatchToRoute()
+#30 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(200): Illuminate\\Routing\\Router->dispatch()
+#31 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(144): Illuminate\\Foundation\\Http\\Kernel->Illuminate\\Foundation\\Http\\{closure}()
+#32 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/TransformsRequest.php(21): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#33 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/ConvertEmptyStringsToNull.php(31): Illuminate\\Foundation\\Http\\Middleware\\TransformsRequest->handle()
+#34 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\Foundation\\Http\\Middleware\\ConvertEmptyStringsToNull->handle()
+#35 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/TransformsRequest.php(21): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#36 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/TrimStrings.php(40): Illuminate\\Foundation\\Http\\Middleware\\TransformsRequest->handle()
+#37 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\Foundation\\Http\\Middleware\\TrimStrings->handle()
+#38 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/ValidatePostSize.php(27): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#39 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\Foundation\\Http\\Middleware\\ValidatePostSize->handle()
+#40 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/PreventRequestsDuringMaintenance.php(99): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#41 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\Foundation\\Http\\Middleware\\PreventRequestsDuringMaintenance->handle()
+#42 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Http/Middleware/HandleCors.php(49): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#43 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\Http\\Middleware\\HandleCors->handle()
+#44 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Http/Middleware/TrustProxies.php(39): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#45 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\Http\\Middleware\\TrustProxies->handle()
+#46 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(119): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#47 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(175): Illuminate\\Pipeline\\Pipeline->then()
+#48 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(144): Illuminate\\Foundation\\Http\\Kernel->sendRequestThroughRouter()
+#49 /var/www/labeling-app/public/index.php(53): Illuminate\\Foundation\\Http\\Kernel->handle()
+#50 {main}
+"} 
+[2025-05-22 16:32:42] production.ERROR: Attempt to read property "GET /labeling/ HTTP/2.0
+Accept:                    text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7
+Accept-Encoding:           gzip, deflate, br, zstd
+Accept-Language:           en-US,en;q=0.9,id;q=0.8
+Cookie:                    sirine_app_session=eyJpdiI6Iloyd1FKMHZTcjM3Z0p2WHUwYm9SdGc9PSIsInZhbHVlIjoiaDBnN3VFZFpOcUpjMkR4cXFQNnArYmU1aXc0d3REc1gzV2s5RmxBcXNkYVE3dE5IZWNxTzZ4K0VhOWpjRStUUWE5TkVPbDlYNWtMM1habnlvcUJ0eE5kQmRvaU56SUJIR1lFVmxlMndEdTYwQ2ZOV2NxS1NTcm55K0xvNzg0M3oiLCJtYWMiOiIwMGE0YmNkNTZhMTllMzY1MTFhOGYxM2UyMjVkNTE0YzVmZDcyMDMzNTNlZDEzNTgwNGRhMTYzNTkxZDJmNGVkIiwidGFnIjoiIn0%3D; XSRF-TOKEN=eyJpdiI6IkMwdGl1RmJUOVgyVEpDd0RoaTRCUkE9PSIsInZhbHVlIjoiRE5YT3FjNFI2MnhOM2d6SExxSCt1OUJLVk1LcDJtcnRzdnlwY2ZVZWFMY09vNXBZSDZvWXZ5dU8vR080SzRhalpObFF6QmlpMlJHcTJqaWFQbFVWL09oREk2d1QrNGFYOXc2L053c2RnRXA0SzhZcDJTbUlqSEc1N2lkczlTY0oiLCJtYWMiOiI0Yjg0YjY2Y2IyOTFhNzg2MzRkODMzMmEyZWQ2YjQ3NGE1ZDZhMjg2ODA4ZWEyMDk3OTI4ZTdiOGM4M2UxYmUzIiwidGFnIjoiIn0%3D; labeling_app_session=eyJpdiI6Ik8xOHYwb1c2ZkowVmNtdkhVZGtOVUE9PSIsInZhbHVlIjoib0dqcUdTeUJxVU8vd05tSmRWOWlnNDVnSUdpdjNQOTlreitmM2hGSndsK2ZiRkd4ajVvcVR6emlFd1lwclNDeUVJazYvTSsxTjZXVkZGMG9xZ2lRcDNmajljYUR5TDJZSFBITnV4VXNJQXlwU3RpNitwakE2UjNwWnBIOFYyUEgiLCJtYWMiOiIxZmZkZjgxYjViNjA5YTIxN2UzMzU0YmIxMmIyZGNhNTBkNTYwZTg2NGU3YTE4YzM2Y2NlMDk4MzM4ZWI5M2U5IiwidGFnIjoiIn0%3D
+Dnt:                       1
+Host:                      sirine.peruri.co.id
+Priority:                  u=0, i
+Sec-Ch-Ua:                 "Chromium";v="136", "Microsoft Edge";v="136", "Not.A/Brand";v="99"
+Sec-Ch-Ua-Mobile:          ?0
+Sec-Ch-Ua-Platform:        "Windows"
+Sec-Fetch-Dest:            document
+Sec-Fetch-Mode:            navigate
+Sec-Fetch-Site:            none
+Sec-Fetch-User:            ?1
+Upgrade-Insecure-Requests: 1
+User-Agent:                Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36 Edg/136.0.0.0
+Cookie: sirine_app_session=; XSRF-TOKEN=9CqILh26WabKma2spCBlUI5CSfguzllnRYZpSYyF; labeling_app_session=cwlMnqXguGOFW3bnvPecUKIH3iBzuYP1PMDheNiZ
+
+" on string {"userId":1,"exception":"[object] (ErrorException(code: 0): Attempt to read property \"GET /labeling/ HTTP/2.0
+
+Accept:                    text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7
+
+Accept-Encoding:           gzip, deflate, br, zstd
+
+Accept-Language:           en-US,en;q=0.9,id;q=0.8
+
+Cookie:                    sirine_app_session=eyJpdiI6Iloyd1FKMHZTcjM3Z0p2WHUwYm9SdGc9PSIsInZhbHVlIjoiaDBnN3VFZFpOcUpjMkR4cXFQNnArYmU1aXc0d3REc1gzV2s5RmxBcXNkYVE3dE5IZWNxTzZ4K0VhOWpjRStUUWE5TkVPbDlYNWtMM1habnlvcUJ0eE5kQmRvaU56SUJIR1lFVmxlMndEdTYwQ2ZOV2NxS1NTcm55K0xvNzg0M3oiLCJtYWMiOiIwMGE0YmNkNTZhMTllMzY1MTFhOGYxM2UyMjVkNTE0YzVmZDcyMDMzNTNlZDEzNTgwNGRhMTYzNTkxZDJmNGVkIiwidGFnIjoiIn0%3D; XSRF-TOKEN=eyJpdiI6IkMwdGl1RmJUOVgyVEpDd0RoaTRCUkE9PSIsInZhbHVlIjoiRE5YT3FjNFI2MnhOM2d6SExxSCt1OUJLVk1LcDJtcnRzdnlwY2ZVZWFMY09vNXBZSDZvWXZ5dU8vR080SzRhalpObFF6QmlpMlJHcTJqaWFQbFVWL09oREk2d1QrNGFYOXc2L053c2RnRXA0SzhZcDJTbUlqSEc1N2lkczlTY0oiLCJtYWMiOiI0Yjg0YjY2Y2IyOTFhNzg2MzRkODMzMmEyZWQ2YjQ3NGE1ZDZhMjg2ODA4ZWEyMDk3OTI4ZTdiOGM4M2UxYmUzIiwidGFnIjoiIn0%3D; labeling_app_session=eyJpdiI6Ik8xOHYwb1c2ZkowVmNtdkhVZGtOVUE9PSIsInZhbHVlIjoib0dqcUdTeUJxVU8vd05tSmRWOWlnNDVnSUdpdjNQOTlreitmM2hGSndsK2ZiRkd4ajVvcVR6emlFd1lwclNDeUVJazYvTSsxTjZXVkZGMG9xZ2lRcDNmajljYUR5TDJZSFBITnV4VXNJQXlwU3RpNitwakE2UjNwWnBIOFYyUEgiLCJtYWMiOiIxZmZkZjgxYjViNjA5YTIxN2UzMzU0YmIxMmIyZGNhNTBkNTYwZTg2NGU3YTE4YzM2Y2NlMDk4MzM4ZWI5M2U5IiwidGFnIjoiIn0%3D
+
+Dnt:                       1
+
+Host:                      sirine.peruri.co.id
+
+Priority:                  u=0, i
+
+Sec-Ch-Ua:                 \"Chromium\";v=\"136\", \"Microsoft Edge\";v=\"136\", \"Not.A/Brand\";v=\"99\"
+
+Sec-Ch-Ua-Mobile:          ?0
+
+Sec-Ch-Ua-Platform:        \"Windows\"
+
+Sec-Fetch-Dest:            document
+
+Sec-Fetch-Mode:            navigate
+
+Sec-Fetch-Site:            none
+
+Sec-Fetch-User:            ?1
+
+Upgrade-Insecure-Requests: 1
+
+User-Agent:                Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36 Edg/136.0.0.0
+
+Cookie: sirine_app_session=; XSRF-TOKEN=9CqILh26WabKma2spCBlUI5CSfguzllnRYZpSYyF; labeling_app_session=cwlMnqXguGOFW3bnvPecUKIH3iBzuYP1PMDheNiZ
+
+
+
+\" on string at /var/www/labeling-app/vendor/inertiajs/inertia-laravel/src/Response.php:104)
+[stacktrace]
+#0 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(255): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->handleError()
+#1 /var/www/labeling-app/vendor/inertiajs/inertia-laravel/src/Response.php(104): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->Illuminate\\Foundation\\Bootstrap\\{closure}()
+#2 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Routing/Router.php(900): Inertia\\Response->toResponse()
+#3 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Routing/Router.php(885): Illuminate\\Routing\\Router::toResponse()
+#4 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Routing/Router.php(805): Illuminate\\Routing\\Router->prepareResponse()
+#5 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(144): Illuminate\\Routing\\Router->Illuminate\\Routing\\{closure}()
+#6 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Http/Middleware/AddLinkHeadersForPreloadedAssets.php(20): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#7 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\Http\\Middleware\\AddLinkHeadersForPreloadedAssets->handle()
+#8 /var/www/labeling-app/vendor/inertiajs/inertia-laravel/src/Middleware.php(87): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#9 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Inertia\\Middleware->handle()
+#10 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Routing/Middleware/SubstituteBindings.php(50): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#11 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\Routing\\Middleware\\SubstituteBindings->handle()
+#12 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Auth/Middleware/Authenticate.php(57): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#13 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\Auth\\Middleware\\Authenticate->handle()
+#14 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/VerifyCsrfToken.php(78): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#15 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\Foundation\\Http\\Middleware\\VerifyCsrfToken->handle()
+#16 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/View/Middleware/ShareErrorsFromSession.php(49): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#17 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\View\\Middleware\\ShareErrorsFromSession->handle()
+#18 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Session/Middleware/StartSession.php(121): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#19 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Session/Middleware/StartSession.php(64): Illuminate\\Session\\Middleware\\StartSession->handleStatefulRequest()
+#20 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\Session\\Middleware\\StartSession->handle()
+#21 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Cookie/Middleware/AddQueuedCookiesToResponse.php(37): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#22 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\Cookie\\Middleware\\AddQueuedCookiesToResponse->handle()
+#23 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Cookie/Middleware/EncryptCookies.php(67): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#24 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\Cookie\\Middleware\\EncryptCookies->handle()
+#25 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(119): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#26 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Routing/Router.php(805): Illuminate\\Pipeline\\Pipeline->then()
+#27 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Routing/Router.php(784): Illuminate\\Routing\\Router->runRouteWithinStack()
+#28 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Routing/Router.php(748): Illuminate\\Routing\\Router->runRoute()
+#29 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Routing/Router.php(737): Illuminate\\Routing\\Router->dispatchToRoute()
+#30 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(200): Illuminate\\Routing\\Router->dispatch()
+#31 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(144): Illuminate\\Foundation\\Http\\Kernel->Illuminate\\Foundation\\Http\\{closure}()
+#32 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/TransformsRequest.php(21): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#33 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/ConvertEmptyStringsToNull.php(31): Illuminate\\Foundation\\Http\\Middleware\\TransformsRequest->handle()
+#34 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\Foundation\\Http\\Middleware\\ConvertEmptyStringsToNull->handle()
+#35 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/TransformsRequest.php(21): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#36 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/TrimStrings.php(40): Illuminate\\Foundation\\Http\\Middleware\\TransformsRequest->handle()
+#37 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\Foundation\\Http\\Middleware\\TrimStrings->handle()
+#38 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/ValidatePostSize.php(27): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#39 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\Foundation\\Http\\Middleware\\ValidatePostSize->handle()
+#40 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/PreventRequestsDuringMaintenance.php(99): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#41 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\Foundation\\Http\\Middleware\\PreventRequestsDuringMaintenance->handle()
+#42 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Http/Middleware/HandleCors.php(49): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#43 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\Http\\Middleware\\HandleCors->handle()
+#44 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Http/Middleware/TrustProxies.php(39): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#45 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\Http\\Middleware\\TrustProxies->handle()
+#46 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(119): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#47 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(175): Illuminate\\Pipeline\\Pipeline->then()
+#48 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(144): Illuminate\\Foundation\\Http\\Kernel->sendRequestThroughRouter()
+#49 /var/www/labeling-app/public/index.php(53): Illuminate\\Foundation\\Http\\Kernel->handle()
+#50 {main}
+"} 
+[2025-05-22 16:35:58] production.ERROR: Undefined variable $queryString {"userId":1,"exception":"[object] (ErrorException(code: 0): Undefined variable $queryString at /var/www/labeling-app/vendor/inertiajs/inertia-laravel/src/Response.php:103)
+[stacktrace]
+#0 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Bootstrap/HandleExceptions.php(255): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->handleError()
+#1 /var/www/labeling-app/vendor/inertiajs/inertia-laravel/src/Response.php(103): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->Illuminate\\Foundation\\Bootstrap\\{closure}()
+#2 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Routing/Router.php(900): Inertia\\Response->toResponse()
+#3 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Routing/Router.php(885): Illuminate\\Routing\\Router::toResponse()
+#4 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Routing/Router.php(805): Illuminate\\Routing\\Router->prepareResponse()
+#5 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(144): Illuminate\\Routing\\Router->Illuminate\\Routing\\{closure}()
+#6 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Http/Middleware/AddLinkHeadersForPreloadedAssets.php(20): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#7 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\Http\\Middleware\\AddLinkHeadersForPreloadedAssets->handle()
+#8 /var/www/labeling-app/vendor/inertiajs/inertia-laravel/src/Middleware.php(87): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#9 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Inertia\\Middleware->handle()
+#10 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Routing/Middleware/SubstituteBindings.php(50): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#11 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\Routing\\Middleware\\SubstituteBindings->handle()
+#12 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Auth/Middleware/Authenticate.php(57): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#13 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\Auth\\Middleware\\Authenticate->handle()
+#14 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/VerifyCsrfToken.php(78): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#15 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\Foundation\\Http\\Middleware\\VerifyCsrfToken->handle()
+#16 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/View/Middleware/ShareErrorsFromSession.php(49): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#17 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\View\\Middleware\\ShareErrorsFromSession->handle()
+#18 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Session/Middleware/StartSession.php(121): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#19 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Session/Middleware/StartSession.php(64): Illuminate\\Session\\Middleware\\StartSession->handleStatefulRequest()
+#20 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\Session\\Middleware\\StartSession->handle()
+#21 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Cookie/Middleware/AddQueuedCookiesToResponse.php(37): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#22 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\Cookie\\Middleware\\AddQueuedCookiesToResponse->handle()
+#23 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Cookie/Middleware/EncryptCookies.php(67): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#24 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\Cookie\\Middleware\\EncryptCookies->handle()
+#25 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(119): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#26 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Routing/Router.php(805): Illuminate\\Pipeline\\Pipeline->then()
+#27 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Routing/Router.php(784): Illuminate\\Routing\\Router->runRouteWithinStack()
+#28 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Routing/Router.php(748): Illuminate\\Routing\\Router->runRoute()
+#29 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Routing/Router.php(737): Illuminate\\Routing\\Router->dispatchToRoute()
+#30 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(200): Illuminate\\Routing\\Router->dispatch()
+#31 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(144): Illuminate\\Foundation\\Http\\Kernel->Illuminate\\Foundation\\Http\\{closure}()
+#32 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/TransformsRequest.php(21): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#33 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/ConvertEmptyStringsToNull.php(31): Illuminate\\Foundation\\Http\\Middleware\\TransformsRequest->handle()
+#34 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\Foundation\\Http\\Middleware\\ConvertEmptyStringsToNull->handle()
+#35 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/TransformsRequest.php(21): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#36 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/TrimStrings.php(40): Illuminate\\Foundation\\Http\\Middleware\\TransformsRequest->handle()
+#37 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\Foundation\\Http\\Middleware\\TrimStrings->handle()
+#38 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/ValidatePostSize.php(27): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#39 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\Foundation\\Http\\Middleware\\ValidatePostSize->handle()
+#40 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/PreventRequestsDuringMaintenance.php(99): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#41 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\Foundation\\Http\\Middleware\\PreventRequestsDuringMaintenance->handle()
+#42 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Http/Middleware/HandleCors.php(49): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#43 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\Http\\Middleware\\HandleCors->handle()
+#44 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Http/Middleware/TrustProxies.php(39): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#45 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\Http\\Middleware\\TrustProxies->handle()
+#46 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(119): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#47 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(175): Illuminate\\Pipeline\\Pipeline->then()
+#48 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(144): Illuminate\\Foundation\\Http\\Kernel->sendRequestThroughRouter()
+#49 /var/www/labeling-app/public/index.php(53): Illuminate\\Foundation\\Http\\Kernel->handle()
+#50 {main}
+"} 
+[2025-05-23 08:41:41] production.ERROR: There are no commands defined in the "otpimize" namespace.
+
+Did you mean this?
+    optimize {"exception":"[object] (Symfony\\Component\\Console\\Exception\\NamespaceNotFoundException(code: 0): There are no commands defined in the \"otpimize\" namespace.
+
+Did you mean this?
+    optimize at /var/www/labeling-app/vendor/symfony/console/Application.php:669)
+[stacktrace]
+#0 /var/www/labeling-app/vendor/symfony/console/Application.php(720): Symfony\\Component\\Console\\Application->findNamespace()
+#1 /var/www/labeling-app/vendor/symfony/console/Application.php(266): Symfony\\Component\\Console\\Application->find()
+#2 /var/www/labeling-app/vendor/symfony/console/Application.php(175): Symfony\\Component\\Console\\Application->doRun()
+#3 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(201): Symfony\\Component\\Console\\Application->run()
+#4 /var/www/labeling-app/artisan(35): Illuminate\\Foundation\\Console\\Kernel->handle()
+#5 {main}
+"} 
+[2025-05-23 08:41:48] production.ERROR: There are no commands defined in the "otptimize" namespace.
+
+Did you mean this?
+    optimize {"exception":"[object] (Symfony\\Component\\Console\\Exception\\NamespaceNotFoundException(code: 0): There are no commands defined in the \"otptimize\" namespace.
+
+Did you mean this?
+    optimize at /var/www/labeling-app/vendor/symfony/console/Application.php:669)
+[stacktrace]
+#0 /var/www/labeling-app/vendor/symfony/console/Application.php(720): Symfony\\Component\\Console\\Application->findNamespace()
+#1 /var/www/labeling-app/vendor/symfony/console/Application.php(266): Symfony\\Component\\Console\\Application->find()
+#2 /var/www/labeling-app/vendor/symfony/console/Application.php(175): Symfony\\Component\\Console\\Application->doRun()
+#3 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Console/Kernel.php(201): Symfony\\Component\\Console\\Application->run()
+#4 /var/www/labeling-app/artisan(35): Illuminate\\Foundation\\Console\\Kernel->handle()
+#5 {main}
+"} 
+[2025-05-23 09:57:41] production.ERROR: SQLSTATE[HY000] [1044] Access denied for user 'pitacukai'@'%' to database 'dev-labeling' (Connection: mysql, SQL: select * from `users` where `id` = 1 limit 1) {"exception":"[object] (Illuminate\\Database\\QueryException(code: 1044): SQLSTATE[HY000] [1044] Access denied for user 'pitacukai'@'%' to database 'dev-labeling' (Connection: mysql, SQL: select * from `users` where `id` = 1 limit 1) at /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Database/Connection.php:829)
+[stacktrace]
+#0 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Database/Connection.php(783): Illuminate\\Database\\Connection->runQueryCallback()
+#1 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Database/Connection.php(414): Illuminate\\Database\\Connection->run()
+#2 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Database/Query/Builder.php(2913): Illuminate\\Database\\Connection->select()
+#3 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Database/Query/Builder.php(2902): Illuminate\\Database\\Query\\Builder->runSelect()
+#4 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Database/Query/Builder.php(3456): Illuminate\\Database\\Query\\Builder->Illuminate\\Database\\Query\\{closure}()
+#5 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Database/Query/Builder.php(2901): Illuminate\\Database\\Query\\Builder->onceWithColumns()
+#6 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Builder.php(739): Illuminate\\Database\\Query\\Builder->get()
+#7 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Builder.php(723): Illuminate\\Database\\Eloquent\\Builder->getModels()
+#8 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Database/Concerns/BuildsQueries.php(333): Illuminate\\Database\\Eloquent\\Builder->get()
+#9 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Auth/EloquentUserProvider.php(59): Illuminate\\Database\\Eloquent\\Builder->first()
+#10 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Auth/SessionGuard.php(159): Illuminate\\Auth\\EloquentUserProvider->retrieveById()
+#11 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Auth/GuardHelpers.php(56): Illuminate\\Auth\\SessionGuard->user()
+#12 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Auth/Middleware/Authenticate.php(76): Illuminate\\Auth\\SessionGuard->check()
+#13 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Auth/Middleware/Authenticate.php(55): Illuminate\\Auth\\Middleware\\Authenticate->authenticate()
+#14 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\Auth\\Middleware\\Authenticate->handle()
+#15 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/VerifyCsrfToken.php(78): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#16 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\Foundation\\Http\\Middleware\\VerifyCsrfToken->handle()
+#17 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/View/Middleware/ShareErrorsFromSession.php(49): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#18 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\View\\Middleware\\ShareErrorsFromSession->handle()
+#19 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Session/Middleware/StartSession.php(121): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#20 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Session/Middleware/StartSession.php(64): Illuminate\\Session\\Middleware\\StartSession->handleStatefulRequest()
+#21 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\Session\\Middleware\\StartSession->handle()
+#22 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Cookie/Middleware/AddQueuedCookiesToResponse.php(37): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#23 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\Cookie\\Middleware\\AddQueuedCookiesToResponse->handle()
+#24 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Cookie/Middleware/EncryptCookies.php(67): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#25 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\Cookie\\Middleware\\EncryptCookies->handle()
+#26 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(119): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#27 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Routing/Router.php(805): Illuminate\\Pipeline\\Pipeline->then()
+#28 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Routing/Router.php(784): Illuminate\\Routing\\Router->runRouteWithinStack()
+#29 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Routing/Router.php(748): Illuminate\\Routing\\Router->runRoute()
+#30 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Routing/Router.php(737): Illuminate\\Routing\\Router->dispatchToRoute()
+#31 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(200): Illuminate\\Routing\\Router->dispatch()
+#32 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(144): Illuminate\\Foundation\\Http\\Kernel->Illuminate\\Foundation\\Http\\{closure}()
+#33 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/TransformsRequest.php(21): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#34 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/ConvertEmptyStringsToNull.php(31): Illuminate\\Foundation\\Http\\Middleware\\TransformsRequest->handle()
+#35 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\Foundation\\Http\\Middleware\\ConvertEmptyStringsToNull->handle()
+#36 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/TransformsRequest.php(21): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#37 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/TrimStrings.php(40): Illuminate\\Foundation\\Http\\Middleware\\TransformsRequest->handle()
+#38 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\Foundation\\Http\\Middleware\\TrimStrings->handle()
+#39 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/ValidatePostSize.php(27): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#40 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\Foundation\\Http\\Middleware\\ValidatePostSize->handle()
+#41 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/PreventRequestsDuringMaintenance.php(99): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#42 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\Foundation\\Http\\Middleware\\PreventRequestsDuringMaintenance->handle()
+#43 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Http/Middleware/HandleCors.php(49): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#44 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\Http\\Middleware\\HandleCors->handle()
+#45 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Http/Middleware/TrustProxies.php(39): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#46 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\Http\\Middleware\\TrustProxies->handle()
+#47 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(119): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#48 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(175): Illuminate\\Pipeline\\Pipeline->then()
+#49 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(144): Illuminate\\Foundation\\Http\\Kernel->sendRequestThroughRouter()
+#50 /var/www/labeling-app/public/index.php(53): Illuminate\\Foundation\\Http\\Kernel->handle()
+#51 {main}
+
+[previous exception] [object] (PDOException(code: 1044): SQLSTATE[HY000] [1044] Access denied for user 'pitacukai'@'%' to database 'dev-labeling' at /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Database/Connectors/Connector.php:65)
+[stacktrace]
+#0 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Database/Connectors/Connector.php(65): PDO->__construct()
+#1 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Database/Connectors/Connector.php(44): Illuminate\\Database\\Connectors\\Connector->createPdoConnection()
+#2 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Database/Connectors/MySqlConnector.php(24): Illuminate\\Database\\Connectors\\Connector->createConnection()
+#3 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Database/Connectors/ConnectionFactory.php(184): Illuminate\\Database\\Connectors\\MySqlConnector->connect()
+#4 [internal function]: Illuminate\\Database\\Connectors\\ConnectionFactory->Illuminate\\Database\\Connectors\\{closure}()
+#5 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Database/Connection.php(1339): call_user_func()
+#6 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Database/Connection.php(1375): Illuminate\\Database\\Connection->getPdo()
+#7 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Database/Connection.php(528): Illuminate\\Database\\Connection->getReadPdo()
+#8 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Database/Connection.php(423): Illuminate\\Database\\Connection->getPdoForSelect()
+#9 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Database/Connection.php(816): Illuminate\\Database\\Connection->Illuminate\\Database\\{closure}()
+#10 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Database/Connection.php(783): Illuminate\\Database\\Connection->runQueryCallback()
+#11 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Database/Connection.php(414): Illuminate\\Database\\Connection->run()
+#12 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Database/Query/Builder.php(2913): Illuminate\\Database\\Connection->select()
+#13 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Database/Query/Builder.php(2902): Illuminate\\Database\\Query\\Builder->runSelect()
+#14 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Database/Query/Builder.php(3456): Illuminate\\Database\\Query\\Builder->Illuminate\\Database\\Query\\{closure}()
+#15 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Database/Query/Builder.php(2901): Illuminate\\Database\\Query\\Builder->onceWithColumns()
+#16 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Builder.php(739): Illuminate\\Database\\Query\\Builder->get()
+#17 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Builder.php(723): Illuminate\\Database\\Eloquent\\Builder->getModels()
+#18 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Database/Concerns/BuildsQueries.php(333): Illuminate\\Database\\Eloquent\\Builder->get()
+#19 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Auth/EloquentUserProvider.php(59): Illuminate\\Database\\Eloquent\\Builder->first()
+#20 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Auth/SessionGuard.php(159): Illuminate\\Auth\\EloquentUserProvider->retrieveById()
+#21 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Auth/GuardHelpers.php(56): Illuminate\\Auth\\SessionGuard->user()
+#22 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Auth/Middleware/Authenticate.php(76): Illuminate\\Auth\\SessionGuard->check()
+#23 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Auth/Middleware/Authenticate.php(55): Illuminate\\Auth\\Middleware\\Authenticate->authenticate()
+#24 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\Auth\\Middleware\\Authenticate->handle()
+#25 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/VerifyCsrfToken.php(78): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#26 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\Foundation\\Http\\Middleware\\VerifyCsrfToken->handle()
+#27 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/View/Middleware/ShareErrorsFromSession.php(49): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#28 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\View\\Middleware\\ShareErrorsFromSession->handle()
+#29 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Session/Middleware/StartSession.php(121): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#30 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Session/Middleware/StartSession.php(64): Illuminate\\Session\\Middleware\\StartSession->handleStatefulRequest()
+#31 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\Session\\Middleware\\StartSession->handle()
+#32 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Cookie/Middleware/AddQueuedCookiesToResponse.php(37): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#33 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\Cookie\\Middleware\\AddQueuedCookiesToResponse->handle()
+#34 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Cookie/Middleware/EncryptCookies.php(67): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#35 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\Cookie\\Middleware\\EncryptCookies->handle()
+#36 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(119): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#37 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Routing/Router.php(805): Illuminate\\Pipeline\\Pipeline->then()
+#38 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Routing/Router.php(784): Illuminate\\Routing\\Router->runRouteWithinStack()
+#39 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Routing/Router.php(748): Illuminate\\Routing\\Router->runRoute()
+#40 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Routing/Router.php(737): Illuminate\\Routing\\Router->dispatchToRoute()
+#41 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(200): Illuminate\\Routing\\Router->dispatch()
+#42 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(144): Illuminate\\Foundation\\Http\\Kernel->Illuminate\\Foundation\\Http\\{closure}()
+#43 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/TransformsRequest.php(21): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#44 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/ConvertEmptyStringsToNull.php(31): Illuminate\\Foundation\\Http\\Middleware\\TransformsRequest->handle()
+#45 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\Foundation\\Http\\Middleware\\ConvertEmptyStringsToNull->handle()
+#46 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/TransformsRequest.php(21): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#47 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/TrimStrings.php(40): Illuminate\\Foundation\\Http\\Middleware\\TransformsRequest->handle()
+#48 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\Foundation\\Http\\Middleware\\TrimStrings->handle()
+#49 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/ValidatePostSize.php(27): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#50 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\Foundation\\Http\\Middleware\\ValidatePostSize->handle()
+#51 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/PreventRequestsDuringMaintenance.php(99): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#52 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\Foundation\\Http\\Middleware\\PreventRequestsDuringMaintenance->handle()
+#53 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Http/Middleware/HandleCors.php(49): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#54 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\Http\\Middleware\\HandleCors->handle()
+#55 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Http/Middleware/TrustProxies.php(39): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#56 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\Http\\Middleware\\TrustProxies->handle()
+#57 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(119): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#58 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(175): Illuminate\\Pipeline\\Pipeline->then()
+#59 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(144): Illuminate\\Foundation\\Http\\Kernel->sendRequestThroughRouter()
+#60 /var/www/labeling-app/public/index.php(53): Illuminate\\Foundation\\Http\\Kernel->handle()
+#61 {main}
+"} 
+[2025-05-23 11:03:29] production.ERROR: SQLSTATE[HY000] [1049] Unknown database 'dev-labeling' (Connection: mysql, SQL: select * from `users` where `id` = 1 limit 1) {"exception":"[object] (Illuminate\\Database\\QueryException(code: 1049): SQLSTATE[HY000] [1049] Unknown database 'dev-labeling' (Connection: mysql, SQL: select * from `users` where `id` = 1 limit 1) at /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Database/Connection.php:829)
+[stacktrace]
+#0 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Database/Connection.php(783): Illuminate\\Database\\Connection->runQueryCallback()
+#1 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Database/Connection.php(414): Illuminate\\Database\\Connection->run()
+#2 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Database/Query/Builder.php(2913): Illuminate\\Database\\Connection->select()
+#3 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Database/Query/Builder.php(2902): Illuminate\\Database\\Query\\Builder->runSelect()
+#4 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Database/Query/Builder.php(3456): Illuminate\\Database\\Query\\Builder->Illuminate\\Database\\Query\\{closure}()
+#5 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Database/Query/Builder.php(2901): Illuminate\\Database\\Query\\Builder->onceWithColumns()
+#6 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Builder.php(739): Illuminate\\Database\\Query\\Builder->get()
+#7 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Builder.php(723): Illuminate\\Database\\Eloquent\\Builder->getModels()
+#8 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Database/Concerns/BuildsQueries.php(333): Illuminate\\Database\\Eloquent\\Builder->get()
+#9 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Auth/EloquentUserProvider.php(59): Illuminate\\Database\\Eloquent\\Builder->first()
+#10 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Auth/SessionGuard.php(159): Illuminate\\Auth\\EloquentUserProvider->retrieveById()
+#11 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Auth/GuardHelpers.php(56): Illuminate\\Auth\\SessionGuard->user()
+#12 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Auth/Middleware/Authenticate.php(76): Illuminate\\Auth\\SessionGuard->check()
+#13 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Auth/Middleware/Authenticate.php(55): Illuminate\\Auth\\Middleware\\Authenticate->authenticate()
+#14 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\Auth\\Middleware\\Authenticate->handle()
+#15 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/VerifyCsrfToken.php(78): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#16 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\Foundation\\Http\\Middleware\\VerifyCsrfToken->handle()
+#17 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/View/Middleware/ShareErrorsFromSession.php(49): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#18 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\View\\Middleware\\ShareErrorsFromSession->handle()
+#19 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Session/Middleware/StartSession.php(121): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#20 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Session/Middleware/StartSession.php(64): Illuminate\\Session\\Middleware\\StartSession->handleStatefulRequest()
+#21 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\Session\\Middleware\\StartSession->handle()
+#22 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Cookie/Middleware/AddQueuedCookiesToResponse.php(37): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#23 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\Cookie\\Middleware\\AddQueuedCookiesToResponse->handle()
+#24 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Cookie/Middleware/EncryptCookies.php(67): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#25 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\Cookie\\Middleware\\EncryptCookies->handle()
+#26 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(119): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#27 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Routing/Router.php(805): Illuminate\\Pipeline\\Pipeline->then()
+#28 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Routing/Router.php(784): Illuminate\\Routing\\Router->runRouteWithinStack()
+#29 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Routing/Router.php(748): Illuminate\\Routing\\Router->runRoute()
+#30 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Routing/Router.php(737): Illuminate\\Routing\\Router->dispatchToRoute()
+#31 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(200): Illuminate\\Routing\\Router->dispatch()
+#32 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(144): Illuminate\\Foundation\\Http\\Kernel->Illuminate\\Foundation\\Http\\{closure}()
+#33 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/TransformsRequest.php(21): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#34 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/ConvertEmptyStringsToNull.php(31): Illuminate\\Foundation\\Http\\Middleware\\TransformsRequest->handle()
+#35 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\Foundation\\Http\\Middleware\\ConvertEmptyStringsToNull->handle()
+#36 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/TransformsRequest.php(21): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#37 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/TrimStrings.php(40): Illuminate\\Foundation\\Http\\Middleware\\TransformsRequest->handle()
+#38 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\Foundation\\Http\\Middleware\\TrimStrings->handle()
+#39 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/ValidatePostSize.php(27): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#40 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\Foundation\\Http\\Middleware\\ValidatePostSize->handle()
+#41 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/PreventRequestsDuringMaintenance.php(99): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#42 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\Foundation\\Http\\Middleware\\PreventRequestsDuringMaintenance->handle()
+#43 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Http/Middleware/HandleCors.php(49): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#44 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\Http\\Middleware\\HandleCors->handle()
+#45 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Http/Middleware/TrustProxies.php(39): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#46 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\Http\\Middleware\\TrustProxies->handle()
+#47 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(119): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#48 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(175): Illuminate\\Pipeline\\Pipeline->then()
+#49 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(144): Illuminate\\Foundation\\Http\\Kernel->sendRequestThroughRouter()
+#50 /var/www/labeling-app/public/index.php(53): Illuminate\\Foundation\\Http\\Kernel->handle()
+#51 {main}
+
+[previous exception] [object] (PDOException(code: 1049): SQLSTATE[HY000] [1049] Unknown database 'dev-labeling' at /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Database/Connectors/Connector.php:65)
+[stacktrace]
+#0 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Database/Connectors/Connector.php(65): PDO->__construct()
+#1 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Database/Connectors/Connector.php(44): Illuminate\\Database\\Connectors\\Connector->createPdoConnection()
+#2 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Database/Connectors/MySqlConnector.php(24): Illuminate\\Database\\Connectors\\Connector->createConnection()
+#3 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Database/Connectors/ConnectionFactory.php(184): Illuminate\\Database\\Connectors\\MySqlConnector->connect()
+#4 [internal function]: Illuminate\\Database\\Connectors\\ConnectionFactory->Illuminate\\Database\\Connectors\\{closure}()
+#5 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Database/Connection.php(1339): call_user_func()
+#6 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Database/Connection.php(1375): Illuminate\\Database\\Connection->getPdo()
+#7 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Database/Connection.php(528): Illuminate\\Database\\Connection->getReadPdo()
+#8 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Database/Connection.php(423): Illuminate\\Database\\Connection->getPdoForSelect()
+#9 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Database/Connection.php(816): Illuminate\\Database\\Connection->Illuminate\\Database\\{closure}()
+#10 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Database/Connection.php(783): Illuminate\\Database\\Connection->runQueryCallback()
+#11 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Database/Connection.php(414): Illuminate\\Database\\Connection->run()
+#12 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Database/Query/Builder.php(2913): Illuminate\\Database\\Connection->select()
+#13 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Database/Query/Builder.php(2902): Illuminate\\Database\\Query\\Builder->runSelect()
+#14 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Database/Query/Builder.php(3456): Illuminate\\Database\\Query\\Builder->Illuminate\\Database\\Query\\{closure}()
+#15 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Database/Query/Builder.php(2901): Illuminate\\Database\\Query\\Builder->onceWithColumns()
+#16 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Builder.php(739): Illuminate\\Database\\Query\\Builder->get()
+#17 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Builder.php(723): Illuminate\\Database\\Eloquent\\Builder->getModels()
+#18 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Database/Concerns/BuildsQueries.php(333): Illuminate\\Database\\Eloquent\\Builder->get()
+#19 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Auth/EloquentUserProvider.php(59): Illuminate\\Database\\Eloquent\\Builder->first()
+#20 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Auth/SessionGuard.php(159): Illuminate\\Auth\\EloquentUserProvider->retrieveById()
+#21 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Auth/GuardHelpers.php(56): Illuminate\\Auth\\SessionGuard->user()
+#22 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Auth/Middleware/Authenticate.php(76): Illuminate\\Auth\\SessionGuard->check()
+#23 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Auth/Middleware/Authenticate.php(55): Illuminate\\Auth\\Middleware\\Authenticate->authenticate()
+#24 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\Auth\\Middleware\\Authenticate->handle()
+#25 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/VerifyCsrfToken.php(78): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#26 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\Foundation\\Http\\Middleware\\VerifyCsrfToken->handle()
+#27 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/View/Middleware/ShareErrorsFromSession.php(49): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#28 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\View\\Middleware\\ShareErrorsFromSession->handle()
+#29 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Session/Middleware/StartSession.php(121): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#30 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Session/Middleware/StartSession.php(64): Illuminate\\Session\\Middleware\\StartSession->handleStatefulRequest()
+#31 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\Session\\Middleware\\StartSession->handle()
+#32 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Cookie/Middleware/AddQueuedCookiesToResponse.php(37): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#33 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\Cookie\\Middleware\\AddQueuedCookiesToResponse->handle()
+#34 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Cookie/Middleware/EncryptCookies.php(67): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#35 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\Cookie\\Middleware\\EncryptCookies->handle()
+#36 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(119): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#37 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Routing/Router.php(805): Illuminate\\Pipeline\\Pipeline->then()
+#38 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Routing/Router.php(784): Illuminate\\Routing\\Router->runRouteWithinStack()
+#39 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Routing/Router.php(748): Illuminate\\Routing\\Router->runRoute()
+#40 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Routing/Router.php(737): Illuminate\\Routing\\Router->dispatchToRoute()
+#41 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(200): Illuminate\\Routing\\Router->dispatch()
+#42 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(144): Illuminate\\Foundation\\Http\\Kernel->Illuminate\\Foundation\\Http\\{closure}()
+#43 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/TransformsRequest.php(21): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#44 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/ConvertEmptyStringsToNull.php(31): Illuminate\\Foundation\\Http\\Middleware\\TransformsRequest->handle()
+#45 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\Foundation\\Http\\Middleware\\ConvertEmptyStringsToNull->handle()
+#46 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/TransformsRequest.php(21): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#47 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/TrimStrings.php(40): Illuminate\\Foundation\\Http\\Middleware\\TransformsRequest->handle()
+#48 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\Foundation\\Http\\Middleware\\TrimStrings->handle()
+#49 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/ValidatePostSize.php(27): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#50 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\Foundation\\Http\\Middleware\\ValidatePostSize->handle()
+#51 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/PreventRequestsDuringMaintenance.php(99): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#52 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\Foundation\\Http\\Middleware\\PreventRequestsDuringMaintenance->handle()
+#53 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Http/Middleware/HandleCors.php(49): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#54 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\Http\\Middleware\\HandleCors->handle()
+#55 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Http/Middleware/TrustProxies.php(39): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#56 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\Http\\Middleware\\TrustProxies->handle()
+#57 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(119): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#58 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(175): Illuminate\\Pipeline\\Pipeline->then()
+#59 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(144): Illuminate\\Foundation\\Http\\Kernel->sendRequestThroughRouter()
+#60 /var/www/labeling-app/public/index.php(53): Illuminate\\Foundation\\Http\\Kernel->handle()
+#61 {main}
+"} 
+[2025-05-26 09:40:35] production.ERROR: App\Services\SpecificationService::getSpecByNomorPo(): Argument #1 ($no_po) must be of type int, string given, called in /var/www/labeling-app/app/Http/Controllers/OrderBesar/RegisterNomorPoController.php on line 123 {"exception":"[object] (TypeError(code: 0): App\\Services\\SpecificationService::getSpecByNomorPo(): Argument #1 ($no_po) must be of type int, string given, called in /var/www/labeling-app/app/Http/Controllers/OrderBesar/RegisterNomorPoController.php on line 123 at /var/www/labeling-app/app/Services/SpecificationService.php:8)
+[stacktrace]
+#0 /var/www/labeling-app/app/Http/Controllers/OrderBesar/RegisterNomorPoController.php(123): App\\Services\\SpecificationService->getSpecByNomorPo()
+#1 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Routing/Controller.php(54): App\\Http\\Controllers\\OrderBesar\\RegisterNomorPoController->show()
+#2 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Routing/ControllerDispatcher.php(43): Illuminate\\Routing\\Controller->callAction()
+#3 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Routing/Route.php(259): Illuminate\\Routing\\ControllerDispatcher->dispatch()
+#4 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Routing/Route.php(205): Illuminate\\Routing\\Route->runController()
+#5 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Routing/Router.php(806): Illuminate\\Routing\\Route->run()
+#6 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(144): Illuminate\\Routing\\Router->Illuminate\\Routing\\{closure}()
+#7 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Routing/Middleware/SubstituteBindings.php(50): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#8 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\Routing\\Middleware\\SubstituteBindings->handle()
+#9 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Routing/Middleware/ThrottleRequests.php(159): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#10 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Routing/Middleware/ThrottleRequests.php(125): Illuminate\\Routing\\Middleware\\ThrottleRequests->handleRequest()
+#11 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Routing/Middleware/ThrottleRequests.php(87): Illuminate\\Routing\\Middleware\\ThrottleRequests->handleRequestUsingNamedLimiter()
+#12 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\Routing\\Middleware\\ThrottleRequests->handle()
+#13 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(119): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#14 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Routing/Router.php(805): Illuminate\\Pipeline\\Pipeline->then()
+#15 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Routing/Router.php(784): Illuminate\\Routing\\Router->runRouteWithinStack()
+#16 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Routing/Router.php(748): Illuminate\\Routing\\Router->runRoute()
+#17 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Routing/Router.php(737): Illuminate\\Routing\\Router->dispatchToRoute()
+#18 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(200): Illuminate\\Routing\\Router->dispatch()
+#19 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(144): Illuminate\\Foundation\\Http\\Kernel->Illuminate\\Foundation\\Http\\{closure}()
+#20 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/TransformsRequest.php(21): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#21 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/ConvertEmptyStringsToNull.php(31): Illuminate\\Foundation\\Http\\Middleware\\TransformsRequest->handle()
+#22 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\Foundation\\Http\\Middleware\\ConvertEmptyStringsToNull->handle()
+#23 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/TransformsRequest.php(21): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#24 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/TrimStrings.php(40): Illuminate\\Foundation\\Http\\Middleware\\TransformsRequest->handle()
+#25 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\Foundation\\Http\\Middleware\\TrimStrings->handle()
+#26 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/ValidatePostSize.php(27): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#27 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\Foundation\\Http\\Middleware\\ValidatePostSize->handle()
+#28 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/PreventRequestsDuringMaintenance.php(99): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#29 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\Foundation\\Http\\Middleware\\PreventRequestsDuringMaintenance->handle()
+#30 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Http/Middleware/HandleCors.php(62): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#31 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\Http\\Middleware\\HandleCors->handle()
+#32 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Http/Middleware/TrustProxies.php(39): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#33 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(183): Illuminate\\Http\\Middleware\\TrustProxies->handle()
+#34 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(119): Illuminate\\Pipeline\\Pipeline->Illuminate\\Pipeline\\{closure}()
+#35 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(175): Illuminate\\Pipeline\\Pipeline->then()
+#36 /var/www/labeling-app/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(144): Illuminate\\Foundation\\Http\\Kernel->sendRequestThroughRouter()
+#37 /var/www/labeling-app/public/index.php(53): Illuminate\\Foundation\\Http\\Kernel->handle()
+#38 {main}
+"} 

@@ -40,7 +40,7 @@ const submit = () => {
             >
                 <div class="flex flex-row gap-3 pb-4 items-center">
                     <div>
-                        <img src="/img/logo.png" width="50" alt="Logo" />
+                        <img src="img/logo.png" width="50" alt="Logo" />
                     </div>
                     <h1
                         class="text-3xl font-bold text-[#4B5563] text-[#4B5563]"

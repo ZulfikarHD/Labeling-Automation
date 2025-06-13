@@ -406,8 +406,20 @@ const submit = async (e) => {
             periksa1Input.value?.focus();
 
         } else {
-            router.get("/order-besar/po-siap-verif", {}, { preserveState: true });
             loading.value = false;
+            
+            // Show completion alert before redirecting
+            const result = await Swal.fire({
+                title: 'Order telah selesai',
+                icon: 'success',
+                confirmButtonText: 'OK',
+                confirmButtonColor: '#0891b2',
+                allowOutsideClick: false,
+                allowEscapeKey: false
+            });
+            
+            // Redirect after user confirms or closes the popup
+            router.get(route('orderBesar.poSiapVerif'), {}, { preserveState: true });
         }
     } catch (error) {
         console.error('Error:', error);
@@ -420,7 +432,7 @@ const submit = async (e) => {
 
         // Check if team has changed from initial value
         if (form.team !== props.crntTeam) {
-            router.get(`/order-besar/cetak-label/${form.team}/${props.product.id}`);
+            router.get(route('orderBesar.cetakLabel', { team: form.team, id: props.product.id }));
             return;
         }
     }
@@ -461,7 +473,7 @@ const confirmFinishOrder = async () => {
 
         if (result.isConfirmed) {
             await axios.put(`/api/production-order-finish/${form.po}`);
-            router.get("/order-besar/po-siap-verif", {}, { preserveState: true });
+            router.get(route('orderBesar.poSiapVerif'), {}, { preserveState: true });
             showNotification('Order berhasil diselesaikan', 'success');
         }
     } catch (error) {

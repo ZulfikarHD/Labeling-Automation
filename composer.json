@@ -32,7 +32,7 @@
             "Database\\Seeders\\": "database/seeders/"
         },
         "files": [
-          "app/Http/Jobs/Divnum.php"
+
         ]
     },
     "autoload-dev": {

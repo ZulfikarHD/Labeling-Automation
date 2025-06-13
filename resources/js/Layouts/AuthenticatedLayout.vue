@@ -27,7 +27,7 @@ const toggleMobileMenu = () => {
                     <div class="max-w-7xl mx-auto flex justify-between items-center">
                         <!-- Logo -->
                         <img
-                            src="/img/peruri.png"
+                            src="/labeling/img/peruri.png"
                             class="w-20 md:w-24 hover:opacity-80 transition-opacity"
                             alt="Logo Peruri"
                         />

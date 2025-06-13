@@ -43,7 +43,7 @@ class UpdateSpecController extends Controller
                 // Update atau buat spesifikasi baru
                 Specification::updateOrCreate(
                     [
-                        'no_po'  => $noPo,
+                        'no_po'  => $spesifikasi['no_po'],
                         'no_obc' => $spesifikasi['no_obc']
                     ],
                     [
