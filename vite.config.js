@@ -19,18 +19,8 @@ export default defineConfig({
             },
         }),
     ],
-    server: {
-        host: true,
-        hmr: {
-            host: 'localhost',
-            protocol: 'ws'
-        },
-        watch: {
-            usePolling: true
-        },
-        cors: true,
-        strictPort: true,
-        port: 5173,
-        origin: 'http://localhost:5173',
-    },
+    build: {
+        assetsDir: 'assets',
+        base: '/labeling/'
+    }
 });

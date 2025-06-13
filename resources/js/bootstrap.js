@@ -9,6 +9,9 @@ window.axios = axios;
 
 window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 
+// Set the baseURL for all axios requests based on current path
+window.axios.defaults.baseURL = window.location.pathname.includes('/labeling') ? '/labeling' : '';
+
 /**
  * Echo exposes an expressive API for subscribing to channels and listening
  * for events that are broadcast by Laravel. Echo and event broadcasting
