@@ -15,7 +15,7 @@ class PrintLabelInspeksiController extends Controller
         return Inertia::render('PrintLabel/PrintLabelInspeksi/Index');
     }
 
-    public function fetchDataSpec(Number $no_po)
+    public function fetchDataSpec(Int $no_po)
     {
         $specPo = Specification::where('no_po', $no_po)->first();
 

@@ -6,6 +6,7 @@ import TextInput from "@/Components/TextInput.vue";
 import InputLabel from "@/Components/InputLabel.vue";
 import Select from "@/Components/Select.vue";
 import Button from "@/Components/Button.vue";
+import { router } from '@inertiajs/vue3';
 import LoadingOverlay from "@/Components/LoadingOverlay.vue";
 import {
     Scan,
@@ -51,16 +52,19 @@ const form = useForm({
 
 // Fetch specification data when PO is scanned/entered
 const fetchSpecification = async () => {
-    if (!form.no_po || form.no_po.length < 3) {
-        resetSpecification();
-        return;
-    }
+    // if (!form.no_po || form.no_po.length < 3) {
+    //     resetSpecification();
+    //     return;
+    // }
 
+    // const response = await axios.get(`/api/print-label/inspeksi/${form.no_po}`);
+    // console.log(form.no_po);
+    // router.get(`/api/print-label/inspeksi/${form.no_po}`);
     isLoading.value = true;
     try {
         // Simulate API call - replace with actual endpoint
-        const response = await axios.get(`/api/po-specification/${form.no_po}`);
-
+        const response = await axios.get(`/api/print-label/inspeksi/${form.no_po}`);
+        console.log(response);
         specificationData.value = {
             no_obc: response.data.no_obc || 'OBC-' + Math.random().toString(36).substr(2, 6).toUpperCase(),
             nomor_plat: response.data.nomor_plat || 'B-' + Math.floor(Math.random() * 9999) + '-ABC',
