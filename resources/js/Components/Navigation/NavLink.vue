@@ -18,8 +18,8 @@ const props = defineProps({
 
 const classes = computed(() =>
     props.active
-        ? 'inline-flex items-center px-4 py-2.5 text-sm font-medium text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 rounded-lg transition-all duration-200'
-        : 'inline-flex items-center px-4 py-2.5 text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-all duration-200'
+        ? "group inline-flex items-center gap-3 px-4 py-2.5 text-sm font-semibold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 rounded-xl border border-blue-200 dark:border-blue-800 shadow-sm transition-all duration-200 hover:shadow-md"
+        : "group inline-flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/10 rounded-xl transition-all duration-200 hover:shadow-sm"
 );
 </script>
 
@@ -28,8 +28,12 @@ const classes = computed(() =>
         <component
             v-if="icon"
             :is="icon"
-            class="w-4.5 h-4.5 mr-2.5"
-            :class="active ? 'text-blue-600 dark:text-blue-400' : 'text-slate-500 dark:text-slate-400'"
+            class="h-4 w-4 flex-shrink-0 transition-colors duration-200"
+            :class="
+                active
+                    ? 'text-blue-600 dark:text-blue-400'
+                    : 'text-slate-500 dark:text-slate-400 group-hover:text-blue-600 dark:group-hover:text-blue-400'
+            "
         />
         <slot />
     </Link>

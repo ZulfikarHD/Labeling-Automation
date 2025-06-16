@@ -86,3 +86,13 @@ Route::get('/pendapatan-harian', [PendapatanHarianController::class, 'gradeHaria
 Route::get('/team-name/{id}', [App\Models\Workstations::class, 'getTeamName']);
 Route::post('/update-spec', [UpdateSpecController::class, 'updateSpec']);
 Route::get('/active-teams', [PendapatanHarianController::class, 'getActiveTeams']);
+
+
+/*
+|--------------------------------------------------------------------------
+| Print Label Inspeksi Routes
+|--------------------------------------------------------------------------
+*/
+Route::get('/print-label/inspeksi/{no_po}', [App\Http\Controllers\PrintLabel\PrintLabelInspeksiController::class, 'getSpecification']);
+Route::get('/print-label/inspeksi/count-remaining-label/{no_po}', [App\Http\Controllers\PrintLabel\PrintLabelInspeksiController::class, 'getRemainingLabelCount']);
+Route::post('/print-label/inspeksi/store', [App\Http\Controllers\PrintLabel\PrintLabelInspeksiController::class, 'store']);

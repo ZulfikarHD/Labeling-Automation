@@ -66,6 +66,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/monitoring-produksi/status-verif', [App\Http\Controllers\MonitoringProduksi\StatusVerifikasiTeamController::class, 'index'])->name('monitoringProduksi.statusVerif.index');
     Route::get('/monitoring-produksi/status-verif/{id}', [App\Http\Controllers\MonitoringProduksi\StatusVerifikasiTeamController::class, 'show'])->name('monitoringProduksi.statusVerif.show');
     Route::get('/monitoring-produksi/produksi-pegawai', [App\Http\Controllers\MonitoringProduksi\ProduksiPegawaiController::class, 'index'])->name('monitoringProduksi.produksiPegawai');
+
+    // Print Label Routes
+    Route::get('/print-label/inspeksi', [App\Http\Controllers\PrintLabel\PrintLabelInspeksiController::class, 'index'])->name('printLabel.inspeksi');
 });
 
 // Include authentication routes
