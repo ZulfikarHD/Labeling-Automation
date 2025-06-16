@@ -33,7 +33,7 @@ class PrintLabelInspeksiController extends Controller
         $listTeam = Workstations::listWorkstation()->toArray();
         $currentTeam = Auth::user()->workstation_id;
 
-        return Inertia::render('PrintLabel/PrintLabelInspeksi/Index', [
+        return Inertia::render('PrintLabel/PrintLabelInspeksi', [
             'listTeam' => $listTeam,
             'currentTeam' => $currentTeam
         ]);

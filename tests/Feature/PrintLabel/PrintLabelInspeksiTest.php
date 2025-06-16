@@ -3,16 +3,15 @@
 namespace Tests\Feature\PrintLabel;
 
 use Tests\TestCase;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 use Mockery;
 
 use App\Http\Controllers\PrintLabel\PrintLabelInspeksiController;
-use App\Models\Users;
+use App\Models\User;
 use App\Models\Specification;
 use App\Models\Workstations;
 use App\Models\GeneratedLabels;
@@ -22,7 +21,7 @@ use App\Services\PrintLabelService;
 
 class PrintLabelInspeksiTest extends TestCase
 {
-    use DatabaseTransactions, WithFaker;
+    use RefreshDatabase, WithFaker;
 
     protected $controller;
     protected $productionOrderService;
@@ -44,25 +43,12 @@ class PrintLabelInspeksiTest extends TestCase
         );
 
         // Create test user
-        $this->user = $this->createTestUser();
+        $this->user = User::factory()->create([
+            'workstation_id' => 1
+        ]);
 
         // Authenticate user
         $this->actingAs($this->user);
-    }
-
-    /**
-     * Helper untuk membuat user test
-     *
-     * @return Users
-     */
-    private function createTestUser()
-    {
-        return Users::create([
-            'np' => "TEST",
-            'role' => 0,
-            'workstation_id' => 1,
-            'password' => Hash::make('Test123'),
-        ]);
     }
 
     protected function tearDown(): void
@@ -71,12 +57,12 @@ class PrintLabelInspeksiTest extends TestCase
         parent::tearDown();
     }
 
-        /** @test */
+    /** @test */
     public function index_returns_correct_view_with_data()
     {
         // Arrange
-        $workstation1 = Workstations::create(['id' => 1, 'workstation' => 'WS001']);
-        $workstation2 = Workstations::create(['id' => 2, 'workstation' => 'WS002']);
+        $workstation1 = Workstations::factory()->create(['id' => 1, 'workstation' => 'WS001']);
+        $workstation2 = Workstations::factory()->create(['id' => 2, 'workstation' => 'WS002']);
 
         // Mock the listWorkstation method
         Workstations::shouldReceive('listWorkstation->toArray')
@@ -102,7 +88,7 @@ class PrintLabelInspeksiTest extends TestCase
     public function get_specification_returns_specification_data()
     {
         // Arrange
-        $specification = Specification::create([
+        $specification = Specification::factory()->create([
             'no_po' => 12345,
             'no_obc' => 'OBC001',
             'nomor_plat' => 'B1234CD',
@@ -139,26 +125,16 @@ class PrintLabelInspeksiTest extends TestCase
         // Arrange
         $noPo = 12345;
 
-                // Create labels with different states
-        for ($i = 0; $i < 3; $i++) {
-            GeneratedLabels::create([
-                'no_po_generated_products' => $noPo,
-                'np_users' => null, // Unprocessed
-                'no_rim' => $i + 1,
-                'potongan' => 'Kiri',
-                'workstation' => 1
-            ]);
-        }
+        // Create labels with different states
+        GeneratedLabels::factory()->count(3)->create([
+            'no_po_generated_products' => $noPo,
+            'np_users' => null // Unprocessed
+        ]);
 
-        for ($i = 0; $i < 2; $i++) {
-            GeneratedLabels::create([
-                'no_po_generated_products' => $noPo,
-                'np_users' => 'EMP1', // Processed
-                'no_rim' => $i + 4,
-                'potongan' => 'Kiri',
-                'workstation' => 1
-            ]);
-        }
+        GeneratedLabels::factory()->count(2)->create([
+            'no_po_generated_products' => $noPo,
+            'np_users' => 'EMP1' // Processed
+        ]);
 
         // Act
         $response = $this->getJson("/api/print-label/inspeksi/count-remaining-label/{$noPo}");
@@ -199,7 +175,7 @@ class PrintLabelInspeksiTest extends TestCase
     public function store_validates_field_formats()
     {
         // Arrange
-        $workstation = Workstations::create(['workstation' => 'WS001']);
+        $workstation = Workstations::factory()->create();
 
         // Act
         $response = $this->postJson('/api/print-label/inspeksi/store', [
@@ -224,31 +200,21 @@ class PrintLabelInspeksiTest extends TestCase
     /** @test */
     public function store_processes_labels_successfully_with_existing_po()
     {
-                // Arrange
+        // Arrange
         $noPo = 12345;
-        $workstation = Workstations::create(['workstation' => 'WS001']);
+        $workstation = Workstations::factory()->create();
 
         // Create existing labels
-        for ($i = 0; $i < 5; $i++) {
-            GeneratedLabels::create([
-                'no_po_generated_products' => $noPo,
-                'np_users' => null,
-                'no_rim' => 'RIM' . str_pad($i + 1, 3, '0', STR_PAD_LEFT),
-                'potongan' => 'Kiri',
-                'workstation' => 1
-            ]);
-        }
+        $labels = GeneratedLabels::factory()->count(5)->create([
+            'no_po_generated_products' => $noPo,
+            'np_users' => null,
+            'no_rim' => fn($attributes, $index) => 'RIM' . str_pad($index + 1, 3, '0', STR_PAD_LEFT)
+        ]);
 
         // Create generated product
-        GeneratedProducts::create([
+        GeneratedProducts::factory()->create([
             'no_po' => $noPo,
-            'no_obc' => 'OBC001',
-            'type' => 'PCHT',
-            'sum_rim' => 5,
-            'start_rim' => 1,
-            'end_rim' => 5,
-            'status' => 0,
-            'assigned_team' => 1
+            'status' => 0
         ]);
 
         // Mock service calls
@@ -296,30 +262,20 @@ class PrintLabelInspeksiTest extends TestCase
     /** @test */
     public function store_processes_labels_and_completes_po_when_all_processed()
     {
-                // Arrange
+        // Arrange
         $noPo = 12345;
-        $workstation = Workstations::create(['workstation' => 'WS001']);
+        $workstation = Workstations::factory()->create();
 
         // Create exactly 2 labels
-        for ($i = 0; $i < 2; $i++) {
-            GeneratedLabels::create([
-                'no_po_generated_products' => $noPo,
-                'np_users' => null,
-                'no_rim' => 'RIM' . str_pad($i + 1, 3, '0', STR_PAD_LEFT),
-                'potongan' => 'Kiri',
-                'workstation' => 1
-            ]);
-        }
+        GeneratedLabels::factory()->count(2)->create([
+            'no_po_generated_products' => $noPo,
+            'np_users' => null,
+            'no_rim' => fn($attributes, $index) => 'RIM' . str_pad($index + 1, 3, '0', STR_PAD_LEFT)
+        ]);
 
-        GeneratedProducts::create([
+        GeneratedProducts::factory()->create([
             'no_po' => $noPo,
-            'no_obc' => 'OBC001',
-            'type' => 'PCHT',
-            'sum_rim' => 2,
-            'start_rim' => 1,
-            'end_rim' => 2,
-            'status' => 1,
-            'assigned_team' => 1
+            'status' => 1
         ]);
 
         $this->printLabelService
@@ -358,9 +314,9 @@ class PrintLabelInspeksiTest extends TestCase
     /** @test */
     public function store_creates_new_po_when_no_labels_exist()
     {
-                // Arrange
+        // Arrange
         $noPo = 12345;
-        $workstation = Workstations::create(['workstation' => 'WS001']);
+        $workstation = Workstations::factory()->create();
 
         // Mock service calls for new PO creation
         $this->productionOrderService
@@ -392,25 +348,14 @@ class PrintLabelInspeksiTest extends TestCase
 
         // Create labels after PO registration (simulating service behavior)
         $this->beforeApplicationDestroyed(function () use ($noPo) {
-            for ($i = 0; $i < 5; $i++) {
-                GeneratedLabels::create([
-                    'no_po_generated_products' => $noPo,
-                    'np_users' => null,
-                    'no_rim' => $i + 1,
-                    'potongan' => 'Kiri',
-                    'workstation' => 1
-                ]);
-            }
+            GeneratedLabels::factory()->count(5)->create([
+                'no_po_generated_products' => $noPo,
+                'np_users' => null
+            ]);
 
-            GeneratedProducts::create([
+            GeneratedProducts::factory()->create([
                 'no_po' => $noPo,
-                'no_obc' => 'OBC001',
-                'type' => 'PCHT',
-                'sum_rim' => 5,
-                'start_rim' => 1,
-                'end_rim' => 5,
-                'status' => 0,
-                'assigned_team' => 1
+                'status' => 0
             ]);
         });
 
@@ -434,30 +379,20 @@ class PrintLabelInspeksiTest extends TestCase
     /** @test */
     public function store_handles_partial_label_processing_failure()
     {
-                // Arrange
+        // Arrange
         $noPo = 12345;
-        $workstation = Workstations::create(['workstation' => 'WS001']);
+        $workstation = Workstations::factory()->create();
 
         // Create labels, but make one fail by creating invalid data
-        for ($i = 0; $i < 3; $i++) {
-            GeneratedLabels::create([
-                'no_po_generated_products' => $noPo,
-                'np_users' => null,
-                'no_rim' => 'RIM' . str_pad($i + 1, 3, '0', STR_PAD_LEFT),
-                'potongan' => 'Kiri',
-                'workstation' => 1
-            ]);
-        }
+        GeneratedLabels::factory()->count(3)->create([
+            'no_po_generated_products' => $noPo,
+            'np_users' => null,
+            'no_rim' => fn($attributes, $index) => 'RIM' . str_pad($index + 1, 3, '0', STR_PAD_LEFT)
+        ]);
 
-        GeneratedProducts::create([
+        GeneratedProducts::factory()->create([
             'no_po' => $noPo,
-            'no_obc' => 'OBC001',
-            'type' => 'PCHT',
-            'sum_rim' => 3,
-            'start_rim' => 1,
-            'end_rim' => 3,
-            'status' => 0,
-            'assigned_team' => 1
+            'status' => 0
         ]);
 
         $this->printLabelService
@@ -495,30 +430,20 @@ class PrintLabelInspeksiTest extends TestCase
     /** @test */
     public function store_stops_processing_when_no_more_labels_available()
     {
-                // Arrange
+        // Arrange
         $noPo = 12345;
-        $workstation = Workstations::create(['workstation' => 'WS001']);
+        $workstation = Workstations::factory()->create();
 
         // Create only 2 labels but request 5
-        for ($i = 0; $i < 2; $i++) {
-            GeneratedLabels::create([
-                'no_po_generated_products' => $noPo,
-                'np_users' => null,
-                'no_rim' => 'RIM' . str_pad($i + 1, 3, '0', STR_PAD_LEFT),
-                'potongan' => 'Kiri',
-                'workstation' => 1
-            ]);
-        }
+        GeneratedLabels::factory()->count(2)->create([
+            'no_po_generated_products' => $noPo,
+            'np_users' => null,
+            'no_rim' => fn($attributes, $index) => 'RIM' . str_pad($index + 1, 3, '0', STR_PAD_LEFT)
+        ]);
 
-        GeneratedProducts::create([
+        GeneratedProducts::factory()->create([
             'no_po' => $noPo,
-            'no_obc' => 'OBC001',
-            'type' => 'PCHT',
-            'sum_rim' => 2,
-            'start_rim' => 1,
-            'end_rim' => 2,
-            'status' => 0,
-            'assigned_team' => 1
+            'status' => 0
         ]);
 
         $this->printLabelService
@@ -553,7 +478,7 @@ class PrintLabelInspeksiTest extends TestCase
     {
         // Arrange
         $noPo = 12345;
-        $workstation = Workstations::create(['workstation' => 'WS001']);
+        $workstation = Workstations::factory()->create();
 
         // Mock service to throw exception
         $this->printLabelService
@@ -586,27 +511,17 @@ class PrintLabelInspeksiTest extends TestCase
         Log::spy();
 
         $noPo = 12345;
-        $workstation = Workstations::create(['workstation' => 'WS001']);
+        $workstation = Workstations::factory()->create();
 
-        for ($i = 0; $i < 2; $i++) {
-            GeneratedLabels::create([
-                'no_po_generated_products' => $noPo,
-                'np_users' => null,
-                'no_rim' => 'RIM' . str_pad($i + 1, 3, '0', STR_PAD_LEFT),
-                'potongan' => 'Kiri',
-                'workstation' => 1
-            ]);
-        }
+        GeneratedLabels::factory()->count(2)->create([
+            'no_po_generated_products' => $noPo,
+            'np_users' => null,
+            'no_rim' => fn($attributes, $index) => 'RIM' . str_pad($index + 1, 3, '0', STR_PAD_LEFT)
+        ]);
 
-        GeneratedProducts::create([
+        GeneratedProducts::factory()->create([
             'no_po' => $noPo,
-            'no_obc' => 'OBC001',
-            'type' => 'PCHT',
-            'sum_rim' => 2,
-            'start_rim' => 1,
-            'end_rim' => 2,
-            'status' => 0,
-            'assigned_team' => 1
+            'status' => 0
         ]);
 
         $this->printLabelService
@@ -638,25 +553,17 @@ class PrintLabelInspeksiTest extends TestCase
     {
         // Arrange
         $noPo = 12345;
-        $workstation = Workstations::create(['workstation' => 'WS001']);
+        $workstation = Workstations::factory()->create();
 
-        GeneratedLabels::create([
+        GeneratedLabels::factory()->count(1)->create([
             'no_po_generated_products' => $noPo,
             'np_users' => null,
-            'no_rim' => 'RIM001',
-            'potongan' => 'Kiri',
-            'workstation' => 1
+            'no_rim' => 'RIM001'
         ]);
 
-        GeneratedProducts::create([
+        GeneratedProducts::factory()->create([
             'no_po' => $noPo,
-            'no_obc' => 'OBC001',
-            'type' => 'PCHT',
-            'sum_rim' => 1,
-            'start_rim' => 1,
-            'end_rim' => 1,
-            'status' => 0,
-            'assigned_team' => 1
+            'status' => 0
         ]);
 
         $this->printLabelService
@@ -689,25 +596,17 @@ class PrintLabelInspeksiTest extends TestCase
     {
         // Arrange
         $noPo = 12345;
-        $workstation = Workstations::create(['workstation' => 'WS001']);
+        $workstation = Workstations::factory()->create();
 
-        GeneratedLabels::create([
+        GeneratedLabels::factory()->count(1)->create([
             'no_po_generated_products' => $noPo,
             'np_users' => null,
-            'no_rim' => 'RIM001',
-            'potongan' => 'Kiri',
-            'workstation' => 1
+            'no_rim' => 'RIM001'
         ]);
 
-        GeneratedProducts::create([
+        GeneratedProducts::factory()->create([
             'no_po' => $noPo,
-            'no_obc' => 'OBC001',
-            'type' => 'PCHT',
-            'sum_rim' => 1,
-            'start_rim' => 1,
-            'end_rim' => 1,
-            'status' => 0,
-            'assigned_team' => 1
+            'status' => 0
         ]);
 
         $this->printLabelService
@@ -740,42 +639,30 @@ class PrintLabelInspeksiTest extends TestCase
     {
         // Arrange
         $noPo = 12345;
-        $workstation = Workstations::create(['workstation' => 'WS001']);
+        $workstation = Workstations::factory()->create();
 
         // Create labels with specific rim order
-        $label1 = GeneratedLabels::create([
+        $label1 = GeneratedLabels::factory()->create([
             'no_po_generated_products' => $noPo,
             'np_users' => null,
-            'no_rim' => 'RIM003',
-            'potongan' => 'Kiri',
-            'workstation' => 1
+            'no_rim' => 'RIM003'
         ]);
 
-        $label2 = GeneratedLabels::create([
+        $label2 = GeneratedLabels::factory()->create([
             'no_po_generated_products' => $noPo,
             'np_users' => null,
-            'no_rim' => 'RIM001',
-            'potongan' => 'Kiri',
-            'workstation' => 1
+            'no_rim' => 'RIM001'
         ]);
 
-        $label3 = GeneratedLabels::create([
+        $label3 = GeneratedLabels::factory()->create([
             'no_po_generated_products' => $noPo,
             'np_users' => null,
-            'no_rim' => 'RIM002',
-            'potongan' => 'Kiri',
-            'workstation' => 1
+            'no_rim' => 'RIM002'
         ]);
 
-        GeneratedProducts::create([
+        GeneratedProducts::factory()->create([
             'no_po' => $noPo,
-            'no_obc' => 'OBC001',
-            'type' => 'PCHT',
-            'sum_rim' => 3,
-            'start_rim' => 1,
-            'end_rim' => 3,
-            'status' => 0,
-            'assigned_team' => 1
+            'status' => 0
         ]);
 
         $this->printLabelService
@@ -817,25 +704,17 @@ class PrintLabelInspeksiTest extends TestCase
     {
         // Arrange
         $noPo = 12345;
-        $workstation = Workstations::create(['workstation' => 'WS001']);
+        $workstation = Workstations::factory()->create();
 
-        GeneratedLabels::create([
+        GeneratedLabels::factory()->count(1)->create([
             'no_po_generated_products' => $noPo,
             'np_users' => null,
-            'no_rim' => 'RIM001',
-            'potongan' => 'Kiri',
-            'workstation' => 1
+            'no_rim' => 'RIM001'
         ]);
 
-        GeneratedProducts::create([
+        GeneratedProducts::factory()->create([
             'no_po' => $noPo,
-            'no_obc' => 'OBC001',
-            'type' => 'PCHT',
-            'sum_rim' => 1,
-            'start_rim' => 1,
-            'end_rim' => 1,
-            'status' => 0,
-            'assigned_team' => 1
+            'status' => 0
         ]);
 
         $this->printLabelService
@@ -890,7 +769,7 @@ class PrintLabelInspeksiTest extends TestCase
     public function workstation_validation_works_correctly()
     {
         // Arrange
-        $validWorkstation = Workstations::create(['workstation' => 'WS001']);
+        $validWorkstation = Workstations::factory()->create();
         $noPo = 12345;
 
         // Act - Valid workstation
