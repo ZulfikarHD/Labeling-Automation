@@ -1,5 +1,5 @@
 <script setup>
-import { ref, inject } from 'vue';
+import { ref, inject, computed } from 'vue';
 import { Head, useForm } from '@inertiajs/vue3';
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import TextInput from "@/Components/TextInput.vue";
@@ -38,19 +38,23 @@ const props = defineProps({
 // Injections
 const swal = inject('$swal');
 
+// Constants
+const PRINT_TIMEOUT_BASE = 1000;
+const DEBOUNCE_DELAY = 500;
+const VALIDATION_DELAY = 300;
+
 // Reactive state
 const isLoading = ref(false);
-const isDataFetched = ref(false);
-const timeoutDuration = ref(1000);
 const printFrame = ref(null);
-const obc_color = ref('#1d4ed8');
 const remainingLabels = ref(0);
-const labelQuantityError = ref('');
-const poNotFoundError = ref('');
 const specificationData = ref({
     no_obc: '',
     nomor_plat: '',
     seri: ''
+});
+const errors = ref({
+    poNotFound: '',
+    labelQuantity: ''
 });
 
 // Form state
@@ -62,308 +66,324 @@ const form = useForm({
     np2: ''
 });
 
-// Fetch specification data when PO is scanned/entered
-const fetchSpecification = async () => {
-    if (!form.no_po || form.no_po.length < 3) {
-        resetSpecification();
-        return;
-    }
+// Computed properties
+const isDataFetched = computed(() => !!specificationData.value.no_obc);
+const obcColor = computed(() => specificationData.value.seri == 3 ? "#b91c1c" : "#1d4ed8");
+const printTimeout = computed(() =>
+    form.jumlah_label > 10
+        ? Math.round(PRINT_TIMEOUT_BASE * (form.jumlah_label / 5))
+        : PRINT_TIMEOUT_BASE
+);
 
-    isLoading.value = true;
-    poNotFoundError.value = ''; // Clear previous error
+// API calls
+const apiService = {
+    async getSpecification(noPo) {
+        const response = await axios.get(`/api/print-label/inspeksi/${noPo}`);
+        return response.data;
+    },
 
-    try {
-        // Fetch specification data
-        const response = await axios.get(`/api/print-label/inspeksi/${form.no_po}`);
-        specificationData.value = {
-            no_obc: response.data.no_obc,
-            nomor_plat: response.data.nomor_plat,
-            seri: response.data.seri
-        };
+    async getRemainingLabels(noPo) {
+        const response = await axios.get(`/api/print-label/inspeksi/count-remaining-label/${noPo}`);
+        return response.data;
+    },
 
-        // Fetch remaining label count
-        const remainingLabelResponse = await axios.get(`/api/print-label/inspeksi/count-remaining-label/${form.no_po}`);
-        remainingLabels.value = remainingLabelResponse.data;
-        form.jumlah_label = remainingLabelResponse.data;
-
-        // Set OBC color based on seri
-        const seri = response.data.seri;
-        obc_color.value = seri == 3 ? "#b91c1c" : "#1d4ed8";
-
-        // Clear any previous errors
-        labelQuantityError.value = '';
-
-        isDataFetched.value = true;
-
-    } catch (error) {
-        console.error('Error fetching specification:', error);
-        resetSpecification();
-
-        // Show error message below PO input instead of SweetAlert
-        poNotFoundError.value = 'Nomor Po Tidak Ditemukan Harap Hubungi admin untuk memperbaharui data order';
-    } finally {
-        isLoading.value = false;
+    async submitForm(formData) {
+        const response = await axios.post('/api/print-label/inspeksi/store', formData);
+        return response.data;
     }
 };
 
-// Reset specification data
-const resetSpecification = () => {
-    isDataFetched.value = false;
-    remainingLabels.value = 0;
-    labelQuantityError.value = '';
-    poNotFoundError.value = '';
-    specificationData.value = {
-        no_obc: '',
-        nomor_plat: '',
-        seri: ''
-    };
-};
+// Validation functions
+const validation = {
+    validateLabelQuantity() {
+        errors.value.labelQuantity = '';
 
-// Validate label quantity
-const validateLabelQuantity = () => {
-    labelQuantityError.value = '';
+        if (!form.jumlah_label || form.jumlah_label <= 0) {
+            errors.value.labelQuantity = 'Jumlah label harus lebih dari 0';
+            return false;
+        }
 
-    if (!form.jumlah_label || form.jumlah_label <= 0) {
-        labelQuantityError.value = 'Jumlah label harus lebih dari 0';
-        return false;
-    }
+        if (form.jumlah_label > remainingLabels.value) {
+            errors.value.labelQuantity = `Jumlah label tidak boleh melebihi sisa label yang tersedia (${remainingLabels.value})`;
+            return false;
+        }
 
-    if (form.jumlah_label > remainingLabels.value) {
-        labelQuantityError.value = `Jumlah label tidak boleh melebihi sisa label yang tersedia (${remainingLabels.value})`;
-        return false;
-    }
+        return true;
+    },
 
-    return true;
-};
+    validateForm() {
+        if (!isDataFetched.value) {
+            this.showWarning('Data Belum Lengkap', 'Silakan scan nomor PO terlebih dahulu');
+            return false;
+        }
 
-// Handle form submission
-const submitForm = async () => {
-    if (!isDataFetched.value) {
+        if (!form.team || !form.np1) {
+            this.showWarning('Form Belum Lengkap', 'Silakan lengkapi Team dan NP 1 yang diperlukan');
+            return false;
+        }
+
+        return this.validateLabelQuantity();
+    },
+
+    showWarning(title, text) {
         swal.fire({
             icon: 'warning',
-            title: 'Data Belum Lengkap',
-            text: 'Silakan scan nomor PO terlebih dahulu',
+            title,
+            text,
             confirmButtonText: 'OK'
         });
-        return;
     }
+};
 
-    if (!form.team || !form.np1) {
-        swal.fire({
-            icon: 'warning',
-            title: 'Form Belum Lengkap',
-            text: 'Silakan lengkapi Team dan NP 1 yang diperlukan',
-            confirmButtonText: 'OK'
-        });
-        return;
+// Data management
+const dataManager = {
+    async fetchSpecification() {
+        if (!form.no_po || form.no_po.length < 3) {
+            this.resetSpecification();
+            return;
+        }
+
+        isLoading.value = true;
+        errors.value.poNotFound = '';
+
+        try {
+            const [specData, remainingCount] = await Promise.all([
+                apiService.getSpecification(form.no_po),
+                apiService.getRemainingLabels(form.no_po)
+            ]);
+
+                         specificationData.value = {
+                 no_obc: specData.no_obc,
+                 nomor_plat: specData.nomor_plat,
+                 seri: specData.seri
+             };
+
+             remainingLabels.value = remainingCount;
+             form.jumlah_label = remainingCount;
+             errors.value.labelQuantity = '';
+
+        } catch (error) {
+            console.error('Error fetching specification:', error);
+            this.resetSpecification();
+            errors.value.poNotFound = 'Nomor Po Tidak Ditemukan Harap Hubungi admin untuk memperbaharui data order';
+        } finally {
+            isLoading.value = false;
+        }
+    },
+
+         resetSpecification() {
+         specificationData.value = {
+             no_obc: '',
+             nomor_plat: '',
+             seri: ''
+         };
+         remainingLabels.value = 0;
+         errors.value.poNotFound = '';
+         errors.value.labelQuantity = '';
+     },
+
+    clearForm() {
+        form.reset();
+        this.resetSpecification();
+
+        if (!isLoading.value) {
+            swal.fire({
+                icon: 'info',
+                title: 'Form Telah Direset',
+                text: 'Semua data telah dihapus',
+                timer: 1500,
+                showConfirmButton: false
+            });
+        }
     }
+};
 
-    // Validate label quantity
-    if (!validateLabelQuantity()) {
-        return;
+// Print functionality
+const printService = {
+    printWithoutDialog(content) {
+        const iframe = printFrame.value;
+        const doc = iframe.contentWindow.document;
+        doc.open();
+        doc.write(`<style>
+            @media print {
+                @page {
+                    margin-left: 3rem;
+                    margin-right: 3rem;
+                    margin-top: 0rem;
+                }
+                body { margin: 0; }
+                header, footer { display: none !important; }
+                * {
+                    -webkit-print-color-adjust: exact;
+                    print-color-adjust: exact;
+                }
+            }
+        </style>
+        ${content}`);
+        doc.close();
+        iframe.contentWindow.focus();
+
+        setTimeout(() => {
+            iframe.contentWindow.print();
+        }, 1000);
+    },
+
+    generatePrintContent() {
+        return batchSingleLabel(
+            specificationData.value.no_obc,
+            undefined,
+            obcColor.value,
+            undefined,
+            form.np1,
+            form.np2,
+            form.jumlah_label,
+            500
+        );
     }
+};
 
-    try {
+// Form submission
+const formHandler = {
+    async submitForm() {
+        if (!validation.validateForm()) {
+            return;
+        }
+
+        const confirmed = await this.showConfirmationDialog();
+        if (!confirmed) return;
+
+        isLoading.value = true;
+
+        try {
+            await apiService.submitForm(form);
+
+            const printContent = printService.generatePrintContent();
+            printService.printWithoutDialog(printContent);
+
+            setTimeout(() => {
+                this.showSuccessMessage();
+                dataManager.clearForm();
+                isLoading.value = false;
+            }, printTimeout.value);
+
+        } catch (error) {
+            this.handleSubmissionError(error);
+            isLoading.value = false;
+        }
+    },
+
+    async showConfirmationDialog() {
         const result = await swal.fire({
             icon: 'question',
             title: 'Konfirmasi Cetak Label',
-            html: `
-                <div class="text-left space-y-3">
-                    <div class="flex items-center justify-between">
-                        <span class="text-sm font-medium text-slate-600 dark:text-slate-400">No PO:</span>
-                        <span class="text-sm font-bold text-slate-900 dark:text-slate-100">${form.no_po}</span>
-                    </div>
-                    <div class="flex items-center justify-between">
-                        <span class="text-sm font-medium text-slate-600 dark:text-slate-400">Team:</span>
-                        <span class="text-sm font-bold text-slate-900 dark:text-slate-100">${getTeamName(form.team)}</span>
-                    </div>
-                    <div class="flex items-center justify-between">
-                        <span class="text-sm font-medium text-slate-600 dark:text-slate-400">Jumlah Label:</span>
-                        <span class="text-sm font-bold text-blue-600 dark:text-blue-400">${form.jumlah_label}</span>
-                    </div>
-                    <div class="flex items-center justify-between">
-                        <span class="text-sm font-medium text-slate-600 dark:text-slate-400">NP1:</span>
-                        <span class="text-sm font-bold text-slate-900 dark:text-slate-100 font-mono">${form.np1 || '-'}</span>
-                    </div>
-                    <div class="flex items-center justify-between">
-                        <span class="text-sm font-medium text-slate-600 dark:text-slate-400">NP2:</span>
-                        <span class="text-sm font-bold text-slate-900 dark:text-slate-100 font-mono">${form.np2 || '-'}</span>
-                    </div>
-                </div>
-            `,
+            html: this.buildConfirmationHtml(),
             showCancelButton: true,
             confirmButtonText: 'Ya, Cetak Label',
             cancelButtonText: 'Batal',
             confirmButtonColor: '#3b82f6'
         });
 
-        if (result.isConfirmed) {
-            isLoading.value = true;
+        return result.isConfirmed;
+    },
 
-            // Submit form data to API
-            await axios.post('/api/print-label/inspeksi/store', form).then(response => {
-                    let printLabel = batchSingleLabel(
-                        specificationData.value.no_obc,
-                        undefined,
-                        obc_color.value,
-                        undefined,
-                        form.np1,
-                        form.np2,
-                        form.jumlah_label,
-                        500
-                    );
-                    printWithoutDialog(printLabel);
+    buildConfirmationHtml() {
+        const confirmationData = [
+            { label: 'No PO', value: form.no_po },
+            { label: 'Team', value: getTeamName(form.team) },
+            { label: 'Jumlah Label', value: form.jumlah_label, highlight: true },
+            { label: 'NP1', value: form.np1 || '-', mono: true },
+            { label: 'NP2', value: form.np2 || '-', mono: true }
+        ];
 
-                    if(form.jumlah_label > 10 ) {
-                        timeoutDuration.value = Math.round(1000 * (form.jumlah_label / 5));
-                    }
+        return `
+            <div class="text-left space-y-3">
+                ${confirmationData.map(item => `
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm font-medium text-slate-600 dark:text-slate-400">${item.label}:</span>
+                        <span class="text-sm font-bold ${item.highlight ? 'text-blue-600 dark:text-blue-400' : 'text-slate-900 dark:text-slate-100'} ${item.mono ? 'font-mono' : ''}">${item.value}</span>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+    },
 
-                    setTimeout(() => {
-                        swal.fire({
-                            icon: 'success',
-                            title: 'Berhasil',
-                            text: 'Label Berhasil Dibuat',
-                            customClass: {
-                                popup: 'rounded-lg',
-                                title: 'text-xl font-bold text-green-600 mb-4',
-                                htmlContainer: 'text-base text-gray-600',
-                                confirmButton: 'bg-green-500 hover:bg-green-600 text-white font-medium rounded-lg px-4 py-2'
-                            },
-                            iconColor: '#22c55e'
-                        }).then(() => {
-                            // Reset form after user acknowledges success
-                            clearForm();
-                        });
+    showSuccessMessage() {
+        swal.fire({
+            icon: 'success',
+            title: 'Berhasil',
+            text: 'Label Berhasil Dibuat',
+            customClass: {
+                popup: 'rounded-lg',
+                title: 'text-xl font-bold text-green-600 mb-4',
+                htmlContainer: 'text-base text-gray-600',
+                confirmButton: 'bg-green-500 hover:bg-green-600 text-white font-medium rounded-lg px-4 py-2'
+            },
+            iconColor: '#22c55e'
+        });
+    },
 
-                        isLoading.value = false;
-                    }, timeoutDuration.value);
-                })
-                .catch(error => {
-                    let errorMessage = 'Terjadi kesalahan';
+    handleSubmissionError(error) {
+        let errorMessage = 'Terjadi kesalahan';
 
-                    if (error.response) {
-                        if (error.response.status === 422) {
-                            const errors = error.response.data.errors;
-                            errorMessage = Object.values(errors).flat().join('<br>');
-                        } else {
-                            errorMessage = error.response.data.message || 'Terjadi kesalahan pada server';
-                        }
-                    }
-
-                    swal.fire({
-                        icon: 'error',
-                        title: 'Gagal',
-                        html: `<div class="text-left">
-                            <p class="text-red-500 font-medium text-lg mb-2">Error:</p>
-                            <ul class="text-gray-700 text-base space-y-1 list-disc pl-5">
-                                ${errorMessage.split('<br>').map(error => `<li>${error}</li>`).join('')}
-                            </ul>
-                        </div>`,
-                        customClass: {
-                            popup: 'rounded-lg',
-                            title: 'text-xl font-bold text-red-600 mb-4',
-                            htmlContainer: 'p-4',
-                            confirmButton: 'bg-red-500 hover:bg-red-600 text-white font-medium rounded-lg px-4 py-2'
-                        },
-                        iconColor: '#ef4444'
-                    });
-
-                    isLoading.value = false;
-                });
+        if (error.response) {
+            if (error.response.status === 422) {
+                const errors = error.response.data.errors;
+                errorMessage = Object.values(errors).flat().join('<br>');
+            } else {
+                errorMessage = error.response.data.message || 'Terjadi kesalahan pada server';
+            }
         }
-    } catch (error) {
-        console.error('Error printing labels:', error);
+
         swal.fire({
             icon: 'error',
-            title: 'Gagal Mencetak Label',
-            text: 'Terjadi kesalahan saat mencetak label',
-            confirmButtonText: 'OK'
-        });
-    } finally {
-        isLoading.value = false;
-    }
-};
-
-// Clear form
-const clearForm = () => {
-    form.reset();
-    resetSpecification();
-
-    // Simple toast notification for manual clear
-    if (!isLoading.value) {
-        swal.fire({
-            icon: 'info',
-            title: 'Form Telah Direset',
-            text: 'Semua data telah dihapus',
-            timer: 1500,
-            showConfirmButton: false
+            title: 'Gagal',
+            html: `<div class="text-left">
+                <p class="text-red-500 font-medium text-lg mb-2">Error:</p>
+                <ul class="text-gray-700 text-base space-y-1 list-disc pl-5">
+                    ${errorMessage.split('<br>').map(error => `<li>${error}</li>`).join('')}
+                </ul>
+            </div>`,
+            customClass: {
+                popup: 'rounded-lg',
+                title: 'text-xl font-bold text-red-600 mb-4',
+                htmlContainer: 'p-4',
+                confirmButton: 'bg-red-500 hover:bg-red-600 text-white font-medium rounded-lg px-4 py-2'
+            },
+            iconColor: '#ef4444'
         });
     }
 };
 
-// Get team name by ID
+// Utility functions
 const getTeamName = (teamId) => {
     const team = props.listTeam.find(t => t.id == teamId);
     return team ? team.workstation : 'Unknown';
 };
 
-// Handle PO input change with debounce
+// Debounced handlers
 let debounceTimer;
 const handlePoInput = () => {
     clearTimeout(debounceTimer);
     debounceTimer = setTimeout(() => {
-        fetchSpecification();
-    }, 500);
+        dataManager.fetchSpecification();
+    }, DEBOUNCE_DELAY);
 };
 
-// Handle NP input changes with debounce to prevent immediate submission
-let npDebounceTimer;
-const handleNpInput = () => {
-    clearTimeout(npDebounceTimer);
-    // Clear any existing label quantity errors when NP changes
-    labelQuantityError.value = '';
-};
-
-// Handle PO input to clear errors
 const handlePoInputChange = () => {
-    poNotFoundError.value = '';
+    errors.value.poNotFound = '';
     handlePoInput();
 };
 
-// Handle label quantity input change
 const handleLabelQuantityInput = () => {
-    // Validate on input change
     setTimeout(() => {
-        validateLabelQuantity();
-    }, 300);
+        validation.validateLabelQuantity();
+    }, VALIDATION_DELAY);
 };
 
-const printWithoutDialog = (content) => {
-    const iframe = printFrame.value;
-    const doc = iframe.contentWindow.document;
-    doc.open();
-    doc.write(`<style>
-        @media print {
-            @page {
-                margin-left: 3rem;
-                margin-right: 3rem;
-                margin-top: 0rem;
-            }
-            body { margin: 0; }
-            header, footer { display: none !important; }
-            * {
-                -webkit-print-color-adjust: exact;
-                print-color-adjust: exact;
-            }
-        }
-    </style>
-    ${content}`);
-    doc.close();
-    iframe.contentWindow.focus();
-
-    setTimeout(() => {
-        iframe.contentWindow.print();
-    }, 1000);
+let npDebounceTimer;
+const handleNpInput = () => {
+    clearTimeout(npDebounceTimer);
+    errors.value.labelQuantity = '';
 };
 </script>
 
@@ -372,7 +392,7 @@ const printWithoutDialog = (content) => {
     <LoadingOverlay :is-loading="isLoading" />
 
     <AuthenticatedLayout>
-                <div class="min-h-screen py-8 bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-800">
+        <div class="min-h-screen py-8 bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-800">
             <div class="container mx-auto px-4 max-w-4xl">
 
                 <!-- Main Form Card -->
@@ -402,7 +422,7 @@ const printWithoutDialog = (content) => {
                                     type="text"
                                     placeholder="Scan atau ketik nomor PO..."
                                     class="text-center text-lg font-mono tracking-wider pr-12"
-                                    :class="poNotFoundError ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''"
+                                    :class="errors.poNotFound ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''"
                                     autofocus
                                 />
                                 <div class="absolute right-3 top-1/2 transform -translate-y-1/2">
@@ -410,14 +430,14 @@ const printWithoutDialog = (content) => {
                                 </div>
                             </div>
                             <!-- PO Not Found Error Message -->
-                            <div v-if="poNotFoundError" class="text-red-600 dark:text-red-400 text-sm mt-2 flex items-center gap-2">
+                            <div v-if="errors.poNotFound" class="text-red-600 dark:text-red-400 text-sm mt-2 flex items-center gap-2">
                                 <AlertCircle class="h-4 w-4" />
-                                {{ poNotFoundError }}
+                                {{ errors.poNotFound }}
                             </div>
                         </div>
                     </div>
 
-                    <!-- Specification Display Section - Always Visible -->
+                    <!-- Specification Display Section -->
                     <div class="p-8 border-b border-slate-200 dark:border-slate-700"
                          :class="isDataFetched ? 'bg-gradient-to-r from-green-50 to-emerald-50 dark:from-slate-700 dark:to-slate-600' : 'bg-gradient-to-r from-slate-50 to-gray-50 dark:from-slate-800 dark:to-slate-700'">
                         <div class="flex items-center gap-4 mb-6">
@@ -439,7 +459,7 @@ const printWithoutDialog = (content) => {
                                     <div>
                                         <p class="text-sm text-slate-500 dark:text-slate-400">No OBC</p>
                                         <p class="font-semibold text-slate-900 dark:text-white">
-                                            {{ specificationData.no_obc || '---' }}
+                                            {{ isDataFetched ? (specificationData.no_obc || '---') : '---' }}
                                         </p>
                                     </div>
                                 </div>
@@ -455,7 +475,7 @@ const printWithoutDialog = (content) => {
                                     <div>
                                         <p class="text-sm text-slate-500 dark:text-slate-400">Nomor Plat</p>
                                         <p class="font-semibold text-slate-900 dark:text-white">
-                                            {{ specificationData.nomor_plat || '---' }}
+                                            {{ isDataFetched ? (specificationData.nomor_plat || '---') : '---' }}
                                         </p>
                                     </div>
                                 </div>
@@ -471,7 +491,7 @@ const printWithoutDialog = (content) => {
                                     <div>
                                         <p class="text-sm text-slate-500 dark:text-slate-400">Seri</p>
                                         <p class="font-semibold text-slate-900 dark:text-white">
-                                            {{ specificationData.seri || '---' }}
+                                            {{ isDataFetched ? (specificationData.seri || '---') : '---' }}
                                         </p>
                                     </div>
                                 </div>
@@ -498,7 +518,7 @@ const printWithoutDialog = (content) => {
 
                     <!-- Form Input Section -->
                     <div class="p-8">
-                        <form @submit.prevent="submitForm" class="space-y-6">
+                        <form @submit.prevent="formHandler.submitForm" class="space-y-6">
 
                             <!-- Team Selection -->
                             <div class="space-y-2">
@@ -552,14 +572,14 @@ const printWithoutDialog = (content) => {
                                     :disabled="!isDataFetched"
                                     placeholder="Masukkan jumlah label yang akan dicetak"
                                     class="text-center text-lg font-semibold"
-                                    :class="labelQuantityError ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''"
+                                    :class="errors.labelQuantity ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''"
                                     required
                                 />
                                 <InputError :message="form.errors.jumlah_label" />
                                 <!-- Custom error message for label quantity -->
-                                <div v-if="labelQuantityError" class="text-red-600 dark:text-red-400 text-sm mt-1 flex items-center gap-2">
+                                <div v-if="errors.labelQuantity" class="text-red-600 dark:text-red-400 text-sm mt-1 flex items-center gap-2">
                                     <AlertCircle class="h-4 w-4" />
-                                    {{ labelQuantityError }}
+                                    {{ errors.labelQuantity }}
                                 </div>
                             </div>
 
@@ -612,7 +632,7 @@ const printWithoutDialog = (content) => {
                                     type="submit"
                                     variant="primary"
                                     size="lg"
-                                    :disabled="!isDataFetched || isLoading || !!labelQuantityError || !form.np1"
+                                    :disabled="!isDataFetched || isLoading || !!errors.labelQuantity || !form.np1"
                                     :loading="isLoading"
                                     :icon="Printer"
                                     class="flex-1"
@@ -625,7 +645,7 @@ const printWithoutDialog = (content) => {
                                     variant="outline-secondary"
                                     size="lg"
                                     :icon="RotateCcw"
-                                    @click="clearForm"
+                                    @click="dataManager.clearForm"
                                     class="flex-1"
                                 >
                                     Clear Form
