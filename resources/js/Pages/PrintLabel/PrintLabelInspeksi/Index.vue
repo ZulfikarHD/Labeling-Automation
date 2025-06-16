@@ -6,8 +6,10 @@ import TextInput from "@/Components/TextInput.vue";
 import InputLabel from "@/Components/InputLabel.vue";
 import Select from "@/Components/Select.vue";
 import Button from "@/Components/Button.vue";
+import InputError from "@/Components/InputError.vue";
 import { router } from '@inertiajs/vue3';
 import LoadingOverlay from "@/Components/LoadingOverlay.vue";
+import { batchSingleLabel } from "@/Components/PrintPages/index";
 import {
     Scan,
     FileText,
@@ -26,6 +28,10 @@ const props = defineProps({
     listTeam: {
         type: Array,
         default: () => []
+    },
+    currentTeam: {
+        type: Number,
+        default: 0
     }
 });
 
@@ -35,6 +41,12 @@ const swal = inject('$swal');
 // Reactive state
 const isLoading = ref(false);
 const isDataFetched = ref(false);
+const timeoutDuration = ref(1000);
+const printFrame = ref(null);
+const obc_color = ref('#1d4ed8');
+const remainingLabels = ref(0);
+const labelQuantityError = ref('');
+const poNotFoundError = ref('');
 const specificationData = ref({
     no_obc: '',
     nomor_plat: '',
@@ -44,7 +56,7 @@ const specificationData = ref({
 // Form state
 const form = useForm({
     no_po: '',
-    team: '',
+    team: props.currentTeam,
     jumlah_label: 0,
     np1: '',
     np2: ''
@@ -52,45 +64,43 @@ const form = useForm({
 
 // Fetch specification data when PO is scanned/entered
 const fetchSpecification = async () => {
-    // if (!form.no_po || form.no_po.length < 3) {
-    //     resetSpecification();
-    //     return;
-    // }
+    if (!form.no_po || form.no_po.length < 3) {
+        resetSpecification();
+        return;
+    }
 
-    // const response = await axios.get(`/api/print-label/inspeksi/${form.no_po}`);
-    // console.log(form.no_po);
-    // router.get(`/api/print-label/inspeksi/${form.no_po}`);
     isLoading.value = true;
+    poNotFoundError.value = ''; // Clear previous error
+
     try {
-        // Simulate API call - replace with actual endpoint
+        // Fetch specification data
         const response = await axios.get(`/api/print-label/inspeksi/${form.no_po}`);
-        console.log(response);
         specificationData.value = {
-            no_obc: response.data.no_obc || 'OBC-' + Math.random().toString(36).substr(2, 6).toUpperCase(),
-            nomor_plat: response.data.nomor_plat || 'B-' + Math.floor(Math.random() * 9999) + '-ABC',
-            seri: response.data.seri || 'SER' + Math.floor(Math.random() * 999)
+            no_obc: response.data.no_obc,
+            nomor_plat: response.data.nomor_plat,
+            seri: response.data.seri
         };
 
-        isDataFetched.value = true;
+        // Fetch remaining label count
+        const remainingLabelResponse = await axios.get(`/api/print-label/inspeksi/count-remaining-label/${form.no_po}`);
+        remainingLabels.value = remainingLabelResponse.data;
+        form.jumlah_label = remainingLabelResponse.data;
 
-        swal.fire({
-            icon: 'success',
-            title: 'Data Berhasil Dimuat',
-            text: 'Spesifikasi produk telah ditemukan',
-            timer: 2000,
-            showConfirmButton: false
-        });
+        // Set OBC color based on seri
+        const seri = response.data.seri;
+        obc_color.value = seri == 3 ? "#b91c1c" : "#1d4ed8";
+
+        // Clear any previous errors
+        labelQuantityError.value = '';
+
+        isDataFetched.value = true;
 
     } catch (error) {
         console.error('Error fetching specification:', error);
         resetSpecification();
 
-        swal.fire({
-            icon: 'error',
-            title: 'Data Tidak Ditemukan',
-            text: 'Nomor PO tidak valid atau tidak ditemukan dalam database',
-            confirmButtonText: 'OK'
-        });
+        // Show error message below PO input instead of SweetAlert
+        poNotFoundError.value = 'Nomor Po Tidak Ditemukan Harap Hubungi admin untuk memperbaharui data order';
     } finally {
         isLoading.value = false;
     }
@@ -99,11 +109,31 @@ const fetchSpecification = async () => {
 // Reset specification data
 const resetSpecification = () => {
     isDataFetched.value = false;
+    remainingLabels.value = 0;
+    labelQuantityError.value = '';
+    poNotFoundError.value = '';
     specificationData.value = {
         no_obc: '',
         nomor_plat: '',
         seri: ''
     };
+};
+
+// Validate label quantity
+const validateLabelQuantity = () => {
+    labelQuantityError.value = '';
+
+    if (!form.jumlah_label || form.jumlah_label <= 0) {
+        labelQuantityError.value = 'Jumlah label harus lebih dari 0';
+        return false;
+    }
+
+    if (form.jumlah_label > remainingLabels.value) {
+        labelQuantityError.value = `Jumlah label tidak boleh melebihi sisa label yang tersedia (${remainingLabels.value})`;
+        return false;
+    }
+
+    return true;
 };
 
 // Handle form submission
@@ -118,13 +148,18 @@ const submitForm = async () => {
         return;
     }
 
-    if (!form.team || !form.jumlah_label || form.jumlah_label <= 0) {
+    if (!form.team || !form.np1) {
         swal.fire({
             icon: 'warning',
             title: 'Form Belum Lengkap',
-            text: 'Silakan lengkapi semua field yang diperlukan',
+            text: 'Silakan lengkapi Team dan NP 1 yang diperlukan',
             confirmButtonText: 'OK'
         });
+        return;
+    }
+
+    // Validate label quantity
+    if (!validateLabelQuantity()) {
         return;
     }
 
@@ -133,12 +168,27 @@ const submitForm = async () => {
             icon: 'question',
             title: 'Konfirmasi Cetak Label',
             html: `
-                <div class="text-left space-y-2">
-                    <p><strong>No PO:</strong> ${form.no_po}</p>
-                    <p><strong>Team:</strong> ${getTeamName(form.team)}</p>
-                    <p><strong>Jumlah Label:</strong> ${form.jumlah_label}</p>
-                    <p><strong>NP1:</strong> ${form.np1 || '-'}</p>
-                    <p><strong>NP2:</strong> ${form.np2 || '-'}</p>
+                <div class="text-left space-y-3">
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm font-medium text-slate-600 dark:text-slate-400">No PO:</span>
+                        <span class="text-sm font-bold text-slate-900 dark:text-slate-100">${form.no_po}</span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm font-medium text-slate-600 dark:text-slate-400">Team:</span>
+                        <span class="text-sm font-bold text-slate-900 dark:text-slate-100">${getTeamName(form.team)}</span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm font-medium text-slate-600 dark:text-slate-400">Jumlah Label:</span>
+                        <span class="text-sm font-bold text-blue-600 dark:text-blue-400">${form.jumlah_label}</span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm font-medium text-slate-600 dark:text-slate-400">NP1:</span>
+                        <span class="text-sm font-bold text-slate-900 dark:text-slate-100 font-mono">${form.np1 || '-'}</span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm font-medium text-slate-600 dark:text-slate-400">NP2:</span>
+                        <span class="text-sm font-bold text-slate-900 dark:text-slate-100 font-mono">${form.np2 || '-'}</span>
+                    </div>
                 </div>
             `,
             showCancelButton: true,
@@ -150,18 +200,76 @@ const submitForm = async () => {
         if (result.isConfirmed) {
             isLoading.value = true;
 
-            // Simulate API call for printing
-            await new Promise(resolve => setTimeout(resolve, 2000));
+            // Submit form data to API
+            await axios.post('/api/print-label/inspeksi/store', form).then(response => {
+                    let printLabel = batchSingleLabel(
+                        specificationData.value.no_obc,
+                        undefined,
+                        obc_color.value,
+                        undefined,
+                        form.np1,
+                        form.np2,
+                        form.jumlah_label,
+                        500
+                    );
+                    printWithoutDialog(printLabel);
 
-            swal.fire({
-                icon: 'success',
-                title: 'Label Berhasil Dicetak',
-                text: `${form.jumlah_label} label telah berhasil dicetak`,
-                confirmButtonText: 'OK'
-            });
+                    if(form.jumlah_label > 10 ) {
+                        timeoutDuration.value = Math.round(1000 * (form.jumlah_label / 5));
+                    }
 
-            // Reset form after successful print
-            clearForm();
+                    setTimeout(() => {
+                        swal.fire({
+                            icon: 'success',
+                            title: 'Berhasil',
+                            text: 'Label Berhasil Dibuat',
+                            customClass: {
+                                popup: 'rounded-lg',
+                                title: 'text-xl font-bold text-green-600 mb-4',
+                                htmlContainer: 'text-base text-gray-600',
+                                confirmButton: 'bg-green-500 hover:bg-green-600 text-white font-medium rounded-lg px-4 py-2'
+                            },
+                            iconColor: '#22c55e'
+                        }).then(() => {
+                            // Reset form after user acknowledges success
+                            clearForm();
+                        });
+
+                        isLoading.value = false;
+                    }, timeoutDuration.value);
+                })
+                .catch(error => {
+                    let errorMessage = 'Terjadi kesalahan';
+
+                    if (error.response) {
+                        if (error.response.status === 422) {
+                            const errors = error.response.data.errors;
+                            errorMessage = Object.values(errors).flat().join('<br>');
+                        } else {
+                            errorMessage = error.response.data.message || 'Terjadi kesalahan pada server';
+                        }
+                    }
+
+                    swal.fire({
+                        icon: 'error',
+                        title: 'Gagal',
+                        html: `<div class="text-left">
+                            <p class="text-red-500 font-medium text-lg mb-2">Error:</p>
+                            <ul class="text-gray-700 text-base space-y-1 list-disc pl-5">
+                                ${errorMessage.split('<br>').map(error => `<li>${error}</li>`).join('')}
+                            </ul>
+                        </div>`,
+                        customClass: {
+                            popup: 'rounded-lg',
+                            title: 'text-xl font-bold text-red-600 mb-4',
+                            htmlContainer: 'p-4',
+                            confirmButton: 'bg-red-500 hover:bg-red-600 text-white font-medium rounded-lg px-4 py-2'
+                        },
+                        iconColor: '#ef4444'
+                    });
+
+                    isLoading.value = false;
+                });
         }
     } catch (error) {
         console.error('Error printing labels:', error);
@@ -181,13 +289,16 @@ const clearForm = () => {
     form.reset();
     resetSpecification();
 
-    swal.fire({
-        icon: 'info',
-        title: 'Form Telah Direset',
-        text: 'Semua data telah dihapus',
-        timer: 1500,
-        showConfirmButton: false
-    });
+    // Simple toast notification for manual clear
+    if (!isLoading.value) {
+        swal.fire({
+            icon: 'info',
+            title: 'Form Telah Direset',
+            text: 'Semua data telah dihapus',
+            timer: 1500,
+            showConfirmButton: false
+        });
+    }
 };
 
 // Get team name by ID
@@ -203,6 +314,56 @@ const handlePoInput = () => {
     debounceTimer = setTimeout(() => {
         fetchSpecification();
     }, 500);
+};
+
+// Handle NP input changes with debounce to prevent immediate submission
+let npDebounceTimer;
+const handleNpInput = () => {
+    clearTimeout(npDebounceTimer);
+    // Clear any existing label quantity errors when NP changes
+    labelQuantityError.value = '';
+};
+
+// Handle PO input to clear errors
+const handlePoInputChange = () => {
+    poNotFoundError.value = '';
+    handlePoInput();
+};
+
+// Handle label quantity input change
+const handleLabelQuantityInput = () => {
+    // Validate on input change
+    setTimeout(() => {
+        validateLabelQuantity();
+    }, 300);
+};
+
+const printWithoutDialog = (content) => {
+    const iframe = printFrame.value;
+    const doc = iframe.contentWindow.document;
+    doc.open();
+    doc.write(`<style>
+        @media print {
+            @page {
+                margin-left: 3rem;
+                margin-right: 3rem;
+                margin-top: 0rem;
+            }
+            body { margin: 0; }
+            header, footer { display: none !important; }
+            * {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+        }
+    </style>
+    ${content}`);
+    doc.close();
+    iframe.contentWindow.focus();
+
+    setTimeout(() => {
+        iframe.contentWindow.print();
+    }, 1000);
 };
 </script>
 
@@ -237,20 +398,26 @@ const handlePoInput = () => {
                                 <TextInput
                                     id="no_po"
                                     v-model="form.no_po"
-                                    @input="handlePoInput"
+                                    @input="handlePoInputChange"
                                     type="text"
                                     placeholder="Scan atau ketik nomor PO..."
                                     class="text-center text-lg font-mono tracking-wider pr-12"
+                                    :class="poNotFoundError ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''"
                                     autofocus
                                 />
                                 <div class="absolute right-3 top-1/2 transform -translate-y-1/2">
                                     <Scan class="h-5 w-5 text-slate-400" />
                                 </div>
                             </div>
+                            <!-- PO Not Found Error Message -->
+                            <div v-if="poNotFoundError" class="text-red-600 dark:text-red-400 text-sm mt-2 flex items-center gap-2">
+                                <AlertCircle class="h-4 w-4" />
+                                {{ poNotFoundError }}
+                            </div>
                         </div>
                     </div>
 
-                                        <!-- Specification Display Section - Always Visible -->
+                    <!-- Specification Display Section - Always Visible -->
                     <div class="p-8 border-b border-slate-200 dark:border-slate-700"
                          :class="isDataFetched ? 'bg-gradient-to-r from-green-50 to-emerald-50 dark:from-slate-700 dark:to-slate-600' : 'bg-gradient-to-r from-slate-50 to-gray-50 dark:from-slate-800 dark:to-slate-700'">
                         <div class="flex items-center gap-4 mb-6">
@@ -261,7 +428,7 @@ const handlePoInput = () => {
                             </h2>
                         </div>
 
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                             <!-- No OBC Badge -->
                             <div class="bg-white dark:bg-slate-800 rounded-xl p-4 shadow-sm border border-slate-200 dark:border-slate-600"
                                  :class="!isDataFetched ? 'opacity-50' : ''">
@@ -309,6 +476,23 @@ const handlePoInput = () => {
                                     </div>
                                 </div>
                             </div>
+
+                            <!-- Remaining Labels Badge -->
+                            <div class="bg-white dark:bg-slate-800 rounded-xl p-4 shadow-sm border border-slate-200 dark:border-slate-600"
+                                 :class="!isDataFetched ? 'opacity-50' : ''">
+                                <div class="flex items-center gap-3">
+                                    <div class="bg-green-100 dark:bg-green-900/30 p-2 rounded-lg">
+                                        <Printer class="h-5 w-5 text-green-600 dark:text-green-400" />
+                                    </div>
+                                    <div>
+                                        <p class="text-sm text-slate-500 dark:text-slate-400">Sisa Label</p>
+                                        <p class="font-semibold text-slate-900 dark:text-white"
+                                           :class="remainingLabels === 0 ? 'text-red-600 dark:text-red-400' : 'text-green-600 dark:text-green-400'">
+                                            {{ isDataFetched ? remainingLabels : '---' }}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -347,22 +531,36 @@ const handlePoInput = () => {
 
                             <!-- Label Quantity -->
                             <div class="space-y-2">
-                                <InputLabel
-                                    for="jumlah_label"
-                                    value="Jumlah Label"
-                                    required
-                                    class="text-slate-700 dark:text-slate-300"
-                                />
+                                <div class="flex items-center justify-between">
+                                    <InputLabel
+                                        for="jumlah_label"
+                                        value="Jumlah Label"
+                                        required
+                                        class="text-slate-700 dark:text-slate-300"
+                                    />
+                                    <span v-if="isDataFetched" class="text-sm text-slate-500 dark:text-slate-400">
+                                        Sisa: {{ remainingLabels }}
+                                    </span>
+                                </div>
                                 <TextInput
                                     id="jumlah_label"
                                     v-model="form.jumlah_label"
+                                    @input="handleLabelQuantityInput"
                                     type="number"
-                                    min="0"
+                                    min="1"
+                                    :max="remainingLabels"
                                     :disabled="!isDataFetched"
                                     placeholder="Masukkan jumlah label yang akan dicetak"
                                     class="text-center text-lg font-semibold"
+                                    :class="labelQuantityError ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''"
                                     required
                                 />
+                                <InputError :message="form.errors.jumlah_label" />
+                                <!-- Custom error message for label quantity -->
+                                <div v-if="labelQuantityError" class="text-red-600 dark:text-red-400 text-sm mt-1 flex items-center gap-2">
+                                    <AlertCircle class="h-4 w-4" />
+                                    {{ labelQuantityError }}
+                                </div>
                             </div>
 
                             <!-- NP Input Fields -->
@@ -371,14 +569,18 @@ const handlePoInput = () => {
                                     <InputLabel
                                         for="np1"
                                         value="NP 1"
+                                        required
                                         class="text-slate-700 dark:text-slate-300"
                                     />
                                     <TextInput
                                         id="np1"
                                         v-model="form.np1"
+                                        @input="handleNpInput"
+                                        @keydown.enter.prevent
                                         type="text"
                                         maxlength="4"
                                         :disabled="!isDataFetched"
+                                        required
                                         placeholder="Max 4 karakter"
                                         class="text-center font-mono tracking-wider"
                                     />
@@ -393,6 +595,8 @@ const handlePoInput = () => {
                                     <TextInput
                                         id="np2"
                                         v-model="form.np2"
+                                        @input="handleNpInput"
+                                        @keydown.enter.prevent
                                         type="text"
                                         maxlength="4"
                                         :disabled="!isDataFetched"
@@ -408,7 +612,7 @@ const handlePoInput = () => {
                                     type="submit"
                                     variant="primary"
                                     size="lg"
-                                    :disabled="!isDataFetched || isLoading"
+                                    :disabled="!isDataFetched || isLoading || !!labelQuantityError || !form.np1"
                                     :loading="isLoading"
                                     :icon="Printer"
                                     class="flex-1"
@@ -445,4 +649,5 @@ const handlePoInput = () => {
             </div>
         </div>
     </AuthenticatedLayout>
+    <iframe ref="printFrame" class="hidden"></iframe>
 </template>
