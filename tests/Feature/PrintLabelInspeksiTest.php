@@ -265,7 +265,7 @@ class PrintLabelInspeksiTest extends TestCase
     /**
      * Test penanganan PO baru tanpa production order yang sudah ada
      */
-    public function test_handles_new_po_without_existing_production_order(): void
+    public function test_auto_creates_production_order_for_new_po(): void
     {
         $this->createTestSpecification();
 
@@ -277,10 +277,45 @@ class PrintLabelInspeksiTest extends TestCase
             'np2' => null
         ];
 
-
         $response = $this->actingAs($this->user)
             ->postJson('/api/print-label/inspeksi/store', $requestData);
 
+        $response->assertStatus(200)
+            ->assertJson([
+                'success' => true,
+                'message' => 'Label berhasil diproses'
+            ]);
+
+        // Verifikasi production order dibuat otomatis
+        $this->assertDatabaseHas('generated_products', [
+            'no_po' => $this->testPo,
+            'no_obc' => 'TST010110',
+            'type' => 'PCHT'
+        ]);
+
+        // Verifikasi labels dibuat dan diproses
+        $this->assertDatabaseHas('generated_labels', [
+            'no_po_generated_products' => $this->testPo,
+            'np_users' => 'I444'
+        ]);
+    }
+
+    /**
+     * Test error ketika PO tidak memiliki spesifikasi
+     */
+    public function test_fails_when_po_has_no_specification(): void
+    {
+        // Tidak membuat specification untuk PO ini
+        $requestData = [
+            'no_po' => $this->testPo,
+            'team' => $this->testWorkstation->id,
+            'jumlah_label' => 2,
+            'np1' => 'I444',
+            'np2' => null
+        ];
+
+        $response = $this->actingAs($this->user)
+            ->postJson('/api/print-label/inspeksi/store', $requestData);
 
         $response->assertStatus(500)
             ->assertJson([

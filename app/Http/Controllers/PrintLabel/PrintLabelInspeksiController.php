@@ -116,11 +116,39 @@ class PrintLabelInspeksiController extends Controller
         $existingLabelsCount = GeneratedLabels::where('no_po_generated_products', $validatedData['no_po'])->count();
 
         if ($existingLabelsCount === 0) {
-            // Only log PO creation - this is important business logic
+            // Get specification data to create production order
+            $specification = Specification::where('no_po', $validatedData['no_po'])->first();
+
+            if (!$specification) {
+                throw new \Exception('Spesifikasi untuk nomor PO tidak ditemukan');
+            }
+
+                        // Calculate rim data from specification (using 500 sheets per rim for inspection)
+            $totalRims = max(floor($specification->rencet / 500), 1);
+
+            // Transform data for ProductionOrderService
+            $productionOrderData = [
+                'po' => $validatedData['no_po'],
+                'obc' => $specification->no_obc,
+                'jml_lembar' => $specification->rencet,
+                'start_rim' => 1,
+                'end_rim' => $totalRims,
+                'team' => $validatedData['team'],
+            ];
+
+            // Transform data for PrintLabelService
+            $printLabelData = [
+                'po' => $validatedData['no_po'],
+                'jml_lembar' => $specification->rencet,
+                'team' => $validatedData['team'],
+                'start_rim' => 1,
+                'end_rim' => $totalRims,
+            ];
+
             Log::info('Creating new PO for inspection', ['no_po' => $validatedData['no_po']]);
 
-            $this->productionOrderService->registerProductionOrder($validatedData);
-            $this->printLabelService->populateLabelForRegisteredPo($validatedData);
+            $this->productionOrderService->registerProductionOrder($productionOrderData);
+            $this->printLabelService->populateLabelForRegisteredPo($printLabelData);
         }
     }
 
