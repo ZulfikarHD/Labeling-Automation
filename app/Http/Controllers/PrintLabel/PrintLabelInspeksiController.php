@@ -47,9 +47,23 @@ class PrintLabelInspeksiController extends Controller
 
     public function getRemainingLabelCount(int $no_po)
     {
-        return GeneratedLabels::where('no_po_generated_products', $no_po)
+        $isPoRegistered = GeneratedProducts::where('no_po', $no_po)->first();
+
+        $countLabel = GeneratedLabels::where('no_po_generated_products', $no_po)
                              ->whereNull('np_users')
                              ->count();
+
+        if ($isPoRegistered) {
+            return $countLabel;
+        } else {
+            $specification = Specification::where('no_po', $no_po)->first();
+
+            if (!$specification) {
+                return 0;
+            }
+
+            return max(floor($specification->rencet / 500), 0);
+        }
     }
 
     public function store(Request $request)
@@ -67,11 +81,11 @@ class PrintLabelInspeksiController extends Controller
 
             DB::commit();
 
-            Log::info('Label processing completed successfully', [
+            // Only log completion with essential data
+            Log::info('Label inspection completed', [
                 'no_po' => $validatedData['no_po'],
-                'processed_labels' => $result['processed_labels'],
-                'failed_labels' => $result['failed_labels'],
-                'remaining_labels' => $result['remaining_labels']
+                'processed' => $result['processed_labels'],
+                'remaining' => $result['remaining_labels']
             ]);
 
             return $this->successResponse($result);
@@ -102,12 +116,39 @@ class PrintLabelInspeksiController extends Controller
         $existingLabelsCount = GeneratedLabels::where('no_po_generated_products', $validatedData['no_po'])->count();
 
         if ($existingLabelsCount === 0) {
-            Log::info('Creating new PO and labels', ['no_po' => $validatedData['no_po']]);
+            // Get specification data to create production order
+            $specification = Specification::where('no_po', $validatedData['no_po'])->first();
 
-            $this->productionOrderService->registerProductionOrder($validatedData);
-            $this->printLabelService->populateLabelForRegisteredPo($validatedData);
+            if (!$specification) {
+                throw new \Exception('Spesifikasi untuk nomor PO tidak ditemukan');
+            }
 
-            Log::info('Successfully created PO and labels', ['no_po' => $validatedData['no_po']]);
+                        // Calculate rim data from specification (using 500 sheets per rim for inspection)
+            $totalRims = max(floor($specification->rencet / 500), 1);
+
+            // Transform data for ProductionOrderService
+            $productionOrderData = [
+                'po' => $validatedData['no_po'],
+                'obc' => $specification->no_obc,
+                'jml_lembar' => $specification->rencet,
+                'start_rim' => 1,
+                'end_rim' => $totalRims,
+                'team' => $validatedData['team'],
+            ];
+
+            // Transform data for PrintLabelService
+            $printLabelData = [
+                'po' => $validatedData['no_po'],
+                'jml_lembar' => $specification->rencet,
+                'team' => $validatedData['team'],
+                'start_rim' => 1,
+                'end_rim' => $totalRims,
+            ];
+
+            Log::info('Creating new PO for inspection', ['no_po' => $validatedData['no_po']]);
+
+            $this->productionOrderService->registerProductionOrder($productionOrderData);
+            $this->printLabelService->populateLabelForRegisteredPo($printLabelData);
         }
     }
 
@@ -116,21 +157,14 @@ class PrintLabelInspeksiController extends Controller
         $processedLabels = 0;
         $failedLabels = 0;
 
-        Log::info('Starting label processing', [
-            'no_po' => $validatedData['no_po'],
-            'requested_labels' => $validatedData['jumlah_label'],
-            'inspector_1' => $validatedData['np1'],
-            'inspector_2' => $validatedData['np2']
-        ]);
-
         for ($i = 0; $i < $validatedData['jumlah_label']; $i++) {
             $label = $this->getNextAvailableLabel($validatedData['no_po']);
 
             if (!$label) {
-                Log::warning('No available label found for processing', [
-                    'no_po' => $validatedData['no_po'],
-                    'iteration' => $i + 1
-                ]);
+                // Only log this if we couldn't process any labels - indicates a real issue
+                if ($processedLabels === 0) {
+                    Log::warning('No available labels found', ['no_po' => $validatedData['no_po']]);
+                }
                 break;
             }
 
@@ -154,7 +188,7 @@ class PrintLabelInspeksiController extends Controller
     {
         return GeneratedLabels::where('no_po_generated_products', $no_po)
                              ->whereNull('np_users')
-                             ->orderBy('no_rim', 'asc')
+                             ->orderBy('no_rim', 'desc')
                              ->first();
     }
 
@@ -169,17 +203,13 @@ class PrintLabelInspeksiController extends Controller
                 'finish' => now(),
             ]);
 
-            Log::debug('Label processed successfully', [
-                'label_id' => $label->id,
-                'no_rim' => $label->no_rim,
-                'potongan' => $label->potongan
-            ]);
-
             return true;
 
         } catch (\Exception $e) {
-            Log::error('Failed to process individual label', [
+            // Only log errors - successful updates don't need logging
+            Log::error('Failed to update label', [
                 'label_id' => $label->id,
+                'no_po' => $validatedData['no_po'] ?? 'unknown',
                 'error' => $e->getMessage()
             ]);
 
@@ -212,11 +242,7 @@ class PrintLabelInspeksiController extends Controller
 
     private function validationErrorResponse(\Illuminate\Validation\ValidationException $e, Request $request): \Illuminate\Http\JsonResponse
     {
-        Log::warning('Validation failed', [
-            'errors' => $e->errors(),
-            'request_data' => $request->all()
-        ]);
-
+        // Remove detailed logging for validation errors - they're expected user errors
         return response()->json([
             'success' => false,
             'message' => 'Data yang dikirim tidak valid',
@@ -226,11 +252,11 @@ class PrintLabelInspeksiController extends Controller
 
     private function systemErrorResponse(\Exception $e, Request $request): \Illuminate\Http\JsonResponse
     {
-        Log::error('Critical error in label processing', [
+        // Keep detailed logging only for system errors - these are unexpected
+        Log::error('System error in label inspection', [
             'no_po' => $request->no_po ?? 'unknown',
             'error' => $e->getMessage(),
-            'trace' => $e->getTraceAsString(),
-            'request_data' => $request->all()
+            'trace' => $e->getTraceAsString()
         ]);
 
         return response()->json([
