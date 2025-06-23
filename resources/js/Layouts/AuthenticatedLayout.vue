@@ -63,22 +63,22 @@ const userInitials = computed(() => {
 <template>
     <AppTheme v-slot="{ isDark, toggleDarkMode }">
         <div
-            class="flex flex-col min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-800 transition-colors duration-300"
+            class="flex flex-col min-h-screen bg-gradient-to-br transition-colors duration-300 from-slate-50 via-blue-50/30 to-indigo-50/50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-800"
         >
             <!-- Enhanced Navigation Bar -->
             <nav
                 class="sticky top-0 z-[100] w-full border-b border-slate-200/60 dark:border-slate-700/60 bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl shadow-sm"
             >
-                <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                    <div class="flex h-16 items-center justify-between">
+                <div class="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
+                    <div class="flex justify-between items-center h-16">
                         <!-- Logo Section -->
                         <div class="flex items-center space-x-4">
                             <div
-                                class="flex-shrink-0 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 p-2 shadow-lg"
+                                class="flex-shrink-0 p-2 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl shadow-lg"
                             >
                                 <img
                                     src="/labeling/img/peruri.png"
-                                    class="h-8 w-8 object-contain brightness-0 invert"
+                                    class="object-contain w-8 h-8 brightness-0 invert"
                                     alt="Logo Peruri"
                                 />
                             </div>
@@ -97,7 +97,7 @@ const userInitials = computed(() => {
                             <!-- Dark Mode Toggle -->
                             <button
                                 @click="toggleDarkMode"
-                                class="rounded-full p-2 text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100 transition-all duration-200"
+                                class="p-2 rounded-full transition-all duration-200 text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100"
                                 :aria-label="
                                     isDark
                                         ? 'Switch to light mode'
@@ -106,16 +106,16 @@ const userInitials = computed(() => {
                             >
                                 <Moon
                                     v-if="isDark"
-                                    class="h-5 w-5 text-amber-400"
+                                    class="w-5 h-5 text-amber-400"
                                 />
-                                <Sun v-else class="h-5 w-5" />
+                                <Sun v-else class="w-5 h-5" />
                             </button>
 
                             <!-- User Profile Dropdown -->
-                            <div class="relative hidden md:block">
+                            <div class="hidden relative md:block">
                                 <button
                                     @click="toggleOptions"
-                                    class="flex items-center space-x-3 rounded-full bg-slate-100 dark:bg-slate-800 p-1 pr-3 text-sm hover:bg-slate-200 dark:hover:bg-slate-700 transition-all duration-200"
+                                    class="flex items-center p-1 pr-3 space-x-3 text-sm rounded-full transition-all duration-200 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700"
                                     :class="
                                         isOptionsOpen
                                             ? 'ring-2 ring-blue-500 ring-offset-2 dark:ring-offset-slate-900'
@@ -123,16 +123,16 @@ const userInitials = computed(() => {
                                     "
                                 >
                                     <div
-                                        class="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 text-xs font-semibold text-white shadow-md"
+                                        class="flex justify-center items-center w-8 h-8 text-xs font-semibold text-white bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full shadow-md"
                                     >
                                         {{ userInitials }}
                                     </div>
                                     <span
-                                        class="hidden sm:block font-medium text-slate-700 dark:text-slate-200"
+                                        class="hidden font-medium sm:block text-slate-700 dark:text-slate-200"
                                     >
                                         {{ userName }}
                                     </span>
-                                    <Settings class="h-4 w-4 text-slate-500" />
+                                    <Settings class="w-4 h-4 text-slate-500" />
                                 </button>
 
                                 <!-- Enhanced Dropdown Menu -->
@@ -143,7 +143,7 @@ const userInitials = computed(() => {
                                     <div class="p-4 border-b border-slate-200 dark:border-slate-700">
                                         <div class="flex items-center space-x-3">
                                             <div
-                                                class="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 text-sm font-semibold text-white"
+                                                class="flex justify-center items-center w-10 h-10 text-sm font-semibold text-white bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full"
                                             >
                                                 {{ userInitials }}
                                             </div>
@@ -169,17 +169,17 @@ const userInitials = computed(() => {
                                     <div class="py-2">
                                         <NavLink
                                             :href="route('changePassword.index')"
-                                            class="flex items-center space-x-3 px-4 py-3 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors duration-200"
+                                            class="flex items-center px-4 py-3 space-x-3 text-sm transition-colors duration-200 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700/50"
                                         >
-                                            <KeyRound class="h-4 w-4" />
+                                            <KeyRound class="w-4 h-4" />
                                             <span>Ganti Password</span>
                                         </NavLink>
 
                                         <button
                                             @click="logout"
-                                            class="flex w-full items-center space-x-3 px-4 py-3 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors duration-200"
+                                            class="flex items-center px-4 py-3 space-x-3 w-full text-sm text-red-600 transition-colors duration-200 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20"
                                         >
-                                            <LogOut class="h-4 w-4" />
+                                            <LogOut class="w-4 h-4" />
                                             <span>Logout</span>
                                         </button>
                                     </div>
@@ -189,14 +189,14 @@ const userInitials = computed(() => {
                             <!-- Mobile Menu Button -->
                             <button
                                 @click="toggleMobileMenu"
-                                class="rounded-md p-2 text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100 lg:hidden transition-all duration-200"
+                                class="p-2 rounded-md transition-all duration-200 text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100 lg:hidden"
                                 aria-label="Toggle mobile menu"
                             >
                                 <Menu
                                     v-if="!isMobileMenuOpen"
-                                    class="h-6 w-6"
+                                    class="w-6 h-6"
                                 />
-                                <X v-else class="h-6 w-6" />
+                                <X v-else class="w-6 h-6" />
                             </button>
                         </div>
                     </div>
@@ -210,16 +210,16 @@ const userInitials = computed(() => {
                 @click="closeMobileMenu"
             >
                 <div
-                    class="fixed inset-y-0 right-0 w-full max-w-sm bg-white dark:bg-slate-900 shadow-xl border-l border-slate-200 dark:border-slate-700"
+                    class="fixed inset-y-0 right-0 w-full max-w-sm bg-white border-l shadow-xl dark:bg-slate-900 border-slate-200 dark:border-slate-700"
                     @click.stop
                 >
                     <!-- Mobile Menu Header -->
                     <div
-                        class="flex items-center justify-between border-b border-slate-200 dark:border-slate-700 p-4"
+                        class="flex justify-between items-center p-4 border-b border-slate-200 dark:border-slate-700"
                     >
                         <div class="flex items-center space-x-3">
                             <div
-                                class="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 text-sm font-semibold text-white"
+                                class="flex justify-center items-center w-10 h-10 text-sm font-semibold text-white bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full"
                             >
                                 {{ userInitials }}
                             </div>
@@ -240,19 +240,19 @@ const userInitials = computed(() => {
                         </div>
                         <button
                             @click="closeMobileMenu"
-                            class="rounded-md p-2 text-slate-400 hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-slate-800 dark:hover:text-slate-300"
+                            class="p-2 rounded-md text-slate-400 hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-slate-800 dark:hover:text-slate-300"
                         >
-                            <X class="h-5 w-5" />
+                            <X class="w-5 h-5" />
                         </button>
                     </div>
 
                     <!-- Mobile Navigation Content -->
-                    <div class="flex-1 overflow-y-auto p-4">
+                    <div class="overflow-y-auto flex-1 p-4">
                         <div class="space-y-6">
                             <!-- Navigation Links -->
                             <div>
                                 <h3
-                                    class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-3"
+                                    class="mb-3 text-xs font-semibold tracking-wider uppercase text-slate-500 dark:text-slate-400"
                                 >
                                     Navigation
                                 </h3>
@@ -260,26 +260,26 @@ const userInitials = computed(() => {
                             </div>
 
                             <!-- Account Options -->
-                            <div class="border-t border-slate-200 dark:border-slate-700 pt-6">
+                            <div class="pt-6 border-t border-slate-200 dark:border-slate-700">
                                 <h3
-                                    class="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-3"
+                                    class="mb-3 text-xs font-semibold tracking-wider uppercase text-slate-500 dark:text-slate-400"
                                 >
                                     Account
                                 </h3>
                                 <div class="space-y-1">
                                     <NavLink
                                         :href="route('changePassword.index')"
-                                        class="flex items-center space-x-3 rounded-lg px-3 py-2 text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors duration-200"
+                                        class="flex items-center px-3 py-2 space-x-3 text-sm rounded-lg transition-colors duration-200 text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800"
                                     >
-                                        <KeyRound class="h-4 w-4" />
+                                        <KeyRound class="w-4 h-4" />
                                         <span>Ganti Password</span>
                                     </NavLink>
 
                                     <button
                                         @click="logout"
-                                        class="flex w-full items-center space-x-3 rounded-lg px-3 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors duration-200"
+                                        class="flex items-center px-3 py-2 space-x-3 w-full text-sm text-red-600 rounded-lg transition-colors duration-200 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20"
                                     >
-                                        <LogOut class="h-4 w-4" />
+                                        <LogOut class="w-4 h-4" />
                                         <span>Logout</span>
                                     </button>
                                 </div>
@@ -291,17 +291,17 @@ const userInitials = computed(() => {
 
             <!-- Enhanced Main Content -->
             <main class="flex-1">
-                <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+                <div class="px-4 py-6 mx-auto sm:px-6 lg:px-8">
                     <slot />
                 </div>
             </main>
 
             <!-- Footer -->
             <footer
-                class="border-t border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm w-screen"
+                class="w-screen border-t backdrop-blur-sm border-slate-200 dark:border-slate-700 bg-white/50 dark:bg-slate-900/50"
             >
                 <div
-                    class="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8 text-center"
+                    class="px-4 py-4 mx-auto max-w-7xl text-center sm:px-6 lg:px-8"
                 >
                     <p
                         class="text-sm text-slate-500 dark:text-slate-400"

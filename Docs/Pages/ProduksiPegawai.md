@@ -2,34 +2,41 @@
 
 ## Overview
 
-**Halaman monitoring produksi harian pegawai dalam sistem labeling**
+**Modern tab-based dashboard untuk monitoring produksi harian pegawai dalam sistem labeling**
 
-Komponen Vue ini menampilkan interface untuk monitoring aktivitas produksi pegawai per tim dan tanggal. Halaman ini menggunakan arsitektur hybrid dimana data dasar workstation dikirim dari controller, sedangkan data dinamis (tim aktif, data produksi) di-fetch melalui API calls.
+Komponen Vue ini menampilkan interface monitoring yang telah didesain ulang dari table-based menjadi modern dashboard dengan tab navigation, ranking system, dan gamification elements. Halaman ini menggunakan arsitektur hybrid dimana data dasar workstation dikirim dari controller, sedangkan data dinamis (tim aktif, data produksi) di-fetch melalui API calls.
 
 ## Purpose
 
 Menyediakan interface monitoring produksi dengan fitur:
-- Date picker untuk filtering data berdasarkan tanggal
-- Display tim yang aktif pada tanggal tertentu
-- Monitoring data verifikasi per tim
-- View agregat untuk semua tim
-- Loading states dan empty states
-- Dark mode support
-- Responsive design
+- **Tab-based Navigation**: Interface dengan tab untuk overview, ranking, dan detail per tim
+- **Dashboard Overview**: Summary cards dengan metrics keseluruhan dan team performance cards
+- **Ranking System**: Competitive leaderboard dengan top performers dan team rankings
+- **Individual Employee Cards**: Detail performa per pegawai dengan ranking numbers (1/17 format)
+- **Employee Ranking**: Sorted employee display dengan urutan performance dalam tim
+- **Gamification Elements**: Achievement badges, progress bars, dan competitive features
+- **Date picker filtering**: Filter data berdasarkan tanggal
+- **Real-time data loading**: Dynamic data fetching untuk semua tim aktif
+- **Modern UI/UX**: Card-based design dengan visual indicators dan responsive tabs
+- **Dark mode support**: Complete dark theme implementation dengan slate/indigo color scheme
+- **Mobile responsive**: Tab wrapping dan mobile-first design
+- **AuthenticatedLayout Integration**: Seamless integration dengan aplikasi layout
 
 ## Component Structure
 
 ### Script Setup (Composition API)
 - **Props**: Menerima data teams dari controller
-- **Reactive State**: Form data, loading states, dan active teams
+- **Reactive State**: Form data, loading states, active teams, dan teamData
 - **API Integration**: Fetch data dinamis dari multiple endpoints
-- **Computed Properties**: Filter teams berdasarkan aktivitas
+- **Computed Properties**: Filter teams, ranking calculations, dan statistics
+- **Tab Management**: Active tab state dan navigation logic
 - **Lifecycle Hooks**: Initialize data saat component mount
 
 ### Template Structure
-- **Layout**: AuthenticatedLayout dengan gradient background
-- **Header**: Title dan date picker
-- **Content**: Grid layout untuk team tables
+- **Layout**: AuthenticatedLayout integration (no duplicate backgrounds)
+- **Header**: Title dan date picker dengan slate color scheme
+- **Tab Navigation**: Responsive wrapping tabs (Overview, Ranking, Team tabs)
+- **Content**: Dynamic tab content dengan conditional rendering
 - **Loading**: Overlay component untuk loading states
 - **Empty State**: Message ketika tidak ada data
 
@@ -66,68 +73,118 @@ const form = useForm({
 
 ### Component State
 ```javascript
-const today = ref(form.date)        // Reference tanggal hari ini
 const activeTeams = ref([])         // Array ID tim yang aktif
 const isLoading = ref(true)         // Loading state
+const activeTab = ref('overview')   // Current active tab
+const teamData = ref({})            // Comprehensive team data storage
 ```
 
 ## Methods
 
 ### `fetchActiveTeams()`
-**Purpose**: Mengambil data tim yang aktif pada tanggal tertentu
+**Purpose**: Mengambil data tim yang aktif pada tanggal tertentu dan fetch comprehensive team data
 
 **Flow**:
 1. Set loading state ke true
 2. Call API `/api/active-teams` dengan parameter date
 3. Update activeTeams dengan response data
-4. Handle error jika terjadi masalah
-5. Set loading state ke false
+4. Call `fetchAllTeamData()` untuk comprehensive data
+5. Handle error jika terjadi masalah
+6. Set loading state ke false
 
-**API Call**:
+### `fetchAllTeamData()`
+**Purpose**: Mengambil data lengkap untuk semua tim aktif secara parallel
+
+**Flow**:
+1. Create promises array untuk semua tim aktif
+2. Parallel fetch team name dan production data
+3. Store results dalam teamData reactive object
+4. Handle individual team errors gracefully
+
+### `getTeamEmployeesWithRanking(teamId)`
+**Purpose**: Mendapatkan employees dengan ranking information untuk specific team
+
+**Returns**: Array employees yang sudah sorted dengan ranking information:
 ```javascript
-const response = await axios.get(`/api/active-teams?date=${form.date}`)
+[
+    {
+        ...employeeData,
+        rank: 1,
+        totalEmployees: 17,
+        verifikasiNumber: 25000
+    }
+    // ... more employees
+]
 ```
-
-**Error Handling**:
-- Console.error untuk debugging
-- Graceful fallback dengan empty array
 
 ## Computed Properties
 
 ### `filteredTeams`
 **Purpose**: Filter workstation berdasarkan tim yang aktif
-
-**Logic**:
-```javascript
-const filteredTeams = computed(() => {
-    return props.teams.filter(team => activeTeams.value.includes(team.id))
-})
-```
-
 **Returns**: Array workstation yang memiliki aktivitas pada tanggal terpilih
 
-## Watchers
+### `overviewStats`
+**Purpose**: Calculate overall statistics untuk dashboard overview
+**Returns**: Object dengan totalVerifikasi, totalRim, activeTeams, totalEmployees
 
-### Date Change Watcher
-**Purpose**: Reload data ketika user mengubah tanggal
+### `getTopPerformers`
+**Purpose**: Mendapatkan top 10 performers across all teams
+**Logic**: Combines all employees, sorts by verification count, returns top 10 with team info
 
-**Implementation**:
-```javascript
-watch(() => form.date, () => {
-    fetchActiveTeams()
-})
-```
+### `getTeamRanking`
+**Purpose**: Ranking teams berdasarkan total verification output
+**Returns**: Teams sorted by performance dengan percentage calculations
 
-**Behavior**: Otomatis fetch ulang data tim aktif setiap kali tanggal berubah
+## Utility Functions
 
-## Lifecycle Hooks
+### `getTeamStats(teamId)`
+**Purpose**: Calculate statistics untuk specific team
+**Returns**: Object dengan verifikasi, rim, po, employees counts
 
-### `onMounted()`
-**Purpose**: Initialize data saat component pertama kali dimount
+### `getPerformanceColor(actual, target = 17500)`
+**Purpose**: Dynamic color coding berdasarkan performance
+**Returns**: CSS class string untuk color coding
 
-**Actions**:
-- Call `fetchActiveTeams()` untuk load data awal
-- Setup initial state berdasarkan tanggal hari ini
+### `getProgressPercentage(actual, target = 17500)`
+**Purpose**: Calculate progress percentage terhadap target
+**Returns**: Number (0-100) untuk progress bar width
+
+### `getRankBadgeColor(rank)` & `getRankIcon(rank)`
+**Purpose**: Styling dan icon untuk ranking badges dalam leaderboard
+**Returns**: CSS classes dan emoji icons untuk top 3 ranks
+
+## Tab Navigation System
+
+### Tab Structure
+1. **Overview Tab**: Dashboard dengan summary cards dan team performance
+2. **Ranking Tab**: Leaderboard dengan top performers dan team rankings
+3. **Dynamic Team Tabs**: Individual team detail views dengan employee cards
+
+### Responsive Tab Behavior
+- **Mobile**: Tab wrapping dengan abbreviated text ("Ring.", "Rank")
+- **Desktop**: Horizontal layout dengan full text ("Ringkasan", "Ranking")
+- **Overflow**: Horizontal scroll sebagai fallback
+
+## Employee Cards Features
+
+### Ranking Display
+- **Format**: "1/17" (rank/total employees)
+- **Label**: "Urutan" dalam bahasa Indonesia
+- **Color**: Indigo theme untuk consistency
+- **Position**: Top-right corner of employee card
+
+### Card Information
+- **Employee Name**: Prominent display
+- **Ranking**: Position within team
+- **Progress Bar**: Visual progress terhadap target dengan percentage
+- **Statistics**: Verifikasi, RIM, PO counts
+- **Target Reference**: 17.500 lembar target display
+
+### Sorting Logic
+Employees dalam setiap tim di-sort berdasarkan:
+1. Verification count (descending)
+2. Rank assignment (1, 2, 3, etc.)
+3. Total team size calculation
 
 ## API Integration
 
@@ -137,213 +194,95 @@ watch(() => form.date, () => {
 **Parameters**: `date` (YYYY-MM-DD format)
 **Response**: Array of team IDs yang aktif pada tanggal tersebut
 
-### Child Component API Calls
-Component `TableVerifikasiPegawai` melakukan API calls sendiri:
+### Team Data Endpoints
 - `/api/team-name/{id}` - Untuk nama tim
-- `/api/pendapatan-harian` - Untuk data produksi dan verifikasi
+- `/api/pendapatan-harian` - Untuk data produksi dan verifikasi per tim
 
-## UI Components Used
-
-### Layout & Structure
-- `AuthenticatedLayout`: Base layout dengan navigation
-- `Head`: Inertia head component untuk page title
-
-### Form Components
-- `InputLabel`: Label untuk date input
-- `TextInput`: Date picker input dengan icon
-- `Calendar`: Lucide icon untuk date picker
-
-### Data Display
-- `TableVerifikasiPegawai`: Component untuk menampilkan data verifikasi per tim
-- `LoadingOverlay`: Overlay component untuk loading states
+### Parallel API Calls
+Component melakukan parallel fetching untuk optimal performance:
+```javascript
+const [teamResponse, produksiResponse] = await Promise.all([
+    axios.get(`/api/team-name/${teamId}`),
+    axios.get(`/api/pendapatan-harian?date=${form.date}&team=${teamId}`)
+])
+```
 
 ## Styling & Design
 
-### Color Scheme
-- **Light Mode**: Blue gradient (blue-50, cyan-50, sky-50)
-- **Dark Mode**: Slate gradient (slate-900, slate-800)
-- **Accent Colors**: Blue tones untuk interactive elements
+### Color Scheme (AuthenticatedLayout Compatible)
+- **Primary**: Slate color palette (slate-50 to slate-900)
+- **Accent**: Indigo theme (indigo-500, indigo-600)
+- **Background**: Uses AuthenticatedLayout's gradient background
+- **Cards**: White/slate-800 dengan slate borders
+- **Text**: Slate color hierarchy untuk optimal readability
 
 ### Layout Structure
-- **Container**: max-w-[95%] untuk responsive width
-- **Grid**: 1 column mobile, 2 columns XL screens
+- **Container**: max-w-7xl untuk consistency dengan AuthenticatedLayout
+- **Grid**: Responsive grid systems (1-4 columns based on breakpoint)
 - **Spacing**: Consistent padding dan margins
+- **No Duplicate Styling**: Removed conflicting backgrounds dan padding
 
-### Background Effects
-- **Grid Pattern**: Subtle grid overlay
-- **Gradient Blur**: Decorative blur circles
-- **Responsive**: Adapts to different screen sizes
+### Responsive Design
+- **Mobile-first**: Tab wrapping, abbreviated text, compact layouts
+- **Breakpoints**: sm, md, lg, xl responsive behavior
+- **Grid Systems**: Adaptive column counts
+- **Touch-friendly**: Proper spacing untuk mobile interaction
 
-## Component Rendering Logic
+## Gamification Elements
 
-### Loading State
-```vue
-<LoadingOverlay :is-loading="isLoading" />
-```
+### Ranking System
+- **Individual Leaderboard**: Top 10 performers dengan medal badges
+- **Team Rankings**: Teams sorted by total output
+- **Achievement Tracking**: Target achievement statistics
 
-### Empty State
-```vue
-<div v-if="!isLoading && activeTeams.length === 0" class="text-center py-12">
-    <p class="text-lg text-gray-600 dark:text-gray-400">
-        Tidak ada data produksi untuk tanggal ini
-    </p>
-</div>
-```
+### Visual Elements
+- **Medal Badges**: 🥇🥈🥉 untuk top 3 performers
+- **Progress Bars**: Gradient progress indicators
+- **Color Coding**: Performance-based color schemes
+- **Achievement Cards**: Target achievement breakdown
 
-### Data Display
-```vue
-<template v-else-if="!isLoading">
-    <!-- Individual team tables -->
-    <div class="grid grid-cols-1 xl:grid-cols-2 gap-6 mb-12">
-        <template v-for="team in filteredTeams" :key="'team'+team.id">
-            <TableVerifikasiPegawai :team="team.id" :date="form.date" />
-        </template>
-    </div>
-    
-    <!-- Aggregate table for all teams -->
-    <TableVerifikasiPegawai :team="0" :date="form.date" />
-</template>
-```
-
-## Data Flow
-
-### Initial Load
-1. Controller passes workstation data via props
-2. Component mounts and calls `fetchActiveTeams()`
-3. API returns active team IDs for current date
-4. `filteredTeams` computed property filters workstations
-5. `TableVerifikasiPegawai` components render for each active team
-
-### Date Change
-1. User selects new date in date picker
-2. Watcher detects form.date change
-3. `fetchActiveTeams()` called with new date
-4. Active teams updated, triggering re-render
-5. Child components receive new date prop and refresh data
-
-### Child Component Integration
-1. Each `TableVerifikasiPegawai` receives team ID and date
-2. Child components make their own API calls for detailed data
-3. Parent component manages overall loading state
-4. Child components handle their own loading and error states
+### Competitive Features
+- **Real-time Rankings**: Dynamic ranking updates
+- **Performance Comparison**: Team vs team comparison
+- **Target Tracking**: Progress towards daily targets
 
 ## Performance Considerations
 
 ### API Optimization
-- Single API call untuk active teams per date change
-- Child components handle their own data fetching
-- Debouncing tidak diperlukan karena date picker discrete changes
+- **Parallel Requests**: Simultaneous team data fetching
+- **Single Active Teams Call**: Efficient date-based filtering
+- **Error Resilience**: Individual team failures don't break entire page
 
 ### Rendering Optimization
-- `v-for` dengan unique keys untuk efficient re-rendering
-- Conditional rendering untuk loading dan empty states
-- Computed properties untuk efficient filtering
+- **Computed Properties**: Efficient data transformations
+- **Conditional Rendering**: Only active tab content rendered
+- **Unique Keys**: Proper v-for keys untuk efficient re-rendering
+- **Lazy Loading**: Team data only loaded when needed
 
-### Memory Management
-- Reactive refs untuk minimal memory footprint
-- No memory leaks dari event listeners
-- Efficient component cleanup
+## Recent Updates
 
-## Error Handling
+### Version 2.0 Features
+- **Complete UI Redesign**: From table-based to modern dashboard
+- **Ranking System**: Employee ranking dengan "1/17" format display
+- **Tab Navigation**: Responsive tab system dengan mobile wrapping
+- **Gamification**: Leaderboards, achievements, competitive elements
+- **AuthenticatedLayout Integration**: Seamless design consistency
+- **Mobile Optimization**: Tab wrapping dan responsive improvements
 
-### API Errors
-- Try-catch blocks untuk semua API calls
-- Console logging untuk debugging
-- Graceful fallback dengan empty states
-
-### User Experience
-- Loading states untuk feedback visual
-- Empty states dengan pesan informatif
-- Error boundaries untuk component stability
-
-## Accessibility
-
-### Form Controls
-- Proper labels untuk date input
-- Keyboard navigation support
-- Focus management
-
-### Visual Design
-- High contrast colors
-- Dark mode support
-- Responsive design untuk berbagai devices
-
-## Usage Examples
-
-### Basic Usage
-```vue
-<!-- Dari controller -->
-<ProduksiPegawai :teams="workstationData" />
-```
-
-### Props Data Example
-```javascript
-const workstationData = [
-    { id: 1, workstation: "Team Production A" },
-    { id: 2, workstation: "Team Production B" },
-    { id: 3, workstation: "Team Quality Control" }
-]
-```
-
-### API Response Example
-```javascript
-// /api/active-teams?date=2024-01-15
-[1, 3] // Team IDs yang aktif pada tanggal tersebut
-```
-
-## Integration Points
-
-### With Controller
-- Receives initial workstation data via Inertia props
-- Uses data untuk menampilkan available teams
-
-### With API Endpoints
-- `/api/active-teams` untuk filtering tim aktif
-- Child components call additional endpoints
-
-### With Child Components
-- Passes team ID dan date ke `TableVerifikasiPegawai`
-- Manages overall page loading state
-
-## Browser Compatibility
-
-### Modern Features Used
-- ES6+ syntax (arrow functions, async/await)
-- Vue 3 Composition API
-- CSS Grid dan Flexbox
-- CSS Custom Properties
-
-### Supported Browsers
-- Chrome 88+
-- Firefox 85+
-- Safari 14+
-- Edge 88+
-
-## Development Notes
-
-### Code Organization
-- Clean separation of concerns
-- Minimal comments dalam code
-- Comprehensive external documentation
-
-### Best Practices
-- Composition API untuk better logic reuse
-- TypeScript untuk type safety
-- Reactive state management
-- Proper error handling
-
-### Maintenance
-- Regular dependency updates
-- Performance monitoring
-- User feedback integration
+### Breaking Changes
+- **UI Structure**: Completely new interface design
+- **Data Flow**: Enhanced data management dengan comprehensive team data
+- **Navigation**: Tab-based instead of single-page layout
+- **Styling**: AuthenticatedLayout integration requires updated color scheme
 
 ## Notes
 
-- Component menggunakan hybrid architecture: SSR untuk initial load, SPA untuk dynamic updates
-- Date filtering adalah core functionality yang mempengaruhi semua child components
-- Loading states dikelola secara hierarchical (parent untuk page, child untuk individual tables)
-- Responsive design menggunakan Tailwind CSS utility classes
-- Dark mode support built-in dengan proper color schemes
-- Component ini adalah bagian dari monitoring module yang lebih besar
-- Integration dengan authentication system melalui AuthenticatedLayout
-- Menggunakan Inertia.js untuk seamless navigation tanpa full page reload
+- Component telah didesain ulang dari table-heavy interface menjadi modern dashboard
+- Ranking system memberikan competitive element yang mendorong performance
+- Tab wrapping ensures optimal mobile experience dengan responsive design
+- AuthenticatedLayout integration provides seamless application consistency
+- Employee cards dengan ranking numbers memberikan clear performance hierarchy
+- Gamification elements membuat monitoring lebih engaging dan motivational
+- Real-time data updates maintain accuracy untuk production monitoring
+- Mobile-first approach ensures accessibility across all device types
+- Component architecture supports future enhancements dan feature additions
