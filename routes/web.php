@@ -69,6 +69,7 @@ Route::middleware('auth')->group(function () {
 
     // Print Label Routes
     Route::get('/print-label/inspeksi', [App\Http\Controllers\PrintLabel\PrintLabelInspeksiController::class, 'index'])->name('printLabel.inspeksi');
+    Route::get('/print-label/mmea', [App\Http\Controllers\PrintLabel\PrintLabelMmeaController::class, 'index'])->name('printLabel.mmea');
 });
 
 // Include authentication routes

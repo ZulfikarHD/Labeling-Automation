@@ -138,6 +138,14 @@ onBeforeUnmount(() => {
                         <span>Cetak Label Inspeksi</span>
                     </div>
                 </DropdownLink>
+                <DropdownLink :href="route('printLabel.mmea')">
+                    <div class="flex items-center gap-3">
+                        <FileText
+                            class="h-4 w-4 text-slate-500 dark:text-slate-400"
+                        />
+                        <span>Cetak Label MMEA</span>
+                    </div>
+                </DropdownLink>
             </DropdownMenu>
         </div>
 
