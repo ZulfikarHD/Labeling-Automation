@@ -23,9 +23,21 @@ import {
     AlertCircle
 } from 'lucide-vue-next';
 
-const isLoading = ref(false);
+// Constants
+const PRINT_TIMEOUT_BASE = 1000;
+const DEBOUNCE_DELAY = 500;
+const VALIDATION_DELAY = 300;
 
-const nomorPo = ref(0);
+// Computed properties
+const isDataFetched = computed(() => !!specMmea.value.no_obc);
+const obcColor = "#1d4ed8";
+const printTimeout = computed(() =>
+    form.jumlah_label > 10
+        ? Math.round(PRINT_TIMEOUT_BASE * (form.jumlah_label / 5))
+        : PRINT_TIMEOUT_BASE
+);
+
+const isLoading = ref(false);
 const specMmea = ref({
     produk: "-",
     no_obc: "-",
@@ -33,10 +45,122 @@ const specMmea = ref({
     jml_lbr: 0,
 });
 const form = useForm({
-    
+    no_po: 0,
+    no_rim: 1,
+    periksa1: "",
+    periksa2: "",
+    jml_kemas: 0,
+});
+
+const errors = ref({
+    poNotFound: '',
 });
 
 
+// API calls
+const apiService = {
+    async getSpecification(noPo) {
+        const response = await axios.get(`https://sirine.peruri.co.id/sirine/api/detail-order-mmea/${noPo}`);
+        return response.data;
+    },
+
+    async submitForm(formData) {
+        const response = await axios.post('/api/print-label/inspeksi/store', formData);
+        return response.data;
+    }
+};
+
+// Data management
+const dataManager = {
+    async fetchSpecification() {
+        if (!form.no_po || form.no_po.length < 3) {
+            this.resetSpecification();
+            return;
+        }
+
+        isLoading.value = true;
+        errors.value.poNotFound = '';
+
+        try {
+            const [specData] = await Promise.all([
+                apiService.getSpecification(form.no_po),
+            ]);
+
+            const jml_label = Math.ceil(specData.rencet / 300);
+
+            specMmea.value = {
+                no_obc: specData.no_obc,
+                produk: specData.produk,
+                jml_lbr: specData.rencet,
+                // nomor_plat: specData.nomor_plat,
+                nomor_plat: "-", //temporary
+            };
+
+            form.jml_kemas = specData.rencet;
+            console.log(form);
+
+        } catch (error) {
+            console.error('Error fetching specification:', error);
+            this.resetSpecification();
+            errors.value.poNotFound = 'Nomor Po Tidak Ditemukan Harap Hubungi admin untuk memperbaharui data order';
+        } finally {
+            isLoading.value = false;
+        }
+    },
+
+    resetSpecification() {
+        specMmea.value = {
+            no_obc: '',
+            nomor_plat: '',
+            produk: '',
+            jml_lbr: 0,
+        };
+        errors.value.poNotFound = '';
+        errors.value.labelQuantity = '';
+    },
+
+    clearForm() {
+        form.reset();
+        this.resetSpecification();
+
+        if (!isLoading.value) {
+            swal.fire({
+                icon: 'info',
+                title: 'Form Telah Direset',
+                text: 'Semua data telah dihapus',
+                timer: 1500,
+                showConfirmButton: false
+            });
+        }
+    }
+};
+console.log(form);
+
+// Debounced handlers
+let debounceTimer;
+const handlePoInput = () => {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(() => {
+        dataManager.fetchSpecification();
+    }, DEBOUNCE_DELAY);
+};
+
+const handlePoInputChange = () => {
+    errors.value.poNotFound = '';
+    handlePoInput();
+};
+
+const handleLabelQuantityInput = () => {
+    setTimeout(() => {
+        validation.validateLabelQuantity();
+    }, VALIDATION_DELAY);
+};
+
+let npDebounceTimer;
+const handleNpInput = () => {
+    clearTimeout(npDebounceTimer);
+    errors.value.labelQuantity = '';
+};
 </script>
 
 <template>
@@ -45,176 +169,174 @@ const form = useForm({
     <LoadingOverlay :is-loading="isLoading" />
 
     <AuthenticatedLayout>
-        <div
-            class="min-h-screen py-8 bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-800">
-            <div class="container mx-auto px-4 max-w-4xl">
+        <div class="container mx-auto px-4 max-w-4xl">
 
-                <!-- Main Form Card -->
+            <!-- Main Form Card -->
+            <div
+                class="bg-white/90 dark:bg-slate-800/90 backdrop-blur-xl rounded-2xl shadow-lg border border-slate-100 dark:border-slate-700 overflow-hidden">
+
+                <!-- Barcode Input Section -->
                 <div
-                    class="bg-white/90 dark:bg-slate-800/90 backdrop-blur-xl rounded-2xl shadow-lg border border-slate-100 dark:border-slate-700 overflow-hidden">
+                    class="p-8 border-b border-slate-200 dark:border-slate-700 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-slate-800 dark:to-slate-700">
+                    <div class="flex items-center gap-4 mb-4">
+                        <Scan class="h-6 w-6 text-blue-600 dark:text-blue-400" />
+                        <h2 class="text-xl font-semibold text-slate-900 dark:text-white">
+                            Scan Nomor PO
+                        </h2>
+                    </div>
 
-                    <!-- Barcode Input Section -->
-                    <div
-                        class="p-8 border-b border-slate-200 dark:border-slate-700 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-slate-800 dark:to-slate-700">
-                        <div class="flex items-center gap-4 mb-4">
-                            <Scan class="h-6 w-6 text-blue-600 dark:text-blue-400" />
-                            <h2 class="text-xl font-semibold text-slate-900 dark:text-white">
-                                Scan Nomor PO
-                            </h2>
-                        </div>
-
+                    <div class="relative">
+                        <InputLabel for="no_po" value="Nomor Production Order" required
+                            class="text-slate-700 dark:text-slate-300" />
                         <div class="relative">
-                            <InputLabel for="no_po" value="Nomor Production Order" required
-                                class="text-slate-700 dark:text-slate-300" />
-                            <div class="relative">
-                                <TextInput id="no_po" v-model="form.no_po" @input="handlePoInputChange" type="text"
-                                    placeholder="Scan atau ketik nomor PO..."
-                                    class="text-center text-lg font-mono tracking-wider pr-12"
-                                    :class="errors.poNotFound ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''"
-                                    autofocus />
-                                <div class="absolute right-3 top-1/2 transform -translate-y-1/2">
-                                    <Scan class="h-5 w-5 text-slate-400" />
-                                </div>
-                            </div>
-                            <!-- PO Not Found Error Message -->
-                            <div v-if="errors.poNotFound"
-                                class="text-red-600 dark:text-red-400 text-sm mt-2 flex items-center gap-2">
-                                <AlertCircle class="h-4 w-4" />
-                                {{ errors.poNotFound }}
+                            <TextInput id="no_po" v-model="form.no_po" @input="handlePoInputChange" type="text"
+                                placeholder="Scan atau ketik nomor PO..."
+                                class="text-center text-lg font-mono tracking-wider pr-12"
+                                :class="errors.poNotFound ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''"
+                                autofocus />
+                            <div class="absolute right-3 top-1/2 transform -translate-y-1/2">
+                                <Scan class="h-5 w-5 text-slate-400" />
                             </div>
                         </div>
-                    </div>
-
-                    <!-- Specification Display Section -->
-                    <div class="p-8 border-b border-slate-200 dark:border-slate-700"
-                        :class="isDataFetched ? 'bg-gradient-to-r from-green-50 to-emerald-50 dark:from-slate-700 dark:to-slate-600' : 'bg-gradient-to-r from-slate-50 to-gray-50 dark:from-slate-800 dark:to-slate-700'">
-                        <div class="flex items-center gap-4 mb-6">
-                            <CheckCircle v-if="isDataFetched" class="h-6 w-6 text-green-600 dark:text-green-400" />
-                            <AlertCircle v-else class="h-6 w-6 text-slate-400 dark:text-slate-500" />
-                            <h2 class="text-xl font-semibold text-slate-900 dark:text-white">
-                                Spesifikasi Produk
-                            </h2>
-                        </div>
-
-                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                            <!-- No OBC Badge -->
-                            <div class="bg-white dark:bg-slate-800 rounded-xl p-4 shadow-sm border border-slate-200 dark:border-slate-600"
-                                :class="!isDataFetched ? 'opacity-50' : ''">
-                                <div class="flex items-center gap-3">
-                                    <div class="bg-blue-100 dark:bg-blue-900/30 p-2 rounded-lg">
-                                        <FileText class="h-5 w-5 text-blue-600 dark:text-blue-400" />
-                                    </div>
-                                    <div>
-                                        <p class="text-sm text-slate-500 dark:text-slate-400">No OBC</p>
-                                        <p class="font-semibold text-slate-900 dark:text-white">
-                                            {{ isDataFetched ? (specificationData.no_obc || '---') : '---' }}
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Nomor Plat Badge -->
-                            <div class="bg-white dark:bg-slate-800 rounded-xl p-4 shadow-sm border border-slate-200 dark:border-slate-600"
-                                :class="!isDataFetched ? 'opacity-50' : ''">
-                                <div class="flex items-center gap-3">
-                                    <div class="bg-purple-100 dark:bg-purple-900/30 p-2 rounded-lg">
-                                        <Car class="h-5 w-5 text-purple-600 dark:text-purple-400" />
-                                    </div>
-                                    <div>
-                                        <p class="text-sm text-slate-500 dark:text-slate-400">Nomor Plat</p>
-                                        <p class="font-semibold text-slate-900 dark:text-white">
-                                            {{ isDataFetched ? (specificationData.nomor_plat || '---') : '---' }}
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Seri Badge -->
-                            <div class="bg-white dark:bg-slate-800 rounded-xl p-4 shadow-sm border border-slate-200 dark:border-slate-600"
-                                :class="!isDataFetched ? 'opacity-50' : ''">
-                                <div class="flex items-center gap-3">
-                                    <div class="bg-orange-100 dark:bg-orange-900/30 p-2 rounded-lg">
-                                        <Hash class="h-5 w-5 text-orange-600 dark:text-orange-400" />
-                                    </div>
-                                    <div>
-                                        <p class="text-sm text-slate-500 dark:text-slate-400">Seri</p>
-                                        <p class="font-semibold text-slate-900 dark:text-white">
-                                            {{ isDataFetched ? (specificationData.seri || '---') : '---' }}
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Remaining Labels Badge -->
-                            <div class="bg-white dark:bg-slate-800 rounded-xl p-4 shadow-sm border border-slate-200 dark:border-slate-600"
-                                :class="!isDataFetched ? 'opacity-50' : ''">
-                                <div class="flex items-center gap-3">
-                                    <div class="bg-green-100 dark:bg-green-900/30 p-2 rounded-lg">
-                                        <Printer class="h-5 w-5 text-green-600 dark:text-green-400" />
-                                    </div>
-                                    <div>
-                                        <p class="text-sm text-slate-500 dark:text-slate-400">Sisa Label</p>
-                                        <p class="font-semibold text-slate-900 dark:text-white"
-                                            :class="remainingLabels === 0 ? 'text-red-600 dark:text-red-400' : 'text-green-600 dark:text-green-400'">
-                                            {{ isDataFetched ? remainingLabels : '---' }}
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
+                        <!-- PO Not Found Error Message -->
+                        <div v-if="errors.poNotFound"
+                            class="text-red-600 dark:text-red-400 text-sm mt-2 flex items-center gap-2">
+                            <AlertCircle class="h-4 w-4" />
+                            {{ errors.poNotFound }}
                         </div>
                     </div>
-
-                    <!-- Form Input Section -->
-                    <div class="p-8">
-                        <form @submit.prevent="formHandler.submitForm" class="space-y-6">
-
-                            <!-- NP Input Fields -->
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div class="space-y-2">
-                                    <InputLabel for="np1" value="NP 1" required
-                                        class="text-slate-700 dark:text-slate-300" />
-                                    <TextInput id="np1" v-model="form.np1" @input="handleNpInput" @keydown.enter.prevent
-                                        type="text" maxlength="4" :disabled="!isDataFetched" required
-                                        placeholder="Max 4 karakter" class="text-center font-mono tracking-wider" />
-                                </div>
-
-                                <div class="space-y-2">
-                                    <InputLabel for="np2" value="NP 2" class="text-slate-700 dark:text-slate-300" />
-                                    <TextInput id="np2" v-model="form.np2" @input="handleNpInput" @keydown.enter.prevent
-                                        type="text" maxlength="4" :disabled="!isDataFetched"
-                                        placeholder="Max 4 karakter" class="text-center font-mono tracking-wider" />
-                                </div>
-                            </div>
-
-                            <!-- Action Buttons -->
-                            <div class="flex flex-col sm:flex-row gap-4 pt-6">
-                                <Button type="submit" variant="primary" size="lg"
-                                    :disabled="!isDataFetched || isLoading || !!errors.labelQuantity || !form.np1"
-                                    :loading="isLoading" :icon="Printer" class="flex-1">
-                                    Cetak Label
-                                </Button>
-
-                                <Button type="button" variant="outline-secondary" size="lg" :icon="RotateCcw"
-                                    @click="dataManager.clearForm" class="flex-1">
-                                    Clear Form
-                                </Button>
-                            </div>
-
-                        </form>
-                    </div>
-
-                    <!-- Status Information -->
-                    <div v-if="!isDataFetched && form.no_po"
-                        class="p-6 bg-amber-50 dark:bg-amber-900/20 border-t border-amber-200 dark:border-amber-800">
-                        <div class="flex items-center gap-3">
-                            <AlertCircle class="h-5 w-5 text-amber-600 dark:text-amber-400" />
-                            <p class="text-amber-800 dark:text-amber-200">
-                                Menunggu data spesifikasi... Pastikan nomor PO sudah benar.
-                            </p>
-                        </div>
-                    </div>
-
                 </div>
+
+                <!-- Specification Display Section -->
+                <div class="p-8 border-b border-slate-200 dark:border-slate-700"
+                    :class="isDataFetched ? 'bg-gradient-to-r from-green-50 to-emerald-50 dark:from-slate-700 dark:to-slate-600' : 'bg-gradient-to-r from-slate-50 to-gray-50 dark:from-slate-800 dark:to-slate-700'">
+                    <div class="flex items-center gap-4 mb-6">
+                        <CheckCircle v-if="isDataFetched" class="h-6 w-6 text-green-600 dark:text-green-400" />
+                        <AlertCircle v-else class="h-6 w-6 text-slate-400 dark:text-slate-500" />
+                        <h2 class="text-xl font-semibold text-slate-900 dark:text-white">
+                            Spesifikasi Produk
+                        </h2>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+
+                        <!-- Jenis Produk Badge -->
+                        <div class="bg-white dark:bg-slate-800 rounded-xl p-4 shadow-sm border border-slate-200 dark:border-slate-600"
+                            :class="!isDataFetched ? 'opacity-50' : ''">
+                            <div class="flex items-center gap-3">
+                                <div class="bg-orange-100 dark:bg-orange-900/30 p-2 rounded-lg">
+                                    <Hash class="h-5 w-5 text-orange-600 dark:text-orange-400" />
+                                </div>
+                                <div>
+                                    <p class="text-sm text-slate-500 dark:text-slate-400">Produk</p>
+                                    <p class="font-semibold text-slate-900 dark:text-white">
+                                        {{ isDataFetched ? (specMmea.produk || '---') : '---' }}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- No OBC Badge -->
+                        <div class="bg-white dark:bg-slate-800 rounded-xl p-4 shadow-sm border border-slate-200 dark:border-slate-600"
+                            :class="!isDataFetched ? 'opacity-50' : ''">
+                            <div class="flex items-center gap-3">
+                                <div class="bg-blue-100 dark:bg-blue-900/30 p-2 rounded-lg">
+                                    <FileText class="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                                </div>
+                                <div>
+                                    <p class="text-sm text-slate-500 dark:text-slate-400">No OBC</p>
+                                    <p class="font-semibold text-slate-900 dark:text-white">
+                                        {{ isDataFetched ? (specMmea.no_obc || '---') : '---' }}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Nomor Plat Badge -->
+                        <div class="bg-white dark:bg-slate-800 rounded-xl p-4 shadow-sm border border-slate-200 dark:border-slate-600"
+                            :class="!isDataFetched ? 'opacity-50' : ''">
+                            <div class="flex items-center gap-3">
+                                <div class="bg-purple-100 dark:bg-purple-900/30 p-2 rounded-lg">
+                                    <Car class="h-5 w-5 text-purple-600 dark:text-purple-400" />
+                                </div>
+                                <div>
+                                    <p class="text-sm text-slate-500 dark:text-slate-400">Nomor Plat</p>
+                                    <p class="font-semibold text-slate-900 dark:text-white">
+                                        {{ isDataFetched ? (specMmea.nomor_plat || '---') : '---' }}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Jumlah Lembar Barang Badge -->
+                        <div class="bg-white dark:bg-slate-800 rounded-xl p-4 shadow-sm border border-slate-200 dark:border-slate-600"
+                            :class="!isDataFetched ? 'opacity-50' : ''">
+                            <div class="flex items-center gap-3">
+                                <div class="bg-green-100 dark:bg-green-900/30 p-2 rounded-lg">
+                                    <Printer class="h-5 w-5 text-green-600 dark:text-green-400" />
+                                </div>
+                                <div>
+                                    <p class="text-sm text-slate-500 dark:text-slate-400">Lembar Cetak</p>
+                                    <p class="font-semibold text-slate-900 dark:text-white"
+                                        :class="specMmea.jml_lbr === 0 ? 'text-red-600 dark:text-red-400' : 'text-green-600 dark:text-green-400'">
+                                        {{ isDataFetched ? specMmea.jml_lbr : '---' }}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Form Input Section -->
+                <div class="p-8">
+                    <form @submit.prevent="formHandler.submitForm" class="space-y-6">
+
+                        <!-- NP Input Fields -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="space-y-2">
+                                <InputLabel for="np1" value="NP 1" required
+                                    class="text-slate-700 dark:text-slate-300" />
+                                <TextInput id="np1" v-model="form.np1" @input="handleNpInput" @keydown.enter.prevent
+                                    type="text" maxlength="4" :disabled="!isDataFetched" required
+                                    placeholder="Max 4 karakter" class="text-center font-mono tracking-wider" />
+                            </div>
+
+                            <div class="space-y-2">
+                                <InputLabel for="np2" value="NP 2" class="text-slate-700 dark:text-slate-300" />
+                                <TextInput id="np2" v-model="form.np2" @input="handleNpInput" @keydown.enter.prevent
+                                    type="text" maxlength="4" :disabled="!isDataFetched" placeholder="Max 4 karakter"
+                                    class="text-center font-mono tracking-wider" />
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="flex flex-col sm:flex-row gap-4 pt-6">
+                            <Button type="submit" variant="primary" size="lg"
+                                :disabled="!isDataFetched || isLoading || !!errors.labelQuantity || !form.np1"
+                                :loading="isLoading" :icon="Printer" class="flex-1">
+                                Cetak Label
+                            </Button>
+
+                            <Button type="button" variant="outline-secondary" size="lg" :icon="RotateCcw"
+                                @click="dataManager.clearForm" class="flex-1">
+                                Clear Form
+                            </Button>
+                        </div>
+
+                    </form>
+                </div>
+
+                <!-- Status Information -->
+                <div v-if="!isDataFetched && form.no_po"
+                    class="p-6 bg-amber-50 dark:bg-amber-900/20 border-t border-amber-200 dark:border-amber-800">
+                    <div class="flex items-center gap-3">
+                        <AlertCircle class="h-5 w-5 text-amber-600 dark:text-amber-400" />
+                        <p class="text-amber-800 dark:text-amber-200">
+                            Menunggu data spesifikasi... Pastikan nomor PO sudah benar.
+                        </p>
+                    </div>
+                </div>
+
             </div>
         </div>
     </AuthenticatedLayout>

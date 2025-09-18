@@ -14,13 +14,9 @@ return new class extends Migration
         Schema::create('generated_labels_mmea', function (Blueprint $table) {
             $table->id();
             $table->bigInteger('nomor_po');
-            $table->string('nomor_obc');
-            $table->string('gol');
-            $table->string('produk');
-            $table->string('waktu_kerja');
+            $table->integer('no_rim');
             $table->string('periksa1');
             $table->string('periksa2');
-            $table->integer('kemasan')->nullable();
             $table->integer('lbr_kemas')->nullable();
             $table->timestamps();
         });
