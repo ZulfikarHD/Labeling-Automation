@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('generated_labels_mmea', function (Blueprint $table) {
             $table->id();
             $table->bigInteger('nomor_po');
-            $table->integer('no_rim');
+            $table->integer('nomor_rim');
             $table->string('periksa1');
             $table->string('periksa2');
             $table->integer('lbr_kemas')->nullable();

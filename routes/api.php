@@ -7,6 +7,7 @@ use App\Http\Controllers\GenerateLabelsPersonalController;
 use App\Http\Controllers\OrderBesar\PoSiapVerifController;
 use App\Http\Controllers\PrintLabelPersonalController;
 use App\Http\Controllers\PendapatanHarianController;
+use App\Http\Controllers\PrintLabel\PrintLabelMmeaController;
 use App\Http\Controllers\ProductionOrderController;
 use App\Http\Controllers\UpdateSpecController;
 
@@ -96,3 +97,11 @@ Route::get('/active-teams', [PendapatanHarianController::class, 'getActiveTeams'
 Route::get('/print-label/inspeksi/{no_po}', [App\Http\Controllers\PrintLabel\PrintLabelInspeksiController::class, 'getSpecification']);
 Route::get('/print-label/inspeksi/count-remaining-label/{no_po}', [App\Http\Controllers\PrintLabel\PrintLabelInspeksiController::class, 'getRemainingLabelCount']);
 Route::post('/print-label/inspeksi/store', [App\Http\Controllers\PrintLabel\PrintLabelInspeksiController::class, 'store']);
+
+
+/*
+|--------------------------------------------------------------------------
+| Print Label MMEA Routes
+|--------------------------------------------------------------------------
+*/
+Route::post('/print-label/mmea/store', [PrintLabelMmeaController::class, 'store']);

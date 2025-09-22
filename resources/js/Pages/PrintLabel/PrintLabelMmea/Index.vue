@@ -9,7 +9,7 @@ import Button from "@/Components/Button.vue";
 import InputError from "@/Components/InputError.vue";
 import { router } from '@inertiajs/vue3';
 import LoadingOverlay from "@/Components/LoadingOverlay.vue";
-import { batchSingleLabel } from "@/Components/PrintPages/index";
+import { batchSingleLabel, singleLabel } from "@/Components/PrintPages/index";
 import axios from 'axios';
 import {
     Scan,
@@ -27,6 +27,8 @@ import {
 const PRINT_TIMEOUT_BASE = 1000;
 const DEBOUNCE_DELAY = 500;
 const VALIDATION_DELAY = 300;
+// Injections
+const swal = inject('$swal');
 
 // Computed properties
 const isDataFetched = computed(() => !!specMmea.value.no_obc);
@@ -73,8 +75,9 @@ const apiService = {
         return response.data;
     },
 
-    async submitForm(formData) {
-        const response = await axios.post('/api/print-label/inspeksi/store', formData);
+    async submitForm(form) {
+        // const response = await router.post('/api/print-label/mmea/store', form);
+        const response = await axios.post('/api/print-label/mmea/store', form);
         return response.data;
     }
 };
@@ -165,7 +168,163 @@ const dataManager = {
         }
     }
 };
-console.log(form);
+
+// Form submission
+const formHandler = {
+    async submitForm() {
+        // if (!validation.validateForm()) {
+        //     return;
+        // }
+
+        const confirmed = await this.showConfirmationDialog();
+        if (!confirmed) return;
+
+        isLoading.value = true;
+
+        try {
+            await apiService.submitForm(form);
+
+            const printContent = printService.generatePrintContent();
+            printService.printWithoutDialog(printContent);
+
+            setTimeout(() => {
+                this.showSuccessMessage();
+                dataManager.clearForm();
+                isLoading.value = false;
+            }, printTimeout.value);
+
+        } catch (error) {
+            this.handleSubmissionError(error);
+            isLoading.value = false;
+        }
+    },
+
+    async showConfirmationDialog() {
+        const result = await swal.fire({
+            icon: 'question',
+            title: 'Konfirmasi Cetak Label',
+            // html: this.buildConfirmationHtml(),
+            showCancelButton: true,
+            confirmButtonText: 'Ya, Cetak Label',
+            cancelButtonText: 'Batal',
+            confirmButtonColor: '#3b82f6'
+        });
+
+        return result.isConfirmed;
+    },
+
+    // buildConfirmationHtml() {
+    //     const confirmationData = [
+    //         { label: 'No PO', value: form.no_po },
+    //         { label: 'Team', value: getTeamName(form.team) },
+    //         { label: 'Jumlah Label', value: form.jumlah_label, highlight: true },
+    //         { label: 'NP1', value: form.np1 || '-', mono: true },
+    //         { label: 'NP2', value: form.np2 || '-', mono: true }
+    //     ];
+
+    //     return `
+    //         <div class="text-left space-y-3">
+    //             ${confirmationData.map(item => `
+    //                 <div class="flex items-center justify-between">
+    //                     <span class="text-sm font-medium text-slate-600 dark:text-slate-400">${item.label}:</span>
+    //                     <span class="text-sm font-bold ${item.highlight ? 'text-blue-600 dark:text-blue-400' : 'text-slate-900 dark:text-slate-100'} ${item.mono ? 'font-mono' : ''}">${item.value}</span>
+    //                 </div>
+    //             `).join('')}
+    //         </div>
+    //     `;
+    // },
+
+    showSuccessMessage() {
+        swal.fire({
+            icon: 'success',
+            title: 'Berhasil',
+            text: 'Label Berhasil Dibuat',
+            customClass: {
+                popup: 'rounded-lg',
+                title: 'text-xl font-bold text-green-600 mb-4',
+                htmlContainer: 'text-base text-gray-600',
+                confirmButton: 'bg-green-500 hover:bg-green-600 text-white font-medium rounded-lg px-4 py-2'
+            },
+            iconColor: '#22c55e'
+        });
+    },
+
+    handleSubmissionError(error) {
+        let errorMessage = 'Terjadi kesalahan';
+
+        if (error.response) {
+            if (error.response.status === 422) {
+                const errors = error.response.data.errors;
+                errorMessage = Object.values(errors).flat().join('<br>');
+            } else {
+                errorMessage = error.response.data.message || 'Terjadi kesalahan pada server';
+            }
+        }
+
+        swal.fire({
+            icon: 'error',
+            title: 'Gagal',
+            html: `<div class="text-left">
+                <p class="text-red-500 font-medium text-lg mb-2">Error:</p>
+                <ul class="text-gray-700 text-base space-y-1 list-disc pl-5">
+                    ${errorMessage.split('<br>').map(error => `<li>${error}</li>`).join('')}
+                </ul>
+            </div>`,
+            customClass: {
+                popup: 'rounded-lg',
+                title: 'text-xl font-bold text-red-600 mb-4',
+                htmlContainer: 'p-4',
+                confirmButton: 'bg-red-500 hover:bg-red-600 text-white font-medium rounded-lg px-4 py-2'
+            },
+            iconColor: '#ef4444'
+        });
+    }
+};
+
+// Print functionality
+const printService = {
+    printWithoutDialog(content) {
+        const iframe = printFrame.value;
+        const doc = iframe.contentWindow.document;
+        doc.open();
+        doc.write(`<style>
+            @media print {
+                @page {
+                    margin-left: 3rem;
+                    margin-right: 3rem;
+                    margin-top: 0rem;
+                }
+                body { margin: 0; }
+                header, footer { display: none !important; }
+                * {
+                    -webkit-print-color-adjust: exact;
+                    print-color-adjust: exact;
+                }
+            }
+        </style>
+        ${content}`);
+        doc.close();
+        iframe.contentWindow.focus();
+
+        setTimeout(() => {
+            iframe.contentWindow.print();
+        }, 1000);
+    },
+
+    generatePrintContent() {
+        return singleLabel(
+            specMmea.value.no_obc,
+            undefined,
+            obcColor.value,
+            undefined,
+            form.np1,
+            form.np2,
+            form.jumlah_label,
+            500
+        );
+    }
+};
+
 
 // Debounced handlers
 let debounceTimer;
@@ -334,9 +493,9 @@ const handleNpInput = () => {
                             <div class="flex flex-col gap-2 col-span-1">
                                 <template v-for="(nomorRim, key) in form.no_rim">
                                     <div class="space-y-2">
-                                        <TextInput v-model="form.no_rim.key" @input="handleNpInput" disabled :value="nomorRim"
-                                            @keydown.enter.prevent type="text" maxlength="4" :disabled="!isDataFetched"
-                                            required placeholder="Nomor Rim"
+                                        <TextInput v-model="form.no_rim[key]" @input="handleNpInput" disabled
+                                            :value="nomorRim" @keydown.enter.prevent type="text" maxlength="4"
+                                            :disabled="!isDataFetched" required placeholder="Nomor Rim"
                                             class="text-center font-mono tracking-wider" />
                                     </div>
                                 </template>
@@ -344,7 +503,7 @@ const handleNpInput = () => {
                             <div class="flex flex-col gap-2 col-span-1 md:col-span-2">
                                 <template v-for="(pemeriksa1, key) in form.periksa1">
                                     <div class="space-y-2">
-                                        <TextInput v-model="form.periksa1.key" @input="handleNpInput"
+                                        <TextInput v-model="form.periksa1[key]" @input="handleNpInput" :key="key"
                                             @keydown.enter.prevent type="text" maxlength="4" :disabled="!isDataFetched"
                                             placeholder="Max 4 karakter" class="text-center font-mono tracking-wider" />
                                     </div>
@@ -353,7 +512,7 @@ const handleNpInput = () => {
                             <div class="flex flex-col gap-2 col-span-1 md:col-span-2">
                                 <template v-for="(pemeriksa2, key) in form.periksa1">
                                     <div class="space-y-2">
-                                        <TextInput v-model="form.periksa2.key" @input="handleNpInput"
+                                        <TextInput v-model="form.periksa2[key]" @input="handleNpInput"
                                             @keydown.enter.prevent type="text" maxlength="4" :disabled="!isDataFetched"
                                             placeholder="Max 4 karakter" class="text-center font-mono tracking-wider" />
                                     </div>
@@ -364,7 +523,7 @@ const handleNpInput = () => {
                         <!-- Action Buttons -->
                         <div class="flex flex-col sm:flex-row gap-4 pt-6">
                             <Button type="submit" variant="primary" size="lg"
-                                :disabled="!isDataFetched || isLoading || !!errors.labelQuantity || !form.np1"
+                                :disabled="!isDataFetched || isLoading || !!errors.labelQuantity || !form.periksa1"
                                 :loading="isLoading" :icon="Printer" class="flex-1">
                                 Cetak Label
                             </Button>
