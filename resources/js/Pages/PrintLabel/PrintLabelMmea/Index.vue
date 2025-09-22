@@ -9,7 +9,7 @@ import Button from "@/Components/Button.vue";
 import InputError from "@/Components/InputError.vue";
 import { router } from '@inertiajs/vue3';
 import LoadingOverlay from "@/Components/LoadingOverlay.vue";
-import { batchSingleLabel, singleLabel } from "@/Components/PrintPages/index";
+import { LabelMmea } from "@/Components/PrintPages/index";
 import axios from 'axios';
 import {
     Scan,
@@ -27,6 +27,7 @@ import {
 const PRINT_TIMEOUT_BASE = 1000;
 const DEBOUNCE_DELAY = 500;
 const VALIDATION_DELAY = 300;
+const printFrame = ref(null);
 // Injections
 const swal = inject('$swal');
 
@@ -61,6 +62,7 @@ const form = useForm({
     jml_kemas: {
         no_1: 300,
     },
+    jml_label: 0,
 });
 
 const errors = ref({
@@ -102,6 +104,7 @@ const dataManager = {
             ]);
 
             const jml_label = Math.ceil(specData.rencet / 300);
+            form.jml_label = jml_label;
             const last_jml_kemas = specData.rencet % 300 == 0 ? 300 : specData.rencet % 300;
 
 
@@ -183,7 +186,6 @@ const formHandler = {
 
         try {
             await apiService.submitForm(form);
-
             const printContent = printService.generatePrintContent();
             printService.printWithoutDialog(printContent);
 
@@ -312,15 +314,13 @@ const printService = {
     },
 
     generatePrintContent() {
-        return singleLabel(
+        return LabelMmea(
             specMmea.value.no_obc,
-            undefined,
-            obcColor.value,
-            undefined,
-            form.np1,
-            form.np2,
-            form.jumlah_label,
-            500
+            obcColor,
+            form.periksa1,
+            form.periksa2,
+            form.jml_label,
+            form.jml_kemas,
         );
     }
 };

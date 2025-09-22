@@ -31,6 +31,17 @@ class PrintLabelMmeaController extends Controller
                 ]
             );
         }
+        
+        return response()->json([
+            'success' => true,
+            'message' => 'Label berhasil diproses',
+            // 'data' => [
+            //     'processed_labels' => $result['processed_labels'],
+            //     'failed_labels' => $result['failed_labels'],
+            //     'remaining_labels' => $result['remaining_labels'],
+            //     'status' => $result['remaining_labels'] > 0 ? 'in_progress' : 'completed'
+            // ]
+        ]);
     }
     
 }
