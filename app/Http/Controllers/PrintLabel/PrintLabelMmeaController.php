@@ -43,5 +43,12 @@ class PrintLabelMmeaController extends Controller
             // ]
         ]);
     }
+
+    public function qcData(int $nomor_po)
+    {
+        return GeneratedLabelsMmea::where('nomor_po',$nomor_po)
+                    ->orderBy('nomor_rim')
+                    ->get();
+    }
     
 }

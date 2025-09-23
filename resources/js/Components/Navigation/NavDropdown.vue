@@ -3,7 +3,7 @@ import { ChevronDown } from "lucide-vue-next";
 
 defineProps({
   label: String,
-  icon: Object,
+  icon: Function,
   isOpen: Boolean,
   active: {
     type: Boolean,

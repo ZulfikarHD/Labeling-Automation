@@ -105,3 +105,4 @@ Route::post('/print-label/inspeksi/store', [App\Http\Controllers\PrintLabel\Prin
 |--------------------------------------------------------------------------
 */
 Route::post('/print-label/mmea/store', [PrintLabelMmeaController::class, 'store']);
+Route::get('/print-label/mmea/qc-data/{nomor_po}', [PrintLabelMmeaController::class,  'qcData']);

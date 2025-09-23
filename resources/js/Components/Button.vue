@@ -46,7 +46,7 @@ const props = defineProps({
     default: false
   },
   icon: {
-    type: Object,
+    type: Function,
     default: null
   },
   iconPosition: {

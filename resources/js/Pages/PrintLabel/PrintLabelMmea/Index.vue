@@ -1,4 +1,10 @@
 <script setup>
+/**
+ * TODO : Cleanup Code
+ * TODO : Add Validation
+ * TODO : Add Checklist For Print Selected Item Only
+ * TODO : Add Print Ulang Label
+ */
 import { ref, inject, computed } from 'vue';
 import { Head, useForm } from '@inertiajs/vue3';
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
@@ -10,6 +16,7 @@ import InputError from "@/Components/InputError.vue";
 import { router } from '@inertiajs/vue3';
 import LoadingOverlay from "@/Components/LoadingOverlay.vue";
 import { LabelMmea } from "@/Components/PrintPages/index";
+import { fetchDataOrder, fetchQcData, storeLabelData } from "./ApiServices"
 import axios from 'axios';
 import {
     Scan,
@@ -39,7 +46,6 @@ const printTimeout = computed(() =>
         ? Math.round(PRINT_TIMEOUT_BASE * (form.jumlah_label / 5))
         : PRINT_TIMEOUT_BASE
 );
-
 const isLoading = ref(false);
 const specMmea = ref({
     produk: "-",
@@ -69,26 +75,12 @@ const errors = ref({
     poNotFound: '',
 });
 
-
-// API calls
-const apiService = {
-    async getSpecification(noPo) {
-        const response = await axios.get(`https://sirine.peruri.co.id/sirine/api/detail-order-mmea/${noPo}`);
-        return response.data;
-    },
-
-    async submitForm(form) {
-        // const response = await router.post('/api/print-label/mmea/store', form);
-        const response = await axios.post('/api/print-label/mmea/store', form);
-        return response.data;
-    }
-};
-
 // Data management
 const dataManager = {
     async fetchSpecification() {
         let nomor_po = form.no_po;
         form.reset();
+
         if (!nomor_po || nomor_po < 3) {
             this.resetSpecification();
             return;
@@ -99,20 +91,28 @@ const dataManager = {
         errors.value.poNotFound = '';
 
         try {
-            const [specData] = await Promise.all([
-                apiService.getSpecification(nomor_po),
+            const [specData, qcData] = await Promise.all([
+                fetchDataOrder(nomor_po),
+                fetchQcData(nomor_po)
             ]);
 
+            let produkMmea = "MMEA";
+
+            if (specData.status == "ZP16" || specData.status == "ZP17") {
+                produkMmea = "MMEA";
+            } else {
+                produkMmea = "HPTL";
+            }
+
             const jml_label = Math.ceil(specData.rencet / 300);
-            form.jml_label = jml_label;
             const last_jml_kemas = specData.rencet % 300 == 0 ? 300 : specData.rencet % 300;
 
+            form.jml_label = jml_label;
 
             specMmea.value = {
+                produk: produkMmea,
                 no_obc: specData.no_obc,
-                produk: specData.produk,
                 jml_lbr: specData.rencet,
-                // nomor_plat: specData.nomor_plat,
                 nomor_plat: "-", //temporary
             };
 
@@ -120,21 +120,41 @@ const dataManager = {
                 form.jml_kemas.no_1 = specData.rencet;
             }
 
+            // First Field Form
+            if (typeof qcData[0] !== 'undefined') {
+                form.periksa1['np_1'] = qcData[0]['periksa1'];
+                form.periksa2['np_1'] = qcData[0]['periksa2'];
+                form.jml_kemas['no_1'] = qcData[0]['lbr_kemas'];
+                form.no_rim['no_1'] = qcData[0]['nomor_rim'];
+            }
+
             //Dynamic Form Untuk Pemeriksa
             for (let i = 2; i < jml_label; i++) {
-                form.periksa1[`np_${i}`] = "";
-                form.periksa2[`np_${i}`] = "";
-                form.jml_kemas[`no_${i}`] = 300;
-                form.no_rim[`no_${i}`] = i;
+                if (typeof qcData[i - 1] !== 'undefined') {
+                    form.periksa1[`np_${i}`] = qcData[i - 1]['periksa1'];
+                    form.periksa2[`np_${i}`] = qcData[i - 1]['periksa2'];
+                    form.jml_kemas[`no_${i}`] = qcData[i - 1]['lbr_kemas'];
+                    form.no_rim[`no_${i}`] = qcData[i - 1]['nomor_rim'];
+                } else {
+                    form.periksa1[`np_${i}`] = "";
+                    form.periksa2[`np_${i}`] = "";
+                    form.jml_kemas[`no_${i}`] = 300;
+                    form.no_rim[`no_${i}`] = i;
+                }
             }
 
             // Last Field For Form
-            form.periksa1[`np_${jml_label}`] = "";
-            form.periksa2[`np_${jml_label}`] = "";
-            form.jml_kemas[`no_${jml_label}`] = last_jml_kemas;
-            form.no_rim[`no_${jml_label}`] = jml_label;
-
-            console.log(form);
+            if (typeof qcData[jml_label - 1] !== 'undefined') {
+                form.periksa1[`np_${jml_label}`] = qcData[jml_label - 1]['periksa1'];
+                form.periksa2[`np_${jml_label}`] = qcData[jml_label - 1]['periksa2'];
+                form.jml_kemas[`no_${jml_label}`] = qcData[jml_label - 1]['lbr_kemas'];
+                form.no_rim[`no_${jml_label}`] = qcData[jml_label - 1]['nomor_rim'];
+            } else {
+                form.periksa1[`np_${jml_label}`] = "";
+                form.periksa2[`np_${jml_label}`] = "";
+                form.jml_kemas[`no_${jml_label}`] = last_jml_kemas;
+                form.no_rim[`no_${jml_label}`] = jml_label;
+            }
 
         } catch (error) {
             console.error('Error fetching specification:', error);
@@ -185,7 +205,7 @@ const formHandler = {
         isLoading.value = true;
 
         try {
-            await apiService.submitForm(form);
+            await storeLabelData(form);
             const printContent = printService.generatePrintContent();
             printService.printWithoutDialog(printContent);
 
@@ -339,12 +359,6 @@ const handlePoInputChange = () => {
     errors.value.poNotFound = '';
     handlePoInput();
 };
-
-// const handleLabelQuantityInput = () => {
-//     setTimeout(() => {
-//         validation.validateLabelQuantity();
-//     }, VALIDATION_DELAY);
-// };
 
 let npDebounceTimer;
 const handleNpInput = () => {
@@ -503,7 +517,7 @@ const handleNpInput = () => {
                             <div class="flex flex-col gap-2 col-span-1 md:col-span-2">
                                 <template v-for="(pemeriksa1, key) in form.periksa1">
                                     <div class="space-y-2">
-                                        <TextInput v-model="form.periksa1[key]" @input="handleNpInput" :key="key"
+                                        <TextInput v-model="form.periksa1[key]" @input="handleNpInput" :key="key" required
                                             @keydown.enter.prevent type="text" maxlength="4" :disabled="!isDataFetched"
                                             placeholder="Max 4 karakter" class="text-center font-mono tracking-wider" />
                                     </div>
@@ -512,7 +526,7 @@ const handleNpInput = () => {
                             <div class="flex flex-col gap-2 col-span-1 md:col-span-2">
                                 <template v-for="(pemeriksa2, key) in form.periksa1">
                                     <div class="space-y-2">
-                                        <TextInput v-model="form.periksa2[key]" @input="handleNpInput"
+                                        <TextInput v-model="form.periksa2[key]" @input="handleNpInput" required
                                             @keydown.enter.prevent type="text" maxlength="4" :disabled="!isDataFetched"
                                             placeholder="Max 4 karakter" class="text-center font-mono tracking-wider" />
                                     </div>
