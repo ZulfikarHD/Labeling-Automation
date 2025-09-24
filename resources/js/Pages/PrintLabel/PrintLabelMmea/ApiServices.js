@@ -14,6 +14,6 @@ export async function storeLabelData(form) {
 }
 
 export async function fetchQcData(nomorPo) {
-    const response = await axios.get(`/api/print-label/mmea/qc-data/${nomorPo}`);
+    const response = await axios.get(`/api/mmea/qc-data/${nomorPo}`);
     return response.data;
 }
