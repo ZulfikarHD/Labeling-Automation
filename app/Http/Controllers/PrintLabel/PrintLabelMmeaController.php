@@ -19,15 +19,17 @@ class PrintLabelMmeaController extends Controller
         foreach($request->no_rim as $nomor_rim) {
             $key_kemas = "no_".$nomor_rim;
             $key_pemeriksa = "np_".$nomor_rim;
+
+
             GeneratedLabelsMmea::updateOrCreate(
                 [
                     'nomor_po'  => $request->no_po,
                     'nomor_rim' => $nomor_rim,
                 ],
                 [
-                    'periksa1'  => $request->periksa1[$key_pemeriksa],
-                    'periksa2'  => $request->periksa2[$key_pemeriksa],
-                    'lbr_kemas' => $request->jml_kemas[$key_kemas],
+                    'periksa1'  => $request->periksa1[$key_pemeriksa] ?? $request->periksa1['np_1'],
+                    'periksa2'  => $request->periksa2[$key_pemeriksa] ?? $request->periksa2['np_1'],
+                    'lbr_kemas' => $request->jml_kemas[$key_kemas] ?? $request->jml_kemas['no_1'],
                 ]
             );
         }

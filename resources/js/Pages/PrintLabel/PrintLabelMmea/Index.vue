@@ -29,7 +29,7 @@ import {
     CheckCircle,
     AlertCircle
 } from 'lucide-vue-next';
-import { initDataQc, initOrderSpec } from './InitDataLabel';
+import { initDataQc, initOrderSpec, resetOrderSpec } from './InitDataLabel';
 
 // Constants
 const PRINT_TIMEOUT_BASE = 1000;
@@ -47,6 +47,7 @@ const printTimeout = computed(() =>
         ? Math.round(PRINT_TIMEOUT_BASE * (form.jumlah_label / 5))
         : PRINT_TIMEOUT_BASE
 );
+
 const isLoading = ref(false);
 
 const specMmea = ref({
@@ -73,161 +74,93 @@ const form = useForm({
     jml_label: 0,
 });
 
+const singleLabelForm = useForm({
+    no_po: form.no_po,
+    no_rim: {
+        no_1: 1,
+    },
+    periksa1: {
+        np_1: "",
+    },
+    periksa2: {
+        np_1: "",
+    },
+    jml_kemas: {
+        no_1: 300,
+    },
+    jml_label: 1,
+});
+
 const errors = ref({
     poNotFound: '',
 });
 
-const InitDataLabel = () => {
-    // Store Nomor PO
-    let nomorPo = form.no_po;
+const InitDataLabel = async () => {
+    isLoading.value = true;
+    errors.value.poNotFound = '';
+    try {
+        // Ambil Data Order MMEA
+        const dataOrder = await (fetchDataOrder(form.no_po));
 
-    // Reset Form Label
-    form.reset();
+        // Initialize Spesifikasi Berdasarkan Data Order
+        const specOrder = await (initOrderSpec(dataOrder));
 
-    // Ambli Data Order Berdasarkan PO
-    const dataOrder = fetchDataOrder(nomorPo);
+        // Ambil Data Qc Jika Sudah Ada Di Database
+        const dataQc = await (initDataQc(dataOrder));
 
-    // Update Spesifikasi MMEA
-    specMmema.value = initOrderSpec(dataOrder);
+        // Update Form Label Berdasarkan Data QC
+        updateFormContent(dataQc);
+
+        // Update Form Spesifikasi Order
+        specMmea.value = specOrder;
+    } catch (error) {
+        resetOrderSpec();
+        console.error('Error fetching specification:', error);
+        errors.value.poNotFound = 'Nomor Po Tidak Ditemukan Harap Hubungi admin untuk memperbaharui data order';
+    } finally {
+        isLoading.value = false;
+    }
 }
 
-// Data management
-const dataManager = {
-    async fetchSpecification() {
-        // let nomor_po = form.no_po;
-        // form.reset();
+const updateFormContent = (dataQc) => {
+    form.no_po = dataQc.no_po;
+    form.no_rim = dataQc.no_rim;
+    form.periksa1 = dataQc.periksa1;
+    form.periksa2 = dataQc.periksa2;
+    form.jml_kemas = dataQc.jml_kemas;
+    form.jml_label = dataQc.jml_label;
+}
 
-        // if (!nomor_po || nomor_po < 3) {
-        //     this.resetSpecification();
-        //     return;
-        // }
-
-        // form.no_po = nomor_po;
-        isLoading.value = true;
-        errors.value.poNotFound = '';
-
-        try {
-            const dataOrder = await (fetchDataOrder(form.no_po));
-
-            const specOrder = await (initOrderSpec(dataOrder));
-            const dataQc    = await (initDataQc(dataOrder));
-
-            specMmea.value = specOrder;
-            form = dataQc;
-
-
-            // const [orderSpec, dataQc] = await Promise.all([
-            //     initOrderSpec(await dataOrder),
-            //     initDataQc(dataOrder),
-            // ]);
-
-            console.log(form.value)
-            // const [specData, qcData] = await Promise.all([
-            //     fetchDataOrder(nomor_po),
-            //     fetchQcData(nomor_po)
-            // ]);
-
-            // console.log(initDataQc(specData));
-
-            // let produkMmea = "MMEA";
-
-            // if (specData.status == "ZP16" || specData.status == "ZP17") {
-            //     produkMmea = "MMEA";
-            // } else {
-            //     produkMmea = "HPTL";
-            // }
-
-            // const jml_label = Math.ceil(specData.rencet / 300);
-            // const last_jml_kemas = specData.rencet % 300 == 0 ? 300 : specData.rencet % 300;
-
-            // form.jml_label = jml_label;
-
-            // specMmea.value = {
-            //     produk: produkMmea,
-            //     no_obc: specData.no_obc,
-            //     jml_lbr: specData.rencet,
-            //     nomor_plat: "-", //temporary
-            // };
-
-            // if (jml_label == 1) {
-            //     form.jml_kemas.no_1 = specData.rencet;
-            // }
-
-            // // First Field Form
-            // if (typeof qcData[0] !== 'undefined') {
-            //     form.periksa1['np_1'] = qcData[0]['periksa1'];
-            //     form.periksa2['np_1'] = qcData[0]['periksa2'];
-            //     form.jml_kemas['no_1'] = qcData[0]['lbr_kemas'];
-            //     form.no_rim['no_1'] = qcData[0]['nomor_rim'];
-            // }
-
-            // //Dynamic Form Untuk Pemeriksa
-            // for (let i = 2; i < jml_label; i++) {
-            //     if (typeof qcData[i - 1] !== 'undefined') {
-            //         form.periksa1[`np_${i}`] = qcData[i - 1]['periksa1'];
-            //         form.periksa2[`np_${i}`] = qcData[i - 1]['periksa2'];
-            //         form.jml_kemas[`no_${i}`] = qcData[i - 1]['lbr_kemas'];
-            //         form.no_rim[`no_${i}`] = qcData[i - 1]['nomor_rim'];
-            //     } else {
-            //         form.periksa1[`np_${i}`] = "";
-            //         form.periksa2[`np_${i}`] = "";
-            //         form.jml_kemas[`no_${i}`] = 300;
-            //         form.no_rim[`no_${i}`] = i;
-            //     }
-            // }
-
-            // // Last Field For Form
-            // if (typeof qcData[jml_label - 1] !== 'undefined') {
-            //     form.periksa1[`np_${jml_label}`] = qcData[jml_label - 1]['periksa1'];
-            //     form.periksa2[`np_${jml_label}`] = qcData[jml_label - 1]['periksa2'];
-            //     form.jml_kemas[`no_${jml_label}`] = qcData[jml_label - 1]['lbr_kemas'];
-            //     form.no_rim[`no_${jml_label}`] = qcData[jml_label - 1]['nomor_rim'];
-            // } else {
-            //     form.periksa1[`np_${jml_label}`] = "";
-            //     form.periksa2[`np_${jml_label}`] = "";
-            //     form.jml_kemas[`no_${jml_label}`] = last_jml_kemas;
-            //     form.no_rim[`no_${jml_label}`] = jml_label;
-            // }
-
-        } catch (error) {
-            console.error('Error fetching specification:', error);
-            this.resetSpecification();
-            errors.value.poNotFound = 'Nomor Po Tidak Ditemukan Harap Hubungi admin untuk memperbaharui data order';
-        } finally {
-            isLoading.value = false;
-        }
-    },
-
-    resetSpecification() {
-        specMmea.value = {
-            no_obc: '',
-            nomor_plat: '',
-            produk: '',
-            jml_lbr: 0,
-        };
-        errors.value.poNotFound = '';
-        errors.value.labelQuantity = '';
-    },
-
-    clearForm() {
-        form.reset();
-        this.resetSpecification();
-
-        if (!isLoading.value) {
-            swal.fire({
-                icon: 'info',
-                title: 'Form Telah Direset',
-                text: 'Semua data telah dihapus',
-                timer: 1500,
-                showConfirmButton: false
-            });
-        }
+const clearForm = () => {
+    form.reset();
+    resetOrderSpec();
+    if (!isLoading.value) {
+        swal.fire({
+            icon: 'info',
+            title: 'Form Telah Direset',
+            text: 'Semua data telah dihapus',
+            timer: 1500,
+            showConfirmButton: false
+        });
     }
-};
+}
+
+const printSingleLabel = (no_rim) => {
+    // Update Form Berdasarkan Nomor PO
+    singleLabelForm.no_po = form.no_po;
+    singleLabelForm.no_rim = { no_1: form.no_rim[`no_${no_rim}`] };
+    singleLabelForm.periksa1 = { np_1: form.periksa1[`np_${no_rim}`] };
+    singleLabelForm.periksa2 = { np_1: form.periksa2[`np_${no_rim}`] };
+    singleLabelForm.jml_kemas = { no_1: form.jml_kemas[`no_${no_rim}`] };
+    singleLabelForm.jml_label = 1;
+
+    console.log(singleLabelForm)
+    formHandler.submitForm('single');
+}
 
 // Form submission
 const formHandler = {
-    async submitForm() {
+    async submitForm(print_type) {
         // if (!validation.validateForm()) {
         //     return;
         // }
@@ -238,13 +171,20 @@ const formHandler = {
         isLoading.value = true;
 
         try {
-            await storeLabelData(form);
-            const printContent = printService.generatePrintContent();
+            if (print_type == "batch") {
+                await storeLabelData(form);
+            } else if (print_type == "single") {
+                await storeLabelData(singleLabelForm);
+            }
+
+            const printContent = printService.generatePrintContent(print_type);
             printService.printWithoutDialog(printContent);
 
             setTimeout(() => {
                 this.showSuccessMessage();
-                dataManager.clearForm();
+                if (print_type == "batch") {
+                    clearForm();
+                }
                 isLoading.value = false;
             }, printTimeout.value);
 
@@ -258,7 +198,6 @@ const formHandler = {
         const result = await swal.fire({
             icon: 'question',
             title: 'Konfirmasi Cetak Label',
-            // html: this.buildConfirmationHtml(),
             showCancelButton: true,
             confirmButtonText: 'Ya, Cetak Label',
             cancelButtonText: 'Batal',
@@ -267,27 +206,6 @@ const formHandler = {
 
         return result.isConfirmed;
     },
-
-    // buildConfirmationHtml() {
-    //     const confirmationData = [
-    //         { label: 'No PO', value: form.no_po },
-    //         { label: 'Team', value: getTeamName(form.team) },
-    //         { label: 'Jumlah Label', value: form.jumlah_label, highlight: true },
-    //         { label: 'NP1', value: form.np1 || '-', mono: true },
-    //         { label: 'NP2', value: form.np2 || '-', mono: true }
-    //     ];
-
-    //     return `
-    //         <div class="text-left space-y-3">
-    //             ${confirmationData.map(item => `
-    //                 <div class="flex items-center justify-between">
-    //                     <span class="text-sm font-medium text-slate-600 dark:text-slate-400">${item.label}:</span>
-    //                     <span class="text-sm font-bold ${item.highlight ? 'text-blue-600 dark:text-blue-400' : 'text-slate-900 dark:text-slate-100'} ${item.mono ? 'font-mono' : ''}">${item.value}</span>
-    //                 </div>
-    //             `).join('')}
-    //         </div>
-    //     `;
-    // },
 
     showSuccessMessage() {
         swal.fire({
@@ -366,15 +284,26 @@ const printService = {
         }, 1000);
     },
 
-    generatePrintContent() {
-        return LabelMmea(
-            specMmea.value.no_obc,
-            obcColor,
-            form.periksa1,
-            form.periksa2,
-            form.jml_label,
-            form.jml_kemas,
-        );
+    generatePrintContent(print_type) {
+        if (print_type == "batch") {
+            return LabelMmea(
+                specMmea.value.no_obc,
+                obcColor,
+                form.periksa1,
+                form.periksa2,
+                form.jml_label,
+                form.jml_kemas,
+            );
+        } else if (print_type == "single") {
+            return LabelMmea(
+                specMmea.value.no_obc,
+                obcColor,
+                singleLabelForm.periksa1,
+                singleLabelForm.periksa2,
+                singleLabelForm.jml_label,
+                singleLabelForm.jml_kemas,
+            );
+        }
     }
 };
 
@@ -384,7 +313,8 @@ let debounceTimer;
 const handlePoInput = () => {
     clearTimeout(debounceTimer);
     debounceTimer = setTimeout(() => {
-        dataManager.fetchSpecification();
+        // dataManager.fetchSpecification();
+        InitDataLabel();
     }, DEBOUNCE_DELAY);
 };
 
@@ -528,15 +458,17 @@ const handleNpInput = () => {
                 <div class="p-8">
                     <form @submit.prevent="formHandler.submitForm" class="space-y-6">
 
-                        <div class="grid grid-cols-1 md:grid-cols-5 gap-6">
+                        <div class="grid grid-cols-1 md:grid-cols-6 gap-6">
                             <InputLabel value="Nomor Rim" required class="text-slate-700 dark:text-slate-300" />
                             <InputLabel value="Periksa 1" required
                                 class="text-slate-700 dark:text-slate-300 col-span-1 md:col-span-2" />
                             <InputLabel value="Periksa 2" required
                                 class="text-slate-700 dark:text-slate-300 col-span-1 md:col-span-2" />
+                            <InputLabel value="Print Satuan" required
+                                class="text-slate-700 dark:text-slate-300 col-span-1 md:col-span-1" />
                         </div>
                         <!-- NP Input Fields -->
-                        <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
+                        <div class="grid grid-cols-1 md:grid-cols-6 gap-4">
                             <div class="flex flex-col gap-2 col-span-1">
                                 <template v-for="(nomorRim, key) in form.no_rim">
                                     <div class="space-y-2">
@@ -558,7 +490,7 @@ const handleNpInput = () => {
                                 </template>
                             </div>
                             <div class="flex flex-col gap-2 col-span-1 md:col-span-2">
-                                <template v-for="(pemeriksa2, key) in form.periksa1">
+                                <template v-for="(pemeriksa2, key) in form.periksa2">
                                     <div class="space-y-2">
                                         <TextInput v-model="form.periksa2[key]" @input="handleNpInput" required
                                             @keydown.enter.prevent type="text" maxlength="4" :disabled="!isDataFetched"
@@ -566,18 +498,27 @@ const handleNpInput = () => {
                                     </div>
                                 </template>
                             </div>
+                            <div class="flex flex-col gap-2 col-span-1">
+                                <template v-for="(nomorRim, key) in form.no_rim">
+                                    <Button type="button" @click="printSingleLabel(nomorRim)" variant="primary"
+                                        size="sm"
+                                        :disabled="!isDataFetched || isLoading || !!errors.labelQuantity || !form.periksa1"
+                                        :loading="isLoading" :icon="Printer" class="flex-1 mb-3 mt-0.5 ml-2 mr-2">
+                                    </Button>
+                                </template>
+                            </div>
                         </div>
 
                         <!-- Action Buttons -->
                         <div class="flex flex-col sm:flex-row gap-4 pt-6">
-                            <Button type="submit" variant="primary" size="lg"
+                            <Button type="button" @click="formHandler.submitForm('batch')" variant="primary" size="lg"
                                 :disabled="!isDataFetched || isLoading || !!errors.labelQuantity || !form.periksa1"
                                 :loading="isLoading" :icon="Printer" class="flex-1">
                                 Cetak Label
                             </Button>
 
                             <Button type="button" variant="outline-secondary" size="lg" :icon="RotateCcw"
-                                @click="dataManager.clearForm" class="flex-1">
+                                @click="clearForm" class="flex-1">
                                 Clear Form
                             </Button>
                         </div>

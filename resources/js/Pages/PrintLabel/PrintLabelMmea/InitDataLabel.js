@@ -36,6 +36,7 @@ export async function initDataQc(dataOrder) {
         periksa1: {},
         periksa2: {},
         jml_kemas: {},
+        jml_label: jml_label,
     };
 
     // ------------------------------------------ //
@@ -88,9 +89,9 @@ export async function initDataQc(dataOrder) {
 
 export function resetOrderSpec() {
     return {
-        produk: "-",
         no_obc: "-",
-        jml_lbr: 0,
+        produk: "-",
         no_plat: "-",
+        jml_lbr: 0,
     }
 }
