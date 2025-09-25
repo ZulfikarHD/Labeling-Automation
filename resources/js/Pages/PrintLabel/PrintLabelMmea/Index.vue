@@ -126,7 +126,6 @@ const InitDataLabel = async () => {
 }
 
 const updateFormContent = (dataQc) => {
-    console.log(dataQc);
     form.no_po = dataQc.no_po;
     form.no_rim = dataQc.no_rim;
     form.periksa1 = dataQc.periksa1;
