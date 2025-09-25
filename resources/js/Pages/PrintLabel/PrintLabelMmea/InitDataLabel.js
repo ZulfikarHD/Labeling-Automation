@@ -24,7 +24,7 @@ export async function initDataQc(dataOrder) {
     const jml_label = Math.ceil(dataOrder.rencet / 300);
 
     // Hitung Banyaknya Jumlah Kemas Rim Terakhir Pada Order
-    const last_jml_kemas = dataOrder.rencet % 300 == 0 ? 300 : dataOrder.rencet % 300;
+    const last_jml_kemas = dataOrder.jml_order % 300 == 0 ? 300 : dataOrder.rencet % 300;
 
     // Ambil Data QC Jika Ada di Database
     const data_qc = await fetchQcData(dataOrder.no_po);
@@ -52,15 +52,15 @@ export async function initDataQc(dataOrder) {
     } else {
         form_qc['periksa1']['np_1'] = "";
         form_qc['periksa2']['np_1'] = "";
-        form_qc['jml_kemas']['no_1'] = jml_label > 1 ? 300 : dataOrder.rencet;
+        form_qc['jml_kemas']['no_1'] = jml_label > 1 ? 300 : dataOrder.jml_order;
         form_qc['no_rim']['no_1'] = 1;
     }
 
     // Isi Filed Kedua dan Seterusnya
     for (let i = 2; i < jml_label; i++) {
         if (typeof data_qc[i - 1] !== 'undefined') {
-            form_qc['periksa1'][`np_${i}`] = data_qc[i - 1]['periksa1'];
-            form_qc['periksa2'][`np_${i}`] = data_qc[i - 1]['periksa2'];
+            form_qc['periksa1'][`np_${i}`] = data_qc[i - 1]['periksa1'] ?? "";
+            form_qc['periksa2'][`np_${i}`] = data_qc[i - 1]['periksa2'] ?? "";
             form_qc['jml_kemas'][`no_${i}`] = data_qc[i - 1]['lbr_kemas'];
             form_qc['no_rim'][`no_${i}`] = data_qc[i - 1]['nomor_rim'];
         } else {

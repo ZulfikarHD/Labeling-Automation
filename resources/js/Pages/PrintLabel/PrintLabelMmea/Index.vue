@@ -1,9 +1,9 @@
 <script setup>
 /**
  * TODO : Cleanup Code
- * TODO : Add Validation
  * TODO : Add Checklist For Print Selected Item Only
- * TODO : Add Print Ulang Label
+ * TODO : Get Array From No Rim
+ * 
  */
 import { ref, inject, computed } from 'vue';
 import { Head, useForm } from '@inertiajs/vue3';
@@ -49,6 +49,7 @@ const printTimeout = computed(() =>
 );
 
 const isLoading = ref(false);
+const nomorPo = ref(0);
 
 const specMmea = ref({
     produk: "-",
@@ -58,7 +59,7 @@ const specMmea = ref({
 });
 
 const form = useForm({
-    no_po: 0,
+    no_po: nomorPo.value,
     no_rim: {
         no_1: 1,
     },
@@ -75,7 +76,7 @@ const form = useForm({
 });
 
 const singleLabelForm = useForm({
-    no_po: form.no_po,
+    no_po: nomorPo.value,
     no_rim: {
         no_1: 1,
     },
@@ -98,9 +99,10 @@ const errors = ref({
 const InitDataLabel = async () => {
     isLoading.value = true;
     errors.value.poNotFound = '';
+
     try {
         // Ambil Data Order MMEA
-        const dataOrder = await (fetchDataOrder(form.no_po));
+        const dataOrder = await (fetchDataOrder(nomorPo.value));
 
         // Initialize Spesifikasi Berdasarkan Data Order
         const specOrder = await (initOrderSpec(dataOrder));
@@ -114,7 +116,8 @@ const InitDataLabel = async () => {
         // Update Form Spesifikasi Order
         specMmea.value = specOrder;
     } catch (error) {
-        resetOrderSpec();
+        resetSpecMmea();
+        form.reset();
         console.error('Error fetching specification:', error);
         errors.value.poNotFound = 'Nomor Po Tidak Ditemukan Harap Hubungi admin untuk memperbaharui data order';
     } finally {
@@ -123,6 +126,7 @@ const InitDataLabel = async () => {
 }
 
 const updateFormContent = (dataQc) => {
+    console.log(dataQc);
     form.no_po = dataQc.no_po;
     form.no_rim = dataQc.no_rim;
     form.periksa1 = dataQc.periksa1;
@@ -133,7 +137,7 @@ const updateFormContent = (dataQc) => {
 
 const clearForm = () => {
     form.reset();
-    resetOrderSpec();
+    resetSpecMmea();
     if (!isLoading.value) {
         swal.fire({
             icon: 'info',
@@ -145,6 +149,13 @@ const clearForm = () => {
     }
 }
 
+const resetSpecMmea = () => {
+    specMmea.value.produk = "-";
+    specMmea.value.no_obc = "-";
+    specMmea.value.jml_lbr    = 0;
+    specMmea.value.no_plat    = "-";
+}
+
 const printSingleLabel = (no_rim) => {
     // Update Form Berdasarkan Nomor PO
     singleLabelForm.no_po = form.no_po;
@@ -154,7 +165,6 @@ const printSingleLabel = (no_rim) => {
     singleLabelForm.jml_kemas = { no_1: form.jml_kemas[`no_${no_rim}`] };
     singleLabelForm.jml_label = 1;
 
-    console.log(singleLabelForm)
     formHandler.submitForm('single');
 }
 
@@ -356,7 +366,7 @@ const handleNpInput = () => {
                         <InputLabel for="no_po" value="Nomor Production Order" required
                             class="text-slate-700 dark:text-slate-300" />
                         <div class="relative">
-                            <TextInput id="no_po" v-model="form.no_po" @input="handlePoInputChange" type="text"
+                            <TextInput id="no_po" v-model="nomorPo" @input="handlePoInputChange" type="text"
                                 placeholder="Scan atau ketik nomor PO..."
                                 class="text-center text-lg font-mono tracking-wider pr-12"
                                 :class="errors.poNotFound ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''"
@@ -474,7 +484,7 @@ const handleNpInput = () => {
                                     <div class="space-y-2">
                                         <TextInput v-model="form.no_rim[key]" @input="handleNpInput" disabled
                                             :value="nomorRim" @keydown.enter.prevent type="text" maxlength="4"
-                                            :disabled="!isDataFetched" required placeholder="Nomor Rim"
+                                            :disabled="!isDataFetched || specMmea.no_obc == '-'" required placeholder="Nomor Rim"
                                             class="text-center font-mono tracking-wider" />
                                     </div>
                                 </template>
@@ -484,7 +494,7 @@ const handleNpInput = () => {
                                     <div class="space-y-2">
                                         <TextInput v-model="form.periksa1[key]" @input="handleNpInput" :key="key"
                                             required @keydown.enter.prevent type="text" maxlength="4"
-                                            :disabled="!isDataFetched" placeholder="Max 4 karakter"
+                                            :disabled="!isDataFetched || specMmea.no_obc == '-'" placeholder="Max 4 karakter"
                                             class="text-center font-mono tracking-wider" />
                                     </div>
                                 </template>
@@ -493,7 +503,7 @@ const handleNpInput = () => {
                                 <template v-for="(pemeriksa2, key) in form.periksa2">
                                     <div class="space-y-2">
                                         <TextInput v-model="form.periksa2[key]" @input="handleNpInput" required
-                                            @keydown.enter.prevent type="text" maxlength="4" :disabled="!isDataFetched"
+                                            @keydown.enter.prevent type="text" maxlength="4" :disabled="!isDataFetched || specMmea.no_obc == '-'"
                                             placeholder="Max 4 karakter" class="text-center font-mono tracking-wider" />
                                     </div>
                                 </template>
@@ -502,7 +512,7 @@ const handleNpInput = () => {
                                 <template v-for="(nomorRim, key) in form.no_rim">
                                     <Button type="button" @click="printSingleLabel(nomorRim)" variant="primary"
                                         size="sm"
-                                        :disabled="!isDataFetched || isLoading || !!errors.labelQuantity || !form.periksa1"
+                                        :disabled="!isDataFetched || isLoading || form.periksa1['np_'+nomorRim] == '' || form.periksa2['np_'+nomorRim] == ''"
                                         :loading="isLoading" :icon="Printer" class="flex-1 mb-3 mt-0.5 ml-2 mr-2">
                                     </Button>
                                 </template>
@@ -512,7 +522,7 @@ const handleNpInput = () => {
                         <!-- Action Buttons -->
                         <div class="flex flex-col sm:flex-row gap-4 pt-6">
                             <Button type="button" @click="formHandler.submitForm('batch')" variant="primary" size="lg"
-                                :disabled="!isDataFetched || isLoading || !!errors.labelQuantity || !form.periksa1"
+                                :disabled="!isDataFetched || isLoading"
                                 :loading="isLoading" :icon="Printer" class="flex-1">
                                 Cetak Label
                             </Button>
