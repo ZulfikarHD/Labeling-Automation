@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use App\Models\GeneratedLabels;
+use App\Models\GeneratedLabelsMmea;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
@@ -93,4 +95,62 @@ class VerificationService
             ];
         })->sortByDesc('verifikasi')->values();
     }
+
+    public function getDataVerifMmea()
+    {
+        $data_prod_mmea = GeneratedLabelsMmea::query()
+                            // ->where('created_at',today())
+                            ->get();
+
+        $prod_p1 = $this->produksiLembarP1($data_prod_mmea);
+        $prod_p2 = $this->produksiLembarP2($data_prod_mmea);
+                    
+        $np_prod = array_keys(array_merge($prod_p1,$prod_p2));
+
+        // Produksi Mmea Dalam Satuan Lembar
+        foreach ($np_prod as $np) {
+            $prod_verif_p1 = $data_prod_mmea->where('periksa1',$np)->sum('lbr_kemas');
+            $prod_verif_p2 = $data_prod_mmea->where('periksa2',$np)->sum('lbr_kemas');
+            $sub_total_prod[$np] = $prod_verif_p1 + $prod_verif_p2;
+        }
+
+        // Produksi Mmmea Dalam Satuan OBC / PO
+        foreach ($np_prod as $np) {
+            $prod_po_p1 = $data_prod_mmea->where('periksa1',$np)->unique('nomor_po');
+            $prod_po_p2 = $data_prod_mmea->where('periksa2',$np)->unique('nomor_po');
+            // $sub_total_po[$np] = $prod_po_p1 + $prod_po_p2;
+        }
+
+        dd($data_prod_mmea->where('periksa1',"asdf")->unique('nomor_po'));
+
+        return [
+            'produksi_lbr' => $sub_total_prod,
+        ];
+
+    }
+
+    private function produksiLembarP1($data_produksi) : array
+    {
+        return $data_produksi->groupBy('periksa1')
+                    ->map(function($q){
+                        return $q->sum('lbr_kemas');
+                    })->toArray();
+    }
+
+    private function produksiLembarP2($data_produksi) : array
+    {
+        return $data_produksi->groupBy('periksa2')
+                    ->map(function($q){
+                        return $q->sum('lbr_kemas');
+                    })->toArray();
+    }
+
+    // private function produksiPoP1($data_produksi) : array
+    // {
+    //     return $data_produksi->groupBy('periksa1')
+    //                 ->map(function($q){
+    //                     return $q->distinct()->count('nomor_po')
+    //                 })->toArray();
+    // }
+    
 }

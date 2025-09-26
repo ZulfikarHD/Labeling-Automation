@@ -9,6 +9,7 @@ import { Head, useForm } from '@inertiajs/vue3' // Utilitas dari Inertia.js untu
 import { ref, watch, onMounted, computed } from 'vue' // Composables dari Vue 3
 import { Calendar } from 'lucide-vue-next' // Icon kalender dari library Lucide
 import axios from 'axios' // HTTP client untuk request API
+import TableVerifikasiMmea from './Table/TableVerifikasiMmea.vue'
 
 // Props yang diterima komponen
 const props = defineProps({
@@ -92,6 +93,7 @@ const filteredTeams = computed(() => {
 
                     <!-- Tampilan saat tidak ada data -->
                     <div v-if="!isLoading && activeTeams.length === 0" class="text-center py-12">
+                        <TableVerifikasiMmea />
                         <p class="text-lg text-gray-600 dark:text-gray-400">
                             Tidak ada data produksi untuk tanggal ini
                         </p>
@@ -107,6 +109,7 @@ const filteredTeams = computed(() => {
 
                         <!-- Tabel untuk semua tim (agregat) -->
                         <TableVerifikasiPegawai :team="0" :date="form.date" />
+
                     </template>
                 </div>
             </div>

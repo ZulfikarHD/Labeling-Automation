@@ -84,6 +84,7 @@ Route::post('/order-kecil/cetak-label', [App\Http\Controllers\OrderKecil\CetakLa
 |--------------------------------------------------------------------------
 */
 Route::get('/pendapatan-harian', [PendapatanHarianController::class, 'gradeHarian']);
+Route::get('/pendapatan-harian-mmea',[PendapatanHarianController::class, 'gradeHarianMmea']);
 Route::get('/team-name/{id}', [App\Models\Workstations::class, 'getTeamName']);
 Route::post('/update-spec', [UpdateSpecController::class, 'updateSpec']);
 Route::get('/active-teams', [PendapatanHarianController::class, 'getActiveTeams']);
@@ -105,5 +106,4 @@ Route::post('/print-label/inspeksi/store', [App\Http\Controllers\PrintLabel\Prin
 |--------------------------------------------------------------------------
 */
 Route::post('/print-label/mmea/store', [PrintLabelMmeaController::class, 'store']);
-
 Route::get('/mmea/qc-data/{nomor_po}', [PrintLabelMmeaController::class,  'qcData']);

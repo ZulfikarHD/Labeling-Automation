@@ -9,7 +9,11 @@ class GeneratedLabelsMmea extends Model
 {
     use HasFactory;
     protected $table = 'generated_labels_mmea';
-    protected $guarded = [
-        'id'
+    protected $fillable = [
+        'nomor_po',
+        'nomor_rim',
+        'periksa1',
+        'periksa2',
+        'lbr_kemas',
     ];
 }

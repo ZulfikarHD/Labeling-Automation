@@ -43,6 +43,11 @@ class PendapatanHarianController extends Controller
         return response()->json($this->verificationService->getDailyVerification($date, $request->team));
     }
 
+    public function gradeHarianMmea(Request $request)
+    {
+        return response()->json($this->verificationService->getDataVerifMmea());
+    }
+
     /**
      * Mengambil daftar tim yang memiliki aktivitas
      */
