@@ -1,4 +1,48 @@
 <script setup>
+import BaseCard from '@/Components/BaseCard.vue';
+import Badge from '@/Components/CustomBadge.vue';
+import TableVerifikasiPegawaiSkeleton from '@/Components/TableVerifikasiPegawaiSkeleton.vue';
+import { ChevronLeft, ChevronRight } from 'lucide-vue-next';
+import axios from 'axios';
+import { computed, ref } from 'vue';
+
+const dataProduksi = ref([]);
+const isLoading = ref(false);
+
+// Table Component
+const currentPage = ref(1);
+const itemsPerPage = ref(10);
+
+const initDataProduksi = async () => {
+    isLoading.value = true;
+
+    try {
+        const produksiResponse = await axios.get(`/api/pendapatan-harian-mmea`);
+        dataProduksi.value = produksiResponse.data
+        console.log(dataProduksi.value);
+    } catch {
+
+    } finally {
+        isLoading.value = false;
+    }
+}
+
+initDataProduksi();
+
+// Computed properties untuk pagination
+const paginatedData = computed(() => {
+    const start = (currentPage.value - 1) * itemsPerPage;
+    return dataProduksi.value || [];
+});
+
+const totalPages = computed(() =>
+    Math.ceil(dataProduksi.value.length / itemsPerPage) || 0
+);
+
+// Fungsi navigasi pagination
+const nextPage = () => currentPage.value < totalPages.value && currentPage.value++;
+const prevPage = () => currentPage.value > 1 && currentPage.value--;
+
 </script>
 
 <template>
@@ -31,7 +75,7 @@
                                 </svg>
                                 <div class="flex flex-col items-start">
                                     <span class="text-xs opacity-80">Total Verifikasi</span>
-                                    <span class="font-semibold">100 Lbr</span>
+                                    <span class="font-semibold"> Lbr</span>
                                 </div>
                             </Badge>
                         </div>
@@ -70,13 +114,16 @@
                         </thead>
                         <!-- Body dengan spacing yang lebih baik -->
                         <tbody class="bg-white/50 dark:bg-gray-800/50 divide-y divide-gray-200 dark:divide-gray-700">
-                            <tr
+                            <tr v-for="(produksi, np) in paginatedData"
+                                :key="index"
                                 class="hover:bg-sky-50 dark:hover:bg-sky-900/20 transition-all duration-200 even:bg-gray-50/50 dark:even:bg-gray-800/30">
                                 <td
                                     class="px-6 py-5 whitespace-nowrap text-sm text-center font-medium text-gray-600 dark:text-gray-400">
+                                    {{ (currentPage - 1) * itemsPerPage + 1 }}
                                 </td>
                                 <!-- NP dengan indikator clickable -->
                                 <td class="px-6 py-5 whitespace-nowrap text-sm text-center group">
+                                    {{ np }}
                                     <a href="#"
                                         class="inline-flex items-center gap-1 font-medium text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300">
                                         <svg class="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity"
@@ -91,19 +138,19 @@
                                 <!-- Nilai dengan spacing yang lebih baik -->
                                 <td class="px-6 py-5 whitespace-nowrap text-sm text-right">
                                     <span class="font-semibold text-cyan-600 dark:text-cyan-400 mr-2">
-
+                                        {{ produksi[0] }}
                                     </span>
                                     <span class="text-gray-500 dark:text-gray-400 text-xs">Lbr</span>
                                 </td>
                                 <td class="px-6 py-5 whitespace-nowrap text-sm text-right">
                                     <span class="font-semibold text-emerald-600 dark:text-emerald-400">
-
+                                        {{ produksi[2] }}
                                     </span>
                                     <span class="text-gray-500 dark:text-gray-400 ml-1 text-xs">RIM</span>
                                 </td>
                                 <td class="px-6 py-5 whitespace-nowrap text-sm text-right">
                                     <span class="font-semibold text-emerald-600 dark:text-emerald-400">
-
+                                        {{ produksi[1] }}
                                     </span>
                                     <span class="text-gray-500 dark:text-gray-400 ml-1 text-xs">PO</span>
                                 </td>

@@ -1,7 +1,7 @@
 <?php
+namespace App\Http\Jobs;
 
-
-class Divnum
+Trait Divnum
 {
     public function divnum($numerator, $denominator)
     {
