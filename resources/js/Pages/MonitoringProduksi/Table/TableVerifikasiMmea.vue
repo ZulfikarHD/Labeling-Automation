@@ -4,35 +4,47 @@ import Badge from '@/Components/CustomBadge.vue';
 import TableVerifikasiPegawaiSkeleton from '@/Components/TableVerifikasiPegawaiSkeleton.vue';
 import { ChevronLeft, ChevronRight } from 'lucide-vue-next';
 import axios from 'axios';
-import { computed, ref } from 'vue';
+import { computed, ref, watch } from 'vue';
+
+const props = defineProps({
+    date: String
+});
 
 const dataProduksi = ref([]);
-const isLoading = ref(false);
+const dateFilter = ref(props.date);
+const isLoading  = ref(false);
 
 // Table Component
 const currentPage = ref(1);
-const itemsPerPage = ref(10);
+const itemsPerPage = 10;
 
 const initDataProduksi = async () => {
     isLoading.value = true;
-
     try {
-        const produksiResponse = await axios.get(`/api/pendapatan-harian-mmea`);
+        const produksiResponse = await axios.get(`/api/pendapatan-harian-mmea?date=${dateFilter.value}`);
         dataProduksi.value = produksiResponse.data
-        console.log(dataProduksi.value);
     } catch {
-
+        
     } finally {
         isLoading.value = false;
     }
 }
 
+const totalProduksi = computed(() => {
+    return dataProduksi.value.reduce((sum, item) => sum + Number(item.lbr), 0);
+});
+
 initDataProduksi();
+
+watch(() => props.date, () => {
+    dateFilter.value = props.date;
+    initDataProduksi();
+});
 
 // Computed properties untuk pagination
 const paginatedData = computed(() => {
     const start = (currentPage.value - 1) * itemsPerPage;
-    return dataProduksi.value || [];
+    return dataProduksi.value.slice(start, start + itemsPerPage) || [];
 });
 
 const totalPages = computed(() =>
@@ -59,7 +71,7 @@ const prevPage = () => currentPage.value > 1 && currentPage.value--;
                     <!-- Periode Data -->
                     <div class="px-6 py-3 border-b border-gray-200 dark:border-gray-700">
                         <span class="text-sm text-gray-600 dark:text-gray-400">Periode Data : </span>
-                        <span class="font-medium text-blue-600 dark:text-blue-400"></span>
+                        <span class="font-medium text-blue-600 dark:text-blue-400">{{ props.date }}</span>
                     </div>
 
                     <!-- Sum Harian -->
@@ -75,7 +87,7 @@ const prevPage = () => currentPage.value > 1 && currentPage.value--;
                                 </svg>
                                 <div class="flex flex-col items-start">
                                     <span class="text-xs opacity-80">Total Verifikasi</span>
-                                    <span class="font-semibold"> Lbr</span>
+                                    <span class="font-semibold">{{ totalProduksi }} Lbr</span>
                                 </div>
                             </Badge>
                         </div>
@@ -114,16 +126,15 @@ const prevPage = () => currentPage.value > 1 && currentPage.value--;
                         </thead>
                         <!-- Body dengan spacing yang lebih baik -->
                         <tbody class="bg-white/50 dark:bg-gray-800/50 divide-y divide-gray-200 dark:divide-gray-700">
-                            <tr v-for="(produksi, np) in paginatedData"
-                                :key="index"
+                            <tr v-for="(produksi, index) in paginatedData" :key="index"
                                 class="hover:bg-sky-50 dark:hover:bg-sky-900/20 transition-all duration-200 even:bg-gray-50/50 dark:even:bg-gray-800/30">
                                 <td
                                     class="px-6 py-5 whitespace-nowrap text-sm text-center font-medium text-gray-600 dark:text-gray-400">
-                                    {{ (currentPage - 1) * itemsPerPage + 1 }}
+                                    {{ (currentPage - 1) * itemsPerPage + index + 1 }}
                                 </td>
                                 <!-- NP dengan indikator clickable -->
                                 <td class="px-6 py-5 whitespace-nowrap text-sm text-center group">
-                                    {{ np }}
+                                    {{ produksi['np'] }}
                                     <a href="#"
                                         class="inline-flex items-center gap-1 font-medium text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300">
                                         <svg class="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity"
@@ -138,19 +149,19 @@ const prevPage = () => currentPage.value > 1 && currentPage.value--;
                                 <!-- Nilai dengan spacing yang lebih baik -->
                                 <td class="px-6 py-5 whitespace-nowrap text-sm text-right">
                                     <span class="font-semibold text-cyan-600 dark:text-cyan-400 mr-2">
-                                        {{ produksi[0] }}
+                                        {{ produksi['lbr'] }}
                                     </span>
                                     <span class="text-gray-500 dark:text-gray-400 text-xs">Lbr</span>
                                 </td>
                                 <td class="px-6 py-5 whitespace-nowrap text-sm text-right">
                                     <span class="font-semibold text-emerald-600 dark:text-emerald-400">
-                                        {{ produksi[2] }}
+                                        {{ produksi['rim'] }}
                                     </span>
                                     <span class="text-gray-500 dark:text-gray-400 ml-1 text-xs">RIM</span>
                                 </td>
                                 <td class="px-6 py-5 whitespace-nowrap text-sm text-right">
                                     <span class="font-semibold text-emerald-600 dark:text-emerald-400">
-                                        {{ produksi[1] }}
+                                        {{ produksi['po'] }}
                                     </span>
                                     <span class="text-gray-500 dark:text-gray-400 ml-1 text-xs">PO</span>
                                 </td>
@@ -179,8 +190,9 @@ const prevPage = () => currentPage.value > 1 && currentPage.value--;
                 </div>
 
                 <!-- Pagination yang lebih cerdas -->
-                <div class="flex justify-center items-center gap-3 p-4 border-t border-gray-200 dark:border-gray-700">
-                    <button
+                <div v-if="totalPages > 1"
+                    class="flex justify-center items-center gap-3 p-4 border-t border-gray-200 dark:border-gray-700">
+                    <button @click="prevPage" :disabled="currentPage === 1"
                         class="inline-flex items-center gap-1 px-4 py-2 text-sm font-medium text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-800/40 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800">
                         <ChevronLeft class="w-4 h-4" /> Sebelumnya
                     </button>

@@ -45,7 +45,8 @@ class PendapatanHarianController extends Controller
 
     public function gradeHarianMmea(Request $request)
     {
-        return response()->json($this->verificationService->getDataVerifMmea());
+        $date = $request->date ? Carbon::parse($request->date)->startOfDay() : today();
+        return response()->json($this->verificationService->getDataVerifMmea($date));
     }
 
     /**

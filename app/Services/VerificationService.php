@@ -99,41 +99,41 @@ class VerificationService
         })->sortByDesc('verifikasi')->values();
     }
 
-    public function getDataVerifMmea()
+    public function getDataVerifMmea($date)
     {
         $data_prod_mmea = GeneratedLabelsMmea::query()
-                            // ->where('created_at',today())
+                            ->whereDate('created_at',$date)
                             ->get();
 
         $prod_p1 = $this->produksiMmeaP1($data_prod_mmea);
         $prod_p2 = $this->produksiMmeaP2($data_prod_mmea);
                     
-        $np_prod = array_keys(array_merge($prod_p1,$prod_p2));
+        $np_prod = array_merge(array_keys($prod_p1),array_keys($prod_p2));
+
+        $subtotal_prod = [];
 
         // Produksi Mmea Dalam Satuan Lembar
         foreach ($np_prod as $np) {
+            $subtotal_prod[$np]['np'] = $np;
+
             $prod_verif_p1 = $data_prod_mmea->where('periksa1',$np)->sum('lbr_kemas');
             $prod_verif_p2 = $data_prod_mmea->where('periksa2',$np)->sum('lbr_kemas');
-            $subtotal_prod[$np] = $prod_verif_p1 + $prod_verif_p2;
+            $subtotal_prod[$np]['lbr'] = $prod_verif_p1 + $prod_verif_p2;
 
             $prod_verif_p1_rim = $this->divnum($prod_verif_p1,300);
             $prod_verif_p2_rim = $this->divnum($prod_verif_p2,300);
-            $subtotal_prod_rim[$np] =  round($prod_verif_p1_rim + $prod_verif_p2_rim,0,PHP_ROUND_HALF_UP);
-        }
+            $subtotal_prod[$np]['rim'] =  round($prod_verif_p1_rim + $prod_verif_p2_rim,0,PHP_ROUND_HALF_UP);
 
-        // Produksi Mmmea Dalam Satuan OBC / PO
-        foreach ($np_prod as $np) {
             $prod_po_p1 = $data_prod_mmea->where('periksa1',$np)->unique('nomor_po')->count('no_po');
             $prod_po_p2 = $data_prod_mmea->where('periksa2',$np)->unique('nomor_po')->count('no_po');
-            $subtotal_po[$np] = $prod_po_p1 + $prod_po_p2;
+            $subtotal_prod[$np]['po'] = $prod_po_p1 + $prod_po_p2;
         }
 
-        $arr_produksi = array_merge_recursive($subtotal_prod,$subtotal_po,$subtotal_prod_rim);
+        // if($subtotal_prod !== null) {
+            usort($subtotal_prod, fn($a,$b) => $b['lbr'] <=> $a['lbr']);
+        // }
 
-        array_multisort(array_column($arr_produksi,0),SORT_DESC,SORT_NUMERIC,$arr_produksi);
-
-        return $arr_produksi;
-
+        return $subtotal_prod;
     }
 
     private function produksiMmeaP1($data_produksi) : array

@@ -94,7 +94,7 @@ const filteredTeams = computed(() => {
                     <!-- Tampilan saat tidak ada data -->
                     <div v-if="!isLoading && activeTeams.length === 0" class="text-center py-12">
                         <p class="text-lg text-gray-600 dark:text-gray-400">
-                            Tidak ada data produksi untuk tanggal ini
+                            Tidak ada data produksi PCHT untuk tanggal ini
                         </p>
                     </div>
 
@@ -110,7 +110,8 @@ const filteredTeams = computed(() => {
                         <TableVerifikasiPegawai :team="0" :date="form.date" />
 
                     </template>
-                    <TableVerifikasiMmea />
+                    
+                    <TableVerifikasiMmea  :date="form.date"/>
                 </div>
             </div>
         </div>
