@@ -1,10 +1,16 @@
 import axios from "axios";
+import { router } from "@inertiajs/vue3";
 
 export async function fetchDataOrder(nomorPo) {
     const response = await axios.get(`https://sirine.peruri.co.id/sirine/api/detail-order-mmea/${nomorPo}`);
 
     if (response.data == []) throw "Hubungi Admin Untuk Update Order MMEA";
 
+    return response.data;
+}
+
+export async function storeProductData(form) {
+    const response = await axios.post('/api/print-label/mmea/storeProduct', form);
     return response.data;
 }
 

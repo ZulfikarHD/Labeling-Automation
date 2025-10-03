@@ -16,7 +16,7 @@ import InputError from "@/Components/InputError.vue";
 import { router } from '@inertiajs/vue3';
 import LoadingOverlay from "@/Components/LoadingOverlay.vue";
 import { LabelMmea } from "@/Components/PrintPages/index";
-import { fetchDataOrder, fetchQcData, storeLabelData } from "./ApiServices"
+import { fetchDataOrder, fetchQcData, storeLabelData, storeProductData } from "./ApiServices"
 import axios from 'axios';
 import {
     Scan,
@@ -53,6 +53,7 @@ const nomorPo = ref(0);
 const printMode = ref("both");
 
 const specMmea = ref({
+    no_po: nomorPo.value,
     produk: "-",
     no_obc: "-",
     jml_lbr: 0,
@@ -181,6 +182,8 @@ const formHandler = {
         isLoading.value = true;
 
         try {
+            await storeProductData(specMmea.value);
+
             if (print_type == "batch") {
                 await storeLabelData(form);
             } else if (print_type == "single") {

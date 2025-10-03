@@ -4,6 +4,7 @@ namespace App\Http\Controllers\PrintLabel;
 
 use App\Http\Controllers\Controller;
 use App\Models\GeneratedLabelsMmea;
+use App\Models\GeneratedProducts;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -44,6 +45,26 @@ class PrintLabelMmeaController extends Controller
             //     'status' => $result['remaining_labels'] > 0 ? 'in_progress' : 'completed'
             // ]
         ]);
+    }
+
+    public function storeProduct(Request $request)
+    {
+        $sum_rim = round($request->jml_lbr,0,PHP_ROUND_HALF_UP);
+
+        GeneratedProducts::updateOrCreate(
+            [
+                'no_po' => $request->no_po,
+            ],
+            [
+                'no_obc'  => $request->no_obc,
+                'type'    => $request->produk,
+                'sum_rim' => $sum_rim,
+                'start_rim' => 1,
+                'end_rim'   => $sum_rim,
+                'assigned_team' => 6, //MMEA
+                'status'    => 2
+            ]
+        );
     }
 
     public function qcData(int $nomor_po)

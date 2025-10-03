@@ -10,6 +10,7 @@ export function initOrderSpec(dataOrder) {
 
     // Wrap Specification For Label
     const specOrder = {
+        no_po: dataOrder.no_po,
         produk: dataOrder.jenis,
         no_obc: dataOrder.no_obc,
         jml_lbr: dataOrder.rencet,

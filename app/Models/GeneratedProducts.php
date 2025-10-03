@@ -9,10 +9,15 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 class GeneratedProducts extends Model
 {
     use HasFactory;
-    protected $guarded = [
-        'id',
-        'created_at',
-        'updated_at',
+    protected $fillable = [
+        'no_po',
+        'no_obc',
+        'type',
+        'sum_rim',
+        'start_rim',
+        'end_rim',
+        'assigned_team',
+        'status'
     ];
 
     /**
