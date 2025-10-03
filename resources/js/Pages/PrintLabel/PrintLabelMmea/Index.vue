@@ -5,7 +5,7 @@
  * TODO : Get Array From No Rim
  * 
  */
-import { ref, inject, computed } from 'vue';
+import { ref, inject, computed, watch } from 'vue';
 import { Head, useForm } from '@inertiajs/vue3';
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import TextInput from "@/Components/TextInput.vue";
@@ -50,6 +50,7 @@ const printTimeout = computed(() =>
 
 const isLoading = ref(false);
 const nomorPo = ref(0);
+const printMode = ref("both");
 
 const specMmea = ref({
     produk: "-",
@@ -151,8 +152,8 @@ const clearForm = () => {
 const resetSpecMmea = () => {
     specMmea.value.produk = "-";
     specMmea.value.no_obc = "-";
-    specMmea.value.jml_lbr    = 0;
-    specMmea.value.no_plat    = "-";
+    specMmea.value.jml_lbr = 0;
+    specMmea.value.no_plat = "-";
 }
 
 const printSingleLabel = (no_rim) => {
@@ -302,6 +303,7 @@ const printService = {
                 form.periksa2,
                 form.jml_label,
                 form.jml_kemas,
+                printMode.value
             );
         } else if (print_type == "single") {
             return LabelMmea(
@@ -311,10 +313,12 @@ const printService = {
                 singleLabelForm.periksa2,
                 singleLabelForm.jml_label,
                 singleLabelForm.jml_kemas,
+                printMode.value
             );
         }
     }
 };
+
 
 
 // Debounced handlers
@@ -379,6 +383,18 @@ const handleNpInput = () => {
                             class="text-red-600 dark:text-red-400 text-sm mt-2 flex items-center gap-2">
                             <AlertCircle class="h-4 w-4" />
                             {{ errors.poNotFound }}
+                        </div>
+                    </div>
+
+                    <div class="relative mt-4">
+                        <InputLabel for="no_po" value="Mode Cetak" required
+                            class="text-slate-700 dark:text-slate-300" />
+                        <div class="relative">
+                            <Select id="print_mode" v-model="printMode">
+                                <option value="both">Periksa 1 & Periksa 2</option>
+                                <option value="p1_only">Periksa 1</option>
+                                <option value="p2_only">Periksa 2</option>
+                            </Select>
                         </div>
                     </div>
                 </div>
@@ -483,8 +499,8 @@ const handleNpInput = () => {
                                     <div class="space-y-2">
                                         <TextInput v-model="form.no_rim[key]" @input="handleNpInput" disabled
                                             :value="nomorRim" @keydown.enter.prevent type="text" maxlength="4"
-                                            :disabled="!isDataFetched || specMmea.no_obc == '-'" required placeholder="Nomor Rim"
-                                            class="text-center font-mono tracking-wider" />
+                                            :disabled="!isDataFetched || specMmea.no_obc == '-'" required
+                                            placeholder="Nomor Rim" class="text-center font-mono tracking-wider" />
                                     </div>
                                 </template>
                             </div>
@@ -493,8 +509,11 @@ const handleNpInput = () => {
                                     <div class="space-y-2">
                                         <TextInput v-model="form.periksa1[key]" @input="handleNpInput" :key="key"
                                             required @keydown.enter.prevent type="text" maxlength="4"
-                                            :disabled="!isDataFetched || specMmea.no_obc == '-'" placeholder="Max 4 karakter"
-                                            class="text-center font-mono tracking-wider" />
+                                            :disabled="!isDataFetched 
+                                                        || specMmea.no_obc == '-' 
+                                                        || (form.periksa1['np_' + (key.substring(3, 4) - 1)] == '' && key !== 'np_0') 
+                                                        || (form.periksa2['np_' + (key.substring(3, 4) - 1)] == '' && key !== 'np_0')"
+                                            placeholder="Max 4 karakter" class="text-center font-mono tracking-wider" />
                                     </div>
                                 </template>
                             </div>
@@ -502,7 +521,11 @@ const handleNpInput = () => {
                                 <template v-for="(pemeriksa2, key) in form.periksa2">
                                     <div class="space-y-2">
                                         <TextInput v-model="form.periksa2[key]" @input="handleNpInput" required
-                                            @keydown.enter.prevent type="text" maxlength="4" :disabled="!isDataFetched || specMmea.no_obc == '-'"
+                                            @keydown.enter.prevent type="text" maxlength="4"
+                                            :disabled="!isDataFetched 
+                                                        || specMmea.no_obc == '-' 
+                                                        || (form.periksa1['np_' + (key.substring(3, 4) - 1)] == '' && key !== 'np_0') 
+                                                        || (form.periksa2['np_' + (key.substring(3, 4) - 1)] == '' && key !== 'np_0')"
                                             placeholder="Max 4 karakter" class="text-center font-mono tracking-wider" />
                                     </div>
                                 </template>
@@ -511,7 +534,7 @@ const handleNpInput = () => {
                                 <template v-for="(nomorRim, key) in form.no_rim">
                                     <Button type="button" @click="printSingleLabel(nomorRim)" variant="primary"
                                         size="sm"
-                                        :disabled="!isDataFetched || isLoading || form.periksa1['np_'+nomorRim] == '' || form.periksa2['np_'+nomorRim] == ''"
+                                        :disabled="!isDataFetched || isLoading || form.periksa1['np_' + nomorRim] == '' || form.periksa2['np_' + nomorRim] == ''"
                                         :loading="isLoading" :icon="Printer" class="flex-1 mb-3 mt-0.5 ml-2 mr-2">
                                     </Button>
                                 </template>
@@ -521,8 +544,8 @@ const handleNpInput = () => {
                         <!-- Action Buttons -->
                         <div class="flex flex-col sm:flex-row gap-4 pt-6">
                             <Button type="button" @click="formHandler.submitForm('batch')" variant="primary" size="lg"
-                                :disabled="!isDataFetched || isLoading"
-                                :loading="isLoading" :icon="Printer" class="flex-1">
+                                :disabled="!isDataFetched || isLoading" :loading="isLoading" :icon="Printer"
+                                class="flex-1">
                                 Cetak Label
                             </Button>
 

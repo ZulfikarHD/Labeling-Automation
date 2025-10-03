@@ -6,7 +6,8 @@ export function LabelMmea(
     periksa1,
     periksa2,
     jml_label,
-    lembar
+    lembar,
+    print_mode
 ) {
     const date = new Date();
     const tgl = formatDate(date);
@@ -15,6 +16,8 @@ export function LabelMmea(
     let printPage = "";
 
     for (let print = 1; print <= jml_label; print++) {
+        const np_p1 = print_mode == "p2_only" ? "" : periksa1['np_' + print];
+        const np_p2 = print_mode == "p1_only" ? "" : periksa2['np_' + print];
         printPage += `<body>
             <span style="color:white">${print}</span><!DOCTYPE html>
             <html>
@@ -102,14 +105,16 @@ export function LabelMmea(
                                     <td class="grid-wrapper" colspan="1">
                                         <div class="flex justify-center">
                                             <div>
-                                                <strong class="p-content" style="font-size: 1rem; color: ${color};">${periksa1['np_' + print]}</strong>
+                                                <strong class="p-content" style="font-size: 1rem; color: ${color};">
+                                                ${np_p1}                                                
+                                                </strong>
                                             </div>
                                         </div>
                                     </td>
                                     <td class="grid-wrapper" colspan="1">
                                         <div class="flex justify-center">
                                             <div>
-                                                <strong class="p-content" style="font-size: 1rem; color: ${color};">${periksa2['np_' + print]}</strong>
+                                                <strong class="p-content" style="font-size: 1rem; color: ${color};">${np_p2}</strong>
                                             </div>
                                         </div>
                                     </td>

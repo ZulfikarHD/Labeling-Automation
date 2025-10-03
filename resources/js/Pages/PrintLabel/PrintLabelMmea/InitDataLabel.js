@@ -24,7 +24,9 @@ export async function initDataQc(dataOrder) {
     const jml_label = Math.ceil(dataOrder.rencet / 300);
 
     // Hitung Banyaknya Jumlah Kemas Rim Terakhir Pada Order
-    const last_jml_kemas = dataOrder.jml_order % 300 == 0 ? 300 : dataOrder.jml_order % 300;
+    const last_jml_kemas = dataOrder.rencet !== 1500 && 
+                           dataOrder.jml_order % 300 == 0 ? 
+                           300 : dataOrder.jml_order % 300;
 
     // Ambil Data QC Jika Ada di Database
     const data_qc = await fetchQcData(dataOrder.no_po);
@@ -75,7 +77,7 @@ export async function initDataQc(dataOrder) {
     if (typeof data_qc[jml_label - 1] !== 'undefined') {
         form_qc['periksa1'][`np_${jml_label}`] = data_qc[jml_label - 1]['periksa1'];
         form_qc['periksa2'][`np_${jml_label}`] = data_qc[jml_label - 1]['periksa2'];
-        form_qc['jml_kemas'][`no_${jml_label}`] = data_qc[jml_label - 1]['lbr_kemas'];
+        form_qc['jml_kemas'][`no_${jml_label}`] = last_jml_kemas;
         form_qc['no_rim'][`no_${jml_label}`] = jml_label;
     } else {
         form_qc['periksa1'][`np_${jml_label}`] = "";
