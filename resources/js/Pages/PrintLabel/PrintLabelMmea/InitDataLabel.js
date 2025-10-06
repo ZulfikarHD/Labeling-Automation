@@ -25,9 +25,11 @@ export async function initDataQc(dataOrder) {
     const jml_label = Math.ceil(dataOrder.rencet / 300);
 
     // Hitung Banyaknya Jumlah Kemas Rim Terakhir Pada Order
-    const last_jml_kemas = dataOrder.rencet !== 1500 && 
-                           dataOrder.jml_order % 300 == 0 ? 
-                           300 : dataOrder.jml_order % 300;
+    let last_jml_kemas = 300;
+
+    if(dataOrder.rencet !== 1500) {
+        last_jml_kemas = dataOrder.jml_order % 300 == 0 ? 300 : dataOrder.jml_order % 300;
+    }
 
     // Ambil Data QC Jika Ada di Database
     const data_qc = await fetchQcData(dataOrder.no_po);
