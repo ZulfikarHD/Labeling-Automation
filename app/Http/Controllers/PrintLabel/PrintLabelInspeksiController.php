@@ -124,7 +124,7 @@ class PrintLabelInspeksiController extends Controller
             }
 
                         // Calculate rim data from specification (using 500 sheets per rim for inspection)
-            $totalRims = max(floor($specification->rencet / 500), 1);
+            $totalRims = max(floor(($specification->rencet / 500)/2), 1);
 
             // Transform data for ProductionOrderService
             $productionOrderData = [
