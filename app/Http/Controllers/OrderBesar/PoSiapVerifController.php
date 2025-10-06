@@ -58,20 +58,6 @@ class PoSiapVerifController extends Controller
     }
 
     /**
-     * Mengambil spesifikasi PO
-     *
-     * Method ini mengambil detail spesifikasi PO dari database
-     * berdasarkan nomor PO yang diberikan
-     *
-     * @param Request $request Request dengan nomor PO
-     * @return OrderMmea|null Data spesifikasi PO
-     */
-    public function callSpec(Request $request): ?OrderMmea
-    {
-        return OrderMmea::where('order', $request->po)->first();
-    }
-
-    /**
      * Mengambil daftar PO per tim
      *
      * Method ini mengambil semua PO yang:

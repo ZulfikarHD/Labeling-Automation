@@ -26,6 +26,7 @@ const dropdownState = {
     cetakLabel: false,
     options: false,
     monitoringProduksi: false,
+    registeredPo: false,
 };
 
 const dropdowns = ref({ ...dropdownState });
@@ -112,37 +113,24 @@ onBeforeUnmount(() => {
 
         <!-- Cetak Label Dropdown -->
         <div class="relative">
-            <NavDropdown
-                label="Cetak Label"
-                :icon="FileText"
-                :is-open="dropdowns.cetakLabel"
-                @toggle="toggleDropdown('cetakLabel')"
-            />
-            <DropdownMenu
-                :show="dropdowns.cetakLabel"
-                class="lg:absolute lg:top-full lg:left-0 w-64"
-            >
+            <NavDropdown label="Cetak Label" :icon="FileText" :is-open="dropdowns.cetakLabel"
+                @toggle="toggleDropdown('cetakLabel')" />
+            <DropdownMenu :show="dropdowns.cetakLabel" class="lg:absolute lg:top-full lg:left-0 w-64">
                 <DropdownLink :href="route('orderKecil.cetakLabel')">
                     <div class="flex items-center gap-3">
-                        <FileText
-                            class="h-4 w-4 text-slate-500 dark:text-slate-400"
-                        />
+                        <FileText class="h-4 w-4 text-slate-500 dark:text-slate-400" />
                         <span>Cetak Label Personal</span>
                     </div>
                 </DropdownLink>
                 <DropdownLink :href="route('printLabel.inspeksi')">
                     <div class="flex items-center gap-3">
-                        <FileText
-                            class="h-4 w-4 text-slate-500 dark:text-slate-400"
-                        />
+                        <FileText class="h-4 w-4 text-slate-500 dark:text-slate-400" />
                         <span>Cetak Label Inspeksi</span>
                     </div>
                 </DropdownLink>
                 <DropdownLink :href="route('printLabel.mmea')">
                     <div class="flex items-center gap-3">
-                        <FileText
-                            class="h-4 w-4 text-slate-500 dark:text-slate-400"
-                        />
+                        <FileText class="h-4 w-4 text-slate-500 dark:text-slate-400" />
                         <span>Cetak Label MMEA</span>
                     </div>
                 </DropdownLink>
@@ -150,40 +138,40 @@ onBeforeUnmount(() => {
         </div>
 
         <!-- Data PO -->
-        <NavLink :href="route('dataPo.index', 0)">
-            <FileSpreadsheet />
-            Data PO
-        </NavLink>
+        <div class="relative">
+            <NavDropdown label="Data Po" :icon="FileSpreadsheet" :is-open="dropdowns.registeredPo"
+                @toggle="toggleDropdown('registeredPo')" />
+
+            <DropdownMenu :show="dropdowns.registeredPo" class="lg:absolute lg:top-full lg:left-0 w-64">
+                <DropdownLink :href="route('dataPo.index', 0)">
+                    <div class="flex items-center gap-3">
+                        <FileSpreadsheet class="h-4 w-4 text-slate-500 dark:text-slate-400" />
+                        <span>Data PO PCHT</span>
+                    </div>
+                </DropdownLink>
+                <DropdownLink :href="route('dataPoMmea.index')">
+                    <div class="flex items-center gap-3">
+                        <FileSpreadsheet class="h-4 w-4 text-slate-500 dark:text-slate-400" />
+                        <span>Data PO MMEA</span>
+                    </div>
+                </DropdownLink>
+            </DropdownMenu>
+        </div>
 
         <!-- Monitoring Produksi Dropdown -->
         <div class="relative">
-            <NavDropdown
-                label="Monitoring Produksi"
-                :icon="Activity"
-                :is-open="dropdowns.monitoringProduksi"
-                @toggle="toggleDropdown('monitoringProduksi')"
-            />
-            <DropdownMenu
-                :show="dropdowns.monitoringProduksi"
-                class="lg:absolute lg:top-full lg:left-0 w-64"
-            >
-                <DropdownLink
-                    :href="route('monitoringProduksi.produksiPegawai')"
-                >
+            <NavDropdown label="Monitoring Produksi" :icon="Activity" :is-open="dropdowns.monitoringProduksi"
+                @toggle="toggleDropdown('monitoringProduksi')" />
+            <DropdownMenu :show="dropdowns.monitoringProduksi" class="lg:absolute lg:top-full lg:left-0 w-64">
+                <DropdownLink :href="route('monitoringProduksi.produksiPegawai')">
                     <div class="flex items-center gap-3">
-                        <Users
-                            class="h-4 w-4 text-slate-500 dark:text-slate-400"
-                        />
+                        <Users class="h-4 w-4 text-slate-500 dark:text-slate-400" />
                         <span>Produksi Pegawai</span>
                     </div>
                 </DropdownLink>
-                <DropdownLink
-                    :href="route('monitoringProduksi.statusVerif.index')"
-                >
+                <DropdownLink :href="route('monitoringProduksi.statusVerif.index')">
                     <div class="flex items-center gap-3">
-                        <Activity
-                            class="h-4 w-4 text-slate-500 dark:text-slate-400"
-                        />
+                        <Activity class="h-4 w-4 text-slate-500 dark:text-slate-400" />
                         <span>Status Verifikasi</span>
                     </div>
                 </DropdownLink>

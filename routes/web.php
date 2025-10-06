@@ -7,6 +7,7 @@ use Inertia\Inertia;
 
 use App\Http\Controllers\ProductMonitoringController;
 use App\Http\Controllers\GenerateLabelsPersonalController;
+use App\Http\Controllers\RegisteredPoMmeaController;
 use App\Http\Middleware\Role1Access;
 
 /*
@@ -61,6 +62,10 @@ Route::middleware('auth')->group(function () {
     Route::post('/data-po/{team}', [\App\Http\Controllers\ProductionOrderController::class, 'data_products'])->name('dataPo.filterTeam');
     Route::delete('/data-po/{no_po}', [\App\Http\Controllers\ProductionOrderController::class, 'destroy'])->name('dataPo.destroy');
     Route::get('/data-po/{team}/{no_po}', [\App\Http\Controllers\ProductionOrderController::class, 'show'])->name('dataPo.show');
+
+    // Data Po MMEA
+    Route::get('/data-po-mmea', [RegisteredPoMmeaController::class, 'index'])->name('dataPoMmea.index');
+    Route::post('/data-po-mmea', [RegisteredPoMmeaController::class, 'registeredPoData'])->name('dataPoMmea.dataPo');
 
     // Monitoring Produksi routes
     Route::get('/monitoring-produksi/status-verif', [App\Http\Controllers\MonitoringProduksi\StatusVerifikasiTeamController::class, 'index'])->name('monitoringProduksi.statusVerif.index');
