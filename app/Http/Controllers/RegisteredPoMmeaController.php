@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\GeneratedLabelsMmea;
 use App\Models\GeneratedProducts;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -38,5 +39,21 @@ class RegisteredPoMmeaController extends Controller
                             });
 
         return $data_product == null ? '' : $data_product;
+    }
+
+    public function show(Int $no_po)
+    {
+        $data_product = GeneratedProducts::where('no_po',$no_po)
+                            ->select('no_po','no_obc','type')
+                            ->first();
+
+        $data_periksa = GeneratedLabelsMmea::where('nomor_po',$no_po)
+                            ->orderBy('nomor_rim')
+                            ->get();
+
+        return Inertia::render('RegisteredPo/RegisteredPoMmea/Show',[
+            'data_product'  => $data_product,
+            'data_periksa'  => $data_periksa,
+        ]);
     }
 }

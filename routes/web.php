@@ -65,6 +65,7 @@ Route::middleware('auth')->group(function () {
 
     // Data Po MMEA
     Route::get('/data-po-mmea', [RegisteredPoMmeaController::class, 'index'])->name('dataPoMmea.index');
+    Route::get('/data-po-mmea/{no_po}', [RegisteredPoMmeaController::class, 'show'])->name('dataPoMmea.show');
     Route::post('/data-po-mmea', [RegisteredPoMmeaController::class, 'registeredPoData'])->name('dataPoMmea.dataPo');
 
     // Monitoring Produksi routes

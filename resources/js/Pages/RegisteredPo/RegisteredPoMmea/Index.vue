@@ -157,6 +157,7 @@ const search = () => {
                                     <td class="px-4 py-3 text-sm text-center whitespace-nowrap">
                                         <div class="flex items-center justify-center gap-1">
                                             <button
+                                                @click="$inertia.visit(route('dataPoMmea.show', { no_po: dataPo.no_po }))"
                                                 class="group relative p-2 text-blue-600 dark:text-blue-400 transition-colors duration-200 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/50">
                                                 <Eye class="w-5 h-5" />
                                                 <span
