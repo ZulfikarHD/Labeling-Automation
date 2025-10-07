@@ -137,6 +137,7 @@ const updateFormContent = (dataQc) => {
 }
 
 const clearForm = () => {
+    nomorPo.value = '';
     form.reset();
     resetSpecMmea();
     if (!isLoading.value) {
@@ -507,29 +508,24 @@ const handleNpInput = () => {
                                     </div>
                                 </template>
                             </div>
-                            <div class="flex flex-col gap-2 col-span-1 md:col-span-2">
+                            <div class="flex flex-col gap-2 col-span-2 md:col-span-4">
                                 <template v-for="(pemeriksa1, key) in form.periksa1">
-                                    <div class="space-y-2">
+                                    <div class="space-y-2 flex gap-2">
                                         <TextInput v-model="form.periksa1[key]" @input="handleNpInput" :key="key"
                                             required @keydown.enter.prevent type="text" maxlength="4"
-                                            :disabled="!isDataFetched 
-                                                        || specMmea.no_obc == '-' 
-                                                        || (form.periksa1['np_' + (key.substring(3, 4) - 1)] == '' && key !== 'np_0') 
-                                                        || (form.periksa2['np_' + (key.substring(3, 4) - 1)] == '' && key !== 'np_0')"
-                                            placeholder="Max 4 karakter" class="text-center font-mono tracking-wider" />
-                                    </div>
-                                </template>
-                            </div>
-                            <div class="flex flex-col gap-2 col-span-1 md:col-span-2">
-                                <template v-for="(pemeriksa2, key) in form.periksa2">
-                                    <div class="space-y-2">
+                                            :disabled="!isDataFetched
+                                                || specMmea.no_obc == '-'
+                                                || (form.periksa1['np_' + (key.substring(3, 4) - 1)] == '' && key !== 'np_0')
+                                                || (form.periksa2['np_' + (key.substring(3, 4) - 1)] == '' && key !== 'np_0')" placeholder="Max 4 karakter"
+                                            class="text-center font-mono tracking-wider" />
+                                            
                                         <TextInput v-model="form.periksa2[key]" @input="handleNpInput" required
                                             @keydown.enter.prevent type="text" maxlength="4"
-                                            :disabled="!isDataFetched 
-                                                        || specMmea.no_obc == '-' 
-                                                        || (form.periksa1['np_' + (key.substring(3, 4) - 1)] == '' && key !== 'np_0') 
-                                                        || (form.periksa2['np_' + (key.substring(3, 4) - 1)] == '' && key !== 'np_0')"
-                                            placeholder="Max 4 karakter" class="text-center font-mono tracking-wider" />
+                                            :disabled="!isDataFetched
+                                                || specMmea.no_obc == '-'
+                                                || (form.periksa1['np_' + (key.substring(3, 4) - 1)] == '' && key !== 'np_0')
+                                                || (form.periksa2['np_' + (key.substring(3, 4) - 1)] == '' && key !== 'np_0')" placeholder="Max 4 karakter"
+                                            class="text-center font-mono tracking-wider" />
                                     </div>
                                 </template>
                             </div>
