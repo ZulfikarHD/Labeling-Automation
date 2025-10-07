@@ -28,8 +28,8 @@ class PrintLabelMmeaController extends Controller
                     'nomor_rim' => $nomor_rim,
                 ],
                 [
-                    'periksa1'  => $request->periksa1[$key_pemeriksa] ?? $request->periksa1['np_1'],
-                    'periksa2'  => $request->periksa2[$key_pemeriksa] ?? $request->periksa2['np_1'],
+                    'periksa1'  => strtoupper($request->periksa1[$key_pemeriksa]) ?? strtoupper($request->periksa1['np_1']),
+                    'periksa2'  => strtoupper($request->periksa2[$key_pemeriksa]) ?? strtoupper($request->periksa2['np_1']),
                     'lbr_kemas' => $request->jml_kemas[$key_kemas] ?? $request->jml_kemas['no_1'],
                 ]
             );
