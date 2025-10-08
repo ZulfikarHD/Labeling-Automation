@@ -15,5 +15,7 @@ class GeneratedLabelsMmea extends Model
         'periksa1',
         'periksa2',
         'lbr_kemas',
+        'waktu_p1',
+        'waktu_p2',
     ];
 }

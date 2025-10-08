@@ -18,8 +18,24 @@ class PrintLabelMmeaController extends Controller
     public function store(Request $request)
     {
         foreach($request->no_rim as $nomor_rim) {
+            // Check Existiing Data
+            $current_data = GeneratedLabelsMmea::where('nomor_po', $request->no_po)
+                                ->where('nomor_rim',$nomor_rim)
+                                ->first();
+
             $key_kemas = "no_".$nomor_rim;
             $key_pemeriksa = "np_".$nomor_rim;
+
+            $periksa1   = $request->periksa1[$key_pemeriksa] ?? $request->periksa1['np_1'];
+            $periksa2   = $request->periksa2[$key_pemeriksa] ?? $request->periksa2['np_1'];
+
+            if($current_data !==  null) {
+                $waktu_p1 = $current_data->periksa1 == strtoupper($periksa1) ? $current_data->waktu_p1 : now();
+                $waktu_p2 = $current_data->periksa2 == strtoupper($periksa2) ? $current_data->waktu_p2 : now();
+            } else {
+                $waktu_p1 = now();
+                $waktu_p2 = now();
+            }
 
 
             GeneratedLabelsMmea::updateOrCreate(
@@ -28,9 +44,11 @@ class PrintLabelMmeaController extends Controller
                     'nomor_rim' => $nomor_rim,
                 ],
                 [
-                    'periksa1'  => strtoupper($request->periksa1[$key_pemeriksa]) ?? strtoupper($request->periksa1['np_1']),
-                    'periksa2'  => strtoupper($request->periksa2[$key_pemeriksa]) ?? strtoupper($request->periksa2['np_1']),
+                    'periksa1'  => strtoupper($periksa1),
+                    'periksa2'  => strtoupper($periksa2),
                     'lbr_kemas' => $request->jml_kemas[$key_kemas] ?? $request->jml_kemas['no_1'],
+                    'waktu_p1'  => $waktu_p1,
+                    'waktu_p2'  => $waktu_p2,
                 ]
             );
         }

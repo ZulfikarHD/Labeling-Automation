@@ -16,8 +16,10 @@ return new class extends Migration
             $table->bigInteger('nomor_po');
             $table->integer('nomor_rim');
             $table->string('periksa1');
-            $table->string('periksa2');
+            $table->string('periksa2')->nullable();
             $table->integer('lbr_kemas')->nullable();
+            $table->dateTime('waktu_p1')->nullable();
+            $table->dateTime('waktu_p2')->nullable();
             $table->timestamps();
         });
     }
