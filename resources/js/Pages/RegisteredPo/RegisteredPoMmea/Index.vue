@@ -1,6 +1,7 @@
 <script setup>
 import StatusProduksiBadge from '@/Components/StatusProduksiBadge.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import PaginateLink from '@/Components/PaginateLink.vue';
 import { useForm } from '@inertiajs/vue3';
 import { Home, Search, Trash2, Eye, Edit, Printer } from 'lucide-vue-next';
 import { ref } from 'vue';
@@ -201,7 +202,7 @@ const search = () => {
 
                     <!-- Pagination -->
                     <div class="px-4 py-4 border-t border-slate-200 dark:border-slate-700">
-                        <PaginateLink />
+                        <PaginateLink :links="listProduct.links" />
                     </div>
                 </div>
 
