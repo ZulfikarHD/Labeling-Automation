@@ -35,7 +35,7 @@ class VerificationService
             ])
             ->whereDate('gl.start', $date)
             ->where('gl.np_users', 'not like', '%mesin%')
-            ->when($team !== '0', function($query) use ($team) {
+            ->when($team !== '0', function ($query) use ($team) {
                 return $query->where('gl.workstation', $team);
             })
             ->groupBy('gl.np_users')
@@ -49,7 +49,7 @@ class VerificationService
         $hasNoRim999 = DB::table('generated_labels as gl')
             ->whereDate('gl.start', $date)
             ->where('gl.no_rim', 999)
-            ->when($team !== '0', function($query) use ($team) {
+            ->when($team !== '0', function ($query) use ($team) {
                 return $query->where('gl.workstation', $team);
             })
             ->exists();
@@ -87,7 +87,7 @@ class VerificationService
         }
 
         // Menggabungkan dan menghitung hasil akhir
-        return $verificationData->map(function($item) use ($inschietData) {
+        return $verificationData->map(function ($item) use ($inschietData) {
             $inschiet = $inschietData->get($item->pegawai, collect());
             $totalInschiet = $inschiet->sum('kiri_total') + $inschiet->sum('kanan_total');
 
@@ -101,55 +101,60 @@ class VerificationService
 
     public function getDataVerifMmea($date)
     {
-        $data_prod_mmea = GeneratedLabelsMmea::query()
-                            ->whereDate('created_at',$date)
-                            ->get();
+        $data_prod_mmea_p1 = GeneratedLabelsMmea::query()
+                                ->whereDate('waktu_p1', $date)
+                                ->get();
 
-        $prod_p1 = $this->produksiMmeaP1($data_prod_mmea);
-        $prod_p2 = $this->produksiMmeaP2($data_prod_mmea);
-                    
-        $np_prod = array_merge(array_keys($prod_p1),array_keys($prod_p2));
+        $data_prod_mmea_p2 = GeneratedLabelsMmea::query()
+                                ->whereDate('waktu_p2', $date)
+                                ->get();
+
+        $prod_p1 = $this->produksiMmeaP1($data_prod_mmea_p1);
+        $prod_p2 = $this->produksiMmeaP2($data_prod_mmea_p2);
+
+        $np_prod = array_merge(array_keys($prod_p1), array_keys($prod_p2));
 
         $subtotal_prod = [];
 
         // Produksi Mmea Dalam Satuan Lembar
         foreach ($np_prod as $np) {
-            $subtotal_prod[$np]['np'] = $np;
-
-            $prod_verif_p1 = $data_prod_mmea->where('periksa1',$np)->sum('lbr_kemas');
-            $prod_verif_p2 = $data_prod_mmea->where('periksa2',$np)->sum('lbr_kemas');
-            $subtotal_prod[$np]['lbr'] = $prod_verif_p1 + $prod_verif_p2;
-
-            $prod_verif_p1_rim = $this->divnum($prod_verif_p1,300);
-            $prod_verif_p2_rim = $this->divnum($prod_verif_p2,300);
-            $subtotal_prod[$np]['rim'] =  round($prod_verif_p1_rim + $prod_verif_p2_rim,0,PHP_ROUND_HALF_UP);
-
-            $prod_po_p1 = $data_prod_mmea->where('periksa1',$np)->unique('nomor_po')->count('no_po');
-            $prod_po_p2 = $data_prod_mmea->where('periksa2',$np)->unique('nomor_po')->count('no_po');
-            $subtotal_prod[$np]['po'] = $prod_po_p1 + $prod_po_p2;
+            if(strlen($np) > 3) {
+                $subtotal_prod[$np]['np'] = $np;
+    
+                $prod_verif_p1 = $data_prod_mmea_p1->where('periksa1', $np)->sum('lbr_kemas');
+                $prod_verif_p2 = $data_prod_mmea_p2->where('periksa2', $np)->sum('lbr_kemas');
+                $subtotal_prod[$np]['lbr'] = $prod_verif_p1 + $prod_verif_p2;
+    
+                $prod_verif_p1_rim = $this->divnum($prod_verif_p1, 300);
+                $prod_verif_p2_rim = $this->divnum($prod_verif_p2, 300);
+                $subtotal_prod[$np]['rim'] =  round($prod_verif_p1_rim + $prod_verif_p2_rim, 0, PHP_ROUND_HALF_UP);
+    
+                $prod_po_p1 = $data_prod_mmea_p1->where('periksa1', $np)->unique('nomor_po')->count('no_po');
+                $prod_po_p2 = $data_prod_mmea_p2->where('periksa2', $np)->unique('nomor_po')->count('no_po');
+                $subtotal_prod[$np]['po'] = $prod_po_p1 + $prod_po_p2;
+            }
         }
 
         // if($subtotal_prod !== null) {
-            usort($subtotal_prod, fn($a,$b) => $b['lbr'] <=> $a['lbr']);
+        usort($subtotal_prod, fn($a, $b) => $b['lbr'] <=> $a['lbr']);
         // }
 
         return $subtotal_prod;
     }
 
-    private function produksiMmeaP1($data_produksi) : array
+    private function produksiMmeaP1($data_produksi): array
     {
         return $data_produksi->groupBy('periksa1')
-                    ->map(function($q){
-                        return $q->sum('lbr_kemas');
-                    })->toArray();
+            ->map(function ($q) {
+                return $q->sum('lbr_kemas');
+            })->toArray();
     }
 
-    private function produksiMmeaP2($data_produksi) : array
+    private function produksiMmeaP2($data_produksi): array
     {
         return $data_produksi->groupBy('periksa2')
-                    ->map(function($q){
-                        return $q->sum('lbr_kemas');
-                    })->toArray();
+            ->map(function ($q) {
+                return $q->sum('lbr_kemas');
+            })->toArray();
     }
-    
 }
