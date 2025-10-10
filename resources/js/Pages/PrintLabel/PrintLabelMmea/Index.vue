@@ -487,8 +487,9 @@ const handleNpInput = () => {
                 <div class="p-8">
                     <form @submit.prevent="formHandler.submitForm" class="space-y-6">
 
-                        <div class="grid grid-cols-1 md:grid-cols-6 gap-6">
+                        <div class="grid grid-cols-1 md:grid-cols-7 gap-6">
                             <InputLabel value="Nomor Rim" required class="text-slate-700 dark:text-slate-300" />
+                            <InputLabel value="Lbr Kirim" required class="text-slate-700 dark:text-slate-300" />
                             <InputLabel value="Periksa 1" required
                                 class="text-slate-700 dark:text-slate-300 col-span-1 md:col-span-2" />
                             <InputLabel value="Periksa 2" required
@@ -497,14 +498,24 @@ const handleNpInput = () => {
                                 class="text-slate-700 dark:text-slate-300 col-span-1 md:col-span-1" />
                         </div>
                         <!-- NP Input Fields -->
-                        <div class="grid grid-cols-1 md:grid-cols-6 gap-4">
+                        <div class="grid grid-cols-1 md:grid-cols-7 gap-4">
                             <div class="flex flex-col gap-2 col-span-1">
                                 <template v-for="(nomorRim, key) in form.no_rim">
                                     <div class="space-y-2">
-                                        <TextInput v-model="form.no_rim[key]" @input="handleNpInput" disabled
+                                        <TextInput v-model="form.no_rim[key]" disabled
                                             :value="nomorRim" @keydown.enter.prevent type="text" maxlength="4"
                                             :disabled="!isDataFetched || specMmea.no_obc == '-'" required
                                             placeholder="Nomor Rim" class="text-center font-mono tracking-wider" />
+                                    </div>
+                                </template>
+                            </div>
+                            <div class="flex flex-col gap-2 col-span-1">
+                                <template v-for="(lbrKirim, key) in form.jml_kemas">
+                                    <div class="space-y-2">
+                                        <TextInput v-model="form.jml_kemas[key]" disabled
+                                            :value="lbrKirim" @keydown.enter.prevent type="text" maxlength="4"
+                                            :disabled="!isDataFetched || specMmea.no_obc == '-'" required
+                                            placeholder="Lembar Kirim" class="text-center font-mono tracking-wider" />
                                     </div>
                                 </template>
                             </div>
