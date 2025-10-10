@@ -56,4 +56,13 @@ class RegisteredPoMmeaController extends Controller
             'data_periksa'  => $data_periksa,
         ]);
     }
+
+    public function destroy($no_po)
+    {
+        // Delete Generated Labels MMEA
+        GeneratedLabelsMmea::where('nomor_po',$no_po)->delete();
+
+        // Delete Registered PO MMEA
+        GeneratedProducts::where('no_po',$no_po)->delete();
+    }
 }

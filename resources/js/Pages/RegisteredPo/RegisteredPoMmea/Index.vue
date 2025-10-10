@@ -1,9 +1,13 @@
 <script setup>
 import StatusProduksiBadge from '@/Components/StatusProduksiBadge.vue';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { useForm } from '@inertiajs/vue3';
+import PaginateLink from '@/Components/PaginateLink.vue';
+import Modal from '@/Components/Modal.vue';
+import { Link, router, useForm } from '@inertiajs/vue3';
 import { Home, Search, Trash2, Eye, Edit, Printer } from 'lucide-vue-next';
-import { ref } from 'vue';
+import { inject, ref } from 'vue';
+
+const swal = inject("$swal")
 
 const props = defineProps({
     registeredPo: Object,
@@ -11,7 +15,10 @@ const props = defineProps({
 
 const form = useForm({
     search: '',
+    po:0,
 });
+
+const deleteModal = ref(false); // Menginisialisasi deleteModal sebagai Boolean
 
 const listProduct = ref(props.registeredPo)
 
@@ -36,9 +43,60 @@ const search = () => {
     });
 };
 
+// Fungsi untuk menghapus order
+const deleteOrder = () => {
+    router.delete(route('dataPoMmea.destroy', form.po), {
+        onSuccess: () => {
+            swal.fire({
+                icon: "success",
+                title: "Berhasil",
+                text: "Order " + form.po + " berhasil dihapus",
+                showConfirmButton: false,
+                timer: 1500
+            });
+            form.reset(); // Mengreset form setelah menghapus
+            search();
+            deleteModal.value = !deleteModal.value; // Menutup modal setelah menghapus
+        },
+    });
+};
 </script>
 
 <template>
+    <!-- Delete Modal -->
+    <Modal :show="deleteModal" @close="deleteModal = !deleteModal">
+        <div class="flex flex-col gap-4 p-6 dark:bg-slate-800">
+            <div class="flex items-start gap-4">
+                <div class="p-3 bg-red-100/50 dark:bg-red-900/50 rounded-xl">
+                    <Trash2 class="w-6 h-6 text-red-600 dark:text-red-400" />
+                </div>
+                <div class="flex flex-col gap-2">
+                    <h3 class="text-xl font-semibold text-slate-900 dark:text-white">
+                        Hapus Order {{ form.po }}?
+                    </h3>
+                    <p class="text-sm leading-relaxed text-slate-500 dark:text-slate-400">
+                        Peringatan: Menghapus order ini akan menghapus seluruh data label terkait, baik yang sudah dikerjakan maupun belum. Data yang dihapus tidak dapat dikembalikan.
+                    </p>
+                </div>
+            </div>
+            <div class="flex justify-end gap-3 pt-4 mt-4 border-t border-slate-200 dark:border-slate-700">
+                <button
+                    class="px-4 py-2 text-sm font-medium text-slate-600 dark:text-slate-400 transition-colors duration-200 hover:text-slate-900 dark:hover:text-white"
+                    @click.prevent="deleteModal = !deleteModal"
+                >
+                    Batal
+                </button>
+                <button
+                    type="button"
+                    @click.prevent="deleteOrder"
+                    class="px-4 py-2 text-sm font-medium text-white transition-all duration-200 bg-red-500 rounded-lg hover:bg-red-600 focus:ring-2 focus:ring-red-200 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900"
+                >
+                    Hapus Order
+                </button>
+            </div>
+        </div>
+    </Modal>
+
     <AuthenticatedLayout>
         <div class="py-12 px-4 max-w-7xl mx-auto">
             <div class="space-y-8">
@@ -185,6 +243,10 @@ const search = () => {
                                             </button>
 
                                             <button
+                                                @click="
+                                                    deleteModal = !deleteModal;
+                                                    form.po = dataPo.no_po;
+                                                "
                                                 class="group relative p-2 text-red-600 dark:text-red-400 transition-colors duration-200 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/50">
                                                 <Trash2 class="w-5 h-5" />
                                                 <span
@@ -201,7 +263,7 @@ const search = () => {
 
                     <!-- Pagination -->
                     <div class="px-4 py-4 border-t border-slate-200 dark:border-slate-700">
-                        <PaginateLink />
+                        <PaginateLink :links="listProduct.links" />
                     </div>
                 </div>
 

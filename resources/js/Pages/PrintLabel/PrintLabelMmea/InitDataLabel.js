@@ -76,10 +76,16 @@ export async function initDataQc(dataOrder) {
         }
     }
 
-    // Field Terakhir
+    console.log(jml_label)
+
     if (typeof data_qc[jml_label - 1] !== 'undefined') {
         form_qc['periksa1'][`np_${jml_label}`] = data_qc[jml_label - 1]['periksa1'];
         form_qc['periksa2'][`np_${jml_label}`] = data_qc[jml_label - 1]['periksa2'];
+        form_qc['jml_kemas'][`no_${jml_label}`] = last_jml_kemas;
+        form_qc['no_rim'][`no_${jml_label}`] = jml_label;
+    } else if (jml_label < 5 && last_jml_kemas !== 300) {
+        form_qc['periksa1'][`np_${jml_label}`] = "";
+        form_qc['periksa2'][`np_${jml_label}`] = "";
         form_qc['jml_kemas'][`no_${jml_label}`] = last_jml_kemas;
         form_qc['no_rim'][`no_${jml_label}`] = jml_label;
     } else {
