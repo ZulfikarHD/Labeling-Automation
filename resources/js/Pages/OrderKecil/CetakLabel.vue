@@ -126,7 +126,7 @@
                             v-model="form.periksa1"
                             type="text"
                             placeholder="Nomor Pegawai"
-                            maxlength="4"
+
                             required
                         />
                     </div>
@@ -142,7 +142,7 @@
                             v-model="form.periksa2"
                             type="text"
                             placeholder="Nomor Pegawai"
-                            maxlength="4"
+
                         />
                     </div>
                 </div>

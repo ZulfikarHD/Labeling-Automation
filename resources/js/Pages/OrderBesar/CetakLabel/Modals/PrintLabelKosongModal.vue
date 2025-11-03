@@ -21,7 +21,7 @@
                                 type="text"
                                 v-model="form.npPetugas"
                                 class="w-full uppercase text-sm dark:bg-gray-700 dark:text-gray-300"
-                                maxlength="4"
+
                                 required
                             />
                         </div>
@@ -32,7 +32,7 @@
                                 type="text"
                                 v-model="form.npPetugas2"
                                 class="w-full uppercase text-sm dark:bg-gray-700 dark:text-gray-300"
-                                maxlength="4"
+
                             />
                         </div>
                     </div>
@@ -145,11 +145,28 @@ const form = reactive({
     jml_label: 1, // Jumlah label yang akan dicetak
 });
 
+const convNp = () => {
+    const lengthPetugas = form.npPetugas.length;
+
+    if(lengthPetugas > 4) {
+        const firstLetter = form.npPetugas.slice(0, 1);
+        const lastFour = form.npPetugas.slice((lengthPetugas - 4), lengthPetugas);
+        form.npPetugas = firstLetter + lastFour;
+    }
+    const lengthPetugas2 = form.npPetugas2.length;
+    if(lengthPetugas2 > 4) {
+        const firstLetter = form.npPetugas2.slice(0, 1);
+        const lastFour = form.npPetugas2.slice((lengthPetugas2 - 4), lengthPetugas2);
+        form.npPetugas2 = firstLetter + lastFour;
+    }
+}
+
 /**
  * Menangani proses pencetakan label
  * Menggunakan fungsi batchSingleLabel untuk generate label
  */
 const printLabel = async () => {
+    convNp();
     try {
         loading.value = true;
         const printLabel = batchSingleLabel(

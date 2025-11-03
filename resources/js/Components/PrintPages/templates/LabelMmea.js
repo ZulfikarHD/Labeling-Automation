@@ -16,6 +16,18 @@ export function LabelMmea(
     let printPage = "";
 
     for (let print = 1; print <= jml_label; print++) {
+
+        if(periksa1['np_' + print].length > 4) {
+            const firstLetter = periksa1['np_' + print].slice(0, 1);
+            const lastFour = periksa1['np_' + print].slice((periksa1['np_' + print].length - 4), periksa1['np_' + print].length);
+            periksa1['np_' + print] = firstLetter + lastFour;
+        }
+        if(periksa2['np_' + print].length > 4) {
+            const firstLetter = periksa2['np_' + print].slice(0, 1);
+            const lastFour = periksa2['np_' + print].slice((periksa2['np_' + print].length - 4), periksa2['np_' + print].length);
+            periksa2['np_' + print] = firstLetter + lastFour;
+        }
+
         const np_p1 = print_mode == "p2_only" ? "" : periksa1['np_' + print];
         const np_p2 = print_mode == "p1_only" ? "" : periksa2['np_' + print];
         printPage += `<body>
@@ -106,7 +118,7 @@ export function LabelMmea(
                                         <div class="flex justify-center">
                                             <div>
                                                 <strong class="p-content" style="font-size: 1rem; color: ${color};">
-                                                ${np_p1}                                                
+                                                ${np_p1}
                                                 </strong>
                                             </div>
                                         </div>

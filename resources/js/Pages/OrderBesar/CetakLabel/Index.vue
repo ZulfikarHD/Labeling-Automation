@@ -59,7 +59,6 @@
                             class="w-full text-xl py-4 uppercase dark:bg-gray-700 dark:text-gray-300 text-center"
                             required
                             ref="periksa1Input"
-                            maxlength="4"
                             autofocus
                         />
                         <InputError class="mt-2" />
@@ -369,6 +368,7 @@ const fetchUpdatedData = async () => {
  * Handles validasi, print process, dan data updates
  */
 const submit = async (e) => {
+    convNp()
     e.preventDefault();
     if (loading.value) return;
 
@@ -407,7 +407,7 @@ const submit = async (e) => {
 
         } else {
             loading.value = false;
-            
+
             // Show completion alert before redirecting
             const result = await Swal.fire({
                 title: 'Order telah selesai',
@@ -417,7 +417,7 @@ const submit = async (e) => {
                 allowOutsideClick: false,
                 allowEscapeKey: false
             });
-            
+
             // Redirect after user confirms or closes the popup
             router.get(route('orderBesar.poSiapVerif'), {}, { preserveState: true });
         }
@@ -437,6 +437,16 @@ const submit = async (e) => {
         }
     }
 };
+
+const convNp = () => {
+    const lengthPeriksa1 = form.periksa1.length;
+
+    if(lengthPeriksa1 > 4) {
+        const firstLetter = form.periksa1.slice(0, 1);
+        const lastFour = form.periksa1.slice((lengthPeriksa1 - 4), lengthPeriksa1);
+        form.periksa1 = firstLetter + lastFour;
+    }
+}
 
 /**
  * Utility untuk menampilkan notifikasi
