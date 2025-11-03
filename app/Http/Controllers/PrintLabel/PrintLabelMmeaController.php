@@ -26,8 +26,8 @@ class PrintLabelMmeaController extends Controller
             $key_kemas = "no_".$nomor_rim;
             $key_pemeriksa = "np_".$nomor_rim;
 
-            $periksa1   = $request->periksa1[$key_pemeriksa] ?? $request->periksa1['np_1'];
-            $periksa2   = $request->periksa2[$key_pemeriksa] ?? $request->periksa2['np_1'];
+            $periksa1   = $this->convNp($request->periksa1[$key_pemeriksa] ?? $request->periksa1['np_1']);
+            $periksa2   = $this->convNp($request->periksa2[$key_pemeriksa] ?? $request->periksa2['np_1']);
 
             if($current_data !==  null) {
                 $waktu_p1 = $current_data->periksa1 == strtoupper($periksa1) ? $current_data->waktu_p1 : now();
@@ -52,7 +52,7 @@ class PrintLabelMmeaController extends Controller
                 ]
             );
         }
-        
+
         return response()->json([
             'success' => true,
             'message' => 'Label berhasil diproses',
@@ -91,5 +91,16 @@ class PrintLabelMmeaController extends Controller
                     ->orderBy('nomor_rim')
                     ->get();
     }
-    
+
+    private function convNp($np)
+    {
+        if(strlen($np) > 4) {
+            $firstLetter = substr($np, 0, 1);
+            $lastFour = substr($np, (strlen($np) - 4), strlen($np));
+            $np = $firstLetter . $lastFour;
+        }
+
+        return $np;
+    }
+
 }

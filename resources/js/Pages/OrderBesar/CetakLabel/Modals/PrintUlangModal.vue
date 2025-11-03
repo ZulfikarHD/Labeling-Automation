@@ -89,7 +89,7 @@
                             type="text"
                             v-model="formPrintUlang.npPetugas"
                             class="w-full uppercase text-sm dark:bg-gray-700 dark:text-gray-300"
-                            maxlength="4"
+
                             required
                         />
                     </div>
@@ -203,6 +203,16 @@ const pilihRim = (noRim, np) => {
     formPrintUlang.npPetugas = np;
 };
 
+const convNp = () => {
+    const lengthPetugas = formPrintUlang.npPetugas.length;
+
+    if(lengthPetugas > 4) {
+        const firstLetter = formPrintUlang.npPetugas.slice(0, 1);
+        const lastFour = formPrintUlang.npPetugas.slice((lengthPetugas - 4), lengthPetugas);
+        formPrintUlang.npPetugas = firstLetter + lastFour;
+    }
+}
+
 /**
  * Menangani proses cetak ulang label
  * - Memvalidasi input
@@ -210,6 +220,7 @@ const pilihRim = (noRim, np) => {
  * - Mencetak label baru
  */
 const printUlangLabel = async () => {
+    convNp();
     try {
         loading.value = true;
 

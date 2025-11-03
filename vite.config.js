@@ -26,9 +26,11 @@ export default defineConfig({
 
     // Dev
     server: {
-    hmr: {
+        hmr: {
             host: 'localhost',
         },
-        cors: true,
+        cors: {
+            origin : /^https?:\/\/(?:(?:[^:]+\.)?localhost|10\.30\.11\.65|127\.0\.0\.1|\[::1\])(?::\d+)?$/,
+        },
     },
 });

@@ -3,7 +3,7 @@
  * TODO : Cleanup Code
  * TODO : Add Checklist For Print Selected Item Only
  * TODO : Get Array From No Rim
- * 
+ *
  */
 import { ref, inject, computed, watch } from 'vue';
 import { Head, useForm } from '@inertiajs/vue3';
@@ -151,6 +151,7 @@ const clearForm = () => {
     }
 }
 
+
 const resetSpecMmea = () => {
     specMmea.value.produk = "-";
     specMmea.value.no_obc = "-";
@@ -162,12 +163,22 @@ const printSingleLabel = (no_rim) => {
     // Update Form Berdasarkan Nomor PO
     singleLabelForm.no_po = form.no_po;
     singleLabelForm.no_rim = { no_1: form.no_rim[`no_${no_rim}`] };
-    singleLabelForm.periksa1 = { np_1: form.periksa1[`np_${no_rim}`] };
-    singleLabelForm.periksa2 = { np_1: form.periksa2[`np_${no_rim}`] };
+    singleLabelForm.periksa1 = { np_1: convNp(form.periksa1[`np_${no_rim}`]) };
+    singleLabelForm.periksa2 = { np_1: convNp(form.periksa2[`np_${no_rim}`]) };
     singleLabelForm.jml_kemas = { no_1: form.jml_kemas[`no_${no_rim}`] };
     singleLabelForm.jml_label = 1;
 
     formHandler.submitForm('single');
+}
+
+const convNp = (np) => {
+    const lengthNp = np.length;
+    if(lengthNp > 4) {
+        const firstLetter = np.slice(0, 1);
+        const lastFour = np.slice((lengthNp - 4), lengthNp);
+        np = firstLetter + lastFour;
+    }
+    return np;
 }
 
 // Form submission
@@ -503,7 +514,7 @@ const handleNpInput = () => {
                                 <template v-for="(nomorRim, key) in form.no_rim">
                                     <div class="space-y-2">
                                         <TextInput v-model="form.no_rim[key]" disabled
-                                            :value="nomorRim" @keydown.enter.prevent type="text" maxlength="4"
+                                            :value="nomorRim" @keydown.enter.prevent type="text"
                                             :disabled="!isDataFetched || specMmea.no_obc == '-'" required
                                             placeholder="Nomor Rim" class="text-center font-mono tracking-wider" />
                                     </div>
@@ -513,7 +524,7 @@ const handleNpInput = () => {
                                 <template v-for="(lbrKirim, key) in form.jml_kemas">
                                     <div class="space-y-2">
                                         <TextInput v-model="form.jml_kemas[key]" disabled
-                                            :value="lbrKirim" @keydown.enter.prevent type="text" maxlength="4"
+                                            :value="lbrKirim" @keydown.enter.prevent type="text"
                                             :disabled="!isDataFetched || specMmea.no_obc == '-'" required
                                             placeholder="Lembar Kirim" class="text-center font-mono tracking-wider" />
                                     </div>
@@ -523,15 +534,15 @@ const handleNpInput = () => {
                                 <template v-for="(pemeriksa1, key) in form.periksa1">
                                     <div class="space-y-2 flex gap-2">
                                         <TextInput v-model="form.periksa1[key]" @input="handleNpInput" :key="key"
-                                            required @keydown.enter.prevent type="text" maxlength="4"
+                                            required @keydown.enter.prevent type="text"
                                             :disabled="!isDataFetched
                                                 || specMmea.no_obc == '-'
                                                 || (form.periksa1['np_' + (key.substring(3, 4) - 1)] == '' && key !== 'np_0')
                                                 || (form.periksa2['np_' + (key.substring(3, 4) - 1)] == '' && key !== 'np_0')" placeholder="Max 4 karakter"
                                             class="text-center font-mono tracking-wider" />
-                                            
+
                                         <TextInput v-model="form.periksa2[key]" @input="handleNpInput" required
-                                            @keydown.enter.prevent type="text" maxlength="4"
+                                            @keydown.enter.prevent type="text"
                                             :disabled="!isDataFetched
                                                 || specMmea.no_obc == '-'
                                                 || (form.periksa1['np_' + (key.substring(3, 4) - 1)] == '' && key !== 'np_0')

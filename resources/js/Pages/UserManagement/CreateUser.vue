@@ -54,7 +54,7 @@ const changeStateDefaultPassword = () => {
                 <input
                     v-model="userForm.npUser"
                     v-on:keyup="useDefaultPassword"
-                    maxlength="4"
+
                     type="text"
                     class="bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 border-0 rounded-md p-2 mb-4 focus:bg-gray-200 dark:focus:bg-gray-600 focus:outline-none focus:ring-1 focus:ring-blue-500 transition ease-in-out duration-150"
                     placeholder="NP User"

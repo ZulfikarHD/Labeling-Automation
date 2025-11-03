@@ -242,9 +242,27 @@ const printService = {
     }
 };
 
+
+const convNp = () => {
+    const lengthNp1 = form.np1.length;
+
+    if(lengthNp1 > 4) {
+        const firstLetter = form.np1.slice(0, 1);
+        const lastFour = form.np1.slice((lengthNp1 - 4), lengthNp1);
+        form.np1 = firstLetter + lastFour;
+    }
+    const lengthNp2 = form.np2.length;
+    if(lengthNp2 > 4) {
+        const firstLetter = form.np2.slice(0, 1);
+        const lastFour = form.np2.slice((lengthNp2 - 4), lengthNp2);
+        form.np2 = firstLetter + lastFour;
+    }
+}
+
 // Form submission
 const formHandler = {
     async submitForm() {
+        convNp();
         if (!validation.validateForm()) {
             return;
         }
@@ -560,14 +578,14 @@ const handleNpInput = () => {
                                 <InputLabel for="np1" value="NP 1" required
                                     class="text-slate-700 dark:text-slate-300" />
                                 <TextInput id="np1" v-model="form.np1" @input="handleNpInput" @keydown.enter.prevent
-                                    type="text" maxlength="4" :disabled="!isDataFetched" required
+                                    type="text"  :disabled="!isDataFetched" required
                                     placeholder="Max 4 karakter" class="text-center font-mono tracking-wider" />
                             </div>
 
                             <div class="space-y-2">
                                 <InputLabel for="np2" value="NP 2" class="text-slate-700 dark:text-slate-300" />
                                 <TextInput id="np2" v-model="form.np2" @input="handleNpInput" @keydown.enter.prevent
-                                    type="text" maxlength="4" :disabled="!isDataFetched" placeholder="Max 4 karakter"
+                                    type="text"  :disabled="!isDataFetched" placeholder="Max 4 karakter"
                                     class="text-center font-mono tracking-wider" />
                             </div>
                         </div>
