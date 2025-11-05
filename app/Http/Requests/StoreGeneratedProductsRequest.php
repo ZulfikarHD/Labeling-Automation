@@ -109,7 +109,6 @@ class StoreGeneratedProductsRequest extends FormRequest
             'jml_lembar.integer' => 'Jumlah lembar harus berupa angka.',
             'jml_lembar.min' => 'Jumlah lembar harus minimal 1.',
             'periksa1.string' => 'Periksa 1 harus berupa teks.',
-            'periksa1.max' => 'Periksa 1 tidak boleh lebih dari 4 karakter.',
             'periksa2.string' => 'Periksa 2 harus berupa teks.',
             'periksa2.max' => 'Periksa 2 tidak boleh lebih dari 4 karakter.',
         ];
