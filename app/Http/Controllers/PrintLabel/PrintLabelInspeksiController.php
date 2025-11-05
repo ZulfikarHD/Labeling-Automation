@@ -106,8 +106,8 @@ class PrintLabelInspeksiController extends Controller
             'no_po' => 'required',
             'team' => 'required|exists:workstation,id',
             'jumlah_label' => 'required|integer|min:1',
-            'np1' => 'required|string|max:4',
-            'np2' => 'nullable|string|max:4',
+            'np1' => 'required|string|max:5',
+            'np2' => 'nullable|string|max:5',
         ]);
     }
 

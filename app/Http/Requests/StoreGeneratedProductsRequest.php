@@ -47,12 +47,12 @@ class StoreGeneratedProductsRequest extends FormRequest
                 'regex:/^[A-Za-z]{3}/', // Format harus diawali dengan 3 huruf
             ],
             'team'  => 'required|integer|min:1|exists:workstation,id', // Tim harus ada dan valid
-            'produk'    => 'required|string|max:4', // Produk harus diisi dan maksimal 4 karakter
+            'produk'    => 'required|string|max:5', // Produk harus diisi dan maksimal 4 karakter
             'jml_rim'   => 'required|integer|min:1', // Jumlah rim harus diisi dan minimal 1
             'inschiet'  => 'nullable|integer|min:0', // Inschiet boleh kosong, minimal 0
             'start_rim' => 'required|integer|min:1', // Start rim harus diisi dan minimal 1
-            'periksa1'  => 'nullable|string|max:4',
-            'periksa2'  => 'nullable|string|max:4',
+            'periksa1'  => 'nullable|string|max:5',
+            'periksa2'  => 'nullable|string|max:5',
             'end_rim'   => [
                 'required', // End rim harus diisi
                 'integer', // End rim harus berupa integer
