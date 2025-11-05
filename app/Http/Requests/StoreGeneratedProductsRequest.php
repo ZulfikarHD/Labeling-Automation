@@ -51,8 +51,8 @@ class StoreGeneratedProductsRequest extends FormRequest
             'jml_rim'   => 'required|integer|min:1', // Jumlah rim harus diisi dan minimal 1
             'inschiet'  => 'nullable|integer|min:0', // Inschiet boleh kosong, minimal 0
             'start_rim' => 'required|integer|min:1', // Start rim harus diisi dan minimal 1
-            'periksa1'  => 'nullable|string|max:5',
-            'periksa2'  => 'nullable|string|max:5',
+            'periksa1'  => 'nullable|string',
+            'periksa2'  => 'nullable|string',
             'end_rim'   => [
                 'required', // End rim harus diisi
                 'integer', // End rim harus berupa integer
