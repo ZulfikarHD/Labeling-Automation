@@ -169,8 +169,8 @@ class GeneratedLabelController extends Controller
     {
         return Validator::make($request->all(), [
             'id' => 'required|exists:generated_labels,id',
-            'np_users' => 'nullable|string|max:4',
-            'np_user_p2' => 'nullable|string|max:4',
+            'np_users' => 'nullable|string|max:5',
+            'np_user_p2' => 'nullable|string|max:5',
             'start' => 'nullable|date',
             'finish' => 'nullable|date',
             'team' => 'required|integer'
