@@ -359,6 +359,7 @@ const submit = () => {
                     form.reset();
                 })
                 .catch(error => {
+                    console.log(error.response)
                     let errorMessage = 'Terjadi kesalahan';
 
                     if (error.response) {

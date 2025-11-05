@@ -10,6 +10,7 @@ use App\Http\Controllers\GenerateLabelsPersonalController;
 use App\Http\Controllers\ProductionOrderController;
 use App\Http\Controllers\RegisteredPoMmeaController;
 use App\Http\Middleware\Role1Access;
+use App\Http\Controllers\OrderSiapPeriksaController;
 
 /*
 |--------------------------------------------------------------------------
@@ -30,12 +31,10 @@ Route::get('/login', function () {
 // Group routes that require authentication
 Route::middleware('auth')->group(function () {
 
-    // Dashboard route
-    Route::get('/', [App\Http\Controllers\OrderBesar\PoSiapVerifController::class, 'index'])->name('dashboard');
+    Route::get('/', [OrderSiapPeriksaController::class, 'index'])->name('orderSiapPeriksa.index');
 
     // Group routes that require Role1Access middleware
     Route::middleware(Role1Access::class)->group(function () {
-        // User management routes
         Route::get('/create-user', [\App\Http\Controllers\UserManagement\CreateUserController::class, 'index'])->name('createUser.index');
         Route::post('/create-user', [\App\Http\Controllers\UserManagement\CreateUserController::class, 'store'])->name('createUser.store');
         Route::get('/change-password', [\App\Http\Controllers\UserManagement\PasswordController::class, 'changePassword'])->name('changePassword.index');
@@ -44,8 +43,8 @@ Route::middleware('auth')->group(function () {
 
     // Order Besar routes
     Route::prefix('order-besar')->group(function () {
-        Route::get('/po-siap-verif', [App\Http\Controllers\OrderBesar\PoSiapVerifController::class, 'index'])
-            ->name('orderBesar.poSiapVerif');
+        Route::get('/order-siap-periksa', [OrderSiapPeriksaController::class, 'index'])
+            ->name('orderBesar.orderSiapPeriksa');
 
         Route::get('/register-nomor-po', [App\Http\Controllers\OrderBesar\RegisterNomorPoController::class, 'index'])
             ->name('orderBesar.registerNomorPo');
@@ -63,7 +62,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/data-po/{team}', [\App\Http\Controllers\ProductionOrderController::class, 'data_products'])->name('dataPo.filterTeam');
     Route::delete('/data-po/{no_po}', [\App\Http\Controllers\ProductionOrderController::class, 'destroy'])->name('dataPo.destroy');
     Route::get('/data-po/{team}/{no_po}', [\App\Http\Controllers\ProductionOrderController::class, 'show'])->name('dataPo.show');
-    
+
 
     // Data Po MMEA
     Route::get('/data-po-mmea', [RegisteredPoMmeaController::class, 'index'])->name('dataPoMmea.index');

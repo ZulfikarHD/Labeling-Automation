@@ -419,7 +419,7 @@ const submit = async (e) => {
             });
 
             // Redirect after user confirms or closes the popup
-            router.get(route('orderBesar.poSiapVerif'), {}, { preserveState: true });
+            router.get(route('orderSiapPeriksa.index'), {}, { preserveState: true });
         }
     } catch (error) {
         console.error('Error:', error);
@@ -483,7 +483,7 @@ const confirmFinishOrder = async () => {
 
         if (result.isConfirmed) {
             await axios.put(`/api/production-order-finish/${form.po}`);
-            router.get(route('orderBesar.poSiapVerif'), {}, { preserveState: true });
+            router.get(route('orderSiapPeriksa.index'), {}, { preserveState: true });
             showNotification('Order berhasil diselesaikan', 'success');
         }
     } catch (error) {
