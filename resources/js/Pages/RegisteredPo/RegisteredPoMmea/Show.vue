@@ -193,7 +193,7 @@ console.log(props.data_product);
 
                 <!-- Navigation -->
                 <div class="flex justify-center mt-8">
-                    <Link :href="route('dashboard')"
+                    <Link :href="route('orderSiapPeriksa.index')"
                         class="inline-flex items-center gap-3 px-8 py-4 text-lg font-semibold text-white bg-blue-600 dark:bg-blue-500 rounded-xl hover:bg-blue-700 dark:hover:bg-blue-600 transition-all duration-200 shadow-lg hover:shadow-xl hover:-translate-y-0.5">
                     <span>Kembali ke Dashboard</span>
                     <ArrowRight class="w-5 h-5" />

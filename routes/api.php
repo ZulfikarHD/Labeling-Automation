@@ -4,7 +4,7 @@ use App\Http\Controllers\GeneratedLabelController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\GenerateLabelsPersonalController;
-use App\Http\Controllers\OrderBesar\PoSiapVerifController;
+use App\Http\Controllers\OrderSiapPeriksaController;
 use App\Http\Controllers\PrintLabelPersonalController;
 use App\Http\Controllers\PendapatanHarianController;
 use App\Http\Controllers\PrintLabel\PrintLabelMmeaController;
@@ -67,7 +67,7 @@ Route::prefix('order-besar')->group(function () {
         Route::get('/verification-status/{team}', [App\Http\Controllers\OrderBesar\CetakLabelController::class, 'getVerificationStatus']);
     });
 
-    Route::get('/verif/{team}', [PoSiapVerifController::class, 'fetchWorkPo']);
+    Route::get('/verif/{team}', [OrderSiapPeriksaController::class, 'fetchWorkPo']);
 });
 
 /*

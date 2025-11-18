@@ -1,0 +1,106 @@
+---
+alwaysApply: false
+---
+# 🧾 Laravel QA Testing Guideline (Universal)
+
+## 1️⃣ General Principles
+
+* ✅ Write **tests that protect logic**, not tests that duplicate code.
+* ✅ Prefer **Feature Tests** for routes, controllers, and integration.
+* ✅ Use **Unit Tests** for pure logic (helpers, services, calculations).
+* ✅ Cover the **happy path** + **main edge cases** (valid, invalid, empty, unauthorized).
+* ✅ Keep test names descriptive:
+  `test_user_cannot_create_product_without_name()`
+
+---
+
+## 2️⃣ Minimum Baseline (For Every Project)
+
+At least one of each should exist:
+
+| Category                    | Description                                       | Example                       |
+| --------------------------- | ------------------------------------------------- | ----------------------------- |
+| **Smoke Test**              | Core routes return success (200)                  | `/api/status`                 |
+| **Basic CRUD or Read Test** | Verify main resource endpoints                    | `/api/products`               |
+| **Validation Test**         | Ensure invalid input fails cleanly                | Missing name returns 422      |
+| **Authorization Test**      | Guests or wrong roles are denied                  | Guest → 401, Wrong role → 403 |
+| **Database Assertion**      | Data created/updated/deleted as expected          | `assertDatabaseHas()`         |
+| **Error Handling**          | Invalid ID or broken route returns correct status | `/api/products/999 → 404`     |
+
+💡 **Goal:** Basic safety net — if any of these fail, feature is broken.
+
+---
+
+## 3️⃣ Recommended per Feature Type
+
+| Feature Type                     | Core Tests                                                  | Optional Tests                    | Example Count |
+| -------------------------------- | ----------------------------------------------------------- | --------------------------------- | ------------- |
+| **Read-Only / List / Search**    | Response code, structure, filters, pagination, empty result | Sort order, query params, caching | 3–5           |
+| **CRUD Controller**              | Create, Read, Update, Delete, Validation, DB assertions     | Auth, soft delete, relationships  | 5–8           |
+| **Business Logic / Multi-Model** | Core CRUD + calculations, side effects, transactions        | Events, queues, integration mock  | 8–12          |
+| **Utility / Helper / Service**   | Input → Output logic only                                   | Edge math/string cases            | 2–5           |
+| **Public API Endpoint**          | Structure, status, validation, permissions                  | Rate limit, error format          | 4–8           |
+
+---
+
+## 4️⃣ Feature Test Checklist (Laravel `tests/Feature`)
+
+When you create or modify a controller:
+
+* [ ] Can access endpoint successfully (200 OK)
+* [ ] Correct structure or JSON response
+* [ ] Valid input passes
+* [ ] Invalid input fails (422)
+* [ ] Unauthorized access is denied (401/403)
+* [ ] Database reflects changes (create/update/delete)
+* [ ] Soft delete works (if used)
+* [ ] Search, pagination, or filters behave correctly
+* [ ] Edge cases return correct status (404 for missing ID)
+
+---
+
+## 5️⃣ Unit Test Checklist (Laravel `tests/Unit`)
+
+When you build or change **logic classes** (Services, Actions, Helpers):
+
+* [ ] Each public function returns expected output
+* [ ] Handles valid and invalid input gracefully
+* [ ] Edge values produce correct results (0, null, negative, empty)
+* [ ] No external dependencies (DB, HTTP)
+* [ ] Mock external services or facades
+* [ ] Follows naming convention: `test_[method_name]_works_as_expected`
+
+---
+
+## 6️⃣ Data & DB Testing Checklist
+
+* [ ] Uses in-memory SQLite (`phpunit.xml` setup)
+* [ ] Uses `RefreshDatabase` or `DatabaseTransactions`
+* [ ] Confirms inserts via `assertDatabaseHas()`
+* [ ] Confirms deletes via `assertDatabaseMissing()`
+* [ ] Ensures relationships load properly
+* [ ] Tests unique and foreign key constraints
+
+---
+
+## 7️⃣ Auth & Security Checklist
+
+* [ ] Authenticated users only can access restricted routes
+* [ ] Role or permission gates enforced
+* [ ] Validation prevents malformed data
+* [ ] API returns correct status on invalid tokens
+* [ ] Sensitive fields not leaked (e.g. password hashes)
+* [ ] CSRF protection not broken (for web routes)
+
+---
+
+## 8️⃣ Code Coverage Targets
+
+| Coverage Type        | Recommended | Note                                       |
+| -------------------- | ----------- | ------------------------------------------ |
+| **Feature Coverage** | 60–70%      | Focus on core routes                       |
+| **Unit Coverage**    | 70–90%      | For reusable logic                         |
+| **Overall Coverage** | 70%+        | Enough to detect regression                |
+| **Critical Module**  | 100%        | Authentication, File Uploads, Transactions |
+
+---

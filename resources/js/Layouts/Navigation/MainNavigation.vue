@@ -106,7 +106,7 @@ onBeforeUnmount(() => {
         </NavLink>
 
         <!-- Order Siap Periksa -->
-        <NavLink :href="route('orderBesar.poSiapVerif')">
+        <NavLink :href="route('orderSiapPeriksa.index')">
             <FileCheck />
             Order Siap Periksa
         </NavLink>

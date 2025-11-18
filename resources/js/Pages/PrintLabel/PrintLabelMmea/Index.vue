@@ -12,12 +12,10 @@ import TextInput from "@/Components/TextInput.vue";
 import InputLabel from "@/Components/InputLabel.vue";
 import Select from "@/Components/Select.vue";
 import Button from "@/Components/Button.vue";
-import InputError from "@/Components/InputError.vue";
-import { router } from '@inertiajs/vue3';
 import LoadingOverlay from "@/Components/LoadingOverlay.vue";
 import { LabelMmea } from "@/Components/PrintPages/index";
-import { fetchDataOrder, fetchQcData, storeLabelData, storeProductData } from "./ApiServices"
-import axios from 'axios';
+import { fetchDataOrder, storeLabelData, storeProductData } from "./ApiServices"
+import { initDataQc, initOrderSpec } from './InitDataLabel';
 import {
     Scan,
     FileText,
@@ -27,9 +25,10 @@ import {
     Printer,
     RotateCcw,
     CheckCircle,
-    AlertCircle
+    AlertCircle,
+    Plus,
+    Trash2
 } from 'lucide-vue-next';
-import { initDataQc, initOrderSpec, resetOrderSpec } from './InitDataLabel';
 
 // Constants
 const PRINT_TIMEOUT_BASE = 1000;
@@ -51,6 +50,7 @@ const printTimeout = computed(() =>
 const isLoading = ref(false);
 const nomorPo = ref(0);
 const printMode = ref("both");
+const rowCount = ref(1);
 
 const specMmea = ref({
     no_po: nomorPo.value,
@@ -129,15 +129,39 @@ const InitDataLabel = async () => {
 
 const updateFormContent = (dataQc) => {
     form.no_po = dataQc.no_po;
-    form.no_rim = dataQc.no_rim;
-    form.periksa1 = dataQc.periksa1;
-    form.periksa2 = dataQc.periksa2;
-    form.jml_kemas = dataQc.jml_kemas;
     form.jml_label = dataQc.jml_label;
+
+    // Initialize form with data from QC or set defaults
+    rowCount.value = Object.keys(dataQc.no_rim).length || 1;
+
+    // Reset form objects
+    form.no_rim = {};
+    form.periksa1 = {};
+    form.periksa2 = {};
+    form.jml_kemas = {};
+
+    singleLabelForm.no_rim = {};
+    singleLabelForm.periksa1 = {};
+    singleLabelForm.periksa2 = {};
+    singleLabelForm.jml_kemas = {};
+
+    // Populate form with QC data or defaults
+    for (let i = 1; i <= rowCount.value; i++) {
+        form.no_rim[`no_${i}`] = dataQc.no_rim[`no_${i}`] || i;
+        form.periksa1[`np_${i}`] = dataQc.periksa1[`np_${i}`] || "";
+        form.periksa2[`np_${i}`] = dataQc.periksa2[`np_${i}`] || "";
+        form.jml_kemas[`no_${i}`] = dataQc.jml_kemas[`no_${i}`] || 300;
+
+        singleLabelForm.no_rim[`no_${i}`] = dataQc.no_rim[`no_${i}`] || i;
+        singleLabelForm.periksa1[`np_${i}`] = dataQc.periksa1[`np_${i}`] || "";
+        singleLabelForm.periksa2[`np_${i}`] = dataQc.periksa2[`np_${i}`] || "";
+        singleLabelForm.jml_kemas[`no_${i}`] = dataQc.jml_kemas[`no_${i}`] || 300;
+    }
 }
 
 const clearForm = () => {
     nomorPo.value = '';
+    rowCount.value = 1;
     form.reset();
     resetSpecMmea();
     if (!isLoading.value) {
@@ -159,13 +183,98 @@ const resetSpecMmea = () => {
     specMmea.value.no_plat = "-";
 }
 
-const printSingleLabel = (no_rim) => {
+const addRow = () => {
+    rowCount.value++;
+    const rowIndex = rowCount.value;
+
+    // Add new entries to form objects
+    form.no_rim[`no_${rowIndex}`] = rowIndex;
+    form.periksa1[`np_${rowIndex}`] = "";
+    form.periksa2[`np_${rowIndex}`] = "";
+    form.jml_kemas[`no_${rowIndex}`] = 300;
+
+    // Update jml_label to match row count
+    form.jml_label = rowCount.value;
+
+    // Also add to singleLabelForm for consistency
+    singleLabelForm.no_rim[`no_${rowIndex}`] = rowIndex;
+    singleLabelForm.periksa1[`np_${rowIndex}`] = "";
+    singleLabelForm.periksa2[`np_${rowIndex}`] = "";
+    singleLabelForm.jml_kemas[`no_${rowIndex}`] = 300;
+}
+
+const removeRow = (rowIndex) => {
+    if (rowCount.value <= 1) {
+        // Don't allow removing the last row
+        return;
+    }
+
+    // Remove entries from form objects
+    delete form.no_rim[`no_${rowIndex}`];
+    delete form.periksa1[`np_${rowIndex}`];
+    delete form.periksa2[`np_${rowIndex}`];
+    delete form.jml_kemas[`no_${rowIndex}`];
+
+    // Also remove from singleLabelForm
+    delete singleLabelForm.no_rim[`no_${rowIndex}`];
+    delete singleLabelForm.periksa1[`np_${rowIndex}`];
+    delete singleLabelForm.periksa2[`np_${rowIndex}`];
+    delete singleLabelForm.jml_kemas[`no_${rowIndex}`];
+
+    // Reindex the remaining rows
+    const newNoRim = {};
+    const newPeriksa1 = {};
+    const newPeriksa2 = {};
+    const newJmlKemas = {};
+
+    const newSingleNoRim = {};
+    const newSinglePeriksa1 = {};
+    const newSinglePeriksa2 = {};
+    const newSingleJmlKemas = {};
+
+    let newIndex = 1;
+    for (let i = 1; i <= rowCount.value; i++) {
+        if (i !== rowIndex) {
+            newNoRim[`no_${newIndex}`] = newIndex;
+            newPeriksa1[`np_${newIndex}`] = form.periksa1[`np_${i}`] || "";
+            newPeriksa2[`np_${newIndex}`] = form.periksa2[`np_${i}`] || "";
+            newJmlKemas[`no_${newIndex}`] = form.jml_kemas[`no_${i}`] || 300;
+
+            newSingleNoRim[`no_${newIndex}`] = newIndex;
+            newSinglePeriksa1[`np_${newIndex}`] = singleLabelForm.periksa1[`np_${i}`] || "";
+            newSinglePeriksa2[`np_${newIndex}`] = singleLabelForm.periksa2[`np_${i}`] || "";
+            newSingleJmlKemas[`no_${newIndex}`] = singleLabelForm.jml_kemas[`no_${i}`] || 300;
+
+            newIndex++;
+        }
+    }
+
+    form.no_rim = newNoRim;
+    form.periksa1 = newPeriksa1;
+    form.periksa2 = newPeriksa2;
+    form.jml_kemas = newJmlKemas;
+
+    singleLabelForm.no_rim = newSingleNoRim;
+    singleLabelForm.periksa1 = newSinglePeriksa1;
+    singleLabelForm.periksa2 = newSinglePeriksa2;
+    singleLabelForm.jml_kemas = newSingleJmlKemas;
+
+    rowCount.value--;
+
+    // Update jml_label to match row count
+    form.jml_label = rowCount.value;
+}
+
+const printSingleLabel = (key) => {
+    // Extract row index from key (e.g., "no_1" -> 1)
+    const rowIndex = key.replace('no_', '');
+
     // Update Form Berdasarkan Nomor PO
     singleLabelForm.no_po = form.no_po;
-    singleLabelForm.no_rim = { no_1: form.no_rim[`no_${no_rim}`] };
-    singleLabelForm.periksa1 = { np_1: convNp(form.periksa1[`np_${no_rim}`]) };
-    singleLabelForm.periksa2 = { np_1: convNp(form.periksa2[`np_${no_rim}`]) };
-    singleLabelForm.jml_kemas = { no_1: form.jml_kemas[`no_${no_rim}`] };
+    singleLabelForm.no_rim = { no_1: form.no_rim[key] };
+    singleLabelForm.periksa1 = { np_1: convNp(form.periksa1[`np_${rowIndex}`] || '') };
+    singleLabelForm.periksa2 = { np_1: convNp(form.periksa2[`np_${rowIndex}`] || '') };
+    singleLabelForm.jml_kemas = { no_1: form.jml_kemas[key] };
     singleLabelForm.jml_label = 1;
 
     formHandler.submitForm('single');
@@ -511,7 +620,7 @@ const handleNpInput = () => {
                         <!-- NP Input Fields -->
                         <div class="grid grid-cols-1 md:grid-cols-7 gap-4">
                             <div class="flex flex-col gap-2 col-span-1">
-                                <template v-for="(nomorRim, key) in form.no_rim">
+                                <template v-for="(nomorRim, key) in form.no_rim" :key="key">
                                     <div class="space-y-2">
                                         <TextInput v-model="form.no_rim[key]" disabled
                                             :value="nomorRim" @keydown.enter.prevent type="text"
@@ -521,9 +630,9 @@ const handleNpInput = () => {
                                 </template>
                             </div>
                             <div class="flex flex-col gap-2 col-span-1">
-                                <template v-for="(lbrKirim, key) in form.jml_kemas">
+                                <template v-for="(lbrKirim, key) in form.jml_kemas" :key="key">
                                     <div class="space-y-2">
-                                        <TextInput v-model="form.jml_kemas[key]" disabled
+                                        <TextInput v-model="form.jml_kemas[key]"
                                             :value="lbrKirim" @keydown.enter.prevent type="text"
                                             :disabled="!isDataFetched || specMmea.no_obc == '-'" required
                                             placeholder="Lembar Kirim" class="text-center font-mono tracking-wider" />
@@ -531,9 +640,9 @@ const handleNpInput = () => {
                                 </template>
                             </div>
                             <div class="flex flex-col gap-2 col-span-2 md:col-span-4">
-                                <template v-for="(pemeriksa1, key) in form.periksa1">
+                                <template v-for="(pemeriksa1, key) in form.periksa1" :key="key">
                                     <div class="space-y-2 flex gap-2">
-                                        <TextInput v-model="form.periksa1[key]" @input="handleNpInput" :key="key"
+                                        <TextInput v-model="form.periksa1[key]" @input="handleNpInput"
                                             required @keydown.enter.prevent type="text"
                                             :disabled="!isDataFetched
                                                 || specMmea.no_obc == '-'
@@ -552,13 +661,50 @@ const handleNpInput = () => {
                                 </template>
                             </div>
                             <div class="flex flex-col gap-2 col-span-1">
-                                <template v-for="(nomorRim, key) in form.no_rim">
-                                    <Button type="button" @click="printSingleLabel(nomorRim)" variant="primary"
+                                <template v-for="(nomorRim, key) in form.no_rim" :key="key">
+                                    <Button type="button" @click="printSingleLabel(key)" variant="primary"
                                         size="sm"
-                                        :disabled="!isDataFetched || isLoading || form.periksa1['np_' + nomorRim] == '' || form.periksa2['np_' + nomorRim] == ''"
+                                        :disabled="!isDataFetched || isLoading || !form.periksa1['np_' + key.replace('no_', '')] || !form.periksa2['np_' + key.replace('no_', '')]"
                                         :loading="isLoading" :icon="Printer" class="flex-1 mb-3 mt-0.5 ml-2 mr-2">
                                     </Button>
                                 </template>
+                            </div>
+                        </div>
+
+                        <!-- Row Management Buttons -->
+                        <div class="relative pt-6 pb-2">
+                            <div class="flex items-center justify-between gap-4 p-4 bg-gradient-to-r from-slate-50 to-gray-50 dark:from-slate-800/50 dark:to-slate-700/50 rounded-xl border border-slate-200 dark:border-slate-600 shadow-sm">
+                                <div class="flex items-center gap-3">
+                                    <div class="flex items-center justify-center w-10 h-10 rounded-lg bg-blue-100 dark:bg-blue-900/30">
+                                        <Hash class="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-medium text-slate-700 dark:text-slate-300">Jumlah Rim</p>
+                                        <p class="text-lg font-bold text-slate-900 dark:text-white">{{ rowCount }}</p>
+                                    </div>
+                                </div>
+
+                                <div class="flex items-center gap-3">
+                                    <button
+                                        type="button"
+                                        @click="addRow"
+                                        :disabled="!isDataFetched || isLoading || rowCount >= 5"
+                                        class="group relative inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-emerald-500 to-green-500 hover:from-emerald-600 hover:to-green-600 text-white font-semibold rounded-lg shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200 ease-in-out focus:outline-none focus:ring-4 focus:ring-emerald-500/30 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:hover:shadow-md"
+                                    >
+                                        <Plus class="h-5 w-5 transition-transform group-hover:rotate-90" />
+                                        <span>Tambah Baris</span>
+                                    </button>
+
+                                    <button
+                                        type="button"
+                                        @click="removeRow(rowCount)"
+                                        :disabled="!isDataFetched || isLoading || rowCount <= 1"
+                                        class="group relative inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-red-500 to-rose-500 hover:from-red-600 hover:to-rose-600 text-white font-semibold rounded-lg shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200 ease-in-out focus:outline-none focus:ring-4 focus:ring-red-500/30 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:hover:shadow-md"
+                                    >
+                                        <Trash2 class="h-5 w-5 transition-transform group-hover:scale-110" />
+                                        <span>Hapus Baris</span>
+                                    </button>
+                                </div>
                             </div>
                         </div>
 

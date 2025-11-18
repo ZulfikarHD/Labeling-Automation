@@ -344,7 +344,7 @@ const sort = (field) => {
             <!-- Home Button -->
             <div class="flex justify-center mt-12">
                 <Link
-                    :href="route('dashboard')"
+                    :href="route('orderSiapPeriksa.index')"
                     class="inline-flex items-center gap-2 px-6 py-3 text-sm font-medium text-white transition-all duration-200 bg-blue-500 dark:bg-blue-600 rounded-xl hover:bg-blue-600 dark:hover:bg-blue-700 focus:ring-2 focus:ring-blue-200 dark:focus:ring-blue-900"
                 >
                     <Home class="w-5 h-5" />

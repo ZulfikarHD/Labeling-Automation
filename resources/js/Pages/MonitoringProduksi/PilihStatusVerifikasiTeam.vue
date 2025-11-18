@@ -53,7 +53,7 @@ const props = defineProps({
 
             <!-- Back to Dashboard Button -->
             <div class="flex justify-center mt-16">
-                <Link :href="route('dashboard')"
+                <Link :href="route('orderSiapPeriksa.index')"
                     class="inline-flex items-center px-8 py-4 text-base font-medium rounded-xl text-white bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 dark:from-blue-500 dark:to-indigo-500 dark:hover:from-blue-600 dark:hover:to-indigo-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:focus:ring-blue-400 shadow-md hover:shadow-lg transition-all duration-300">
                 <ArrowLeftCircle class="w-5 h-5 mr-2" />
                 Kembali ke Dashboard
