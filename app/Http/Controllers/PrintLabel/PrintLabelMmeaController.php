@@ -10,9 +10,11 @@ use Inertia\Inertia;
 
 class PrintLabelMmeaController extends Controller
 {
-    public function index()
+    public function index($no_po = null)
     {
-        return Inertia::render('PrintLabel/PrintLabelMmea/Index');
+        return Inertia::render('PrintLabel/PrintLabelMmea/Index', [
+            'no_po' => $no_po,
+        ]);
     }
 
     public function store(Request $request)

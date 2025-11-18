@@ -5,7 +5,7 @@
  * TODO : Get Array From No Rim
  *
  */
-import { ref, inject, computed, watch } from 'vue';
+import { ref, inject, computed, watch, onMounted } from 'vue';
 import { Head, useForm } from '@inertiajs/vue3';
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import TextInput from "@/Components/TextInput.vue";
@@ -35,6 +35,14 @@ const PRINT_TIMEOUT_BASE = 1000;
 const DEBOUNCE_DELAY = 500;
 const VALIDATION_DELAY = 300;
 const printFrame = ref(null);
+// Props
+const props = defineProps({
+    no_po: {
+        type: [String, Number],
+        default: null
+    }
+});
+
 // Injections
 const swal = inject('$swal');
 
@@ -48,7 +56,7 @@ const printTimeout = computed(() =>
 );
 
 const isLoading = ref(false);
-const nomorPo = ref(0);
+const nomorPo = ref(props.no_po || 0);
 const printMode = ref("both");
 const rowCount = ref(1);
 
@@ -465,6 +473,22 @@ const handleNpInput = () => {
     clearTimeout(npDebounceTimer);
     errors.value.labelQuantity = '';
 };
+
+// Auto-initialize when component receives no_po prop
+onMounted(() => {
+    if (props.no_po) {
+        nomorPo.value = props.no_po;
+        InitDataLabel();
+    }
+});
+
+// Watch for changes in no_po prop (in case of navigation updates)
+watch(() => props.no_po, (newValue) => {
+    if (newValue && newValue !== nomorPo.value) {
+        nomorPo.value = newValue;
+        InitDataLabel();
+    }
+});
 </script>
 
 <template>
