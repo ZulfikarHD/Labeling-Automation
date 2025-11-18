@@ -2,19 +2,137 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import TextInput from '@/Components/TextInput.vue';
+import Modal from '@/Components/Modal.vue';
 import { Link } from '@inertiajs/vue3';
 import { Hash, Layers, FileText, AlertCircle, CheckCircle2, Clock, ArrowRight } from 'lucide-vue-next';
+import { ref } from 'vue';
 
 const props = defineProps({
     data_product: Object,
     data_periksa: Object,
 })
 
-console.log(props.data_product);
+const modalDetailProduksi = ref(false);
+const periksa1 = ref('');
+const periksa2 = ref('');
+const nomorPo = ref('');
+const nomorObc = ref('');
+const nomorRim = ref('');
+const lbrKemas = ref('');
+const waktuP1 = ref('');
+const waktuP2 = ref('');
+
+const formatDateTime = (dateString) => {
+    if (!dateString) return '-';
+    const date = new Date(dateString);
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    const seconds = String(date.getSeconds()).padStart(2, '0');
+    
+    return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
+};
+
+const openModalDetailProduksi = (dataLabel) => {
+    modalDetailProduksi.value = true;
+    
+    periksa1.value = dataLabel.periksa1 ?? '-';
+    periksa2.value = dataLabel.periksa2 ?? '-';
+    nomorPo.value = dataLabel.nomor_po;
+    nomorObc.value = props.data_product.no_obc;
+    nomorRim.value = dataLabel.nomor_rim;
+    lbrKemas.value = dataLabel.lbr_kemas ?? '-';
+    waktuP1.value = formatDateTime(dataLabel.waktu_p1);
+    waktuP2.value = formatDateTime(dataLabel.waktu_p2);
+};
 
 </script>
 
 <template>
+    <!-- Detail Modal -->
+    <Modal :show="modalDetailProduksi" @close="() => (modalDetailProduksi = !modalDetailProduksi)">
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl p-8">
+            <div class="flex flex-col gap-6">
+                <!-- Modal header -->
+                <div class="text-center">
+                    <h2 class="text-2xl font-bold text-slate-900 dark:text-white">
+                        Detail Data Verifikasi
+                    </h2>
+                    <div class="w-20 h-1 bg-blue-500 mx-auto mt-3 rounded-full"></div>
+                </div>
+
+                <!-- Detail Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+                    <!-- Left Column -->
+                    <div class="space-y-4">
+                        <div class="flex items-center gap-4 p-3 bg-slate-50 dark:bg-slate-700/50 rounded-lg">
+                            <span class="text-sm font-semibold text-slate-600 dark:text-slate-400 min-w-32">Nomor PO</span>
+                            <span class="text-slate-500 dark:text-slate-400">:</span>
+                            <p class="text-sm font-medium text-slate-900 dark:text-white">{{ nomorPo }}</p>
+                        </div>
+
+                        <div class="flex items-center gap-4 p-3 bg-slate-50 dark:bg-slate-700/50 rounded-lg">
+                            <span class="text-sm font-semibold text-slate-600 dark:text-slate-400 min-w-32">Nomor OBC</span>
+                            <span class="text-slate-500 dark:text-slate-400">:</span>
+                            <p class="text-sm font-medium text-slate-900 dark:text-white">{{ nomorObc }}</p>
+                        </div>
+
+                        <div class="flex items-center gap-4 p-3 bg-slate-50 dark:bg-slate-700/50 rounded-lg">
+                            <span class="text-sm font-semibold text-slate-600 dark:text-slate-400 min-w-32">Nomor Rim</span>
+                            <span class="text-slate-500 dark:text-slate-400">:</span>
+                            <p class="text-sm font-medium text-slate-900 dark:text-white">{{ nomorRim }}</p>
+                        </div>
+
+                        <div class="flex items-center gap-4 p-3 bg-slate-50 dark:bg-slate-700/50 rounded-lg">
+                            <span class="text-sm font-semibold text-slate-600 dark:text-slate-400 min-w-32">Lembar Kemas</span>
+                            <span class="text-slate-500 dark:text-slate-400">:</span>
+                            <p class="text-sm font-medium text-slate-900 dark:text-white">{{ lbrKemas }}</p>
+                        </div>
+                    </div>
+
+                    <!-- Right Column -->
+                    <div class="space-y-4">
+                        <div class="flex items-center gap-4 p-3 bg-blue-50 dark:bg-blue-900/30 rounded-lg">
+                            <span class="text-sm font-semibold text-blue-700 dark:text-blue-400 min-w-32">Periksa 1</span>
+                            <span class="text-blue-600 dark:text-blue-400">:</span>
+                            <p class="text-sm font-medium text-blue-900 dark:text-blue-300">{{ periksa1 }}</p>
+                        </div>
+
+                        <div class="flex items-center gap-4 p-3 bg-emerald-50 dark:bg-emerald-900/30 rounded-lg">
+                            <span class="text-sm font-semibold text-emerald-700 dark:text-emerald-400 min-w-32">Periksa 2</span>
+                            <span class="text-emerald-600 dark:text-emerald-400">:</span>
+                            <p class="text-sm font-medium text-emerald-900 dark:text-emerald-300">{{ periksa2 }}</p>
+                        </div>
+
+                        <div class="flex items-center gap-4 p-3 bg-slate-50 dark:bg-slate-700/50 rounded-lg">
+                            <span class="text-sm font-semibold text-slate-600 dark:text-slate-400 min-w-32">Waktu P1</span>
+                            <span class="text-slate-500 dark:text-slate-400">:</span>
+                            <p class="text-sm font-medium text-slate-900 dark:text-white">{{ waktuP1 }}</p>
+                        </div>
+
+                        <div class="flex items-center gap-4 p-3 bg-slate-50 dark:bg-slate-700/50 rounded-lg">
+                            <span class="text-sm font-semibold text-slate-600 dark:text-slate-400 min-w-32">Waktu P2</span>
+                            <span class="text-slate-500 dark:text-slate-400">:</span>
+                            <p class="text-sm font-medium text-slate-900 dark:text-white">{{ waktuP2 }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Close Button -->
+                <div class="flex justify-end pt-4 mt-4 border-t border-slate-200 dark:border-slate-700">
+                    <button 
+                        type="button" 
+                        @click="modalDetailProduksi = !modalDetailProduksi"
+                        class="px-6 py-2.5 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 rounded-lg transition-colors duration-200 shadow-sm hover:shadow">
+                        Tutup
+                    </button>
+                </div>
+            </div>
+        </div>
+    </Modal>
+
     <AuthenticatedLayout>
         <div class="min-h-screen py-12">
             <div class="container mx-auto px-4 max-w-7xl">
@@ -84,7 +202,7 @@ console.log(props.data_product);
                                             <span class="text-sm font-bold text-emerald-700 dark:text-emerald-400">{{
                                                 periksa.periksa1 }}</span>
                                             <span class="text-sm font-medium text-indigo-600 dark:text-indigo-400">{{
-                                                periksa.no_rim }}</span>
+                                                periksa.nomor_rim }}</span>
                                         </div>
                                     </button>
 
@@ -98,7 +216,7 @@ console.log(props.data_product);
                                             <span class="text-sm font-bold text-amber-700 dark:text-amber-400">{{
                                                 periksa.periksa1 }}</span>
                                             <span class="text-sm font-medium text-indigo-600 dark:text-indigo-400">{{
-                                                periksa.no_rim }}</span>
+                                                periksa.nomor_rim }}</span>
                                         </div>
                                     </button>
 
@@ -108,7 +226,7 @@ console.log(props.data_product);
                                         <div class="flex flex-col items-center gap-1">
                                             <span class="text-sm font-bold text-slate-400 dark:text-slate-500">-</span>
                                             <span class="text-sm font-medium text-indigo-600 dark:text-indigo-400">{{
-                                                periksa.no_rim }}</span>
+                                                periksa.nomor_rim }}</span>
                                         </div>
                                     </button>
                                 </template>
@@ -158,7 +276,7 @@ console.log(props.data_product);
                                             <span class="text-sm font-bold text-emerald-700 dark:text-emerald-400">{{
                                                 periksa.periksa2 }}</span>
                                             <span class="text-sm font-medium text-indigo-600 dark:text-indigo-400">{{
-                                                periksa.no_rim }}</span>
+                                                periksa.nomor_rim }}</span>
                                         </div>
                                     </button>
 
@@ -172,7 +290,7 @@ console.log(props.data_product);
                                             <span class="text-sm font-bold text-amber-700 dark:text-amber-400">{{
                                                 periksa.periksa2 }}</span>
                                             <span class="text-sm font-medium text-indigo-600 dark:text-indigo-400">{{
-                                                periksa.no_rim }}</span>
+                                                periksa.nomor_rim }}</span>
                                         </div>
                                     </button>
 
@@ -182,7 +300,7 @@ console.log(props.data_product);
                                         <div class="flex flex-col items-center gap-1">
                                             <span class="text-sm font-bold text-slate-400 dark:text-slate-500">-</span>
                                             <span class="text-sm font-medium text-indigo-600 dark:text-indigo-400">{{
-                                                periksa.no_rim }}</span>
+                                                periksa.nomor_rim }}</span>
                                         </div>
                                     </button>
                                 </template>
