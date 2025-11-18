@@ -202,7 +202,7 @@ const openModalDetailProduksi = (dataLabel) => {
                                             <span class="text-sm font-bold text-emerald-700 dark:text-emerald-400">{{
                                                 periksa.periksa1 }}</span>
                                             <span class="text-sm font-medium text-indigo-600 dark:text-indigo-400">{{
-                                                periksa.no_rim }}</span>
+                                                periksa.nomor_rim }}</span>
                                         </div>
                                     </button>
 
@@ -216,7 +216,7 @@ const openModalDetailProduksi = (dataLabel) => {
                                             <span class="text-sm font-bold text-amber-700 dark:text-amber-400">{{
                                                 periksa.periksa1 }}</span>
                                             <span class="text-sm font-medium text-indigo-600 dark:text-indigo-400">{{
-                                                periksa.no_rim }}</span>
+                                                periksa.nomor_rim }}</span>
                                         </div>
                                     </button>
 
@@ -226,7 +226,7 @@ const openModalDetailProduksi = (dataLabel) => {
                                         <div class="flex flex-col items-center gap-1">
                                             <span class="text-sm font-bold text-slate-400 dark:text-slate-500">-</span>
                                             <span class="text-sm font-medium text-indigo-600 dark:text-indigo-400">{{
-                                                periksa.no_rim }}</span>
+                                                periksa.nomor_rim }}</span>
                                         </div>
                                     </button>
                                 </template>
@@ -276,7 +276,7 @@ const openModalDetailProduksi = (dataLabel) => {
                                             <span class="text-sm font-bold text-emerald-700 dark:text-emerald-400">{{
                                                 periksa.periksa2 }}</span>
                                             <span class="text-sm font-medium text-indigo-600 dark:text-indigo-400">{{
-                                                periksa.no_rim }}</span>
+                                                periksa.nomor_rim }}</span>
                                         </div>
                                     </button>
 
@@ -290,7 +290,7 @@ const openModalDetailProduksi = (dataLabel) => {
                                             <span class="text-sm font-bold text-amber-700 dark:text-amber-400">{{
                                                 periksa.periksa2 }}</span>
                                             <span class="text-sm font-medium text-indigo-600 dark:text-indigo-400">{{
-                                                periksa.no_rim }}</span>
+                                                periksa.nomor_rim }}</span>
                                         </div>
                                     </button>
 
@@ -300,7 +300,7 @@ const openModalDetailProduksi = (dataLabel) => {
                                         <div class="flex flex-col items-center gap-1">
                                             <span class="text-sm font-bold text-slate-400 dark:text-slate-500">-</span>
                                             <span class="text-sm font-medium text-indigo-600 dark:text-indigo-400">{{
-                                                periksa.no_rim }}</span>
+                                                periksa.nomor_rim }}</span>
                                         </div>
                                     </button>
                                 </template>
