@@ -67,6 +67,8 @@ Route::middleware('auth')->group(function () {
     // Data Po MMEA
     Route::get('/data-po-mmea', [RegisteredPoMmeaController::class, 'index'])->name('dataPoMmea.index');
     Route::get('/data-po-mmea/{no_po}', [RegisteredPoMmeaController::class, 'show'])->name('dataPoMmea.show');
+    Route::get('/data-po-mmea/{no_po}/edit', [RegisteredPoMmeaController::class, 'edit'])->name('dataPoMmea.edit');
+    Route::put('/data-po-mmea/{no_po}', [RegisteredPoMmeaController::class, 'update'])->name('dataPoMmea.update');
     Route::post('/data-po-mmea', [RegisteredPoMmeaController::class, 'registeredPoData'])->name('dataPoMmea.dataPo');
     Route::delete('/data-po-mmea/{no_po}',[RegisteredPoMmeaController::class, 'destroy'])->name('dataPoMmea.destroy');
 
