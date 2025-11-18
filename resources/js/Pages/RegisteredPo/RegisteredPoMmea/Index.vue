@@ -225,6 +225,7 @@ const deleteOrder = () => {
                                             </button>
 
                                             <button
+                                                @click="$inertia.visit(route('printLabel.mmea', { no_po: dataPo.no_po }))"
                                                 class="group relative p-2 text-cyan-600 dark:text-cyan-400 transition-colors duration-200 rounded-lg hover:bg-cyan-50 dark:hover:bg-cyan-900/50">
                                                 <Printer class="w-5 h-5" />
                                                 <span
@@ -234,6 +235,7 @@ const deleteOrder = () => {
                                             </button>
 
                                             <button
+                                                @click="$inertia.visit(route('dataPoMmea.edit', { no_po: dataPo.no_po }))"
                                                 class="group relative p-2 text-amber-600 dark:text-amber-400 transition-colors duration-200 rounded-lg hover:bg-amber-50 dark:hover:bg-amber-900/50">
                                                 <Edit class="w-5 h-5" />
                                                 <span
