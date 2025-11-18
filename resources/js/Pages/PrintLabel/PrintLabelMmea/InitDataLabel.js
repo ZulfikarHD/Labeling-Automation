@@ -21,18 +21,21 @@ export function initOrderSpec(dataOrder) {
 }
 
 export async function initDataQc(dataOrder) {
-    // Hitung Jumlah Label Pada Order
-    const jml_label = Math.ceil(dataOrder.rencet / 300);
-
-    // Hitung Banyaknya Jumlah Kemas Rim Terakhir Pada Order
-    let last_jml_kemas = 300;
-
-    if(dataOrder.rencet !== 1500) {
-        last_jml_kemas = dataOrder.jml_order % 300 == 0 ? 300 : dataOrder.jml_order % 300;
-    }
-
     // Ambil Data QC Jika Ada di Database
     const data_qc = await fetchQcData(dataOrder.no_po);
+    let jml_label = 0;
+    let last_jml_kemas = 300;
+
+    // Hitung Jumlah Label Pada Order
+    if(data_qc.length > 0) {
+        jml_label = data_qc.length;
+        last_jml_kemas = data_qc[data_qc.length - 1].lbr_kemas;
+    } else {
+        jml_label = Math.ceil(dataOrder.rencet / 300);
+        if (dataOrder.rencet !== 1500) {
+            last_jml_kemas = dataOrder.jml_order % 300 == 0 ? 300 : dataOrder.jml_order % 300;
+        }
+    }
 
     // Initialize Form QC
     const form_qc = {
@@ -75,8 +78,6 @@ export async function initDataQc(dataOrder) {
             form_qc['no_rim'][`no_${i}`] = i;
         }
     }
-
-    console.log(jml_label)
 
     if (typeof data_qc[jml_label - 1] !== 'undefined') {
         form_qc['periksa1'][`np_${jml_label}`] = data_qc[jml_label - 1]['periksa1'];

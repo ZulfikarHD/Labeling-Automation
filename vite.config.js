@@ -24,13 +24,16 @@ export default defineConfig({
         base: '/labeling/'
     },
 
-    // Dev
+    // Dev Enable this, Prod Comment This
     server: {
+        host: '0.0.0.0', // Listen on all network interfaces
+        port: 5173,
         hmr: {
-            host: 'localhost',
+            host: '10.30.11.65', // Use the server's IP for HMR
+            port: 5173,
         },
         cors: {
-            origin : /^https?:\/\/(?:(?:[^:]+\.)?localhost|10\.30\.11\.65|127\.0\.0\.1|\[::1\])(?::\d+)?$/,
+            origin: true, // Allow all origins during development
         },
     },
 });
