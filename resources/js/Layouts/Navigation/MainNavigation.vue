@@ -96,7 +96,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-    <nav class="flex flex-col lg:flex-row lg:items-center gap-3 lg:gap-3">
+    <div class="flex flex-col lg:flex-row lg:items-center gap-3 lg:gap-3">
         <!-- Register Nomor PO -->
         <NavLink :href="route('orderBesar.registerNomorPo')">
             <ClipboardList />
@@ -181,5 +181,5 @@ onBeforeUnmount(() => {
             <Users />
             Create User
         </NavLink>
-    </nav>
+    </div>
 </template>
