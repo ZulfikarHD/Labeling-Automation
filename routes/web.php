@@ -40,6 +40,9 @@ Route::middleware('auth')->group(function () {
 
     // Order Besar routes
     Route::prefix('order-besar')->group(function () {
+        Route::get('/po-siap-verif', [OrderSiapPeriksaController::class, 'index'])
+            ->name('orderBesar.poSiapVerif');
+
         Route::get('/register-nomor-po', [App\Http\Controllers\OrderBesar\RegisterNomorPoController::class, 'index'])
             ->name('orderBesar.registerNomorPo');
 

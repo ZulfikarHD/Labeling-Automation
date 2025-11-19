@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Auth;
 
 class OrderSiapPeriksaController extends Controller
 {
-    public function index(Workstations $workstations)
+    public function index()
     {
         $teamUser = Auth::user()->workstation_id;
 
@@ -20,7 +20,7 @@ class OrderSiapPeriksaController extends Controller
             'products' => GeneratedProducts::where('assigned_team', $teamUser)
                 ->where('status', '<', 2)
                 ->get(),
-            'teamList' => $workstations->listWorkstation(),
+            'teamList' => Workstations::listWorkstation(),
             'crntTeam' => $teamUser,
         ]);
     }
