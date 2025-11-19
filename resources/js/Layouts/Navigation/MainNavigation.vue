@@ -22,9 +22,7 @@ defineProps({
 
 // Define dropdown state interface
 const dropdownState = {
-    orderBesar: false,
     cetakLabel: false,
-    options: false,
     monitoringProduksi: false,
     registeredPo: false,
 };
@@ -42,7 +40,7 @@ const resetDropdowns = () => {
 
 const closeDropdowns = (e) => {
     try {
-        if (isMounted.value && !e.target.closest(".dropdown-trigger")) {
+        if (isMounted.value && !e.target.closest(".dropdown-trigger") && !e.target.closest("[data-user-dropdown]")) {
             resetDropdowns();
         }
     } catch (error) {

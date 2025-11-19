@@ -3,8 +3,6 @@ import { usePage } from "@inertiajs/vue3"
 import { router } from '@inertiajs/vue3'
 import AppTheme from "@/Layouts/Navigation/AppTheme.vue"
 import MainNavigation from "@/Layouts/Navigation/MainNavigation.vue"
-import NavDropdown from "@/Components/Navigation/NavDropdown.vue"
-import DropdownMenu from "@/Components/Navigation/DropdownMenu.vue"
 import NavLink from "@/Components/Navigation/NavLink.vue"
 import {
     Settings,
@@ -14,10 +12,8 @@ import {
     Moon,
     Menu,
     X,
-    User,
-    Bell,
 } from "lucide-vue-next"
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 
 // Get user role from auth props
 const { props } = usePage()
@@ -25,6 +21,7 @@ const role = props.auth.user.role
 const userName = props.auth.user.name
 const isMobileMenuOpen = ref(false)
 const isOptionsOpen = ref(false)
+const isMounted = ref(false)
 
 const toggleMobileMenu = () => {
     isMobileMenuOpen.value = !isMobileMenuOpen.value
@@ -46,6 +43,46 @@ const logout = async () => {
 const closeMobileMenu = () => {
     isMobileMenuOpen.value = false
 }
+
+// Close user profile dropdown when clicking outside
+const closeOptionsDropdown = (e) => {
+    try {
+        if (isMounted.value && !e.target.closest('[data-user-dropdown]')) {
+            isOptionsOpen.value = false
+        }
+    } catch (error) {
+        console.error('Error closing options dropdown:', error)
+        isOptionsOpen.value = false
+    }
+}
+
+// Handle escape key to close dropdowns
+const handleEscKey = (e) => {
+    if (e.key === "Escape") {
+        if (isOptionsOpen.value) {
+            isOptionsOpen.value = false
+        }
+        if (isMobileMenuOpen.value) {
+            isMobileMenuOpen.value = false
+        }
+    }
+}
+
+onMounted(() => {
+    isMounted.value = true
+    if (typeof window !== "undefined") {
+        document.addEventListener("click", closeOptionsDropdown)
+        document.addEventListener("keydown", handleEscKey)
+    }
+})
+
+onBeforeUnmount(() => {
+    isMounted.value = false
+    if (typeof window !== "undefined") {
+        document.removeEventListener("click", closeOptionsDropdown)
+        document.removeEventListener("keydown", handleEscKey)
+    }
+})
 
 // Get user initials for avatar
 const userInitials = computed(() => {
@@ -110,9 +147,9 @@ const userInitials = computed(() => {
                             </button>
 
                             <!-- User Profile Dropdown -->
-                            <div class="hidden relative md:block">
+                            <div class="hidden relative md:block" data-user-dropdown>
                                 <button
-                                    @click="toggleOptions"
+                                    @click.stop="toggleOptions"
                                     class="flex items-center p-1 pr-3 space-x-3 text-sm rounded-full transition-all duration-200 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700"
                                     :class="
                                         isOptionsOpen
@@ -135,7 +172,8 @@ const userInitials = computed(() => {
 
                                 <!-- Enhanced Dropdown Menu -->
                                 <div v-show="isOptionsOpen"
-                                    class="absolute right-0 mt-2 w-64 origin-top-right rounded-xl bg-white dark:bg-slate-800 shadow-xl ring-1 ring-black ring-opacity-5 border border-slate-200 dark:border-slate-700 z-[110]">
+                                    class="absolute right-0 mt-2 w-64 origin-top-right rounded-xl bg-white dark:bg-slate-800 shadow-xl ring-1 ring-black ring-opacity-5 border border-slate-200 dark:border-slate-700 z-[110]"
+                                    @click.stop>
                                     <div class="p-4 border-b border-slate-200 dark:border-slate-700">
                                         <div class="flex items-center space-x-3">
                                             <div
