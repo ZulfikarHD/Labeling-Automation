@@ -49,12 +49,8 @@ class PrintLabelInspeksiController extends Controller
     {
         $isPoRegistered = GeneratedProducts::where('no_po', $no_po)->first();
 
-        $countLabel = GeneratedLabels::where('no_po_generated_products', $no_po)
-                             ->whereNull('np_users')
-                             ->count();
-
         if ($isPoRegistered) {
-            return $countLabel;
+            return $this->printLabelService->getRemainingLabelCount($no_po);
         } else {
             $specification = Specification::where('no_po', $no_po)->first();
 
@@ -158,7 +154,7 @@ class PrintLabelInspeksiController extends Controller
         $failedLabels = 0;
 
         for ($i = 0; $i < $validatedData['jumlah_label']; $i++) {
-            $label = $this->getNextAvailableLabel($validatedData['no_po']);
+            $label = $this->printLabelService->getNextAvailableLabel($validatedData['no_po'], 'desc');
 
             if (!$label) {
                 // Only log this if we couldn't process any labels - indicates a real issue
@@ -168,7 +164,12 @@ class PrintLabelInspeksiController extends Controller
                 break;
             }
 
-            if ($this->updateLabel($label, $validatedData)) {
+            if ($this->printLabelService->updateLabelWithInspection(
+                $label,
+                $validatedData['np1'],
+                $validatedData['np2'] ?? null,
+                $validatedData['team']
+            )) {
                 $processedLabels++;
             } else {
                 $failedLabels++;
@@ -182,39 +183,6 @@ class PrintLabelInspeksiController extends Controller
             'failed_labels' => $failedLabels,
             'remaining_labels' => $remainingLabels
         ];
-    }
-
-    private function getNextAvailableLabel(int $no_po)
-    {
-        return GeneratedLabels::where('no_po_generated_products', $no_po)
-                             ->whereNull('np_users')
-                             ->orderBy('no_rim', 'desc')
-                             ->first();
-    }
-
-    private function updateLabel($label, array $validatedData): bool
-    {
-        try {
-            $label->update([
-                'np_users' => strtoupper($validatedData['np1']),
-                'np_user_p2' => strtoupper($validatedData['np2']),
-                'workstation' => $validatedData['team'],
-                'start' => now(),
-                'finish' => now(),
-            ]);
-
-            return true;
-
-        } catch (\Exception $e) {
-            // Only log errors - successful updates don't need logging
-            Log::error('Failed to update label', [
-                'label_id' => $label->id,
-                'no_po' => $validatedData['no_po'] ?? 'unknown',
-                'error' => $e->getMessage()
-            ]);
-
-            return false;
-        }
     }
 
     private function updateProductionOrderStatus(int $no_po, int $remainingLabels): void
