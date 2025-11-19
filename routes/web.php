@@ -1,12 +1,9 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
-use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-use App\Http\Controllers\ProductMonitoringController;
-use App\Http\Controllers\GenerateLabelsPersonalController;
 use App\Http\Controllers\ProductionOrderController;
 use App\Http\Controllers\RegisteredPoMmeaController;
 use App\Http\Middleware\Role1Access;
@@ -43,9 +40,6 @@ Route::middleware('auth')->group(function () {
 
     // Order Besar routes
     Route::prefix('order-besar')->group(function () {
-        Route::get('/order-siap-periksa', [OrderSiapPeriksaController::class, 'index'])
-            ->name('orderBesar.orderSiapPeriksa');
-
         Route::get('/register-nomor-po', [App\Http\Controllers\OrderBesar\RegisterNomorPoController::class, 'index'])
             ->name('orderBesar.registerNomorPo');
 
