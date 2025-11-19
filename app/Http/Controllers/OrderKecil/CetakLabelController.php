@@ -64,12 +64,4 @@ class CetakLabelController extends Controller
             ], 422);
         }
     }
-
-    private function countNullNp(string $noPo): int
-    {
-        return GeneratedLabels::query()
-            ->where('no_po_generated_products', $noPo)
-            ->whereNull('np_users')
-            ->count();
-    }
 }

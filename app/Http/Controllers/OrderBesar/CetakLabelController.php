@@ -40,7 +40,7 @@ class CetakLabelController extends Controller
     public function index(string $team, string $id)
     {
         $product = GeneratedProducts::findOrFail($id);
-        $noRimData = $this->fetchNoRim($product->no_po);
+        $noRimData = $this->printLabelService->fetchNextRim($product->no_po);
 
         return Inertia::render('OrderBesar/CetakLabel/Index', [
             'product' => $product,
@@ -134,7 +134,7 @@ class CetakLabelController extends Controller
     {
         try {
             $product = GeneratedProducts::findOrFail($id);
-            $noRimData = $this->fetchNoRim($product->no_po);
+            $noRimData = $this->printLabelService->fetchNextRim($product->no_po);
 
             return response()->json([
                 'product' => $product,
@@ -149,68 +149,6 @@ class CetakLabelController extends Controller
         } catch (\Exception $e) {
             return response()->json(['error' => 'Failed to fetch data'], 500);
         }
-    }
-
-    private function fetchNoRim(string $po): array
-    {
-        $baseQuery = $this->getBaseQuery($po);
-
-        $inschietResult = $this->checkInschietRims($baseQuery);
-        if ($inschietResult) return $inschietResult;
-
-        $nextKiri = $this->getNextRim($baseQuery, self::POTONGAN_KIRI);
-        $nextKanan = $this->getNextRim($baseQuery, self::POTONGAN_KANAN);
-
-        return $this->determineNextRim($nextKiri, $nextKanan);
-    }
-
-    private function getBaseQuery(string $po)
-    {
-        return GeneratedLabels::where('no_po_generated_products', $po)
-            ->where(fn($query) => $query->whereNull('np_users')->orWhere('np_users', ''))
-            ->orderBy('no_rim');
-    }
-
-    private function checkInschietRims($baseQuery): ?array
-    {
-        foreach ([self::POTONGAN_KIRI, self::POTONGAN_KANAN] as $potongan) {
-            $inschiet = (clone $baseQuery)
-                ->where('potongan', $potongan)
-                ->where('no_rim', self::INSCHIET_RIM)
-                ->whereNull('start')
-                ->first();
-
-            if ($inschiet) {
-                return ['noRim' => self::INSCHIET_RIM, 'potongan' => $potongan];
-            }
-        }
-        return null;
-    }
-
-    private function getNextRim($baseQuery, string $potongan)
-    {
-        return (clone $baseQuery)
-            ->where('potongan', $potongan)
-            ->first();
-    }
-
-    private function determineNextRim($nextKiri, $nextKanan): array
-    {
-        if (!$nextKiri && !$nextKanan) {
-            return ['noRim' => 0, 'potongan' => 'Finished'];
-        }
-
-        if (!$nextKiri) {
-            return ['noRim' => $nextKanan->no_rim, 'potongan' => self::POTONGAN_KANAN];
-        }
-
-        if (!$nextKanan) {
-            return ['noRim' => $nextKiri->no_rim, 'potongan' => self::POTONGAN_KIRI];
-        }
-
-        return $nextKiri->no_rim <= $nextKanan->no_rim
-            ? ['noRim' => $nextKiri->no_rim, 'potongan' => self::POTONGAN_KIRI]
-            : ['noRim' => $nextKanan->no_rim, 'potongan' => self::POTONGAN_KANAN];
     }
 
     private function updateGeneratedLabel(Request $request, string $npPetugas): void

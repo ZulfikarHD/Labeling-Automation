@@ -63,6 +63,24 @@ class ProductionOrderService
             ->count() === 0;
     }
 
+    public function registerOrUpdateMmeaProduct(array $productData): void
+    {
+        $sumRim = round($productData['jml_lbr'], 0, PHP_ROUND_HALF_UP);
+
+        GeneratedProducts::updateOrCreate(
+            ['no_po' => $productData['no_po']],
+            [
+                'no_obc'  => $productData['no_obc'],
+                'type'    => $productData['produk'] ?? 'MMEA',
+                'sum_rim' => $sumRim,
+                'start_rim' => 1,
+                'end_rim'   => $sumRim,
+                'assigned_team' => 6, // MMEA team
+                'status'    => 2
+            ]
+        );
+    }
+
     private function calculateTotalRims(int $totalSheets): int
     {
         return max(floor($totalSheets / self::SHEETS_PER_RIM), self::MIN_RIM);

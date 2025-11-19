@@ -227,8 +227,114 @@ class PrintLabelService
         );
     }
 
-    private function formatPeriksaName(?string $name): ?string
+    public function getRemainingLabelCount(int $noPo): int
+    {
+        return GeneratedLabels::where('no_po_generated_products', $noPo)
+            ->whereNull('np_users')
+            ->count();
+    }
+
+    public function getNextAvailableLabel(int $noPo, string $orderBy = 'asc')
+    {
+        return GeneratedLabels::where('no_po_generated_products', $noPo)
+            ->whereNull('np_users')
+            ->orderBy('no_rim', $orderBy)
+            ->first();
+    }
+
+    public function updateLabelWithInspection(
+        $label,
+        string $np1,
+        ?string $np2,
+        int $team
+    ): bool {
+        try {
+            $label->update([
+                'np_users' => strtoupper($np1),
+                'np_user_p2' => $np2 ? strtoupper($np2) : null,
+                'workstation' => $team,
+                'start' => now(),
+                'finish' => now(),
+            ]);
+
+            return true;
+        } catch (\Exception $e) {
+            \Log::error('Failed to update label', [
+                'label_id' => $label->id,
+                'error' => $e->getMessage()
+            ]);
+
+            return false;
+        }
+    }
+
+    public function fetchNextRim(string $po): array
+    {
+        $baseQuery = GeneratedLabels::where('no_po_generated_products', $po)
+            ->where(fn($query) => $query->whereNull('np_users')->orWhere('np_users', ''))
+            ->orderBy('no_rim');
+
+        // Check for inschiet rims first
+        $inschietResult = $this->checkInschietRims($baseQuery);
+        if ($inschietResult) {
+            return $inschietResult;
+        }
+
+        // Get next available rim for both Kiri and Kanan
+        $nextKiri = (clone $baseQuery)->where('potongan', 'Kiri')->first();
+        $nextKanan = (clone $baseQuery)->where('potongan', 'Kanan')->first();
+
+        return $this->determineNextRim($nextKiri, $nextKanan);
+    }
+
+    public function formatPeriksaName(?string $name): ?string
     {
         return $name ? strtoupper($name) : null;
+    }
+
+    public function convertNpFormat(string $np): string
+    {
+        if (strlen($np) > 4) {
+            $firstLetter = substr($np, 0, 1);
+            $lastFour = substr($np, (strlen($np) - 4), strlen($np));
+            return $firstLetter . $lastFour;
+        }
+
+        return $np;
+    }
+
+    private function checkInschietRims($baseQuery): ?array
+    {
+        foreach (['Kiri', 'Kanan'] as $potongan) {
+            $inschiet = (clone $baseQuery)
+                ->where('potongan', $potongan)
+                ->where('no_rim', self::INSCHIET_RIM_NUMBER)
+                ->whereNull('start')
+                ->first();
+
+            if ($inschiet) {
+                return ['noRim' => self::INSCHIET_RIM_NUMBER, 'potongan' => $potongan];
+            }
+        }
+        return null;
+    }
+
+    private function determineNextRim($nextKiri, $nextKanan): array
+    {
+        if (!$nextKiri && !$nextKanan) {
+            return ['noRim' => 0, 'potongan' => 'Finished'];
+        }
+
+        if (!$nextKiri) {
+            return ['noRim' => $nextKanan->no_rim, 'potongan' => 'Kanan'];
+        }
+
+        if (!$nextKanan) {
+            return ['noRim' => $nextKiri->no_rim, 'potongan' => 'Kiri'];
+        }
+
+        return $nextKiri->no_rim <= $nextKanan->no_rim
+            ? ['noRim' => $nextKiri->no_rim, 'potongan' => 'Kiri']
+            : ['noRim' => $nextKanan->no_rim, 'potongan' => 'Kanan'];
     }
 }
