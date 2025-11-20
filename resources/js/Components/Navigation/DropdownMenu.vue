@@ -15,9 +15,9 @@ defineProps({
   >
     <div
       v-show="show"
-      class="absolute mt-2 origin-top-left rounded-xl bg-white dark:bg-slate-800 shadow-xl ring-1 ring-black/5 dark:ring-white/10 border border-slate-200 dark:border-slate-700 backdrop-blur-sm z-[110] min-w-[200px]"
+      class="absolute mt-2 origin-top-left rounded-xl bg-white dark:bg-slate-800 shadow-xl ring-1 ring-black/5 dark:ring-white/10 border border-slate-200 dark:border-slate-700 backdrop-blur-sm z-[110] min-w-[200px] overflow-hidden"
     >
-      <div class="py-2">
+      <div class="py-1.5">
         <slot />
       </div>
     </div>

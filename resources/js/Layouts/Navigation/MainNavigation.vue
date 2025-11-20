@@ -22,9 +22,7 @@ defineProps({
 
 // Define dropdown state interface
 const dropdownState = {
-    orderBesar: false,
     cetakLabel: false,
-    options: false,
     monitoringProduksi: false,
     registeredPo: false,
 };
@@ -42,7 +40,7 @@ const resetDropdowns = () => {
 
 const closeDropdowns = (e) => {
     try {
-        if (isMounted.value && !e.target.closest(".dropdown-trigger")) {
+        if (isMounted.value && !e.target.closest(".dropdown-trigger") && !e.target.closest("[data-user-dropdown]")) {
             resetDropdowns();
         }
     } catch (error) {
@@ -98,7 +96,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-    <nav class="flex flex-col lg:flex-row lg:items-center gap-2 lg:gap-4">
+    <div class="flex flex-col lg:flex-row lg:items-center gap-3 lg:gap-3">
         <!-- Register Nomor PO -->
         <NavLink :href="route('orderBesar.registerNomorPo')">
             <ClipboardList />
@@ -115,22 +113,22 @@ onBeforeUnmount(() => {
         <div class="relative">
             <NavDropdown label="Cetak Label" :icon="FileText" :is-open="dropdowns.cetakLabel"
                 @toggle="toggleDropdown('cetakLabel')" />
-            <DropdownMenu :show="dropdowns.cetakLabel" class="lg:absolute lg:top-full lg:left-0 w-64">
+            <DropdownMenu :show="dropdowns.cetakLabel" class="lg:absolute lg:top-full lg:left-0 w-72 mt-2">
                 <DropdownLink :href="route('orderKecil.cetakLabel')">
                     <div class="flex items-center gap-3">
-                        <FileText class="h-4 w-4 text-slate-500 dark:text-slate-400" />
+                        <FileText class="h-4 w-4 flex-shrink-0 text-slate-500 dark:text-slate-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-200" />
                         <span>Cetak Label Personal</span>
                     </div>
                 </DropdownLink>
                 <DropdownLink :href="route('printLabel.inspeksi')">
                     <div class="flex items-center gap-3">
-                        <FileText class="h-4 w-4 text-slate-500 dark:text-slate-400" />
+                        <FileText class="h-4 w-4 flex-shrink-0 text-slate-500 dark:text-slate-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-200" />
                         <span>Cetak Label Inspeksi</span>
                     </div>
                 </DropdownLink>
                 <DropdownLink :href="route('printLabel.mmea')">
                     <div class="flex items-center gap-3">
-                        <FileText class="h-4 w-4 text-slate-500 dark:text-slate-400" />
+                        <FileText class="h-4 w-4 flex-shrink-0 text-slate-500 dark:text-slate-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-200" />
                         <span>Cetak Label MMEA</span>
                     </div>
                 </DropdownLink>
@@ -142,16 +140,16 @@ onBeforeUnmount(() => {
             <NavDropdown label="Data Po" :icon="FileSpreadsheet" :is-open="dropdowns.registeredPo"
                 @toggle="toggleDropdown('registeredPo')" />
 
-            <DropdownMenu :show="dropdowns.registeredPo" class="lg:absolute lg:top-full lg:left-0 w-64">
+            <DropdownMenu :show="dropdowns.registeredPo" class="lg:absolute lg:top-full lg:left-0 w-72 mt-2">
                 <DropdownLink :href="route('dataPo.index', 0)">
                     <div class="flex items-center gap-3">
-                        <FileSpreadsheet class="h-4 w-4 text-slate-500 dark:text-slate-400" />
+                        <FileSpreadsheet class="h-4 w-4 flex-shrink-0 text-slate-500 dark:text-slate-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-200" />
                         <span>Data PO PCHT</span>
                     </div>
                 </DropdownLink>
                 <DropdownLink :href="route('dataPoMmea.index')">
                     <div class="flex items-center gap-3">
-                        <FileSpreadsheet class="h-4 w-4 text-slate-500 dark:text-slate-400" />
+                        <FileSpreadsheet class="h-4 w-4 flex-shrink-0 text-slate-500 dark:text-slate-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-200" />
                         <span>Data PO MMEA</span>
                     </div>
                 </DropdownLink>
@@ -162,16 +160,16 @@ onBeforeUnmount(() => {
         <div class="relative">
             <NavDropdown label="Monitoring Produksi" :icon="Activity" :is-open="dropdowns.monitoringProduksi"
                 @toggle="toggleDropdown('monitoringProduksi')" />
-            <DropdownMenu :show="dropdowns.monitoringProduksi" class="lg:absolute lg:top-full lg:left-0 w-64">
+            <DropdownMenu :show="dropdowns.monitoringProduksi" class="lg:absolute lg:top-full lg:left-0 w-72 mt-2">
                 <DropdownLink :href="route('monitoringProduksi.produksiPegawai')">
                     <div class="flex items-center gap-3">
-                        <Users class="h-4 w-4 text-slate-500 dark:text-slate-400" />
+                        <Users class="h-4 w-4 flex-shrink-0 text-slate-500 dark:text-slate-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-200" />
                         <span>Produksi Pegawai</span>
                     </div>
                 </DropdownLink>
                 <DropdownLink :href="route('monitoringProduksi.statusVerif.index')">
                     <div class="flex items-center gap-3">
-                        <Activity class="h-4 w-4 text-slate-500 dark:text-slate-400" />
+                        <Activity class="h-4 w-4 flex-shrink-0 text-slate-500 dark:text-slate-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-200" />
                         <span>Status Verifikasi</span>
                     </div>
                 </DropdownLink>
@@ -183,5 +181,5 @@ onBeforeUnmount(() => {
             <Users />
             Create User
         </NavLink>
-    </nav>
+    </div>
 </template>

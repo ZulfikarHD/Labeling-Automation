@@ -1,15 +1,11 @@
 <?php
 
 use App\Http\Controllers\GeneratedLabelController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\GenerateLabelsPersonalController;
 use App\Http\Controllers\OrderSiapPeriksaController;
-use App\Http\Controllers\PrintLabelPersonalController;
 use App\Http\Controllers\PendapatanHarianController;
 use App\Http\Controllers\PrintLabel\PrintLabelMmeaController;
 use App\Http\Controllers\ProductionOrderController;
-use App\Http\Controllers\UpdateSpecController;
 
 /*
 |--------------------------------------------------------------------------
@@ -24,19 +20,9 @@ use App\Http\Controllers\UpdateSpecController;
 
 /*
 |--------------------------------------------------------------------------
-| Authentication Routes
-|--------------------------------------------------------------------------
-*/
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
-
-/*
-|--------------------------------------------------------------------------
 | Production Order Routes
 |--------------------------------------------------------------------------
 */
-Route::post('/register-production-order', [ProductionOrderController::class, 'store']);
 Route::put('/production-order-finish/{noPo}', [ProductionOrderController::class, 'updateStatusFinish']);
 Route::post('/production-order/update-rim', [ProductionOrderController::class, 'update']);
 Route::get('/production-order/get-labels/{no_po}', [GeneratedLabelController::class, 'getLabels']);
@@ -63,8 +49,6 @@ Route::prefix('order-besar')->group(function () {
         Route::post('/update', [App\Http\Controllers\OrderBesar\CetakLabelController::class, 'update']);
 
         Route::delete('/{id}', [App\Http\Controllers\OrderBesar\CetakLabelController::class, 'delete']);
-
-        Route::get('/verification-status/{team}', [App\Http\Controllers\OrderBesar\CetakLabelController::class, 'getVerificationStatus']);
     });
 
     Route::get('/verif/{team}', [OrderSiapPeriksaController::class, 'fetchWorkPo']);
@@ -86,7 +70,6 @@ Route::post('/order-kecil/cetak-label', [App\Http\Controllers\OrderKecil\CetakLa
 Route::get('/pendapatan-harian', [PendapatanHarianController::class, 'gradeHarian']);
 Route::get('/pendapatan-harian-mmea',[PendapatanHarianController::class, 'gradeHarianMmea']);
 Route::get('/team-name/{id}', [App\Models\Workstations::class, 'getTeamName']);
-Route::post('/update-spec', [UpdateSpecController::class, 'updateSpec']);
 Route::get('/active-teams', [PendapatanHarianController::class, 'getActiveTeams']);
 
 
