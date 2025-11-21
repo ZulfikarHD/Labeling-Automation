@@ -6,6 +6,7 @@ use App\Http\Controllers\OrderSiapPeriksaController;
 use App\Http\Controllers\PendapatanHarianController;
 use App\Http\Controllers\PrintLabel\PrintLabelMmeaController;
 use App\Http\Controllers\ProductionOrderController;
+use App\Http\Controllers\UpdateSpecController;
 
 /*
 |--------------------------------------------------------------------------
@@ -91,3 +92,5 @@ Route::post('/print-label/inspeksi/store', [App\Http\Controllers\PrintLabel\Prin
 Route::post('/print-label/mmea/store', [PrintLabelMmeaController::class, 'store']);
 Route::post('/print-label/mmea/storeProduct', [PrintLabelMmeaController::class, 'storeProduct']);
 Route::get('/mmea/qc-data/{nomor_po}', [PrintLabelMmeaController::class,  'qcData']);
+
+Route::post('/update-spec', [UpdateSpecController::class, 'updateSpec']);
