@@ -199,6 +199,19 @@ import Button from "@/Components/Button.vue";
 // Injeksi dependency
 const swal = inject('$swal');
 
+/**
+ * Memformat Nomor Pegawai (NP) agar maksimal 5 karakter
+ * Jika lebih dari 5 karakter, ambil 1 karakter pertama + 4 karakter terakhir
+ * @param {string} np - Nomor Pegawai
+ * @returns {string} - Nomor Pegawai yang sudah diformat
+ */
+const formatNP = (np) => {
+    if (!np) return "";
+    const trimmed = np.toString().trim();
+    if (trimmed.length <= 5) return trimmed;
+    return trimmed.charAt(0) + trimmed.slice(-4);
+};
+
 // State management
 const isLoading = ref(false);
 const errorPo = ref("");
@@ -327,8 +340,8 @@ const submit = () => {
                         undefined,
                         obc_color.value,
                         undefined,
-                        form.periksa1,
-                        form.periksa2,
+                        formatNP(form.periksa1),
+                        formatNP(form.periksa2),
                         form.jml_label,
                         500
                     );
