@@ -332,8 +332,16 @@ const submit = () => {
         if (result.isConfirmed) {
             isLoading.value = true;
 
+            // Prepare payload dengan data yang sudah diformat
+            const payload = {
+                ...form.data(),
+                jml_rim: form.jml_label, // Backend butuh integer, bukan string "1500 / 3 Rim"
+                periksa1: formatNP(form.periksa1),
+                periksa2: formatNP(form.periksa2),
+            };
+
             // Use axios instead of router for better error handling
-            axios.post("/api/order-kecil/cetak-label", form) // untuk debug error ganti axioss ke router
+            axios.post("/api/order-kecil/cetak-label", payload) // untuk debug error ganti axioss ke router
                 .then(response => {
                     let printLabel = batchSingleLabel(
                         form.obc,
