@@ -16,6 +16,7 @@ use App\Models\GeneratedProducts;
 
 use App\Services\ProductionOrderService;
 use App\Services\PrintLabelService;
+use App\Services\SpecificationService;
 
 class PrintLabelInspeksiController extends Controller
 {
@@ -25,7 +26,8 @@ class PrintLabelInspeksiController extends Controller
 
     public function __construct(
         protected ProductionOrderService $productionOrderService,
-        protected PrintLabelService $printLabelService
+        protected PrintLabelService $printLabelService,
+        protected SpecificationService $specificationService
     ) {}
 
     public function index()
@@ -41,8 +43,15 @@ class PrintLabelInspeksiController extends Controller
 
     public function getSpecification(int $no_po)
     {
-        $specification = Specification::where('no_po', $no_po)->first();
-        return response()->json($specification);
+        try {
+            $specification = $this->specificationService->getSpecByNomorPo($no_po);
+            return response()->json($specification);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Spesifikasi tidak ditemukan',
+                'message' => $e->getMessage()
+            ], 404);
+        }
     }
 
     public function getRemainingLabelCount(int $no_po)
@@ -56,13 +65,16 @@ class PrintLabelInspeksiController extends Controller
         if ($isPoRegistered) {
             return $countLabel;
         } else {
-            $specification = Specification::where('no_po', $no_po)->first();
-
-            if (!$specification) {
+            try {
+                $specification = $this->specificationService->getSpecByNomorPo($no_po);
+                return max(floor($specification->rencet / 500), 0);
+            } catch (\Exception $e) {
+                Log::warning('Gagal mendapatkan spesifikasi untuk hitung label', [
+                    'no_po' => $no_po,
+                    'error' => $e->getMessage()
+                ]);
                 return 0;
             }
-
-            return max(floor($specification->rencet / 500), 0);
         }
     }
 
@@ -116,14 +128,14 @@ class PrintLabelInspeksiController extends Controller
         $existingLabelsCount = GeneratedLabels::where('no_po_generated_products', $validatedData['no_po'])->count();
 
         if ($existingLabelsCount === 0) {
-            // Get specification data to create production order
-            $specification = Specification::where('no_po', $validatedData['no_po'])->first();
-
-            if (!$specification) {
-                throw new \Exception('Spesifikasi untuk nomor PO tidak ditemukan');
+            // Get specification data from Sirine API
+            try {
+                $specification = $this->specificationService->getSpecByNomorPo($validatedData['no_po']);
+            } catch (\Exception $e) {
+                throw new \Exception('Spesifikasi untuk nomor PO tidak ditemukan di Sirine: ' . $e->getMessage());
             }
 
-                        // Calculate rim data from specification (using 500 sheets per rim for inspection)
+            // Calculate rim data from specification (using 500 sheets per rim for inspection)
             $totalRims = max(floor(($specification->rencet / 500)/2), 1);
 
             // Transform data for ProductionOrderService
@@ -145,7 +157,7 @@ class PrintLabelInspeksiController extends Controller
                 'end_rim' => $totalRims,
             ];
 
-            Log::info('Creating new PO for inspection', ['no_po' => $validatedData['no_po']]);
+            Log::info('Creating new PO for inspection from Sirine API', ['no_po' => $validatedData['no_po']]);
 
             $this->productionOrderService->registerProductionOrder($productionOrderData);
             $this->printLabelService->populateLabelForRegisteredPo($printLabelData);

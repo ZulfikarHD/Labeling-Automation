@@ -10,7 +10,8 @@ use Inertia\Inertia;
 use App\Models\Workstations;
 use App\Services\PrintLabelService;
 use App\Services\ProductionOrderService;
-use DB;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 
 /**
@@ -92,13 +93,13 @@ class RegisterNomorPoController extends Controller
         $validatedData = $request->validated();
 
         try {
-            \DB::transaction(function() use ($validatedData) {
+            DB::transaction(function() use ($validatedData) {
                 $this->productionOrderService->registerProductionOrder($validatedData);
                 $this->printLabelService->populateLabelForRegisteredPo($validatedData);
             });
             return redirect()->back();
         } catch (\Exception $exception) {
-            \Log::error('Transaction failed: ' . $exception->getMessage());
+            Log::error('Transaction failed: ' . $exception->getMessage());
 
             return response()->json([
                 'error' => 'Terjadi kesalahan saat memproses permintaan. Silakan coba lagi.'
@@ -109,9 +110,13 @@ class RegisterNomorPoController extends Controller
     /**
      * Menampilkan detail spesifikasi PO
      *
+     * @deprecated Endpoint ini sudah tidak digunakan lagi oleh frontend.
+     *             Frontend sekarang mengambil data langsung dari Sirine API.
+     *             Method ini dipertahankan untuk backward compatibility.
+     *
      * Method ini menggunakan SpecificationService untuk:
-     * - Mengambil data spesifikasi berdasarkan nomor PO
-     * - Memastikan data konsisten
+     * - Mengambil data spesifikasi berdasarkan nomor PO dari Sirine API
+     * - Fallback ke database lokal jika Sirine API tidak tersedia
      * - Mengembalikan response dalam format yang sesuai
      *
      * @param string $no_po Nomor PO yang akan ditampilkan

@@ -12,6 +12,7 @@ use App\Models\Specification;
 use App\Models\Workstations;
 use App\Services\PrintLabelService;
 use App\Services\ProductionOrderService;
+use App\Services\SpecificationService;
 use App\Traits\UpdateStatusProgress;
 use Illuminate\Support\Facades\DB;
 
@@ -33,11 +34,16 @@ class ProductionOrderController extends Controller
 
     protected $productionOrderService;
     protected $printLabelService;
+    protected $specificationService;
 
-    public function __construct(ProductionOrderService $productionOrderService, PrintLabelService $printLabelService)
-    {
+    public function __construct(
+        ProductionOrderService $productionOrderService, 
+        PrintLabelService $printLabelService,
+        SpecificationService $specificationService
+    ) {
         $this->productionOrderService = $productionOrderService;
         $this->printLabelService = $printLabelService;
+        $this->specificationService = $specificationService;
     }
 
     /**
@@ -109,9 +115,20 @@ class ProductionOrderController extends Controller
     public function edit(Int $po)
     {
         $dataPo = GeneratedProducts::where('no_po', $po)->firstOrFail();
-        $specPo = Specification::where('no_po',$po)
-            ->select('seri','type','rencet','mesin')
-            ->firstOrFail();
+        
+        // Ambil spesifikasi dari Sirine API (dengan fallback ke local DB)
+        try {
+            $specPo = $this->specificationService->getSpecByNomorPo($po);
+        } catch (\Exception $e) {
+            \Log::error('Gagal mendapatkan spesifikasi untuk edit PO', [
+                'no_po' => $po,
+                'error' => $e->getMessage()
+            ]);
+            // Fallback: coba ambil langsung dari local DB
+            $specPo = Specification::where('no_po', $po)
+                ->select('seri', 'type', 'rencet', 'mesin')
+                ->firstOrFail();
+        }
 
         $dataLabel  = GeneratedLabels::where('no_po_generated_products', $po)
             ->select('id', 'no_po_generated_products', 'no_rim', 'np_users', 'np_user_p2', 'potongan', 'start', 'finish')

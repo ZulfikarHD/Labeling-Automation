@@ -38,6 +38,17 @@ class CetakLabelController extends Controller
         ]);
     }
 
+    /**
+     * Menampilkan detail spesifikasi PO
+     * 
+     * @deprecated Endpoint ini sudah tidak digunakan lagi oleh frontend.
+     *             Frontend sekarang mengambil data langsung dari Sirine API.
+     *             Method ini dipertahankan untuk backward compatibility.
+     *
+     * @param int $no_po Nomor Production Order
+     * @param SpecificationService $specificationService Service untuk query spesifikasi
+     * @return object Data spesifikasi PO
+     */
     public function show(int $no_po, SpecificationService $specificationService)
     {
         return $specificationService->getSpecByNomorPo($no_po);

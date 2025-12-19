@@ -227,17 +227,17 @@ const form = useForm({
 });
 
 /**
- * Mengambil data PO dari server
+ * Mengambil data PO dari Sirine API
  * Mengupdate form fields berdasarkan response
  */
 const fetchData = () => {
     isLoading.value = true;
     errorPo.value = "";
 
-    axios.get(`/api/order-besar/register-no-po/${form.po}`)
+    axios.get(`https://sirine.peruri.co.id/sirine/api/detail-order-pcht/${form.po}`)
         .then((response) => {
             const data = response.data;
-            // Update form dengan data dari server
+            // Update form dengan data dari Sirine API
             form.obc = data.no_obc;
             form.jml_lembar = data.rencet;
             form.jml_rim = Math.ceil(data.rencet / 500);
@@ -247,8 +247,9 @@ const fetchData = () => {
 
             updateConfirmationMessage();
         })
-        .catch(() => {
-            errorPo.value = "Nomor PO Tidak Ditemukan";
+        .catch((error) => {
+            console.error('Error fetching PO data:', error);
+            errorPo.value = "Nomor PO Tidak Ditemukan di Sirine";
             isDataFetched.value = false; // Set to false on error
             const tempPo = form.po;
             resetForm();

@@ -256,7 +256,7 @@ const fetchData = () => {
     errorPo.value = "";
     isLoading.value = true;
 
-    axios.get(`/api/order-kecil/fetch-spec/${form.po}`).then((res) => {
+    axios.get(`https://sirine.peruri.co.id/sirine/api/detail-order-pcht/${form.po}`).then((res) => {
         let total_label = Math.ceil(res.data.rencet / 500);
 
         form.obc = res.data.no_obc;
@@ -267,8 +267,9 @@ const fetchData = () => {
         form.seri = res.data.no_obc.substr(4, 1) > 3 ? 1 : res.data.no_obc.substr(4, 1);
         obc_color.value = form.seri == 3 ? "#b91c1c" : "#1d4ed8";
         isDataFetched.value = true;
-    }).catch(() => {
-        errorPo.value = "Nomor PO Tidak Ditemukan";
+    }).catch((error) => {
+        console.error('Error fetching PO data:', error);
+        errorPo.value = "Nomor PO Tidak Ditemukan di Sirine";
         isDataFetched.value = false;
     }).finally(() => {
         isLoading.value = false;
