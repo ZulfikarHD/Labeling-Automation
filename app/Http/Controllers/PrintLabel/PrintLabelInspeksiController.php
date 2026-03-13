@@ -40,6 +40,16 @@ class PrintLabelInspeksiController extends Controller
 
     public function getRemainingLabelCount(int $no_po)
     {
+        $isPoRegistered = GeneratedLabels::where('no_po_generated_products', $no_po)->exists();
+
+        return response()->json([
+            'registered' => $isPoRegistered,
+            'count' => $isPoRegistered ? $this->countRemainingLabels($no_po) : 0,
+        ]);
+    }
+
+    private function countRemainingLabels(int $no_po): int
+    {
         return GeneratedLabels::where('no_po_generated_products', $no_po)
             ->where('no_rim', '!=', self::INSCHIET_RIM_NUMBER)
             ->whereNull('np_users')
@@ -160,7 +170,7 @@ class PrintLabelInspeksiController extends Controller
             Log::warning('No available labels found', ['no_po' => $validatedData['no_po']]);
         }
 
-        $remainingLabels = $this->getRemainingLabelCount($validatedData['no_po']);
+        $remainingLabels = $this->countRemainingLabels($validatedData['no_po']);
 
         return [
             'processed_labels' => $processedLabels,

@@ -164,9 +164,9 @@ const dataManager = {
 
             let remaining = estimatedLabels;
             try {
-                const backendCount = await apiService.getRemainingLabels(form.no_po);
-                if (backendCount > 0) {
-                    remaining = backendCount;
+                const result = await apiService.getRemainingLabels(form.no_po);
+                if (result.registered) {
+                    remaining = result.count;
                 }
             } catch (e) {
                 console.warn('Backend remaining count unavailable, using estimate from rencet');
