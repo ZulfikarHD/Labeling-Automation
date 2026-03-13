@@ -7,7 +7,6 @@ import InputLabel from "@/Components/InputLabel.vue";
 import Select from "@/Components/Select.vue";
 import Button from "@/Components/Button.vue";
 import InputError from "@/Components/InputError.vue";
-import { router } from '@inertiajs/vue3';
 import LoadingOverlay from "@/Components/LoadingOverlay.vue";
 import { batchSingleLabel } from "@/Components/PrintPages/index";
 import {
@@ -39,6 +38,7 @@ const props = defineProps({
 const swal = inject('$swal');
 
 // Constants
+const SIRINE_API_URL = 'https://sirine.peruri.co.id/sirine/api/detail-order-pcht';
 const PRINT_TIMEOUT_BASE = 1000;
 const DEBOUNCE_DELAY = 500;
 const VALIDATION_DELAY = 300;
@@ -63,7 +63,9 @@ const form = useForm({
     team: props.currentTeam,
     jumlah_label: 0,
     np1: '',
-    np2: ''
+    np2: '',
+    no_obc: '',
+    rencet: 0,
 });
 
 // Computed properties
@@ -78,7 +80,7 @@ const printTimeout = computed(() =>
 // API calls
 const apiService = {
     async getSpecification(noPo) {
-        const response = await axios.get(`/api/print-label/inspeksi/${noPo}`);
+        const response = await axios.get(`${SIRINE_API_URL}/${noPo}`);
         return response.data;
     },
 
@@ -147,25 +149,37 @@ const dataManager = {
         errors.value.poNotFound = '';
 
         try {
-            const [specData, remainingCount] = await Promise.all([
-                apiService.getSpecification(form.no_po),
-                apiService.getRemainingLabels(form.no_po)
-            ]);
+            const specData = await apiService.getSpecification(form.no_po);
+            const seri = specData.no_obc.substr(4, 1) > 3 ? 1 : specData.no_obc.substr(4, 1);
+            const estimatedLabels = Math.max(1, Math.floor(specData.rencet / 1000)) * 2;
 
             specificationData.value = {
                 no_obc: specData.no_obc,
-                nomor_plat: specData.nomor_plat,
-                seri: specData.seri
+                nomor_plat: specData.mesin ?? '---',
+                seri: seri
             };
 
-            remainingLabels.value = remainingCount;
-            form.jumlah_label = remainingCount;
+            form.no_obc = specData.no_obc;
+            form.rencet = specData.rencet;
+
+            let remaining = estimatedLabels;
+            try {
+                const backendCount = await apiService.getRemainingLabels(form.no_po);
+                if (backendCount > 0) {
+                    remaining = backendCount;
+                }
+            } catch (e) {
+                console.warn('Backend remaining count unavailable, using estimate from rencet');
+            }
+
+            remainingLabels.value = remaining;
+            form.jumlah_label = remaining;
             errors.value.labelQuantity = '';
 
         } catch (error) {
             console.error('Error fetching specification:', error);
             this.resetSpecification();
-            errors.value.poNotFound = 'Nomor Po Tidak Ditemukan Harap Hubungi admin untuk memperbaharui data order';
+            errors.value.poNotFound = 'Nomor PO Tidak Ditemukan di Sirine';
         } finally {
             isLoading.value = false;
         }

@@ -79,7 +79,6 @@ Route::get('/active-teams', [PendapatanHarianController::class, 'getActiveTeams'
 | Print Label Inspeksi Routes
 |--------------------------------------------------------------------------
 */
-Route::get('/print-label/inspeksi/{no_po}', [App\Http\Controllers\PrintLabel\PrintLabelInspeksiController::class, 'getSpecification']);
 Route::get('/print-label/inspeksi/count-remaining-label/{no_po}', [App\Http\Controllers\PrintLabel\PrintLabelInspeksiController::class, 'getRemainingLabelCount']);
 Route::post('/print-label/inspeksi/store', [App\Http\Controllers\PrintLabel\PrintLabelInspeksiController::class, 'store']);
 

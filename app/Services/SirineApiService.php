@@ -52,6 +52,7 @@ class SirineApiService
 
             return Cache::remember($cacheKey, self::CACHE_DURATION * 60, function () use ($no_po) {
                 $response = Http::timeout(10)
+                    ->withOptions(['verify' => storage_path('certs/star_peruri_co_id.pem')])
                     ->get(self::SIRINE_API_BASE_URL . "/detail-order-pcht/{$no_po}");
 
                 if ($response->failed()) {
