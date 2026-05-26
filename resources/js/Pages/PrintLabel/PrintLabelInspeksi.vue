@@ -19,7 +19,7 @@ import {
     RotateCcw,
     CheckCircle,
     AlertCircle
-} from 'lucide-vue-next';
+} from '@lucide/vue';
 import axios from 'axios';
 
 // Props

@@ -12,7 +12,7 @@ import {
     FileText,
     Layers,
     Hash,
-} from "lucide-vue-next";
+} from "@lucide/vue";
 import { ref } from "vue";
 
 const props = defineProps({

@@ -4,7 +4,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import PaginateLink from '@/Components/PaginateLink.vue';
 import Modal from '@/Components/Modal.vue';
 import { Link, router, useForm } from '@inertiajs/vue3';
-import { Home, Search, Trash2, Eye, Edit, Printer } from 'lucide-vue-next';
+import { Home, Search, Trash2, Eye, Edit, Printer } from '@lucide/vue';
 import { inject, ref } from 'vue';
 import axios from 'axios';
 

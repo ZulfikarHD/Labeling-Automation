@@ -3,7 +3,7 @@ import { ref, watch } from "vue";
 import { useForm } from "@inertiajs/vue3";
 import InputLabel from "@/Components/InputLabel.vue";
 import TextInput from "@/Components/TextInput.vue";
-import { BarChart, Calendar, ClipboardCheck } from "lucide-vue-next";
+import { BarChart, Calendar, ClipboardCheck } from "@lucide/vue";
 import Swal from 'sweetalert2';
 import axios from 'axios';
 

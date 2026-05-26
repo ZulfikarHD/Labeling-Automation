@@ -2,7 +2,7 @@
 // Import komponen dan fungsi yang dibutuhkan
 import { ref, watch, computed } from "vue"; // Composables dari Vue 3
 import axios from "axios"; // HTTP client untuk request API
-import { ChevronLeft, ChevronRight } from "lucide-vue-next"; // Icon untuk navigasi pagination
+import { ChevronLeft, ChevronRight } from "@lucide/vue"; // Icon untuk navigasi pagination
 import BaseCard from "./BaseCard.vue"; // Komponen card dasar
 import Badge from "./CustomBadge.vue";
 import TableVerifikasiPegawaiSkeleton from "./TableVerifikasiPegawaiSkeleton.vue";

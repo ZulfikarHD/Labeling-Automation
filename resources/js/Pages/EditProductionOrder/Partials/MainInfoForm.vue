@@ -9,7 +9,7 @@ import {
     Hash,
     BarChart,
     Users
-} from "lucide-vue-next";
+} from "@lucide/vue";
 
 const props = defineProps({
     dataPo: {

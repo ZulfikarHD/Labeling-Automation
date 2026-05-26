@@ -3,7 +3,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import TextInput from '@/Components/TextInput.vue';
 import { Link, useForm } from '@inertiajs/vue3';
-import { FileText, Layers, Hash, Save, ArrowLeft, AlertCircle } from 'lucide-vue-next';
+import { FileText, Layers, Hash, Save, ArrowLeft, AlertCircle } from '@lucide/vue';
 import { inject, ref } from 'vue';
 
 const swal = inject("$swal");
@@ -72,8 +72,8 @@ const submit = () => {
                                 <InputLabel for="obc" value="Nomor OBC"
                                     class="text-lg font-semibold text-slate-700 dark:text-slate-300" />
                             </div>
-                            <TextInput 
-                                id="obc" 
+                            <TextInput
+                                id="obc"
                                 v-model="form.no_obc"
                                 type="text"
                                 class="text-xl text-center bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-600 rounded-xl shadow-sm dark:text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900"
@@ -91,8 +91,8 @@ const submit = () => {
                                 <InputLabel for="type" value="Produk"
                                     class="text-lg font-semibold text-slate-700 dark:text-slate-300" />
                             </div>
-                            <select 
-                                id="type" 
+                            <select
+                                id="type"
                                 v-model="form.type"
                                 class="w-full text-xl text-center bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-xl shadow-sm dark:text-white px-4 py-3 transition-all duration-200 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900 focus:outline-none"
                                 :class="{ 'border-red-500': form.errors.type }">
@@ -111,9 +111,9 @@ const submit = () => {
                                 <InputLabel for="po" value="Nomor PO"
                                     class="text-lg font-semibold text-slate-700 dark:text-slate-300" />
                             </div>
-                            <TextInput 
-                                id="po" 
-                                :value="props.data_product?.no_po" 
+                            <TextInput
+                                id="po"
+                                :value="props.data_product?.no_po"
                                 type="text"
                                 class="text-xl text-center bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-600 rounded-xl shadow-sm dark:text-white"
                                 disabled />
@@ -160,21 +160,21 @@ const submit = () => {
                                         {{ label.nomor_rim }}
                                     </td>
                                     <td class="px-4 py-3">
-                                        <TextInput 
+                                        <TextInput
                                             v-model="form.labels[index].periksa1"
                                             type="text"
                                             class="w-full text-sm text-center bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-lg dark:text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900 transition-all duration-200"
                                             placeholder="-" />
                                     </td>
                                     <td class="px-4 py-3">
-                                        <TextInput 
+                                        <TextInput
                                             v-model="form.labels[index].periksa2"
                                             type="text"
                                             class="w-full text-sm text-center bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-lg dark:text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900 transition-all duration-200"
                                             placeholder="-" />
                                     </td>
                                     <td class="px-4 py-3">
-                                        <TextInput 
+                                        <TextInput
                                             v-model="form.labels[index].lbr_kemas"
                                             type="text"
                                             class="w-full text-sm text-center bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-600 rounded-lg dark:text-white focus:border-blue-500 focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-900 transition-all duration-200"
@@ -196,7 +196,7 @@ const submit = () => {
 
                 <!-- Action Buttons -->
                 <div class="flex flex-col sm:flex-row justify-between gap-4 mt-8">
-                    <Link 
+                    <Link
                         :href="route('dataPoMmea.index')"
                         class="inline-flex items-center justify-center gap-2 px-6 py-3 text-sm font-medium text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-600 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700 transition-all duration-200 shadow-sm hover:shadow">
                         <ArrowLeft class="w-5 h-5" />

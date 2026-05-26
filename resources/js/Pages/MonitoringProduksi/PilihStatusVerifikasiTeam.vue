@@ -1,7 +1,7 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link } from '@inertiajs/vue3';
-import { Settings, ArrowLeftCircle, Activity } from 'lucide-vue-next';
+import { Settings, ArrowLeftCircle, Activity } from '@lucide/vue';
 
 const props = defineProps({
     workstations: Object,

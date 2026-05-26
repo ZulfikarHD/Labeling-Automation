@@ -4,7 +4,7 @@ import InputLabel from '@/Components/InputLabel.vue';
 import TextInput from '@/Components/TextInput.vue';
 import Modal from '@/Components/Modal.vue';
 import { Link } from '@inertiajs/vue3';
-import { Hash, Layers, FileText, AlertCircle, CheckCircle2, Clock, ArrowRight } from 'lucide-vue-next';
+import { Hash, Layers, FileText, AlertCircle, CheckCircle2, Clock, ArrowRight } from '@lucide/vue';
 import { ref } from 'vue';
 
 const props = defineProps({
@@ -31,13 +31,13 @@ const formatDateTime = (dateString) => {
     const hours = String(date.getHours()).padStart(2, '0');
     const minutes = String(date.getMinutes()).padStart(2, '0');
     const seconds = String(date.getSeconds()).padStart(2, '0');
-    
+
     return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
 };
 
 const openModalDetailProduksi = (dataLabel) => {
     modalDetailProduksi.value = true;
-    
+
     periksa1.value = dataLabel.periksa1 ?? '-';
     periksa2.value = dataLabel.periksa2 ?? '-';
     nomorPo.value = dataLabel.nomor_po;
@@ -122,8 +122,8 @@ const openModalDetailProduksi = (dataLabel) => {
 
                 <!-- Close Button -->
                 <div class="flex justify-end pt-4 mt-4 border-t border-slate-200 dark:border-slate-700">
-                    <button 
-                        type="button" 
+                    <button
+                        type="button"
                         @click="modalDetailProduksi = !modalDetailProduksi"
                         class="px-6 py-2.5 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 rounded-lg transition-colors duration-200 shadow-sm hover:shadow">
                         Tutup

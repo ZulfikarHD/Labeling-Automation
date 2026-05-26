@@ -28,7 +28,7 @@ import {
     AlertCircle,
     Plus,
     Trash2
-} from 'lucide-vue-next';
+} from '@lucide/vue';
 
 // Constants
 const PRINT_TIMEOUT_BASE = 1000;

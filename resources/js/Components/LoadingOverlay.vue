@@ -16,7 +16,7 @@
 </template>
 
 <script setup lang="ts">
-import { Loader } from 'lucide-vue-next';
+import { Loader } from '@lucide/vue';
 import { ref, watch } from 'vue';
 
 const props = defineProps({

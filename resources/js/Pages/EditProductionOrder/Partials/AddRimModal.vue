@@ -4,7 +4,7 @@ import { useForm } from "@inertiajs/vue3";
 import Modal from "@/Components/Modal.vue";
 import InputLabel from "@/Components/InputLabel.vue";
 import TextInput from "@/Components/TextInput.vue";
-import { AlertCircle } from "lucide-vue-next";
+import { AlertCircle } from "@lucide/vue";
 import axios from "axios";
 import Swal from "sweetalert2";
 

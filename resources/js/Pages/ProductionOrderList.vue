@@ -6,7 +6,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import TextInput from "@/Components/TextInput.vue";
 import Modal from "@/Components/Modal.vue";
 import PaginateLink from "@/Components/PaginateLink.vue";
-import { Search, Printer, Home, Trash2, Eye, Filter, Edit } from 'lucide-vue-next';
+import { Search, Printer, Home, Trash2, Eye, Filter, Edit } from '@lucide/vue';
 import StatusProduksiBadge from "@/Components/StatusProduksiBadge.vue";
 
 // Menginisialisasi variabel dan fungsi yang diperlukan

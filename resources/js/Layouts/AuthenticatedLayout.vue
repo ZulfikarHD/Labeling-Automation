@@ -12,7 +12,7 @@ import {
     Moon,
     Menu,
     X,
-} from "lucide-vue-next"
+} from "@lucide/vue"
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 
 // Get user role from auth props

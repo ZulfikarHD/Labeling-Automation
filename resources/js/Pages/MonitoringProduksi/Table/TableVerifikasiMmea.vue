@@ -2,7 +2,7 @@
 import BaseCard from '@/Components/BaseCard.vue';
 import Badge from '@/Components/CustomBadge.vue';
 import TableVerifikasiPegawaiSkeleton from '@/Components/TableVerifikasiPegawaiSkeleton.vue';
-import { ChevronLeft, ChevronRight } from 'lucide-vue-next';
+import { ChevronLeft, ChevronRight } from '@lucide/vue';
 import axios from 'axios';
 import { computed, ref, watch } from 'vue';
 
@@ -24,7 +24,7 @@ const initDataProduksi = async () => {
         const produksiResponse = await axios.get(`/api/pendapatan-harian-mmea?date=${dateFilter.value}`);
         dataProduksi.value = produksiResponse.data
     } catch {
-        
+
     } finally {
         isLoading.value = false;
     }

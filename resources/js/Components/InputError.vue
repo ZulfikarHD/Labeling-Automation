@@ -1,5 +1,5 @@
 <script setup>
-import { AlertCircle } from 'lucide-vue-next';
+import { AlertCircle } from '@lucide/vue';
 
 defineProps({
     message: {

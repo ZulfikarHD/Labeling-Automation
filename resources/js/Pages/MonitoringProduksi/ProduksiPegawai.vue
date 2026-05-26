@@ -7,7 +7,7 @@ import LoadingOverlay from '@/Components/LoadingOverlay.vue' // Komponen overlay
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue' // Layout dasar untuk halaman yang membutuhkan autentikasi
 import { Head, useForm } from '@inertiajs/vue3' // Utilitas dari Inertia.js untuk manajemen form dan head
 import { ref, watch, onMounted, computed } from 'vue' // Composables dari Vue 3
-import { Calendar } from 'lucide-vue-next' // Icon kalender dari library Lucide
+import { Calendar } from '@lucide/vue' // Icon kalender dari library Lucide
 import axios from 'axios' // HTTP client untuk request API
 import TableVerifikasiMmea from './Table/TableVerifikasiMmea.vue'
 
@@ -110,7 +110,7 @@ const filteredTeams = computed(() => {
                         <TableVerifikasiPegawai :team="0" :date="form.date" />
 
                     </template>
-                    
+
                     <TableVerifikasiMmea  :date="form.date"/>
                 </div>
             </div>

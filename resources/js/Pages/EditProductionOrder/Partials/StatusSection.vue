@@ -1,6 +1,6 @@
 <script setup>
 import { ref, computed } from 'vue';
-import { PlusCircle, Trash2 } from 'lucide-vue-next';
+import { PlusCircle, Trash2 } from '@lucide/vue';
 import Swal from 'sweetalert2';
 import axios from 'axios';
 

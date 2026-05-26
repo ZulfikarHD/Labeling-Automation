@@ -4,7 +4,7 @@ import { useForm, router } from "@inertiajs/vue3";
 import Modal from "@/Components/Modal.vue";
 import InputLabel from "@/Components/InputLabel.vue";
 import TextInput from "@/Components/TextInput.vue";
-import { X, Trash2 } from "lucide-vue-next";
+import { X, Trash2 } from "@lucide/vue";
 import axios from "axios";
 import Swal from "sweetalert2";
 
