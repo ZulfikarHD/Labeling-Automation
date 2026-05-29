@@ -38,13 +38,13 @@ Feature: Akses Halaman Registrasi Nomor PO
 
 Scenario: Operator membuka halaman registrasi nomor PO
   Given saya sudah login sebagai operator
-  When saya mengakses halaman "/order-besar/register-nomor-po"
+  When saya mengakses halaman "/register-po-pcht"
   Then saya melihat halaman "Register Nomor PO" dengan layout AuthenticatedLayout
   And halaman memuat form registrasi PO dalam BaseCard
 
 Scenario: User belum login mengakses halaman
   Given saya belum login
-  When saya mengakses "/order-besar/register-nomor-po"
+  When saya mengakses "/register-po-pcht"
   Then saya diarahkan ke halaman "/login"
 ```
 
@@ -116,7 +116,7 @@ Scenario: Submit berhasil dengan data valid
     | team       | 3             |
   And saya klik "Register"
   And saya konfirmasi dialog SweetAlert
-  Then sistem mengirim POST ke "/api/order-besar/register-no-po"
+  Then sistem mengirim POST ke "/api/register-po-pcht"
   And record baru terbuat di tabel generated_products:
     | Column        | Value       |
     | no_po         | 1234567890  |
